@@ -6,6 +6,12 @@ class CreateCampaign extends CampaignEvent {}
 /// Event to initialize a new campaign form
 class InitCampaignForm extends CampaignEvent {}
 
+/// Event to load a specific campaign by ID
+class LoadCampaign extends CampaignEvent {
+  final String campaignId;
+  LoadCampaign(this.campaignId);
+}
+
 // New events for campaign creation flow
 
 class LoadCampaigns extends CampaignEvent {}
@@ -39,6 +45,13 @@ class UpdateCampaignGoals extends CampaignEvent {
   final List<String> goals;
 
   UpdateCampaignGoals(this.goals);
+}
+
+/// Event to update a campaign's status
+class UpdateCampaignStatus extends CampaignEvent {
+  final String campaignId;
+  final String status;
+  UpdateCampaignStatus(this.campaignId, this.status);
 }
 
 /// Event to update contract details (Step 4)

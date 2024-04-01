@@ -1,5 +1,6 @@
 import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:connectobia/src/shared/presentation/widgets/error_box.dart';
@@ -319,12 +320,14 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
       children: [
         ShadButton.secondary(
           onPressed: () {
-            // TODO: Implement view campaign details
-            ShadToaster.of(context).show(
-              ShadToast(
-                title: const Text('Coming Soon'),
-                description: const Text('This feature is not yet implemented'),
-              ),
+            Navigator.pushNamed(
+              context,
+              campaignDetails,
+              arguments: {
+                'campaignId': campaign.id,
+                'userType':
+                    'influencer', // Indicates this is an influencer viewing the campaign
+              },
             );
           },
           child: const Text('View Details'),

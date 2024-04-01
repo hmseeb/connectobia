@@ -17,6 +17,12 @@ class CampaignCreationError extends CampaignState {
   CampaignCreationError(this.errorMessage);
 }
 
+/// Campaign loading error
+class CampaignError extends CampaignState {
+  final String message;
+  CampaignError(this.message);
+}
+
 /// State to hold campaign form data throughout the creation flow
 class CampaignFormState extends CampaignState {
   final String title;
@@ -104,6 +110,12 @@ class CampaignFormState extends CampaignState {
 
 class CampaignInitial extends CampaignState {}
 
+/// A single campaign loaded
+class CampaignLoaded extends CampaignState {
+  final Campaign campaign;
+  CampaignLoaded(this.campaign);
+}
+
 class CampaignsLoaded extends CampaignState {
   final List<Campaign> campaigns;
   CampaignsLoaded(this.campaigns);
@@ -117,6 +129,12 @@ class CampaignsLoadingError extends CampaignState {
 }
 
 abstract class CampaignState {}
+
+/// Campaign updated successfully
+class CampaignUpdated extends CampaignState {
+  final Campaign campaign;
+  CampaignUpdated(this.campaign);
+}
 
 /// State for validation results
 class StepValidationResult {

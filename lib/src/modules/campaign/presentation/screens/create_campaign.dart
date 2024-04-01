@@ -149,7 +149,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     super.initState();
     // Initialize the campaign form
     context.read<CampaignBloc>().add(InitCampaignForm());
-    _budgetController.text = '0';
+    _budgetController.text = '';
   }
 
   Widget _buildStepContent(CampaignFormState? formState) {

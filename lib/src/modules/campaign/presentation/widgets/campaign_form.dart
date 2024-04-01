@@ -2,7 +2,7 @@ import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../shared/data/constants/assets.dart'; // Import the flutter_svg package
+import '../../../../shared/data/constants/date_and_time.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 
 class CampaignFormCard extends StatefulWidget {
@@ -27,51 +27,10 @@ class CampaignFormCard extends StatefulWidget {
   State<CampaignFormCard> createState() => _CampaignFormCardState();
 }
 
-/// A custom category selector for campaigns
-class CategorySelect extends StatelessWidget {
-  final Map<String, String> categories;
-  final String? selectedCategory;
-  final Function(String) onSelected;
-  final FocusNode focusNode;
-
-  const CategorySelect({
-    super.key,
-    required this.categories,
-    this.selectedCategory,
-    required this.onSelected,
-    required this.focusNode,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Using Flutter's DropdownButtonFormField instead of CustomShadSelect to avoid errors
-    return DropdownButtonFormField<String>(
-      value: selectedCategory ?? categories.keys.first,
-      focusNode: focusNode,
-      decoration: const InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        border: InputBorder.none,
-      ),
-      onChanged: (value) {
-        if (value != null) {
-          onSelected(value);
-        }
-      },
-      items: categories.entries.map((entry) {
-        return DropdownMenuItem<String>(
-          value: entry.key,
-          child: Text(entry.value),
-        );
-      }).toList(),
-      hint: const Text('Select a category'),
-    );
-  }
-}
-
 class _CampaignFormCardState extends State<CampaignFormCard>
     with SingleTickerProviderStateMixin {
   final TextEditingController _budgetController = TextEditingController();
-  DateTime _startDate = DateTime.now();
+  final DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(days: 7));
   String _selectedCategory = 'fashion';
   Map<String, String> _categories = {'fashion': 'Fashion'};
@@ -90,32 +49,16 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Form(
-        key: _formKey,
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Form(
+      key: _formKey,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
         child: SingleChildScrollView(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with image
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.lightBackground,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: SvgPicture.asset(
-                    AssetsPath.campaign,
-                    height: 180,
-                    width: 180,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
               // Campaign Name
               _buildSectionHeader('Campaign Name'),
               const SizedBox(height: 8),
@@ -127,7 +70,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                     children: [
                       ShadInputFormField(
                         controller: widget.campaignNameController,
-                        placeholder: const Text('Enter a catchy campaign name'),
+                        placeholder: const Text('Enter campaign name'),
                         onChanged: (_) =>
                             setState(() => _showNameError = false),
                       ),
@@ -146,7 +89,21 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
 
+              // Campaign Category
+              _buildSectionHeader('Category'),
+              const SizedBox(height: 8),
+              ShadCard(
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: _isLoadingCategories
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              color: AppColors.primary))
+                      : _buildCategorySelector(),
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Campaign Description
@@ -184,33 +141,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
               const SizedBox(height: 20),
 
-              // Category
-              _buildSectionHeader('Category'),
-              const SizedBox(height: 8),
-              _isLoadingCategories
-                  ? const Center(child: CircularProgressIndicator())
-                  : ShadCard(
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: CategorySelect(
-                            categories: _categories,
-                            selectedCategory: _selectedCategory,
-                            onSelected: (value) {
-                              setState(() {
-                                _selectedCategory = value;
-                              });
-                              widget.onCategoryChanged(value);
-                            },
-                            focusNode: _categoryFocusNode,
-                          ),
-                        ),
-                      ),
-                    ),
-
-              const SizedBox(height: 20),
-
               // Budget
               _buildSectionHeader('Budget'),
               const SizedBox(height: 8),
@@ -222,8 +152,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                     children: [
                       ShadInputFormField(
                         controller: _budgetController,
-                        placeholder:
-                            const Text('How much are you willing to spend?'),
+                        placeholder: const Text('Enter campaign budget'),
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
                         prefix: const Text('\$',
@@ -256,83 +185,60 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
               const SizedBox(height: 20),
 
-              // Timeline section header
-              Row(
-                children: [
-                  const Icon(Icons.date_range, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Campaign Timeline',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Date pickers in a Row for better layout
+              // Delivery dates
+              _buildSectionHeader('Campaign Dates'),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   // Start Date
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Start Date',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 5),
-                        GestureDetector(
+                    child: ShadCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: GestureDetector(
                           onTap: () => _selectStartDate(context),
                           child: AbsorbPointer(
                             child: ShadInputFormField(
                               controller: TextEditingController(
-                                text: DateFormat('MMM dd, yyyy')
-                                    .format(_startDate),
+                                text: DateAndTime.formatDate(
+                                    _startDate, 'MMM dd, yyyy'),
                               ),
-                              placeholder: const Text('Select start date'),
+                              placeholder: const Text('Start date'),
                               suffix:
                                   const Icon(Icons.calendar_today, size: 18),
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   // End Date
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'End Date',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 5),
-                        GestureDetector(
+                    child: ShadCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: GestureDetector(
                           onTap: () => _selectEndDate(context),
                           child: AbsorbPointer(
                             child: ShadInputFormField(
                               controller: TextEditingController(
-                                text:
-                                    DateFormat('MMM dd, yyyy').format(_endDate),
+                                text: DateAndTime.formatDate(
+                                    _endDate, 'MMM dd, yyyy'),
                               ),
-                              placeholder: const Text('Select end date'),
+                              placeholder: const Text('End date'),
                               suffix:
                                   const Icon(Icons.calendar_today, size: 18),
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
               // Tips section
               ShadCard(
@@ -385,7 +291,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
   void initState() {
     super.initState();
     _loadCategories();
-    _budgetController.text = '0';
+    _budgetController.text = '';
 
     // Setup animations
     _animationController = AnimationController(
@@ -430,6 +336,60 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     return isValid;
   }
 
+  // Separate method to build category selector to avoid setState during build
+  Widget _buildCategorySelector() {
+    return ShadSelect<String>(
+      placeholder: Text('Select a category'),
+      focusNode: _categoryFocusNode,
+      minWidth: 450,
+      maxHeight: 220,
+      options: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
+          child: Text(
+            'Choose a category',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        ..._categories.entries.map(
+          (e) => ShadOption(
+            value: e.key,
+            child: SizedBox(
+              width: 300, // Constrain the width of the option text
+              child: Text(
+                e.value,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ),
+      ],
+      selectedOptionBuilder: (context, value) {
+        // Using Future.microtask to avoid setState during build
+        Future.microtask(() {
+          if (_selectedCategory != value) {
+            setState(() {
+              _selectedCategory = value;
+            });
+            widget.onCategoryChanged(value);
+          }
+        });
+
+        return SizedBox(
+          width: 300,
+          child: Text(
+            _categories[value] ?? '',
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
@@ -459,9 +419,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
   Future<void> _selectEndDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _endDate.isAfter(_startDate)
-          ? _endDate
-          : _startDate.add(const Duration(days: 1)),
+      initialDate: _endDate,
       firstDate: _startDate,
       lastDate: DateTime(2101),
       builder: (context, child) {
@@ -506,14 +464,13 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     );
     if (picked != null && picked != _startDate) {
       setState(() {
-        _startDate = picked;
         // Ensure end date is after start date
-        if (_endDate.isBefore(_startDate)) {
-          _endDate = _startDate.add(const Duration(days: 7));
+        if (_endDate.isBefore(picked)) {
+          _endDate = picked.add(const Duration(days: 7));
           widget.onEndDateChanged(_endDate);
         }
       });
-      widget.onStartDateChanged(_startDate);
+      widget.onStartDateChanged(picked);
     }
   }
 }

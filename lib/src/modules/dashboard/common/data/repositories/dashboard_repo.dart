@@ -26,17 +26,27 @@ class DashboardRepository {
 
   static Future<Influencers> getInfluencersList() async {
     final pb = await PocketBaseSingleton.instance;
-    late final Influencers list;
+
     try {
+      // Fetch only verified influencers
       final resultList = await pb.collection('influencers').getList(
             page: 1,
-            perPage: 20,
+            perPage: 50,
+            // Filter for verified influencers only
             filter: 'connectedSocial = True && profile != ""',
           );
-      list = Influencers.fromRecord(resultList);
-      debugPrint('Fetched ${list.items.length} influencers');
+
+      final list = Influencers.fromRecord(resultList);
+      debugPrint('Fetched ${list.items.length} verified influencers');
+
+      // If no influencers found, create empty list instead of throwing error
+      if (list.items.isEmpty) {
+        debugPrint('Warning: No verified influencers found in the database');
+      }
+
       return list;
     } catch (e) {
+      debugPrint('Error fetching influencers: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

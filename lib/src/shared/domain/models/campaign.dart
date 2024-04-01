@@ -38,6 +38,9 @@ class Campaign {
   });
 
   factory Campaign.fromJson(Map<String, dynamic> json) {
+    final now = DateTime.now();
+    final defaultEndDate = now.add(const Duration(days: 30));
+
     return Campaign(
       collectionId: json["collectionId"],
       collectionName: json["collectionName"],
@@ -53,12 +56,13 @@ class Campaign {
               ? (json["budget"] as int).toDouble()
               : json["budget"] as double)
           : 0.0,
-      startDate: json["start_date"] != null
-          ? DateTime.parse(json["start_date"])
-          : DateTime.now(),
+      startDate:
+          json["start_date"] != null ? DateTime.parse(json["start_date"]) : now,
       endDate: json["end_date"] != null
           ? DateTime.parse(json["end_date"])
-          : DateTime.now().add(const Duration(days: 30)),
+          : (json["delivery_date"] != null // For backward compatibility
+              ? DateTime.parse(json["delivery_date"])
+              : defaultEndDate),
       status: json["status"] ?? "draft",
       brand: json["brand"] ?? "",
       selectedInfluencer: json["selected_influencer"],
@@ -72,6 +76,9 @@ class Campaign {
 
   factory Campaign.fromRecord(RecordModel record) =>
       Campaign.fromJson(record.toJson());
+
+  // Backward compatibility - provide deliveryDate getter that returns endDate
+  DateTime get deliveryDate => endDate;
 
   Campaign copyWith({
     String? collectionId,

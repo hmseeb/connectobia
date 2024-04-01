@@ -1,6 +1,22 @@
+import 'package:intl/intl.dart';
+
 /// Utility class for date and time operations.
 class DateAndTime {
-  /// Formats the given [dateTime] to a date string in the format 'dd MMM yyyy'.
+  /// Formats the given [dateTime] to a date string in the specified format.
+  /// Uses the intl package's DateFormat for reliable date formatting.
+  ///
+  /// Examples:
+  /// - 'MMM dd, yyyy' for 'Jan 01, 2023'
+  /// - 'yyyy-MM-dd' for '2023-01-01'
+  /// - 'EEEE, MMMM d' for 'Monday, January 1'
+  ///
+  /// If [dateTime] is null, returns an empty string.
+  static String formatDate(DateTime? dateTime, String format) {
+    if (dateTime == null) return '';
+    return DateFormat(format).format(dateTime);
+  }
+
+  /// Formats the given [dateTime] to a time string in the format 'h:mm AM/PM'.
   static String formatDateTimeTo12Hour(DateTime dateTime) {
     dateTime = dateTime.toLocal();
     int hour = dateTime.hour;
@@ -14,10 +30,8 @@ class DateAndTime {
     return '$hour:$minute $period';
   }
 
-  /// Formats the given [dateTime] to a date string in the format 'dd MMM yyyy'.
-  /// Example: '01 Jan 2022'.
-  ///
-  /// If [dateTime] is null, returns an empty string.
+  /// Returns a human-readable string representing time elapsed since [dateTime].
+  /// Example: '5 minutes ago', '2 hours ago', '3 days ago'.
   static String timeAgo(DateTime dateTime) {
     dateTime = dateTime.toLocal();
     Duration difference = DateTime.now().difference(dateTime);

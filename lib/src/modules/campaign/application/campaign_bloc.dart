@@ -20,6 +20,32 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
       }
     });
 
+    // Event to load a specific campaign by ID
+    on<LoadCampaign>((event, emit) async {
+      emit(CampaignsLoading());
+      try {
+        Campaign campaign =
+            await CampaignRepository.getCampaignById(event.campaignId);
+        emit(CampaignLoaded(campaign));
+      } catch (e) {
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(CampaignError(errorRepo.handleError(e)));
+      }
+    });
+
+    // Event to update a campaign's status
+    on<UpdateCampaignStatus>((event, emit) async {
+      emit(CampaignsLoading());
+      try {
+        Campaign campaign = await CampaignRepository.updateCampaignStatus(
+            event.campaignId, event.status);
+        emit(CampaignUpdated(campaign));
+      } catch (e) {
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(CampaignError(errorRepo.handleError(e)));
+      }
+    });
+
     // Event to search campaigns
     on<SearchCampaigns>((event, emit) async {
       emit(CampaignsLoading());
@@ -188,9 +214,10 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         break;
 
       case 3: // Influencer selection
-        if (state.selectedInfluencer == null) {
-          errors.add('Please select an influencer for your campaign');
-        }
+        // Make influencer selection optional - the brand can launch a public campaign without specific influencer
+        // if (state.selectedInfluencer == null) {
+        //   errors.add('Please select an influencer for your campaign');
+        // }
         break;
 
       case 4: // Contract details

@@ -515,6 +515,12 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
       setState(() {
         _influencers = influencers.items;
         _isLoading = false;
+
+        // Check if influencers list is empty and set a friendly message
+        if (_influencers.isEmpty) {
+          _errorMessage =
+              'No verified influencers available yet. Make sure there are verified influencer profiles in the system.';
+        }
       });
     } catch (e) {
       setState(() {
