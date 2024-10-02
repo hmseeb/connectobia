@@ -1,4 +1,5 @@
 import 'package:connectobia/features/auth/presentation/views/account_type.dart';
+import 'package:connectobia/features/auth/presentation/views/privacy_policy.dart';
 import 'package:connectobia/features/auth/presentation/widgets/firstlast_name.dart';
 import 'package:connectobia/features/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/buttons.dart';
@@ -19,33 +20,37 @@ class BrandAgencyScreen extends StatelessWidget {
         body: Center(
           child: SizedBox(
             width: 350,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const HeadingText('Match with creators'),
-                const SizedBox(height: 30),
-                const FirstLastName(),
-                const ShadInput(
-                  placeholder: Text('Business Email'),
-                  prefix: Icon(Icons.email_outlined),
-                ),
-                const ShadInput(
-                  placeholder: Text('Company Website'),
-                  // globe icon prefix
-                  prefix: Icon(Icons.public_outlined),
-                ),
-                const ShadInput(
-                  placeholder: Text('Password'),
-                  prefix: Icon(Icons.lock_outline),
-                  suffix: Icon(Icons.visibility_off_outlined),
-                ),
-                selectAccountType(accountTypes),
-                const SizedBox(height: 30),
-                PrimaryAuthButton(
-                  text: 'Create account',
-                  onPressed: () {},
-                ),
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const HeadingText('Match with the best creators'),
+                  const SizedBox(height: 10),
+                  const FirstLastName(),
+                  const ShadInput(
+                    placeholder: Text('Business Email'),
+                    prefix: Icon(Icons.email_outlined),
+                  ),
+                  const ShadInput(
+                    placeholder: Text('Company Website'),
+                    // globe icon prefix
+                    prefix: Icon(Icons.public_outlined),
+                  ),
+                  const ShadInput(
+                    placeholder: Text('Password'),
+                    prefix: Icon(Icons.lock_outline),
+                    suffix: Icon(Icons.visibility_off_outlined),
+                  ),
+                  selectAccountType(accountTypes),
+                  const SizedBox(height: 10),
+                  const PrivacyPolicy(),
+                  const SizedBox(height: 10),
+                  PrimaryAuthButton(
+                    text: 'Create account',
+                    onPressed: () {},
+                  ),
+                ],
+              ),
             ),
           ),
         ));

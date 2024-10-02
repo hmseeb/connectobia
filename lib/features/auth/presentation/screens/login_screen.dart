@@ -12,53 +12,55 @@ class SigninScreen extends StatelessWidget {
         body: Center(
           child: SizedBox(
             width: 350,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'Log in to your account',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const ShadInput(
-                  placeholder: Text('Email'),
-                  prefix: Icon(Icons.email_outlined),
-                ),
-                const ShadInput(
-                  placeholder: Text('Password'),
-                  prefix: Icon(Icons.lock_outline),
-                  suffix: Icon(Icons.visibility_off_outlined),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Forgot password?'),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'Log in to your account',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: 350,
-                  child: ShadButton(
-                    child: const Text('Sign in'),
-                    onPressed: () {},
                   ),
-                ),
-                const SizedBox(height: 40),
-                AuthFlow(
-                  title: 'Don\'t have an account? ',
-                  buttonText: 'Sign up',
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
-                  },
-                ),
-              ],
+                  const SizedBox(height: 30),
+                  const ShadInput(
+                    placeholder: Text('Email'),
+                    prefix: Icon(Icons.email_outlined),
+                  ),
+                  const ShadInput(
+                    placeholder: Text('Password'),
+                    prefix: Icon(Icons.lock_outline),
+                    suffix: Icon(Icons.visibility_off_outlined),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('Forgot password?'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: 350,
+                    child: ShadButton(
+                      child: const Text('Sign in'),
+                      onPressed: () {},
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  AuthFlow(
+                    title: 'Don\'t have an account? ',
+                    buttonText: 'Sign up',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/signup');
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ));
