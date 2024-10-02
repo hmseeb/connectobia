@@ -56,7 +56,7 @@ class SigninScreen extends StatelessWidget {
                     title: 'Don\'t have an account? ',
                     buttonText: 'Sign up',
                     onPressed: () {
-                      Navigator.pushNamed(context, '/signup');
+                      Navigator.pop(context);
                     },
                   ),
                 ],

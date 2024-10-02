@@ -24,8 +24,8 @@ class AuthFlow extends StatelessWidget {
             color: Colors.grey,
           ),
         ),
-        TextButton(
-          onPressed: onPressed,
+        GestureDetector(
+          onTap: onPressed,
           child: Text(
             buttonText,
             style: const TextStyle(
