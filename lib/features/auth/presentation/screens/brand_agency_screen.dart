@@ -1,3 +1,7 @@
+import 'package:connectobia/features/auth/presentation/views/account_type.dart';
+import 'package:connectobia/features/auth/presentation/widgets/firstlast_name.dart';
+import 'package:connectobia/features/auth/presentation/widgets/heading_text.dart';
+import 'package:connectobia/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -11,81 +15,39 @@ class BrandAgencyScreen extends StatelessWidget {
       'agency': 'Agency',
     };
     return Scaffold(
+        appBar: AppBar(),
         body: Center(
-      child: SizedBox(
-        width: 350,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Match with Creators',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 30),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: SizedBox(
+            width: 350,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Expanded(
-                  // optional flex property if flex is 1 because the default flex is 1
-                  child: ShadInput(
-                    placeholder: Text('First name'),
-                    prefix: Icon(Icons.person_outline),
-                  ),
+                const HeadingText('Match with creators'),
+                const SizedBox(height: 30),
+                const FirstLastName(),
+                const ShadInput(
+                  placeholder: Text('Business Email'),
+                  prefix: Icon(Icons.email_outlined),
                 ),
-                SizedBox(width: 10.0),
-                Expanded(
-                  // optional flex property if flex is 1 because the default flex is 1
-                  child: ShadInput(
-                    placeholder: Text('Last name'),
-                    prefix: Icon(Icons.person_outline),
-                  ),
+                const ShadInput(
+                  placeholder: Text('Company Website'),
+                  // globe icon prefix
+                  prefix: Icon(Icons.public_outlined),
+                ),
+                const ShadInput(
+                  placeholder: Text('Password'),
+                  prefix: Icon(Icons.lock_outline),
+                  suffix: Icon(Icons.visibility_off_outlined),
+                ),
+                selectAccountType(accountTypes),
+                const SizedBox(height: 30),
+                PrimaryAuthButton(
+                  text: 'Create account',
+                  onPressed: () {},
                 ),
               ],
             ),
-            const ShadInput(
-              placeholder: Text('Business Email'),
-              prefix: Icon(Icons.email_outlined),
-            ),
-            const ShadInput(
-              placeholder: Text('Company Website'),
-              // globe icon prefix
-              prefix: Icon(Icons.public_outlined),
-            ),
-            const ShadInput(
-              placeholder: Text('Password'),
-              prefix: Icon(Icons.lock_outline),
-              suffix: Icon(Icons.visibility_off_outlined),
-            ),
-            SizedBox(
-              width: 350,
-              child: ShadSelect<String>(
-                placeholder: const Text('Select account type'),
-                options: [
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(32, 6, 6, 6),
-                  ),
-                  ...accountTypes.entries.map(
-                      (e) => ShadOption(value: e.key, child: Text(e.value))),
-                ],
-                selectedOptionBuilder: (context, value) =>
-                    Text(accountTypes[value]!),
-                onChanged: print,
-              ),
-            ),
-            const SizedBox(height: 30),
-            SizedBox(
-              width: 350,
-              child: ShadButton(
-                child: const Text('Create account'),
-                onPressed: () {},
-              ),
-            ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }

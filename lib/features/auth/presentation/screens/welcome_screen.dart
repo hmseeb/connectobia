@@ -1,5 +1,9 @@
+import 'package:connectobia/features/auth/presentation/views/connection_icon.dart';
+import 'package:connectobia/features/auth/presentation/widgets/auth_flow.dart';
+import 'package:connectobia/features/auth/presentation/widgets/heading_text.dart';
+import 'package:connectobia/features/auth/presentation/widgets/signup_card.dart';
+import 'package:connectobia/features/auth/presentation/widgets/tagline.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -13,100 +17,40 @@ class WelcomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Welcome to ',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Transform(
-                  transform: Matrix4.rotationZ(0.1),
-                  child: const Icon(
-                    Icons.link,
-                    color: Colors.redAccent,
-                  ),
-                ),
-                const Text(
-                  'bia',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                HeadingText('Welcome to '),
+                ConnectionIcon(),
+                HeadingText('bia'),
               ],
             ),
-            Text(
-              'where brands and agencies meet creators'.toUpperCase(),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.redAccent,
-              ),
-            ),
+            const Tagline('where brands and influencers meet'),
             const SizedBox(height: 30),
-            GestureDetector(
-              onTap: () {
+            SignupCard(
+              title: 'Brand or Agency',
+              description: 'I want to grow my business',
+              onPressed: () {
                 Navigator.pushNamed(context, '/brand-agency-signup');
               },
-              child: SizedBox(
-                width: 350,
-                child: ShadCard(
-                  title: const Text('Brand or Agency'),
-                  description:
-                      const Text('I want to promote my brand or agency'),
-                  backgroundColor: const Color(0xFFF2F0EA),
-                  radius: BorderRadius.circular(16),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-              ),
             ),
             const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
+
+            SignupCard(
+              title: 'Influencer',
+              description: 'I want to monetize my content',
+              onPressed: () {
                 Navigator.pushNamed(context, '/creator-signup');
               },
-              child: SizedBox(
-                width: 350,
-                child: ShadCard(
-                  title: const Text('Creator'),
-                  description: const Text('I want to monetize my social media'),
-                  backgroundColor: const Color(0xFFF2F0EA),
-                  radius: BorderRadius.circular(16),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-              ),
             ),
             const SizedBox(height: 30),
             // Already have an account? Sign in
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Already have an account?',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                  child: const Text(
-                    'Sign in',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                ),
-              ],
+            AuthFlow(
+              title: 'Already have an account? ',
+              buttonText: 'Sign in',
+              onPressed: () {
+                Navigator.pushNamed(context, '/signin');
+              },
             ),
           ],
         ),

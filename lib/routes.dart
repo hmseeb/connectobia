@@ -13,7 +13,7 @@ class GenerateRoutes {
               const WelcomeScreen(),
           transitionDuration: const Duration(milliseconds: 600),
         );
-      case '/login':
+      case '/signin':
         return PageRouteBuilder(
           pageBuilder: (_, animation, secondaryAnimation) =>
               const SigninScreen(),
