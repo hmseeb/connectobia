@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class Tagline extends StatelessWidget {
@@ -14,7 +15,7 @@ class Tagline extends StatelessWidget {
       style: const TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.bold,
-        color: Colors.redAccent,
+        color: Pellet.kSecondary,
       ),
     );
   }

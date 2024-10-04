@@ -21,9 +21,11 @@ class SignupCard extends StatelessWidget {
         child: ShadCard(
           title: Text(title),
           description: Text(description),
-          backgroundColor: const Color(0xFFF2F0EA),
           radius: BorderRadius.circular(16),
-          trailing: const Icon(Icons.arrow_forward),
+          trailing: IconButton(
+            onPressed: onPressed,
+            icon: const Icon(Icons.arrow_forward),
+          ),
         ),
       ),
     );

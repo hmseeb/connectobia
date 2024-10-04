@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class ConnectionIcon extends StatelessWidget {
@@ -7,11 +8,11 @@ class ConnectionIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Transform(
-      transform: Matrix4.rotationZ(0.1),
-      child: const Icon(
+    return const Hero(
+      tag: 'logo',
+      child: Icon(
         Icons.link,
-        color: Colors.redAccent,
+        color: Pellet.kSecondary,
       ),
     );
   }

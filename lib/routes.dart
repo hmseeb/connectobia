@@ -2,21 +2,34 @@ import 'package:connectobia/features/auth/presentation/screens/brand_agency_scre
 import 'package:connectobia/features/auth/presentation/screens/creator_screen.dart';
 import 'package:connectobia/features/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/features/auth/presentation/screens/welcome_screen.dart';
+import 'package:connectobia/globals/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class GenerateRoutes {
   static onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return _buildPageRoute(const WelcomeScreen());
+        return PageRouteBuilder(
+            pageBuilder: (_, animation, secondaryAnimation) =>
+                const SplashScreen());
+      case '/welcome':
+        final args = settings.arguments as Map<String, dynamic>;
+        return PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 600),
+          pageBuilder: (_, animation, secondaryAnimation) => WelcomeScreen(
+            isDarkMode: args['isDarkMode'],
+          ),
+        );
       case '/signin':
         return _buildPageRoute(const SigninScreen());
       case '/brand-agency-signup':
         return _buildPageRoute(const BrandAgencyScreen());
       case '/creator-signup':
         return _buildPageRoute(const CreatorScreen());
+      case '/creator-signup':
+        return _buildPageRoute(const CreatorScreen());
       default:
-        return MaterialPageRoute(builder: (_) => const WelcomeScreen());
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
   }
 

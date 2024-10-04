@@ -37,6 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   shadcn_ui: ^0.9.8
   shared_preferences: ^2.3.2
+  pocketbase: ^0.18.1
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.6
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class AuthFlow extends StatelessWidget {
@@ -18,11 +19,7 @@ class AuthFlow extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
+          style: const TextStyle(),
         ),
         GestureDetector(
           onTap: onPressed,
@@ -31,7 +28,7 @@ class AuthFlow extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Colors.redAccent,
+              color: Pellet.kSecondary,
             ),
           ),
         ),

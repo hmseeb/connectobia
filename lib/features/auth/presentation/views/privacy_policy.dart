@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyPolicy extends StatelessWidget {
@@ -19,11 +20,11 @@ class PrivacyPolicy extends StatelessWidget {
           'terms of service',
           style: TextStyle(
             fontSize: 12,
-            color: Colors.redAccent,
+            color: Pellet.kSecondary,
           ),
         ),
         Text(
-          'and ',
+          ' and ',
           style: TextStyle(
             fontSize: 12,
           ),
@@ -32,7 +33,7 @@ class PrivacyPolicy extends StatelessWidget {
           'privacy policy',
           style: TextStyle(
             fontSize: 12,
-            color: Colors.redAccent,
+            color: Pellet.kSecondary,
           ),
         ),
       ],

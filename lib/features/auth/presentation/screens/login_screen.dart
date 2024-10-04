@@ -1,38 +1,40 @@
+import 'package:connectobia/features/auth/presentation/views/login_form.dart';
 import 'package:connectobia/features/auth/presentation/widgets/auth_flow.dart';
+import 'package:connectobia/features/auth/presentation/widgets/heading_text.dart';
+import 'package:connectobia/globals/constants/screen_size.dart';
+import 'package:connectobia/globals/widgets/transparent_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SigninScreen extends StatelessWidget {
+class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
 
   @override
+  State<SigninScreen> createState() => _SigninScreenState();
+}
+
+class _SigninScreenState extends State<SigninScreen> {
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
+  @override
   Widget build(BuildContext context) {
+    final height = ScreenSize.height(context);
+
     return Scaffold(
-        appBar: AppBar(),
-        body: Center(
-          child: SizedBox(
-            width: 350,
-            child: SingleChildScrollView(
+        appBar: transparentAppBar('Sign in to your account'),
+        body: SingleChildScrollView(
+          child: Center(
+            child: SizedBox(
+              width: 350,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text(
-                    'Log in to your account',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  const ShadInput(
-                    placeholder: Text('Email'),
-                    prefix: Icon(Icons.email_outlined),
-                  ),
-                  const ShadInput(
-                    placeholder: Text('Password'),
-                    prefix: Icon(Icons.lock_outline),
-                    suffix: Icon(Icons.visibility_off_outlined),
-                  ),
+                  SizedBox(height: height * 15),
+                  const HeadingText('Log in to your account'),
+                  const SizedBox(height: 20),
+                  LoginForm(
+                      emailController: emailController,
+                      passwordController: passwordController),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -43,7 +45,7 @@ class SigninScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 10),
                   SizedBox(
                     width: 350,
                     child: ShadButton(
@@ -51,7 +53,7 @@ class SigninScreen extends StatelessWidget {
                       onPressed: () {},
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   AuthFlow(
                     title: 'Don\'t have an account? ',
                     buttonText: 'Sign up',
@@ -64,5 +66,19 @@ class SigninScreen extends StatelessWidget {
             ),
           ),
         ));
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+    super.initState();
   }
 }
