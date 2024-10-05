@@ -40,7 +40,8 @@ class _SigninScreenState extends State<SigninScreen> {
                   );
                 }
                 if (state is LoginSuccess) {
-                  Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/home', (route) => false);
                 }
               },
               builder: (context, state) {
