@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/features/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/features/auth/data/respository/input_validation.dart';
+import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
+import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:meta/meta.dart';
 
 part 'login_bloc_event.dart';
