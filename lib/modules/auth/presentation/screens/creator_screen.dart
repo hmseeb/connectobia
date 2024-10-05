@@ -1,9 +1,9 @@
-import 'package:connectobia/features/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/features/auth/presentation/views/creator_signup_form.dart';
-import 'package:connectobia/features/auth/presentation/views/privacy_policy.dart';
-import 'package:connectobia/features/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/globals/constants/screen_size.dart';
 import 'package:connectobia/globals/widgets/transparent_appbar.dart';
+import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
+import 'package:connectobia/modules/auth/presentation/views/creator_signup_form.dart';
+import 'package:connectobia/modules/auth/presentation/views/privacy_policy.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
