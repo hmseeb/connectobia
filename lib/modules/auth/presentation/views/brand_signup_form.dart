@@ -1,9 +1,9 @@
-import 'package:connectobia/features/auth/data/respository/input_validation.dart';
-import 'package:connectobia/features/auth/presentation/widgets/firstlast_name.dart';
+import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class BrandSignupForm extends StatelessWidget {
+class BrandSignupForm extends StatefulWidget {
   final TextEditingController firstNameController;
 
   final TextEditingController lastNameController;
@@ -20,15 +20,22 @@ class BrandSignupForm extends StatelessWidget {
   });
 
   @override
+  State<BrandSignupForm> createState() => _BrandSignupFormState();
+}
+
+class _BrandSignupFormState extends State<BrandSignupForm> {
+  bool obscureText = true;
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         FirstLastName(
-            firstName: firstNameController, lastName: lastNameController),
+            firstName: widget.firstNameController,
+            lastName: widget.lastNameController),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email*'),
-            controller: emailController,
+            controller: widget.emailController,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
               if (error != null) {
@@ -39,7 +46,7 @@ class BrandSignupForm extends StatelessWidget {
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Business Website (optional)'),
-            controller: websiteController,
+            controller: widget.websiteController,
             validator: (value) {
               final error = InputValidation.validateWebsite(value);
               if (error != null) {
@@ -50,8 +57,19 @@ class BrandSignupForm extends StatelessWidget {
         ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           placeholder: const Text('Password*'),
-          suffix: const Icon(Icons.visibility_off_outlined),
-          controller: passwordController,
+          suffix: GestureDetector(
+            child: Icon(
+              obscureText
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+            ),
+            onTap: () {
+              setState(() {
+                obscureText = !obscureText;
+              });
+            },
+          ),
+          controller: widget.passwordController,
           validator: (value) {
             List<String> passwordErrors =
                 InputValidation.validatePassword(value);
@@ -60,6 +78,7 @@ class BrandSignupForm extends StatelessWidget {
             }
             return null;
           },
+          obscureText: obscureText,
         ),
       ],
     );
