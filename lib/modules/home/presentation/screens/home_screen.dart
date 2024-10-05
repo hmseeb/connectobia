@@ -14,6 +14,8 @@ class HomeScreen extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.logout_outlined),
           onPressed: () async {
+            HapticFeedback.mediumImpact();
+
             final pb = await PocketBaseSingleton.instance;
             pb.authStore.clear();
             if (context.mounted) {

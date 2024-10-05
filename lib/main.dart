@@ -5,6 +5,7 @@ import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:connectobia/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -26,6 +27,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        HapticFeedback.mediumImpact();
+
         final currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus &&
             currentFocus.focusedChild != null) {

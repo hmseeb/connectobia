@@ -92,6 +92,8 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                         text: 'Create account',
                         isLoading: state is SignupLoading,
                         onPressed: () {
+                          HapticFeedback.mediumImpact();
+
                           signupBloc.add(SignupBrandSubmitted(
                             firstName: firstNameController.text,
                             lastName: lastNameController.text,

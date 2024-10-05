@@ -7,6 +7,7 @@ import 'package:connectobia/modules/auth/presentation/widgets/signup_card.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/tagline.dart';
 import 'package:connectobia/theme/cubit/theme_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -37,6 +38,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ? Icons.dark_mode_outlined
                 : Icons.light_mode_outlined),
             onPressed: () {
+              HapticFeedback.mediumImpact();
               isDarkMode = !isDarkMode;
               themeCubit.toggleTheme(isDarkMode);
               ShadToaster.of(context).show(
@@ -69,6 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               description: 'I want to grow my business',
               onPressed: () {
                 Navigator.pushNamed(context, '/brand-agency-signup');
+                HapticFeedback.mediumImpact();
               },
             ),
             const SizedBox(height: 10),
@@ -77,6 +80,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               description: 'I want to monetize my content',
               onPressed: () {
                 Navigator.pushNamed(context, '/creator-signup');
+                HapticFeedback.mediumImpact();
               },
             ),
             const SizedBox(height: 30),
@@ -85,6 +89,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               buttonText: 'Sign in',
               onPressed: () {
                 Navigator.pushNamed(context, '/signin');
+                HapticFeedback.mediumImpact();
               },
             ),
           ],

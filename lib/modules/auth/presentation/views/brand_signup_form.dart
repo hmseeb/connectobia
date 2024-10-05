@@ -1,6 +1,7 @@
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class BrandSignupForm extends StatefulWidget {
@@ -64,6 +65,8 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
                   : Icons.visibility_outlined,
             ),
             onTap: () {
+              HapticFeedback.mediumImpact();
+
               setState(() {
                 obscureText = !obscureText;
               });

@@ -1,5 +1,6 @@
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class LoginForm extends StatefulWidget {
@@ -41,6 +42,8 @@ class _LoginFormState extends State<LoginForm> {
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined),
             onTap: () {
+              HapticFeedback.mediumImpact();
+
               setState(() {
                 obscureText = !obscureText;
               });

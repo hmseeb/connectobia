@@ -6,6 +6,7 @@ import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -59,7 +60,9 @@ class _SigninScreenState extends State<SigninScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                          },
                           child: const Text('Forgot password?'),
                         ),
                       ],
@@ -68,6 +71,8 @@ class _SigninScreenState extends State<SigninScreen> {
                     PrimaryAuthButton(
                         text: 'Sign in',
                         onPressed: () {
+                          HapticFeedback.mediumImpact();
+
                           loginBloc.add(LoginSubmitted(
                               email: emailController.text,
                               password: passwordController.text));
@@ -78,6 +83,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       title: 'Don\'t have an account? ',
                       buttonText: 'Sign up',
                       onPressed: () {
+                        HapticFeedback.mediumImpact();
                         Navigator.pop(context);
                       },
                     ),
