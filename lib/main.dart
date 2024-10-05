@@ -1,4 +1,4 @@
-import 'package:connectobia/features/auth/application/signup_bloc/signup_bloc_bloc.dart';
+import 'package:connectobia/features/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/globals/screens/splash_screen.dart';
 import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/colors.dart';
@@ -51,6 +51,12 @@ class _MyAppState extends State<MyApp> {
                   GenerateRoutes.onGenerateRoute(settings),
               themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
               theme: ShadThemeData(
+                inputTheme: const ShadInputTheme(
+                    decoration: ShadDecoration(
+                  errorStyle: TextStyle(
+                    color: Colors.redAccent,
+                  ),
+                )),
                 brightness:
                     state is DarkTheme ? Brightness.dark : Brightness.light,
                 // colorScheme: state is DarkTheme
