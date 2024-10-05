@@ -26,8 +26,6 @@ class GenerateRoutes {
         return _buildPageRoute(const BrandAgencyScreen());
       case '/creator-signup':
         return _buildPageRoute(const CreatorScreen());
-      case '/creator-signup':
-        return _buildPageRoute(const CreatorScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
