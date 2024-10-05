@@ -23,7 +23,7 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
   late final TextEditingController websiteController;
   late final TextEditingController passwordController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
-  late String accountType;
+  String accountType = 'brand';
   final accountTypes = {
     'brand': 'Brand',
     'agency': 'Agency',
@@ -36,46 +36,77 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
     return Scaffold(
         appBar: transparentAppBar('Create your account'),
         body: SingleChildScrollView(
-          child: Center(
-            child: SizedBox(
-              width: 350,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(height: height * 15),
-                  const HeadingText('Match with the best creators'),
-                  const SizedBox(height: 20),
-                  BrandSignupForm(
-                      firstNameController: firstNameController,
-                      lastNameController: lastNameController,
-                      emailController: emailController,
-                      websiteController: websiteController,
-                      passwordController: passwordController),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ShadSelect<String>(
-                      placeholder: const Text('Select account type'),
-                      options: [
-                        ...accountTypes.entries.map((e) =>
-                            ShadOption(value: e.key, child: Text(e.value))),
-                      ],
-                      selectedOptionBuilder: (context, value) =>
-                          Text(accountTypes[value]!),
-                      onChanged: (value) {
-                        accountType = value;
-                      },
-                    ),
+          child: BlocConsumer<SignupBloc, SignupState>(
+            listener: (context, state) {
+              if (state is SignupSuccess) {
+                // Navigator.of(context).pushNamed('/login');
+                ShadToaster.of(context).show(
+                  const ShadToast(
+                    title: Text('Account created successfully!'),
                   ),
-                  const SizedBox(height: 20),
-                  const PrivacyPolicy(),
-                  const SizedBox(height: 20),
-                  PrimaryAuthButton(
-                    text: 'Create account',
-                    onPressed: () {},
+                );
+              } else if (state is SignupFailure) {
+                ShadToaster.of(context).show(
+                  ShadToast.destructive(
+                    title: Text(state.error),
                   ),
-                ],
-              ),
-            ),
+                );
+              }
+            },
+            builder: (context, state) {
+              return Center(
+                child: SizedBox(
+                  width: 350,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: height * 15),
+                      const HeadingText('Match with the best creators'),
+                      const SizedBox(height: 20),
+                      BrandSignupForm(
+                          firstNameController: firstNameController,
+                          lastNameController: lastNameController,
+                          emailController: emailController,
+                          websiteController: websiteController,
+                          passwordController: passwordController),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ShadSelect<String>(
+                          placeholder: const Text('Brand'),
+                          options: [
+                            ...accountTypes.entries.map((e) =>
+                                ShadOption(value: e.key, child: Text(e.value))),
+                          ],
+                          selectedOptionBuilder: (context, value) =>
+                              Text(accountTypes[value]!),
+                          onChanged: (value) {
+                            accountType = value;
+                          },
+                          initialValue: accountType,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const PrivacyPolicy(),
+                      const SizedBox(height: 20),
+                      PrimaryAuthButton(
+                        text: 'Create account',
+                        isLoading: state is SignupLoading,
+                        onPressed: () {
+                          signupBloc.add(SignupBrandSubmitted(
+                            firstName: firstNameController.text,
+                            lastName: lastNameController.text,
+                            email: emailController.text,
+                            website: websiteController.text,
+                            password: passwordController.text,
+                            accountType: accountType,
+                          ));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ));
   }
