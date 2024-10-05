@@ -1,9 +1,9 @@
-import 'package:connectobia/features/Home/presentation/screens/home_screen.dart';
-import 'package:connectobia/features/auth/presentation/screens/brand_agency_screen.dart';
-import 'package:connectobia/features/auth/presentation/screens/creator_screen.dart';
-import 'package:connectobia/features/auth/presentation/screens/login_screen.dart';
-import 'package:connectobia/features/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/globals/screens/splash_screen.dart';
+import 'package:connectobia/modules/Home/presentation/screens/home_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/brand_agency_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/creator_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class GenerateRoutes {
