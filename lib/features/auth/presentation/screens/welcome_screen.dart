@@ -87,7 +87,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 Navigator.pushNamed(context, '/signin');
               },
             ),
-            const Spacer(),
           ],
         ),
       ),
