@@ -1,6 +1,6 @@
-import 'package:connectobia/features/auth/application/login/login_bloc.dart';
-import 'package:connectobia/features/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/globals/screens/splash_screen.dart';
+import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
+import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:connectobia/theme/cubit/theme_cubit.dart';
