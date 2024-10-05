@@ -1,7 +1,7 @@
 class InputValidation {
   static String? validateEmail(String? email) {
     if (email == null || email.isEmpty) {
-      return null;
+      return 'Email is required';
     }
     // Regular expression for a valid email address pattern
     String pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
