@@ -1,4 +1,35 @@
 class InputValidation {
+  static String? validateBrandForm({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String website,
+  }) {
+    String? error;
+    error = validateFirstName(firstName);
+    if (error != null) {
+      return error;
+    }
+    error = validateLastName(lastName);
+    if (error != null) {
+      return error;
+    }
+    error = validateEmail(email);
+    if (error != null) {
+      return error;
+    }
+    error = validatePassword(password).join('\n');
+    if (error.isNotEmpty) {
+      return error;
+    }
+    error = validateWebsite(website);
+    if (error != null) {
+      return error;
+    }
+    return null;
+  }
+
   static String? validateEmail(String? email) {
     if (email == null || email.isEmpty) {
       return 'Email is required';
@@ -20,6 +51,32 @@ class InputValidation {
     }
     if (firstName.length < 2) {
       return 'First name must be at least 2 characters';
+    }
+    return null;
+  }
+
+  static String? validateInfluencerForm({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+  }) {
+    String? error;
+    error = validateFirstName(firstName);
+    if (error != null) {
+      return error;
+    }
+    error = validateLastName(lastName);
+    if (error != null) {
+      return error;
+    }
+    error = validateEmail(email);
+    if (error != null) {
+      return error;
+    }
+    error = validatePassword(password).join('\n');
+    if (error.isNotEmpty) {
+      return error;
     }
     return null;
   }
