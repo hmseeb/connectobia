@@ -1,7 +1,8 @@
+import 'package:connectobia/features/auth/data/respository/input_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
 
@@ -12,18 +13,49 @@ class LoginForm extends StatelessWidget {
   });
 
   @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  bool obscureText = true;
+  @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        ShadInput(
-          placeholder: Text('Email'),
-          prefix: Icon(Icons.email_outlined),
-        ),
-        SizedBox(height: 10),
-        ShadInput(
-          placeholder: Text('Password'),
-          prefix: Icon(Icons.lock_outline),
-          suffix: Icon(Icons.visibility_off_outlined),
+        ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            placeholder: const Text('Email*'),
+            controller: widget.emailController,
+            validator: (value) {
+              final error = InputValidation.validateEmail(value);
+              if (error != null) {
+                return error;
+              }
+              return null;
+            }),
+        ShadInputFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          placeholder: const Text('Password*'),
+          suffix: GestureDetector(
+            child: Icon(obscureText
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined),
+            onTap: () {
+              setState(() {
+                obscureText = !obscureText;
+              });
+            },
+          ),
+          controller: widget.passwordController,
+          validator: (value) {
+            List<String> passwordErrors =
+                InputValidation.validatePassword(value);
+            if (passwordErrors.isNotEmpty) {
+              return passwordErrors.join("\n");
+            }
+            return null;
+          },
+          obscureText: obscureText,
         ),
       ],
     );
