@@ -1,4 +1,4 @@
-import 'package:connectobia/features/auth/application/signup_bloc/signup_bloc_bloc.dart';
+import 'package:connectobia/features/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/features/auth/presentation/views/brand_signup_form.dart';
 import 'package:connectobia/features/auth/presentation/views/privacy_policy.dart';
 import 'package:connectobia/features/auth/presentation/widgets/heading_text.dart';
@@ -36,50 +36,46 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
     return Scaffold(
         appBar: transparentAppBar('Create your account'),
         body: SingleChildScrollView(
-          child: BlocBuilder<SignupBloc, SignupBlocState>(
-            builder: (context, state) {
-              return Center(
-                child: SizedBox(
-                  width: 350,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(height: height * 15),
-                      const HeadingText('Match with the best creators'),
-                      const SizedBox(height: 20),
-                      BrandSignupForm(
-                          firstNameController: firstNameController,
-                          lastNameController: lastNameController,
-                          emailController: emailController,
-                          websiteController: websiteController,
-                          passwordController: passwordController),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ShadSelect<String>(
-                          placeholder: const Text('Select account type'),
-                          options: [
-                            ...accountTypes.entries.map((e) =>
-                                ShadOption(value: e.key, child: Text(e.value))),
-                          ],
-                          selectedOptionBuilder: (context, value) =>
-                              Text(accountTypes[value]!),
-                          onChanged: (value) {
-                            accountType = value;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const PrivacyPolicy(),
-                      const SizedBox(height: 20),
-                      PrimaryAuthButton(
-                        text: 'Create account',
-                        onPressed: () {},
-                      ),
-                    ],
+          child: Center(
+            child: SizedBox(
+              width: 350,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: height * 15),
+                  const HeadingText('Match with the best creators'),
+                  const SizedBox(height: 20),
+                  BrandSignupForm(
+                      firstNameController: firstNameController,
+                      lastNameController: lastNameController,
+                      emailController: emailController,
+                      websiteController: websiteController,
+                      passwordController: passwordController),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ShadSelect<String>(
+                      placeholder: const Text('Select account type'),
+                      options: [
+                        ...accountTypes.entries.map((e) =>
+                            ShadOption(value: e.key, child: Text(e.value))),
+                      ],
+                      selectedOptionBuilder: (context, value) =>
+                          Text(accountTypes[value]!),
+                      onChanged: (value) {
+                        accountType = value;
+                      },
+                    ),
                   ),
-                ),
-              );
-            },
+                  const SizedBox(height: 20),
+                  const PrivacyPolicy(),
+                  const SizedBox(height: 20),
+                  PrimaryAuthButton(
+                    text: 'Create account',
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
           ),
         ));
   }
