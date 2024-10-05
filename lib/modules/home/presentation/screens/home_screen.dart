@@ -1,6 +1,7 @@
 import 'package:connectobia/db/pb.dart';
 import 'package:connectobia/globals/widgets/transparent_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -15,7 +16,6 @@ class HomeScreen extends StatelessWidget {
           icon: const Icon(Icons.logout_outlined),
           onPressed: () async {
             HapticFeedback.mediumImpact();
-
             final pb = await PocketBaseSingleton.instance;
             pb.authStore.clear();
             if (context.mounted) {

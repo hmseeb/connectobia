@@ -6,6 +6,7 @@ import 'package:connectobia/modules/auth/presentation/views/privacy_policy.dart'
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -93,7 +94,6 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                         isLoading: state is SignupLoading,
                         onPressed: () {
                           HapticFeedback.mediumImpact();
-
                           signupBloc.add(SignupBrandSubmitted(
                             firstName: firstNameController.text,
                             lastName: lastNameController.text,
