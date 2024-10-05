@@ -59,14 +59,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _manageNextScreen() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/welcome',
-            arguments: {'isDarkMode': isDarkMode});
+    // TODO: Implement dynamic timer
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (await checkAuth()) {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/welcome',
+              arguments: {'isDarkMode': isDarkMode});
+        }
       }
     });
-    // if (await checkAuth()) {
-    // context.read<FeedsBloc>().add(ValidUserAuthEvent());
-    // } else {}
   }
 }
