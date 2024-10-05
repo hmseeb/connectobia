@@ -27,7 +27,7 @@ class BrandSignupForm extends StatelessWidget {
             firstName: firstNameController, lastName: lastNameController),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            placeholder: const Text('Business Email (optional)'),
+            placeholder: const Text('Email*'),
             controller: emailController,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
@@ -48,6 +48,7 @@ class BrandSignupForm extends StatelessWidget {
               return null;
             }),
         ShadInputFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           placeholder: const Text('Password*'),
           suffix: const Icon(Icons.visibility_off_outlined),
           controller: passwordController,
@@ -59,7 +60,6 @@ class BrandSignupForm extends StatelessWidget {
             }
             return null;
           },
-          autovalidateMode: AutovalidateMode.onUserInteraction,
         ),
       ],
     );
