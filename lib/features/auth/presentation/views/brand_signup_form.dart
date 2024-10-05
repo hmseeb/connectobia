@@ -26,6 +26,7 @@ class BrandSignupForm extends StatelessWidget {
         FirstLastName(
             firstName: firstNameController, lastName: lastNameController),
         ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Business Email (optional)'),
             controller: emailController,
             validator: (value) {
@@ -36,6 +37,7 @@ class BrandSignupForm extends StatelessWidget {
               return null;
             }),
         ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Business Website (optional)'),
             controller: websiteController,
             validator: (value) {

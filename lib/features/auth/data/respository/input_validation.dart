@@ -1,7 +1,7 @@
 class InputValidation {
   static String? validateEmail(String? email) {
     if (email == null || email.isEmpty) {
-      return 'Email is required';
+      return null;
     }
     // Regular expression for a valid email address pattern
     String pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
@@ -63,7 +63,7 @@ class InputValidation {
 
   static String? validateWebsite(String? website) {
     if (website == null || website.isEmpty) {
-      return 'Website is required';
+      return null;
     }
     // Regular expression for a valid website address pattern
     String pattern =

@@ -1,3 +1,4 @@
+import 'package:connectobia/features/auth/data/respository/input_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -11,25 +12,51 @@ class FirstLastName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Expanded(
-          // optional flex property if flex is 1 because the default flex is 1
-          child: ShadInputFormField(
-            placeholder: const Text('First Name*'),
-            controller: firstName,
+    return IntrinsicHeight(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShadInputFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  placeholder: const Text('First Name*'),
+                  controller: firstName,
+                  validator: (value) {
+                    final error = InputValidation.validateFirstName(value);
+                    if (error != null) {
+                      return error;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 10.0),
-        Expanded(
-          // optional flex property if flex is 1 because the default flex is 1
-          child: ShadInputFormField(
-            placeholder: const Text('Last Name*'),
-            controller: lastName,
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShadInputFormField(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  placeholder: const Text('Last Name*'),
+                  controller: lastName,
+                  validator: (value) {
+                    final error = InputValidation.validateLastName(value);
+                    if (error != null) {
+                      return error;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
