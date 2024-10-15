@@ -24,7 +24,7 @@ class PrivacyPolicy extends StatelessWidget {
           ),
         ),
         Text(
-          ' and ',
+          'and ',
           style: TextStyle(
             fontSize: 12,
           ),

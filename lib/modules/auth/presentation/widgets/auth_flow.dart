@@ -14,16 +14,16 @@ class AuthFlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(),
-        ),
-        GestureDetector(
-          onTap: onPressed,
-          child: Text(
+    return GestureDetector(
+      onTap: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(),
+          ),
+          Text(
             buttonText,
             style: const TextStyle(
               fontSize: 12,
@@ -31,8 +31,8 @@ class AuthFlow extends StatelessWidget {
               color: Pellet.kSecondary,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

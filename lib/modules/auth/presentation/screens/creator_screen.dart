@@ -71,7 +71,6 @@ class _CreatorScreenState extends State<CreatorScreen> {
                         text: 'Create account',
                         onPressed: () {
                           HapticFeedback.mediumImpact();
-
                           signupBloc.add(SignupInfluencerSubmitted(
                             firstName: firstNameController.text,
                             lastName: lastNameController.text,
