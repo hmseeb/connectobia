@@ -61,7 +61,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               children: [
                 HeadingText('Welcome to '),
                 ConnectionIcon(),
-                HeadingText('bia'),
+                HeadingText('obia'),
               ],
             ),
             const Tagline('where brands and influencers meet'),

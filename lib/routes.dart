@@ -13,7 +13,6 @@
 /// If an unknown route is provided, the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart) is displayed by default.
 library;
 
-import 'package:connectobia/globals/screens/splash_screen.dart';
 import 'package:connectobia/modules/Home/presentation/screens/home_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/brand_agency_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/creator_screen.dart';
@@ -29,10 +28,10 @@ class GenerateRoutes {
   /// based on the route name provided in [settings.name].
   static onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
-        return PageRouteBuilder(
-            pageBuilder: (_, animation, secondaryAnimation) =>
-                const SplashScreen());
+      // case '/':
+      //   return PageRouteBuilder(
+      //       pageBuilder: (_, animation, secondaryAnimation) =>
+      //           const WelcomeScreen());
       case '/welcome':
         final args = settings.arguments as Map<String, dynamic>;
         return PageRouteBuilder(
@@ -53,7 +52,11 @@ class GenerateRoutes {
           pageBuilder: (_, animation, secondaryAnimation) => const HomeScreen(),
         );
       default:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+            builder: (_) => WelcomeScreen(
+                  isDarkMode: args['isDarkMode'],
+                ));
     }
   }
 
