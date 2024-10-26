@@ -13,7 +13,7 @@ class HeadingText extends StatelessWidget {
     return Text(
       heading,
       style: const TextStyle(
-        fontSize: 24,
+        fontSize: 21,
         fontWeight: FontWeight.bold,
       ),
       textAlign: TextAlign.start,
