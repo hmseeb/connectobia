@@ -129,7 +129,18 @@ class VerifyEmailState extends State<VerifyEmail> {
   }
 
   Future<void> openEmailApp() async {
-    await OpenMailApp.openMailApp();
+    try {
+      await OpenMailApp.openMailApp();
+    } catch (e) {
+      if (mounted) {
+        // Show error toast
+        ShadToaster.of(context).show(
+          ShadToast.destructive(
+            title: Text(e.toString()),
+          ),
+        );
+      }
+    }
   }
 
   void _resendEmail(BuildContext context) async {
@@ -138,7 +149,7 @@ class VerifyEmailState extends State<VerifyEmail> {
       if (context.mounted) {
         ShadToaster.of(context).show(
           const ShadToast(
-            title: Text('Email resent successfully'),
+            title: Text('Email resent'),
           ),
         );
       }
