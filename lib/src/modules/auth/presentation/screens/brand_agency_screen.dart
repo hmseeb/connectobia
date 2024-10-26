@@ -73,8 +73,8 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                       SizedBox(height: height * 2),
                       SvgPicture.asset(
                         AssetsPath.brand,
-                        height: 200,
-                        width: 200,
+                        height: 150,
+                        width: 150,
                       ),
                       const SizedBox(height: 20),
                       const HeadingText('Match with the best creators'),
