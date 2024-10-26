@@ -9,6 +9,7 @@ class CreatorSignupForm extends StatefulWidget {
   final TextEditingController lastNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+
   const CreatorSignupForm(
       {super.key,
       required this.firstNameController,
@@ -22,6 +23,7 @@ class CreatorSignupForm extends StatefulWidget {
 
 class _CreatorSignupFormState extends State<CreatorSignupForm> {
   bool obscureText = true;
+
   @override
   Widget build(BuildContext context) {
     return Column(

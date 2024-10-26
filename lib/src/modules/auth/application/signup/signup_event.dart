@@ -7,6 +7,7 @@ class SignupBrandSubmitted extends SignupEvent {
   final String? website;
   final String password;
   final String accountType = 'brand';
+  final String industry;
 
   SignupBrandSubmitted({
     required this.firstName,
@@ -14,6 +15,7 @@ class SignupBrandSubmitted extends SignupEvent {
     required this.email,
     this.website,
     required this.password,
+    required this.industry,
   });
 }
 
@@ -25,11 +27,13 @@ class SignupInfluencerSubmitted extends SignupEvent {
   final String lastName;
   final String email;
   final String password;
+  final String industry;
 
   SignupInfluencerSubmitted({
     required this.firstName,
     required this.lastName,
     required this.email,
     required this.password,
+    required this.industry,
   });
 }

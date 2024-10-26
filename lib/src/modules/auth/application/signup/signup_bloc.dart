@@ -17,6 +17,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         email: event.email,
         website: event.website ?? '',
         password: event.password,
+        industry: event.industry,
       );
 
       if (error != null) {
@@ -32,6 +33,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           event.website ?? '',
           event.password,
           event.accountType,
+          event.industry,
         );
         emit(SignupSuccess());
       } catch (e) {
@@ -47,6 +49,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         lastName: event.lastName,
         email: event.email,
         password: event.password,
+        industry: event.industry,
       );
 
       if (error != null) {
@@ -62,6 +65,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           '',
           event.password,
           'influencer',
+          event.industry,
         );
         emit(SignupSuccess());
       } catch (e) {

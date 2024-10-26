@@ -4,8 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class AuthRepo {
-  static Future<RecordModel> createAccount(String firstName, String lastName,
-      String email, String website, String password, String accountType) async {
+  static Future<RecordModel> createAccount(
+      String firstName,
+      String lastName,
+      String email,
+      String website,
+      String password,
+      String accountType,
+      String industry) async {
     // example create body
     final body = <String, dynamic>{
       // "username": email.split('@')[0],
@@ -17,6 +23,7 @@ class AuthRepo {
       "last_name": lastName,
       "company_website": website,
       "account_type": accountType,
+      "industry": industry,
     };
 
     try {

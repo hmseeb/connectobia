@@ -1,3 +1,4 @@
+import 'package:connectobia/src/globals/constants/industries.dart';
 import 'package:connectobia/src/globals/constants/path.dart';
 import 'package:connectobia/src/globals/constants/screen_size.dart';
 import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
@@ -28,6 +29,16 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
   late final TextEditingController passwordController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
   String accountType = 'brand';
+  String industry = '';
+  var searchValue = '';
+  bool enabled = true;
+  FocusNode focusNodes = FocusNode();
+
+  Map<String, String> get filteredIndustries => {
+        for (final industry in industries.entries)
+          if (industry.value.toLowerCase().contains(searchValue.toLowerCase()))
+            industry.key: industry.value
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +85,41 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                           emailController: emailController,
                           websiteController: websiteController,
                           passwordController: passwordController),
+                      ShadSelect<String>.withSearch(
+                        enabled: enabled,
+                        focusNode: focusNodes,
+                        minWidth: 350,
+                        maxWidth: 350,
+                        placeholder: const Text('Select industry...'),
+                        onSearchChanged: (value) =>
+                            setState(() => searchValue = value),
+                        searchPlaceholder: const Text('Search industry'),
+                        options: [
+                          if (filteredIndustries.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 24),
+                              child: Text('No industry found'),
+                            ),
+                          ...industries.entries.map(
+                            (industry) {
+                              // this offstage is used to avoid the focus loss when the search results appear again
+                              // because it keeps the widget in the tree.
+                              return Offstage(
+                                offstage: !filteredIndustries
+                                    .containsKey(industry.key),
+                                child: ShadOption(
+                                  value: industry.key,
+                                  child: Text(industry.value),
+                                ),
+                              );
+                            },
+                          )
+                        ],
+                        selectedOptionBuilder: (context, value) {
+                          industry = value;
+                          return Text(industries[value] ?? '');
+                        },
+                      ),
                       const SizedBox(height: 20),
                       const PrivacyPolicy(),
                       const SizedBox(height: 20),
@@ -88,6 +134,7 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                             email: emailController.text,
                             website: websiteController.text,
                             password: passwordController.text,
+                            industry: industry,
                           ));
                         },
                       ),

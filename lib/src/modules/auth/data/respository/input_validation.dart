@@ -5,6 +5,7 @@ class InputValidation {
     required String email,
     required String password,
     required String website,
+    required String industry,
   }) {
     String? error;
     error = validateFirstName(firstName);
@@ -24,6 +25,11 @@ class InputValidation {
       return error;
     }
     error = validateWebsite(website);
+    if (error != null) {
+      return error;
+    }
+
+    error = validateIndustry(industry);
     if (error != null) {
       return error;
     }
@@ -55,11 +61,19 @@ class InputValidation {
     return null;
   }
 
+  static String? validateIndustry(String? industry) {
+    if (industry == null || industry.isEmpty) {
+      return 'Industry is required';
+    }
+    return null;
+  }
+
   static String? validateInfluencerForm({
     required String firstName,
     required String lastName,
     required String email,
     required String password,
+    required String industry,
   }) {
     String? error;
     error = validateFirstName(firstName);
@@ -78,6 +92,11 @@ class InputValidation {
     if (error.isNotEmpty) {
       return error;
     }
+    error = validateIndustry(industry);
+    if (error != null) {
+      return error;
+    }
+
     return null;
   }
 
