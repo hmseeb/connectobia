@@ -2,6 +2,9 @@ PODS:
   - Flutter (1.0.0)
   - open_mail_app (0.0.1):
     - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - rive_common (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -13,6 +16,7 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - open_mail_app (from `.symlinks/plugins/open_mail_app/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - rive_common (from `.symlinks/plugins/rive_common/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -22,6 +26,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   open_mail_app:
     :path: ".symlinks/plugins/open_mail_app/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   rive_common:
     :path: ".symlinks/plugins/rive_common/ios"
   shared_preferences_foundation:
@@ -32,6 +38,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   open_mail_app: 794172f6a22cd16319d3ddaf45e945b2f74952b0
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   rive_common: cbbac3192af00d7341f19dae2f26298e9e37d99e
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe

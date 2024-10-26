@@ -57,7 +57,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: height * 8),
+                    SizedBox(height: height * 5),
                     SvgPicture.asset(
                       AssetsPath.login,
                       height: 150,

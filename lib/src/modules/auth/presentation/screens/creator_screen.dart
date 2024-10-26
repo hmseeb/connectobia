@@ -58,7 +58,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: height * 8),
+                    SizedBox(height: height * 5),
                     SvgPicture.asset(
                       AssetsPath.creator,
                       height: 150,
