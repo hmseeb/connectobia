@@ -12,7 +12,6 @@ class EmailVerificationBloc
       try {
         final pb = await PocketBaseSingleton.instance;
         final id = pb.authStore.model.id;
-        debugPrint('Subscribed to verification updates');
         await pb.collection('users').subscribe(
           id,
           (e) {
@@ -23,6 +22,7 @@ class EmailVerificationBloc
             }
           },
         );
+        debugPrint('Subscribed to verification updates');
       } catch (e) {
         debugPrint(e.toString());
         rethrow;
