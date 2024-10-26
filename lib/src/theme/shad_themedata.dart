@@ -1,12 +1,13 @@
 import 'dart:ui';
 
 import 'package:connectobia/src/theme/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 ShadThemeData shadThemeData(bool isDarkMode) {
   return ShadThemeData(
     textTheme: ShadTextTheme(
-      family: 'VarelaRound',
+      family: GoogleFonts.varelaRound().fontFamily,
     ),
     brightness: isDarkMode ? Brightness.dark : Brightness.light,
     colorScheme: isDarkMode
