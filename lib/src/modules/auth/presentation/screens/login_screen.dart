@@ -57,11 +57,11 @@ class _SigninScreenState extends State<SigninScreen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: height * 7),
+                    SizedBox(height: height * 5),
                     SvgPicture.asset(
                       AssetsPath.login,
-                      height: 100,
-                      width: 100,
+                      height: 200,
+                      width: 200,
                     ),
                     const SizedBox(height: 20),
                     const HeadingText('Log in to your account'),
