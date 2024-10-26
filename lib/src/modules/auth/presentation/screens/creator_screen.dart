@@ -64,6 +64,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                       height: 150,
                       width: 150,
                     ),
+                    const SizedBox(height: 20),
                     const HeadingText('Collaborate with the best brands'),
                     const SizedBox(height: 20),
                     CreatorSignupForm(
