@@ -17,7 +17,7 @@ class PrivacyPolicy extends StatelessWidget {
           ),
         ),
         Text(
-          'terms of service',
+          'terms of service ',
           style: TextStyle(
             fontSize: 12,
             color: ShadColors.kSecondary,
