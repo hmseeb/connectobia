@@ -23,6 +23,7 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       RecordModel user = await pb.collection('users').create(body: body);
       await pb.collection('users').requestVerification(email);
+      await AuthRepo.login(email, password);
       return user;
     } catch (e) {
       debugPrint(e.toString());
@@ -60,6 +61,7 @@ class AuthRepo {
       final authData =
           await pb.collection('users').authWithPassword(email, password);
 
+      debugPrint('Logged in as ${authData.record!.data['email']}');
       return authData;
     } catch (e) {
       debugPrint(e.toString());

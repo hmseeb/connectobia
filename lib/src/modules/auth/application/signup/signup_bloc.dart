@@ -33,7 +33,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           event.password,
           event.accountType,
         );
-        await AuthRepo.login(event.email, event.password);
         emit(SignupSuccess());
       } catch (e) {
         emit(SignupFailure(e.toString()));
