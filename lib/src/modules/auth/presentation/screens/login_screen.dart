@@ -1,3 +1,4 @@
+import 'package:connectobia/src/globals/constants/path.dart';
 import 'package:connectobia/src/globals/constants/screen_size.dart';
 import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
 import 'package:connectobia/src/modules/auth/application/login/login_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:connectobia/src/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SigninScreen extends StatefulWidget {
@@ -55,7 +57,13 @@ class _SigninScreenState extends State<SigninScreen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: height * 15),
+                    SizedBox(height: height * 8),
+                    SvgPicture.asset(
+                      AssetsPath.login,
+                      height: 150,
+                      width: 150,
+                    ),
+                    const SizedBox(height: 20),
                     const HeadingText('Log in to your account'),
                     const SizedBox(height: 20),
                     LoginForm(

@@ -1,3 +1,4 @@
+import 'package:connectobia/src/globals/constants/path.dart';
 import 'package:connectobia/src/globals/constants/screen_size.dart';
 import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
 import 'package:connectobia/src/modules/auth/application/signup/signup_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:connectobia/src/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CreatorScreen extends StatefulWidget {
@@ -56,7 +58,12 @@ class _CreatorScreenState extends State<CreatorScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: height * 15),
+                    SizedBox(height: height * 8),
+                    SvgPicture.asset(
+                      AssetsPath.creator,
+                      height: 150,
+                      width: 150,
+                    ),
                     const HeadingText('Collaborate with the best brands'),
                     const SizedBox(height: 20),
                     CreatorSignupForm(

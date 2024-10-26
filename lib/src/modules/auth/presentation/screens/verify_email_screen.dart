@@ -23,6 +23,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   bool _canResendEmail = false;
   int _secondsRemaining = 30; // Countdown duration
   int _resendEmailCount = 1;
+  bool isLoading = false;
   late final blocProvider = BlocProvider.of<EmailVerificationBloc>(context);
 
   Timer? _timer;
