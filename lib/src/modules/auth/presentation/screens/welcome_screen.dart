@@ -1,6 +1,6 @@
 import 'package:connectobia/src/globals/constants/screen_size.dart';
+import 'package:connectobia/src/globals/widgets/logo.dart';
 import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
-import 'package:connectobia/src/modules/auth/presentation/views/connection_icon.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/signup_card.dart';
@@ -24,9 +24,11 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   late final ThemeCubit themeCubit;
-  late bool isDarkMode;
+
   @override
   Widget build(BuildContext context) {
+    late final shadTheme = ShadTheme.of(context);
+    bool isDarkMode = shadTheme.brightness == Brightness.dark;
     final height = ScreenSize.height(context);
 
     return Scaffold(
@@ -40,7 +42,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             onPressed: () {
               HapticFeedback.mediumImpact();
               isDarkMode = !isDarkMode;
-              themeCubit.toggleTheme(isDarkMode);
+              if (mounted) {
+                themeCubit.toggleTheme(isDarkMode);
+              }
               ShadToaster.of(context).show(
                 ShadToast(
                   description:
@@ -59,11 +63,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                HeadingText('Welcome to '),
-                ConnectionIcon(),
-                HeadingText('obia'),
+                Hero(
+                  tag: 'splash',
+                  child: Logo(size: 40),
+                ),
+                HeadingText('onnectobia'),
               ],
             ),
+            const SizedBox(height: 10),
             const Tagline('where brands and influencers meet'),
             const SizedBox(height: 30),
             SignupCard(
@@ -102,6 +109,5 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void initState() {
     super.initState();
     themeCubit = BlocProvider.of<ThemeCubit>(context);
-    isDarkMode = widget.isDarkMode;
   }
 }

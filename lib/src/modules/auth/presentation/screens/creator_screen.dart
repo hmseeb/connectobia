@@ -3,6 +3,7 @@ import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
 import 'package:connectobia/src/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/src/modules/auth/presentation/views/creator_signup_form.dart';
 import 'package:connectobia/src/modules/auth/presentation/views/privacy_policy.dart';
+import 'package:connectobia/src/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/src/theme/buttons.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,15 @@ class _CreatorScreenState extends State<CreatorScreen> {
                             password: passwordController.text,
                           ));
                         }),
+                    const SizedBox(height: 20),
+                    AuthFlow(
+                      title: 'Already have an account? ',
+                      buttonText: 'Sign in',
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/signin');
+                        HapticFeedback.mediumImpact();
+                      },
+                    ),
                   ],
                 ),
               ),

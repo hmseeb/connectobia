@@ -7,8 +7,9 @@ class AuthRepo {
       String email, String website, String password, String accountType) async {
     // example create body
     final body = <String, dynamic>{
+      "username": email.split('@')[0],
       "email": email,
-      "emailVisibility": true,
+      "emailVisibility": false, // hide email
       "password": password,
       "passwordConfirm": password,
       "first_name": firstName,
@@ -28,12 +29,53 @@ class AuthRepo {
     }
   }
 
+  static Future<void> forgotPassword(String email) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      return await pb.collection('users').requestPasswordReset(email);
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
+
+  static Future<String> getAccountType() async {
+    final pb = await PocketBaseSingleton.instance;
+    final id = await getUserID();
+    final RecordModel record = await pb.collection('users').getOne(id);
+    if (record.data['account_type'] == 'brand') {
+      return 'brand';
+    } else {
+      return 'influencer';
+    }
+  }
+
+  static Future<String> getUserID() async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      return pb.authStore.model.id;
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
+
   static Future<RecordAuth> login(String email, String password) async {
     try {
       final pb = await PocketBaseSingleton.instance;
       final user =
           await pb.collection('users').authWithPassword(email, password);
       return user;
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
+
+  static Future<void> verifyEmail(String email) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      return await pb.collection('users').requestVerification(email);
     } catch (e) {
       debugPrint(e.toString());
       rethrow;

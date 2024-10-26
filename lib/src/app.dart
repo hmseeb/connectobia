@@ -1,7 +1,9 @@
 import 'package:connectobia/src/db/pb.dart';
 import 'package:connectobia/src/db/shared_prefs.dart';
+import 'package:connectobia/src/globals/constants/navigation_service.dart';
 import 'package:connectobia/src/modules/auth/application/login/login_bloc.dart';
 import 'package:connectobia/src/modules/auth/application/signup/signup_bloc.dart';
+import 'package:connectobia/src/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/src/modules/home/presentation/screens/home_screen.dart';
 import 'package:connectobia/src/routes.dart';
@@ -23,10 +25,13 @@ class Connectobia extends StatefulWidget {
 
 class ConnectobiaState extends State<Connectobia> {
   late bool isDarkMode;
-  bool isAuthenticated = false;
+  late bool isAuthenticated;
+  late String accountType;
+  ThemeCubit themeCubit = ThemeCubit();
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Building Connectobia');
     return GestureDetector(
       onTap: () {
         final currentFocus = FocusScope.of(context);
@@ -39,56 +44,64 @@ class ConnectobiaState extends State<Connectobia> {
         providers: [
           BlocProvider(create: (context) => LoginBloc()),
           BlocProvider(create: (context) => SignupBloc()),
-          BlocProvider(create: (context) => ThemeCubit()), // ThemeCubit
+          BlocProvider(create: (context) => ThemeCubit()),
         ],
         child: BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
-          return FutureBuilder(
-            future: _initializeTheme(context),
-            builder: (context, snapshot) => snapshot.connectionState !=
-                    ConnectionState.done
-                ? const Center(child: CircularProgressIndicator())
-                : ShadApp(
-                    debugShowCheckedModeBanner: false,
-                    onGenerateRoute: (settings) =>
-                        GenerateRoutes.onGenerateRoute(settings),
-                    themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                    theme: shadThemeData(isDarkMode),
-                    home: Scaffold(
-                      body: SplashScreen.navigate(
-                        name: isDarkMode
-                            ? 'assets/animations/dark.riv'
-                            : 'assets/animations/light.riv',
-                        next: (context) {
-                          return isAuthenticated
-                              ? const HomeScreen()
-                              : WelcomeScreen(isDarkMode: isDarkMode);
-                        },
-                        until: () async {
-                          isAuthenticated = await checkAuth();
-                        },
-                        startAnimation: 'Timeline 1',
-                      ),
-                    )),
+          return ShadApp(
+            title: 'Connectobia',
+            initialRoute: '/',
+            navigatorKey: NavigationService.navigatorKey,
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: (settings) =>
+                GenerateRoutes.onGenerateRoute(settings),
+            themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
+            theme: shadThemeData(state is DarkTheme),
+            home: Scaffold(
+              body: Hero(
+                tag: 'splash',
+                child: SplashScreen.navigate(
+                  name: state is DarkTheme
+                      ? 'assets/animations/dark.riv'
+                      : 'assets/animations/light.riv',
+                  next: (context) {
+                    return isAuthenticated
+                        ? const HomeScreen()
+                        : WelcomeScreen(isDarkMode: state is DarkTheme);
+                  },
+                  until: () async {
+                    _initializeTheme(context);
+                  },
+                  startAnimation: 'Timeline 1',
+                ),
+              ),
+            ),
           );
         }),
       ),
     );
   }
 
-  Future<bool> checkAuth() async {
+  Future<void> checkAuth() async {
     PocketBase pocketBase = await PocketBaseSingleton.instance;
-    return pocketBase.authStore.isValid;
+    isAuthenticated = pocketBase.authStore.isValid;
+    if (isAuthenticated) {
+      accountType = await AuthRepo.getAccountType();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkAuth();
   }
 
   Future<void> _initializeTheme(BuildContext context) async {
-    isDarkMode = await _loadDarkModePreference();
-  }
-
-  Future<bool> _loadDarkModePreference() async {
     final prefs = await SharedPrefs.instance;
     var brightness =
         SchedulerBinding.instance.platformDispatcher.platformBrightness;
-    bool isDarkTheme = brightness == Brightness.dark;
-    return prefs.getBool('darkMode') ?? isDarkTheme; // Default to system theme
+    setState(() {
+      isDarkMode = prefs.getBool('darkMode') ?? (brightness == Brightness.dark);
+    });
+    themeCubit.toggleTheme(isDarkMode);
   }
 }

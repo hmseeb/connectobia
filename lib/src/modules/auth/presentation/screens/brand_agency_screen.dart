@@ -3,6 +3,7 @@ import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
 import 'package:connectobia/src/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/src/modules/auth/presentation/views/brand_signup_form.dart';
 import 'package:connectobia/src/modules/auth/presentation/views/privacy_policy.dart';
+import 'package:connectobia/src/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/src/theme/buttons.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +26,6 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
   late final TextEditingController passwordController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
   String accountType = 'brand';
-  final accountTypes = {
-    'brand': 'Brand',
-    'agency': 'Agency',
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -70,22 +67,6 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                           emailController: emailController,
                           websiteController: websiteController,
                           passwordController: passwordController),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ShadSelect<String>(
-                          placeholder: const Text('Brand'),
-                          options: [
-                            ...accountTypes.entries.map((e) =>
-                                ShadOption(value: e.key, child: Text(e.value))),
-                          ],
-                          selectedOptionBuilder: (context, value) =>
-                              Text(accountTypes[value]!),
-                          onChanged: (value) {
-                            accountType = value;
-                          },
-                          initialValue: accountType,
-                        ),
-                      ),
                       const SizedBox(height: 20),
                       const PrivacyPolicy(),
                       const SizedBox(height: 20),
@@ -100,8 +81,16 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                             email: emailController.text,
                             website: websiteController.text,
                             password: passwordController.text,
-                            accountType: accountType,
                           ));
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      AuthFlow(
+                        title: 'Already have an account? ',
+                        buttonText: 'Sign in',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/signin');
+                          HapticFeedback.mediumImpact();
                         },
                       ),
                     ],

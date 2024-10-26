@@ -4,13 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int count = 1;
+  @override
   Widget build(BuildContext context) {
     final themeMode = ShadTheme.of(context).brightness;
+
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            count++;
+          });
+        },
+        child: const Icon(Icons.add),
+      ),
       appBar: transparentAppBar('', actions: [
         IconButton(
           icon: const Icon(Icons.logout_outlined),
@@ -28,8 +43,8 @@ class HomeScreen extends StatelessWidget {
           },
         ),
       ]),
-      body: const Center(
-        child: Text('Home'),
+      body: Center(
+        child: Text(count.toString()),
       ),
     );
   }

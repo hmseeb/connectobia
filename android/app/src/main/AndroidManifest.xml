@@ -2,7 +2,7 @@
     <application
         android:label="connectobia"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <uses-permission android:name="android.permission.VIBRATE" />
         <activity
             android:name=".MainActivity"

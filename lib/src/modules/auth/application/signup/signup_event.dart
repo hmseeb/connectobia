@@ -6,7 +6,7 @@ class SignupBrandSubmitted extends SignupEvent {
   final String email;
   final String? website;
   final String password;
-  final String accountType;
+  final String accountType = 'brand';
 
   SignupBrandSubmitted({
     required this.firstName,
@@ -14,7 +14,6 @@ class SignupBrandSubmitted extends SignupEvent {
     required this.email,
     this.website,
     required this.password,
-    required this.accountType,
   });
 }
 

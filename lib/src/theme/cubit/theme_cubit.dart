@@ -10,6 +10,7 @@ class ThemeCubit extends Cubit<ThemeState> {
   void toggleTheme(bool isDarkMode) async {
     final prefs = await SharedPrefs.instance;
     await prefs.setBool('darkMode', isDarkMode);
+    debugPrint('Theme mode set to ${isDarkMode ? 'Dark' : 'Light'}');
     if (isDarkMode) {
       emit(DarkTheme());
     } else {

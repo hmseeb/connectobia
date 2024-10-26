@@ -1,6 +1,7 @@
 import 'package:connectobia/src/globals/constants/screen_size.dart';
 import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
 import 'package:connectobia/src/modules/auth/application/login/login_bloc.dart';
+import 'package:connectobia/src/modules/auth/presentation/views/forget_password_sheet.dart';
 import 'package:connectobia/src/modules/auth/presentation/views/login_form.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/heading_text.dart';
@@ -62,6 +63,12 @@ class _SigninScreenState extends State<SigninScreen> {
                         TextButton(
                           onPressed: () {
                             HapticFeedback.mediumImpact();
+                            showShadSheet(
+                              side: ShadSheetSide.bottom,
+                              context: context,
+                              builder: (context) => const ForgotPasswordSheet(
+                                  side: ShadSheetSide.bottom),
+                            );
                           },
                           child: const Text('Forgot password?'),
                         ),
