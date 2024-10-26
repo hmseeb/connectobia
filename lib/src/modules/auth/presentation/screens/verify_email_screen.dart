@@ -22,7 +22,7 @@ class VerifyEmail extends StatefulWidget {
 class VerifyEmailState extends State<VerifyEmail> {
   bool _canResendEmail = false;
   int _secondsRemaining = 30; // Countdown duration
-  int _resendEmailCount = 0;
+  int _resendEmailCount = 1;
   late final blocProvider = BlocProvider.of<EmailVerificationBloc>(context);
 
   Timer? _timer;

@@ -37,6 +37,7 @@ class _LoginFormState extends State<LoginForm> {
         ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           placeholder: const Text('Password'),
+          keyboardType: TextInputType.visiblePassword,
           suffix: GestureDetector(
             child: Icon(obscureText
                 ? Icons.visibility_off_outlined
