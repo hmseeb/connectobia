@@ -64,7 +64,10 @@ class _SigninScreenState extends State<SigninScreen> {
                       width: 150,
                     ),
                     const SizedBox(height: 20),
-                    const HeadingText('Log in to your account'),
+                    const HeadingText(
+                      'Log in to your account',
+                      width: 350,
+                    ),
                     const SizedBox(height: 20),
                     LoginForm(
                         emailController: emailController,
