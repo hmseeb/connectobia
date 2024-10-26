@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 ShadThemeData shadThemeData(bool isDarkMode) {
   return ShadThemeData(
+    textTheme: ShadTextTheme(),
     brightness: isDarkMode ? Brightness.dark : Brightness.light,
     colorScheme: isDarkMode
         ? const ShadSlateColorScheme.dark(

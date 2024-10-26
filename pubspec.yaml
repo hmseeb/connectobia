@@ -48,6 +48,7 @@ dependencies:
   json_annotation: ^4.9.0
   build_runner: ^2.4.13
   open_mail_app: ^0.4.5
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

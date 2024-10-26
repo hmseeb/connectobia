@@ -59,7 +59,7 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      SizedBox(height: height * 8),
+                      SizedBox(height: height * 5),
                       SvgPicture.asset(
                         AssetsPath.brand,
                         height: 150,
