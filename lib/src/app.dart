@@ -29,7 +29,7 @@ class Connectobia extends StatefulWidget {
 
 class ConnectobiaState extends State<Connectobia> {
   late bool isDarkMode;
-  late final User user;
+  User? user;
   late final bool isAuthenticated;
   ThemeCubit themeCubit = ThemeCubit();
 
@@ -73,11 +73,23 @@ class ConnectobiaState extends State<Connectobia> {
                         : 'assets/animations/light.riv',
                     next: (context) {
                       if (isAuthenticated) {
-                        if (user.verified) {
+                        if (user == null) {
+                          PocketBaseSingleton.instance.then((pb) {
+                            pb.authStore.clear();
+                            if (context.mounted) {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                '/welcome',
+                                (route) => false,
+                                arguments: {'isDarkMode': isDarkMode},
+                              );
+                            }
+                          });
+                        }
+                        if (user!.verified) {
                           return const HomeScreen();
                         } else {
                           return VerifyEmail(
-                            email: user.email,
+                            email: user!.email,
                           );
                         }
                       } else {
@@ -102,12 +114,25 @@ class ConnectobiaState extends State<Connectobia> {
 
   Future<void> checkAuth() async {
     PocketBase pocketBase = await PocketBaseSingleton.instance;
+
     isAuthenticated = pocketBase.authStore.isValid;
     if (isAuthenticated) {
-      user = await AuthRepo.getUser();
-      if (!user.verified) {
-        // TODO: Uncomment this line
-        // await AuthRepo.verifyEmail(user.email);
+      try {
+        user = await AuthRepo.getUser();
+        if (!user!.verified) {
+          await AuthRepo.verifyEmail(user!.email);
+        }
+      } catch (e) {
+        pocketBase.authStore.clear();
+        isAuthenticated = false;
+        if (mounted) {
+          ShadThemeData theme = ShadTheme.of(context);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/welcome',
+            (route) => false,
+            arguments: {'isDarkMode': theme.brightness == Brightness.dark},
+          );
+        }
       }
     }
   }

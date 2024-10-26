@@ -8,6 +8,7 @@ import 'package:connectobia/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:open_mail_app/open_mail_app.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class VerifyEmail extends StatefulWidget {
@@ -99,6 +100,13 @@ class VerifyEmailState extends State<VerifyEmail> {
                   ],
                 ),
                 const SizedBox(height: 20),
+                // open email button using url launcher
+                ShadButton(
+                  onPressed: () {
+                    openEmailApp();
+                  },
+                  child: const Text('Open Email App'),
+                ),
               ],
             ),
           ),
@@ -118,6 +126,10 @@ class VerifyEmailState extends State<VerifyEmail> {
     super.initState();
     _startResendTimer();
     blocProvider.add(EmailSubscribeEvent());
+  }
+
+  Future<void> openEmailApp() async {
+    await OpenMailApp.openMailApp();
   }
 
   void _resendEmail(BuildContext context) async {
