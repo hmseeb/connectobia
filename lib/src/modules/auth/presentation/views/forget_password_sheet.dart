@@ -57,10 +57,8 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               if (context.mounted) {
                 ShadToaster.of(context).show(
                   const ShadToast(
-                    title: Text('Email sent'),
-                    description: Text(
-                        'If the email exists, you will receive a link to reset your password.'),
-                  ),
+                      title: Text(
+                          'If the email exists, you will receive a link to reset your password.')),
                 );
               }
             } catch (e) {
