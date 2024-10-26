@@ -28,7 +28,7 @@ class AuthFlow extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Pellet.kSecondary,
+              color: ShadColors.kSecondary,
             ),
           ),
         ],

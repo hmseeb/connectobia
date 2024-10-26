@@ -35,7 +35,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
             lastName: widget.lastNameController),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            placeholder: const Text('Email*'),
+            placeholder: const Text('Email'),
             controller: widget.emailController,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
@@ -57,7 +57,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
             }),
         ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          placeholder: const Text('Password*'),
+          placeholder: const Text('Password'),
           suffix: GestureDetector(
             child: Icon(
               obscureText

@@ -1,4 +1,4 @@
-import 'package:connectobia/src/globals/constants/strings.dart';
+import 'package:connectobia/src/globals/constants/path.dart';
 import 'package:flutter/material.dart';
 
 class Logo extends StatelessWidget {
@@ -8,7 +8,7 @@ class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ImageIcon(
-      AssetImage(Strings.logoPath),
+      AssetImage(AssetsPath.logo),
       color: Colors.redAccent,
       size: size,
     );

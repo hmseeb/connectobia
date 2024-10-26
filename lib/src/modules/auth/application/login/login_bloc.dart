@@ -21,8 +21,15 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       emit(LoginLoading());
 
       try {
-        await AuthRepo.login(event.email, event.password);
-        emit(LoginSuccess());
+        final authData = await AuthRepo.login(event.email, event.password);
+        bool isVerified = authData.record!.data['verified'];
+        if (isVerified) {
+          emit(LoginSuccess());
+        } else {
+          // TODO: implement email verification
+          // await AuthRepo.verifyEmail(event.email);
+          emit(LoginUnverified());
+        }
       } catch (e) {
         emit(LoginFailure(e.toString()));
       }

@@ -36,10 +36,10 @@ class _CreatorScreenState extends State<CreatorScreen> {
           listener: (context, state) {
             if (state is SignupSuccess) {
               // Navigator.of(context).pushNamed('/login');
-              ShadToaster.of(context).show(
-                const ShadToast(
-                  title: Text('Account created successfully!'),
-                ),
+              Navigator.pushNamed(
+                context,
+                '/verify-email',
+                arguments: {'email': emailController.text},
               );
             } else if (state is SignupFailure) {
               ShadToaster.of(context).show(

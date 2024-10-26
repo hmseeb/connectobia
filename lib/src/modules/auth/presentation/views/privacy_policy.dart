@@ -20,7 +20,7 @@ class PrivacyPolicy extends StatelessWidget {
           'terms of service',
           style: TextStyle(
             fontSize: 12,
-            color: Pellet.kSecondary,
+            color: ShadColors.kSecondary,
           ),
         ),
         Text(
@@ -33,7 +33,7 @@ class PrivacyPolicy extends StatelessWidget {
           'privacy policy',
           style: TextStyle(
             fontSize: 12,
-            color: Pellet.kSecondary,
+            color: ShadColors.kSecondary,
           ),
         ),
       ],

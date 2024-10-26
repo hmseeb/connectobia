@@ -1,4 +1,5 @@
 import 'package:connectobia/src/db/db.dart';
+import 'package:connectobia/src/modules/auth/domain/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -7,7 +8,7 @@ class AuthRepo {
       String email, String website, String password, String accountType) async {
     // example create body
     final body = <String, dynamic>{
-      "username": email.split('@')[0],
+      // "username": email.split('@')[0],
       "email": email,
       "emailVisibility": false, // hide email
       "password": password,
@@ -39,21 +40,14 @@ class AuthRepo {
     }
   }
 
-  static Future<String> getAccountType() async {
-    final pb = await PocketBaseSingleton.instance;
-    final id = await getUserID();
-    final RecordModel record = await pb.collection('users').getOne(id);
-    if (record.data['account_type'] == 'brand') {
-      return 'brand';
-    } else {
-      return 'influencer';
-    }
-  }
-
-  static Future<String> getUserID() async {
+  // get user
+  static Future<User> getUser() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      return pb.authStore.model.id;
+      final id = pb.authStore.model.id;
+      RecordModel record = await pb.collection('users').getOne(id);
+      User user = User.fromRecord(record);
+      return user;
     } catch (e) {
       debugPrint(e.toString());
       rethrow;
@@ -63,9 +57,10 @@ class AuthRepo {
   static Future<RecordAuth> login(String email, String password) async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final user =
+      final authData =
           await pb.collection('users').authWithPassword(email, password);
-      return user;
+
+      return authData;
     } catch (e) {
       debugPrint(e.toString());
       rethrow;

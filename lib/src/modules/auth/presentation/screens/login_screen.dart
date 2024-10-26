@@ -40,10 +40,15 @@ class _SigninScreenState extends State<SigninScreen> {
                       title: Text(state.error),
                     ),
                   );
-                }
-                if (state is LoginSuccess) {
+                } else if (state is LoginSuccess) {
                   Navigator.pushNamedAndRemoveUntil(
                       context, '/home', (route) => false);
+                } else if (state is LoginUnverified) {
+                  Navigator.pushNamed(
+                    context,
+                    '/verify-email',
+                    arguments: {'email': emailController.text},
+                  );
                 }
               },
               builder: (context, state) {

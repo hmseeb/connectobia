@@ -8,16 +8,16 @@ ShadThemeData shadThemeData(bool isDarkMode) {
     brightness: isDarkMode ? Brightness.dark : Brightness.light,
     colorScheme: isDarkMode
         ? const ShadSlateColorScheme.dark(
-            primary: Pellet.kPrimary,
-            secondary: Pellet.kSecondary,
-            foreground: Pellet.kBackground,
-            background: Pellet.kForeground,
+            primary: ShadColors.kPrimary,
+            secondary: ShadColors.kSecondary,
+            foreground: ShadColors.kBackground,
+            background: ShadColors.kForeground,
           )
         : const ShadSlateColorScheme.light(
-            primary: Pellet.kPrimary,
-            secondary: Pellet.kSecondary,
-            foreground: Pellet.kForeground,
-            background: Pellet.kBackground,
+            primary: ShadColors.kPrimary,
+            secondary: ShadColors.kSecondary,
+            foreground: ShadColors.kForeground,
+            background: ShadColors.kBackground,
           ),
   );
 }

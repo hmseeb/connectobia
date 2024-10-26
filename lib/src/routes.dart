@@ -17,6 +17,7 @@ import 'package:connectobia/src/app.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/brand_agency_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/creator_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/src/modules/home/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,11 @@ class GenerateRoutes {
         );
       case '/signin':
         return _buildPageRoute(const SigninScreen());
+      case '/verify-email':
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildPageRoute(VerifyEmail(
+          email: args['email'],
+        ));
       case '/brand-agency-signup':
         return _buildPageRoute(const BrandAgencyScreen());
       case '/creator-signup':

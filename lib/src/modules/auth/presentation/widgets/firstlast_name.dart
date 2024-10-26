@@ -22,7 +22,7 @@ class FirstLastName extends StatelessWidget {
               children: [
                 ShadInputFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  placeholder: const Text('First Name*'),
+                  placeholder: const Text('First Name'),
                   controller: firstName,
                   validator: (value) {
                     final error = InputValidation.validateFirstName(value);
@@ -42,7 +42,7 @@ class FirstLastName extends StatelessWidget {
               children: [
                 ShadInputFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  placeholder: const Text('Last Name*'),
+                  placeholder: const Text('Last Name'),
                   controller: lastName,
                   validator: (value) {
                     final error = InputValidation.validateLastName(value);
