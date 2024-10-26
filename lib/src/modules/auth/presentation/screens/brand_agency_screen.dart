@@ -59,11 +59,11 @@ class _BrandAgencyScreenState extends State<BrandAgencyScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      SizedBox(height: height * 5),
+                      SizedBox(height: height * 4),
                       SvgPicture.asset(
                         AssetsPath.brand,
-                        height: 150,
-                        width: 150,
+                        height: 100,
+                        width: 100,
                       ),
                       const SizedBox(height: 20),
                       const HeadingText('Match with the best creators'),

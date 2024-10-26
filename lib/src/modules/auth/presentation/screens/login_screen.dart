@@ -60,8 +60,8 @@ class _SigninScreenState extends State<SigninScreen> {
                     SizedBox(height: height * 5),
                     SvgPicture.asset(
                       AssetsPath.login,
-                      height: 150,
-                      width: 150,
+                      height: 100,
+                      width: 100,
                     ),
                     const SizedBox(height: 20),
                     const HeadingText('Log in to your account'),

@@ -61,8 +61,8 @@ class _CreatorScreenState extends State<CreatorScreen> {
                     SizedBox(height: height * 5),
                     SvgPicture.asset(
                       AssetsPath.creator,
-                      height: 150,
-                      width: 150,
+                      height: 100,
+                      width: 100,
                     ),
                     const SizedBox(height: 20),
                     const HeadingText('Collaborate with the best brands'),
