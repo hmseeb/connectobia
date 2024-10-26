@@ -65,7 +65,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               children: [
                 Hero(
                   tag: 'splash',
-                  child: Logo(size: 40),
+                  child: Logo(size: 48),
                 ),
                 HeadingText('onnectobia'),
               ],
