@@ -15,7 +15,7 @@ class PocketBaseSingleton {
       );
 
       _pocketBase =
-          PocketBase('https://connectobi.pockethost.io', authStore: store);
+          PocketBase('https://connectobia.pockethost.io', authStore: store);
     }
     return _pocketBase!;
   }
