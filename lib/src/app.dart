@@ -1,4 +1,4 @@
-import 'package:connectobia/src/db/pb.dart';
+import 'package:connectobia/src/db/db.dart';
 import 'package:connectobia/src/db/shared_prefs.dart';
 import 'package:connectobia/src/globals/constants/navigation_service.dart';
 import 'package:connectobia/src/modules/auth/application/login/login_bloc.dart';

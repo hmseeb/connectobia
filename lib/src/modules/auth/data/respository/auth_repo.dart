@@ -1,4 +1,4 @@
-import 'package:connectobia/src/db/pb.dart';
+import 'package:connectobia/src/db/db.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
