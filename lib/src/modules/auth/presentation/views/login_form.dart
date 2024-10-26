@@ -25,7 +25,7 @@ class _LoginFormState extends State<LoginForm> {
       children: [
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            placeholder: const Text('Email*'),
+            placeholder: const Text('Email'),
             controller: widget.emailController,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
@@ -36,7 +36,7 @@ class _LoginFormState extends State<LoginForm> {
             }),
         ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          placeholder: const Text('Password*'),
+          placeholder: const Text('Password'),
           suffix: GestureDetector(
             child: Icon(obscureText
                 ? Icons.visibility_off_outlined
