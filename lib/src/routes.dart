@@ -14,7 +14,7 @@
 library;
 
 import 'package:connectobia/src/app.dart';
-import 'package:connectobia/src/modules/auth/presentation/screens/brand_agency_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/brand_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/creator_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
@@ -50,7 +50,7 @@ class GenerateRoutes {
           email: args['email'],
         ));
       case '/brand-agency-signup':
-        return _buildPageRoute(const BrandAgencyScreen());
+        return _buildPageRoute(const BrandScreen());
       case '/creator-signup':
         return _buildPageRoute(const CreatorScreen());
       case '/home':

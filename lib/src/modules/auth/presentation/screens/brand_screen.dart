@@ -3,7 +3,7 @@ import 'package:connectobia/src/globals/constants/path.dart';
 import 'package:connectobia/src/globals/constants/screen_size.dart';
 import 'package:connectobia/src/globals/widgets/transparent_appbar.dart';
 import 'package:connectobia/src/modules/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/src/modules/auth/presentation/views/creator_signup_form.dart';
+import 'package:connectobia/src/modules/auth/presentation/views/brand_signup_form.dart';
 import 'package:connectobia/src/modules/auth/presentation/views/privacy_policy.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/src/modules/auth/presentation/widgets/custom_shad_select.dart';
@@ -12,32 +12,30 @@ import 'package:connectobia/src/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class CreatorScreen extends StatefulWidget {
-  const CreatorScreen({super.key});
+class BrandScreen extends StatefulWidget {
+  const BrandScreen({super.key});
 
   @override
-  State<CreatorScreen> createState() => _CreatorScreenState();
+  State<BrandScreen> createState() => _BrandScreenState();
 }
 
-class _CreatorScreenState extends State<CreatorScreen> {
+class _BrandScreenState extends State<BrandScreen> {
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;
   late final TextEditingController emailController;
+  late final TextEditingController websiteController;
   late final TextEditingController passwordController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
-  String industry = '';
-  var searchValue = '';
-  bool enabled = true;
-  FocusNode focusNodes = FocusNode();
 
-  Map<String, String> get filteredIndustries => {
-        for (final industry in industries.entries)
-          if (industry.value.toLowerCase().contains(searchValue.toLowerCase()))
-            industry.key: industry.value
-      };
+  final FocusNode industryFocusNode = FocusNode();
+  final ScrollController scrollController = ScrollController();
+
+  String accountType = 'brand';
+  String industry = '';
+  bool enabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +45,10 @@ class _CreatorScreenState extends State<CreatorScreen> {
       resizeToAvoidBottomInset: true,
       appBar: transparentAppBar('Create your account'),
       body: SingleChildScrollView(
+        controller: scrollController,
         child: BlocConsumer<SignupBloc, SignupState>(
           listener: (context, state) {
             if (state is SignupSuccess) {
-              // Navigator.of(context).pushNamed('/login');
               Navigator.pushNamed(
                 context,
                 '/verify-email',
@@ -70,45 +68,49 @@ class _CreatorScreenState extends State<CreatorScreen> {
                 width: 350,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     SizedBox(height: height * 2),
                     SvgPicture.asset(
-                      AssetsPath.creator,
+                      AssetsPath.brand,
                       height: 150,
                       width: 150,
                     ),
                     const SizedBox(height: 20),
-                    const HeadingText('Collaborate with the best brands'),
+                    const HeadingText('Match with the best creators'),
                     const SizedBox(height: 20),
-                    CreatorSignupForm(
-                        firstNameController: firstNameController,
-                        lastNameController: lastNameController,
-                        emailController: emailController,
-                        passwordController: passwordController),
+                    BrandSignupForm(
+                      firstNameController: firstNameController,
+                      lastNameController: lastNameController,
+                      emailController: emailController,
+                      websiteController: websiteController,
+                      passwordController: passwordController,
+                    ),
                     CustomShadSelect(
                       items: industries,
                       placeholder: 'Select industry...',
                       onSelected: (selectedIndustry) {
                         industry = selectedIndustry;
                       },
-                      focusNode: focusNodes,
+                      focusNode: industryFocusNode,
                     ),
                     const SizedBox(height: 20),
                     const PrivacyPolicy(),
                     const SizedBox(height: 20),
                     PrimaryAuthButton(
-                        isLoading: state is SignupLoading,
-                        text: 'Create account',
-                        onPressed: () {
-                          HapticFeedback.mediumImpact();
-                          signupBloc.add(SignupInfluencerSubmitted(
-                            firstName: firstNameController.text,
-                            lastName: lastNameController.text,
-                            email: emailController.text,
-                            password: passwordController.text,
-                            industry: industry,
-                          ));
-                        }),
+                      text: 'Create account',
+                      isLoading: state is SignupLoading,
+                      onPressed: () {
+                        HapticFeedback.mediumImpact();
+                        signupBloc.add(SignupBrandSubmitted(
+                          firstName: firstNameController.text,
+                          lastName: lastNameController.text,
+                          email: emailController.text,
+                          website: websiteController.text,
+                          password: passwordController.text,
+                          industry: industry,
+                        ));
+                      },
+                    ),
                     const SizedBox(height: 20),
                     AuthFlow(
                       title: 'Already have an account? ',
@@ -133,16 +135,22 @@ class _CreatorScreenState extends State<CreatorScreen> {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
+    websiteController.dispose();
     passwordController.dispose();
+    industryFocusNode.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
+    super.initState();
     firstNameController = TextEditingController();
     lastNameController = TextEditingController();
     emailController = TextEditingController();
+    websiteController = TextEditingController();
     passwordController = TextEditingController();
-    super.initState();
+
+    // Listen to focus changes to trigger scroll adjustments
   }
 }

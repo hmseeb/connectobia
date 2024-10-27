@@ -45,17 +45,6 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
               return null;
             }),
         ShadInputFormField(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            placeholder: const Text('Business Website (optional)'),
-            controller: widget.websiteController,
-            validator: (value) {
-              final error = InputValidation.validateWebsite(value);
-              if (error != null) {
-                return error;
-              }
-              return null;
-            }),
-        ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           placeholder: const Text('Password'),
           suffix: GestureDetector(
@@ -83,6 +72,17 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
           },
           obscureText: obscureText,
         ),
+        ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            placeholder: const Text('Business Website (optional)'),
+            controller: widget.websiteController,
+            validator: (value) {
+              final error = InputValidation.validateWebsite(value);
+              if (error != null) {
+                return error;
+              }
+              return null;
+            }),
       ],
     );
   }

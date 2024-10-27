@@ -49,6 +49,7 @@ dependencies:
   build_runner: ^2.4.13
   open_mail_app: ^0.4.5
   google_fonts: ^6.2.1
+  flutter_keyboard_visibility: ^6.0.0
 
 dev_dependencies:
   flutter_test:
