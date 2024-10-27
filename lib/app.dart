@@ -4,7 +4,6 @@ import 'package:connectobia/globals/constants/navigation_service.dart';
 import 'package:connectobia/modules/auth/application/email_verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/modules/auth/application/subscription/bloc/subscription_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
@@ -40,7 +39,7 @@ class Connectobia extends StatefulWidget {
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
   late final bool isAuthenticated;
-  late bool isDarkMode;
+  bool? isDarkMode;
   ThemeCubit themeCubit = ThemeCubit();
   User? user;
 
@@ -59,61 +58,54 @@ class ConnectobiaState extends State<Connectobia> {
           BlocProvider(create: (context) => ThemeCubit()),
           BlocProvider(create: (context) => LoginBloc()),
           BlocProvider(create: (context) => SignupBloc()),
-          BlocProvider(create: (context) => SubscriptionBloc()),
           BlocProvider(create: (context) => EmailVerificationBloc()),
         ],
         child: BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
-          BlocProvider.of<SubscriptionBloc>(context).add(UserInitialEvent());
-          return BlocListener<SubscriptionBloc, SubscriptionState>(
-            listener: (context, state) {},
-            child: ShadApp(
-              title: 'Connectobia',
-              initialRoute: '/',
-              navigatorKey: NavigationService.navigatorKey,
-              debugShowCheckedModeBanner: false,
-              onGenerateRoute: (settings) =>
-                  GenerateRoutes.onGenerateRoute(settings),
-              themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
-              theme: shadThemeData(state is DarkTheme),
-              home: Scaffold(
-                body: Hero(
-                  tag: 'splash',
-                  child: SplashScreen.navigate(
-                    name: state is DarkTheme
-                        ? 'assets/animations/dark.riv'
-                        : 'assets/animations/light.riv',
-                    next: (context) {
-                      if (isAuthenticated) {
-                        if (user == null) {
-                          PocketBaseSingleton.instance.then((pb) {
-                            pb.authStore.clear();
-                            if (context.mounted) {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/welcome',
-                                (route) => false,
-                                arguments: {'isDarkMode': isDarkMode},
-                              );
-                            }
-                          });
-                        }
-                        if (user!.verified) {
-                          return const HomeScreen();
-                        } else {
-                          return VerifyEmail(
-                            email: user!.email,
-                          );
-                        }
+          return ShadApp(
+            title: 'Connectobia',
+            initialRoute: '/',
+            navigatorKey: NavigationService.navigatorKey,
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: (settings) =>
+                GenerateRoutes.onGenerateRoute(settings),
+            themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
+            theme: shadThemeData(state is DarkTheme),
+            home: Scaffold(
+              body: Hero(
+                tag: 'splash',
+                child: SplashScreen.navigate(
+                  name: state is DarkTheme
+                      ? 'assets/animations/dark.riv'
+                      : 'assets/animations/light.riv',
+                  next: (context) {
+                    if (isAuthenticated) {
+                      if (user == null) {
+                        PocketBaseSingleton.instance.then((pb) {
+                          pb.authStore.clear();
+                          if (context.mounted) {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/welcome',
+                              (route) => false,
+                              arguments: {'isDarkMode': isDarkMode},
+                            );
+                          }
+                        });
+                      }
+                      if (user!.verified) {
+                        return const HomeScreen();
                       } else {
-                        return WelcomeScreen(
-                          isDarkMode: isDarkMode,
+                        return VerifyEmail(
+                          email: user!.email,
                         );
                       }
-                    },
-                    until: () async {
-                      _initializeTheme(context);
-                    },
-                    startAnimation: 'Timeline 1',
-                  ),
+                    } else {
+                      return WelcomeScreen(
+                        isDarkMode: isDarkMode ?? false,
+                      );
+                    }
+                  },
+                  until: () async {},
+                  startAnimation: 'Timeline 1',
                 ),
               ),
             ),
@@ -156,19 +148,18 @@ class ConnectobiaState extends State<Connectobia> {
   @override
   void initState() {
     super.initState();
-    if (context.mounted) {
-      checkAuth();
-    }
+    _initializeTheme();
+    checkAuth();
   }
 
   /// Initializes the theme based on the user's preferences or system settings.
   ///
   /// It retrieves the theme preference from shared preferences and toggles the theme accordingly.
-  Future<void> _initializeTheme(BuildContext context) async {
+  Future<void> _initializeTheme() async {
     final prefs = await SharedPrefs.instance;
     var brightness =
         SchedulerBinding.instance.platformDispatcher.platformBrightness;
     isDarkMode = prefs.getBool('darkMode') ?? (brightness == Brightness.dark);
-    themeCubit.toggleTheme(isDarkMode);
+    themeCubit.toggleTheme(isDarkMode ?? false);
   }
 }
