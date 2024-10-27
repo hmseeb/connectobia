@@ -39,9 +39,12 @@ class GenerateRoutes {
   static onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
+        final args = settings.arguments as Map<String, dynamic>;
+
         return PageRouteBuilder(
-            pageBuilder: (_, animation, secondaryAnimation) =>
-                const Connectobia());
+            pageBuilder: (_, animation, secondaryAnimation) => Connectobia(
+                  isDarkMode: args['isDarkMode'],
+                ));
       case '/welcome':
         final args = settings.arguments as Map<String, dynamic>;
         return PageRouteBuilder(
@@ -67,7 +70,11 @@ class GenerateRoutes {
           pageBuilder: (_, animation, secondaryAnimation) => const HomeScreen(),
         );
       default:
-        return MaterialPageRoute(builder: (_) => const Connectobia());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+            builder: (_) => Connectobia(
+                  isDarkMode: args['isDarkMode'],
+                ));
     }
   }
 

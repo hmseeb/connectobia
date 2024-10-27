@@ -1,6 +1,6 @@
 import 'package:connectobia/db/db.dart';
-import 'package:connectobia/db/shared_prefs.dart';
 import 'package:connectobia/globals/constants/navigation_service.dart';
+import 'package:connectobia/globals/constants/path.dart';
 import 'package:connectobia/modules/auth/application/email_verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
@@ -10,10 +10,10 @@ import 'package:connectobia/modules/auth/presentation/screens/verify_email_scree
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/modules/home/presentation/screens/home_screen.dart';
 import 'package:connectobia/routes.dart';
-import 'package:connectobia/theme/cubit/theme_cubit.dart';
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
+import 'package:connectobia/theme/colors.dart';
 import 'package:connectobia/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:rive_splash_screen/rive_splash_screen.dart';
@@ -23,14 +23,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 ///
 /// The widget initializes the application and checks the authentication status of the user.
 /// It also initializes the theme based on the user's preferences or system settings.
-///
-/// The widget uses the [ShadApp] widget as the root widget for the application.
-///
-/// The [ShadApp] widget provides the theme, navigator key, and initial route for the application.
-///
-/// {@category App}
 class Connectobia extends StatefulWidget {
-  const Connectobia({super.key});
+  final bool isDarkMode;
+
+  const Connectobia({super.key, required this.isDarkMode});
 
   @override
   State<Connectobia> createState() => ConnectobiaState();
@@ -39,8 +35,7 @@ class Connectobia extends StatefulWidget {
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
   late final bool isAuthenticated;
-  bool? isDarkMode;
-  ThemeCubit themeCubit = ThemeCubit();
+  late bool isDarkMode;
   User? user;
 
   @override
@@ -55,28 +50,28 @@ class ConnectobiaState extends State<Connectobia> {
       },
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => ThemeCubit()),
+          BlocProvider(
+              create: (context) => ThemeBloc()..add(ThemeChanged(isDarkMode))),
           BlocProvider(create: (context) => LoginBloc()),
           BlocProvider(create: (context) => SignupBloc()),
           BlocProvider(create: (context) => EmailVerificationBloc()),
         ],
-        child: BlocBuilder<ThemeCubit, ThemeState>(builder: (context, state) {
-          return ShadApp(
-            title: 'Connectobia',
-            initialRoute: '/',
-            navigatorKey: NavigationService.navigatorKey,
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: (settings) =>
-                GenerateRoutes.onGenerateRoute(settings),
-            themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
-            theme: shadThemeData(state is DarkTheme),
-            home: Scaffold(
-              body: Hero(
-                tag: 'splash',
+        child: BlocConsumer<ThemeBloc, ThemeState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            return ShadApp(
+              title: 'Connectobia',
+              initialRoute: '/',
+              navigatorKey: NavigationService.navigatorKey,
+              debugShowCheckedModeBanner: false,
+              onGenerateRoute: (settings) =>
+                  GenerateRoutes.onGenerateRoute(settings),
+              themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
+              theme: shadThemeData(state is DarkTheme),
+              home: SizedBox(
                 child: SplashScreen.navigate(
-                  name: state is DarkTheme
-                      ? 'assets/animations/dark.riv'
-                      : 'assets/animations/light.riv',
+                  backgroundColor: ShadColors.kSecondary,
+                  name: AssetsPath.splash,
                   next: (context) {
                     if (isAuthenticated) {
                       if (user == null) {
@@ -94,23 +89,19 @@ class ConnectobiaState extends State<Connectobia> {
                       if (user!.verified) {
                         return const HomeScreen();
                       } else {
-                        return VerifyEmail(
-                          email: user!.email,
-                        );
+                        return VerifyEmail(email: user!.email);
                       }
                     } else {
-                      return WelcomeScreen(
-                        isDarkMode: isDarkMode ?? false,
-                      );
+                      return WelcomeScreen(isDarkMode: isDarkMode);
                     }
                   },
                   until: () async {},
                   startAnimation: 'Timeline 1',
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       ),
     );
   }
@@ -118,8 +109,6 @@ class ConnectobiaState extends State<Connectobia> {
   /// Checks the authentication status of the user.
   ///
   /// If the user is authenticated, it fetches the user details and verifies the email.
-  /// If the user is not authenticated, it clears the authentication store and navigates
-  /// to the welcome screen.
   Future<void> checkAuth() async {
     PocketBase pocketBase = await PocketBaseSingleton.instance;
 
@@ -134,11 +123,10 @@ class ConnectobiaState extends State<Connectobia> {
         pocketBase.authStore.clear();
         isAuthenticated = false;
         if (mounted) {
-          ShadThemeData theme = ShadTheme.of(context);
           Navigator.of(context).pushNamedAndRemoveUntil(
             '/welcome',
             (route) => false,
-            arguments: {'isDarkMode': theme.brightness == Brightness.dark},
+            arguments: {'isDarkMode': isDarkMode},
           );
         }
       }
@@ -148,18 +136,7 @@ class ConnectobiaState extends State<Connectobia> {
   @override
   void initState() {
     super.initState();
-    _initializeTheme();
+    isDarkMode = widget.isDarkMode; // Initialize isDarkMode with widget's value
     checkAuth();
-  }
-
-  /// Initializes the theme based on the user's preferences or system settings.
-  ///
-  /// It retrieves the theme preference from shared preferences and toggles the theme accordingly.
-  Future<void> _initializeTheme() async {
-    final prefs = await SharedPrefs.instance;
-    var brightness =
-        SchedulerBinding.instance.platformDispatcher.platformBrightness;
-    isDarkMode = prefs.getBool('darkMode') ?? (brightness == Brightness.dark);
-    themeCubit.toggleTheme(isDarkMode ?? false);
   }
 }

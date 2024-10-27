@@ -9,4 +9,5 @@ class AssetsPath {
   static String brand = 'assets/illustrations/brand.svg';
   static String login = 'assets/illustrations/login.svg';
   static String creator = 'assets/illustrations/creator.svg';
+  static String splash = 'assets/animations/splash.riv';
 }
