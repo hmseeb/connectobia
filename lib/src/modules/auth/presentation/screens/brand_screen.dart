@@ -15,6 +15,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A screen that allows a brand to sign up.
+/// [BrandScreen] contains a form for a brand to sign up.
 class BrandScreen extends StatefulWidget {
   const BrandScreen({super.key});
 

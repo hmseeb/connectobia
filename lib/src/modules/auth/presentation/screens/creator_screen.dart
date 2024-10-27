@@ -15,6 +15,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A screen that allows a creator to sign up.
+/// [CreatorScreen] contains a form for a creator to sign up.
 class CreatorScreen extends StatefulWidget {
   const CreatorScreen({super.key});
 
