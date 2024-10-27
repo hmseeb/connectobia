@@ -50,6 +50,7 @@ dependencies:
   open_mail_app: ^0.4.5
   google_fonts: ^6.2.1
   flutter_keyboard_visibility: ^6.0.0
+  flutter_native_splash: ^2.4.2
 
 dev_dependencies:
   flutter_test:
@@ -99,6 +100,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "FF5252"
+
 
 flutter_launcher_icons:
   android: "launcher_icon"

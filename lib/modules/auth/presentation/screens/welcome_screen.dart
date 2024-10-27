@@ -5,7 +5,7 @@ import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/signup_card.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/tagline.dart';
-import 'package:connectobia/theme/cubit/theme_cubit.dart';
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +28,7 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  late final ThemeCubit themeCubit;
+  late final ThemeBloc themebloc;
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             onPressed: () {
               HapticFeedback.mediumImpact();
               isDarkMode = !isDarkMode;
-              if (mounted) {
-                themeCubit.toggleTheme(isDarkMode);
-              }
+              themebloc.add(ThemeChanged(isDarkMode));
               ShadToaster.of(context).show(
                 ShadToast(
                   description:
@@ -68,10 +66,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Hero(
-                  tag: 'splash',
-                  child: Logo(size: 48),
-                ),
+                Logo(size: 48),
                 HeadingText('onnectobia'),
               ],
             ),
@@ -113,6 +108,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    themeCubit = BlocProvider.of<ThemeCubit>(context);
+    themebloc = BlocProvider.of<ThemeBloc>(context);
   }
 }
