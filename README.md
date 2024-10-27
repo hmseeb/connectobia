@@ -25,7 +25,7 @@ To get started with Connectobia, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/connectobia.git
+    git clone https://github.com/hmseeb/connectobia.git
     ```
 2. Navigate to the project directory:
     ```bash
@@ -33,18 +33,18 @@ To get started with Connectobia, follow these steps:
     ```
 3. Install dependencies:
     ```bash
-    npm install
+    flutter pub get
     ```
 4. Set up environment variables:
     Create a `.env` file in the root directory and add the necessary environment variables.
 
 5. Start the development server:
     ```bash
-    npm start
+    flutter run
     ```
 
 ## Usage
-Once the server is running, you can access the application at `http://localhost:3000`. Register an account or log in to start using Connectobia.
+Once the server is running, you can access the application at `http://localhost:8080`. Register an account or log in to start using Connectobia.
 
 ## Contributing
 We welcome contributions from the community. To contribute, please follow these steps:
