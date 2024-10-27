@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A form that allows a brand to sign up.
+/// [BrandSignupForm] contains fields for first name, last name, email, password, and website.
 class BrandSignupForm extends StatefulWidget {
   final TextEditingController firstNameController;
-
   final TextEditingController lastNameController;
   final TextEditingController emailController;
   final TextEditingController websiteController;
