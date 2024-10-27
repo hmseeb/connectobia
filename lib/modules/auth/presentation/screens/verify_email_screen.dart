@@ -11,6 +11,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:open_mail_app/open_mail_app.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A screen that allows a user to verify their email.
+///
+/// [VerifyEmail] contains a message to the user to verify their email.
+///
+/// {@category Screens}
 class VerifyEmail extends StatefulWidget {
   final String email;
   const VerifyEmail({super.key, required this.email});

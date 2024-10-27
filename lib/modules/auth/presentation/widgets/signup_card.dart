@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A card that allows a user to sign up.
+/// [SignupCard] contains a title, description, and a button to sign up.
+///
+/// {@category Widgets}
 class SignupCard extends StatelessWidget {
   final String title;
   final String description;

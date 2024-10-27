@@ -6,6 +6,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// A form that allows a brand to sign up.
 /// [BrandSignupForm] contains fields for first name, last name, email, password, and website.
+///
+/// {@category Forms}
 class BrandSignupForm extends StatefulWidget {
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;

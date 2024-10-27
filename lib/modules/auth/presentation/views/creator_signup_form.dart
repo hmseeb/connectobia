@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A form that allows a creator to sign up.
+/// [CreatorSignupForm] contains fields for first name, last name, email, and password.
+///
+/// {@category Forms}
 class CreatorSignupForm extends StatefulWidget {
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;

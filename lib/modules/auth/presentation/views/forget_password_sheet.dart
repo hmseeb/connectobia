@@ -3,6 +3,11 @@ import 'package:connectobia/modules/auth/data/respository/input_validation.dart'
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A sheet that allows the user to reset their password.
+///
+/// [ForgotPasswordSheet] contains a form for the user to enter their email to receive a password reset link.
+///
+/// {@category Sheets}
 class ForgotPasswordSheet extends StatefulWidget {
   final ShadSheetSide side;
 

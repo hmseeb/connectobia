@@ -13,6 +13,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A screen that allows a user to sign in.
+///
+/// [SigninScreen] contains a form for a user to sign in.
+///
+/// {@category Screens}
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
 

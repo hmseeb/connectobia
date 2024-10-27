@@ -7,6 +7,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// [CustomShadSelect] is a custom widget that wraps the [ShadSelect] widget
 /// and provides a sorted list of items to display in the dropdown.
 ///
+/// The widget also provides a placeholder for the dropdown and a callback
+/// function that is called when an item is selected.
+///
+/// {@category Widgets}
 class CustomShadSelect extends StatefulWidget {
   /// [items] is a map of key-value pairs where the key is the value to be
   final Map<String, String> items;

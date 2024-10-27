@@ -2,6 +2,10 @@ import 'package:connectobia/modules/auth/data/respository/input_validation.dart'
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A form that allows a user to sign up.
+/// [SignupForm] contains fields for first name, last name, email, and password.
+///
+/// {@category Forms}
 class FirstLastName extends StatelessWidget {
   final TextEditingController firstName, lastName;
   const FirstLastName({

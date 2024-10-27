@@ -1,3 +1,8 @@
+/// This file contains the list of industries that are available for selection in the app.
+///
+/// The list is used in the sign-up process to allow users to select the industry they belong to.
+///
+/// {@category Constants}
 const industries = {
   'fashion': 'Fashion',
   'beauty_and_cosmetics': 'Beauty and Cosmetics',

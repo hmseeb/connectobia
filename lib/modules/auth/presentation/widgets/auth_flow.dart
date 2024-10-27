@@ -1,6 +1,12 @@
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
+/// A widget that displays the authentication flow
+///
+/// This widget is used to display the authentication flow of the application. It is
+/// used to inform the user about the authentication flow of the application.
+///
+/// {@category Widgets}
 class AuthFlow extends StatelessWidget {
   final String buttonText;
   final void Function() onPressed;

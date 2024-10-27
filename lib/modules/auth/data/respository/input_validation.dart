@@ -1,3 +1,7 @@
+/// This class contains methods for validating user input
+/// in the authentication process.
+///
+/// {@category Repositories}
 class InputValidation {
   static String? validateBrandForm({
     required String firstName,

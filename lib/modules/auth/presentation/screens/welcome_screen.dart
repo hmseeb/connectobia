@@ -11,6 +11,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A screen that allows a user to sign up or sign in.
+///
+/// [WelcomeScreen] contains a welcome message and two buttons for a user to sign up as a brand or influencer.
+///
+/// {@category Screens}
 class WelcomeScreen extends StatefulWidget {
   final bool isDarkMode;
   const WelcomeScreen({

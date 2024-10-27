@@ -6,6 +6,8 @@ import 'shared_prefs.dart';
 ///
 /// This class is used to create a single instance of the PocketBase class
 /// that can be used throughout the application.
+///
+/// {@category Database}
 class PocketBaseSingleton {
   static PocketBase? _pocketBase;
 

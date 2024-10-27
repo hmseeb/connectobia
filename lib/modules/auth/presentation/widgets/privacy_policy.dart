@@ -1,6 +1,13 @@
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
+/// A widget that displays the privacy policy
+///
+/// This widget is used to display the privacy policy of the application. It is
+/// used to inform the user about the terms of service and privacy policy of the
+/// application.
+///
+/// {@category Widgets}
 class PrivacyPolicy extends StatelessWidget {
   const PrivacyPolicy({
     super.key,
