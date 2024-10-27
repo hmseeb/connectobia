@@ -20,6 +20,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:rive_splash_screen/rive_splash_screen.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// The main widget for the Connectobia application.
 class Connectobia extends StatefulWidget {
   const Connectobia({super.key});
 
@@ -27,6 +28,7 @@ class Connectobia extends StatefulWidget {
   State<Connectobia> createState() => ConnectobiaState();
 }
 
+/// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
   late bool isDarkMode;
   User? user;
@@ -112,6 +114,11 @@ class ConnectobiaState extends State<Connectobia> {
     );
   }
 
+  /// Checks the authentication status of the user.
+  ///
+  /// If the user is authenticated, it fetches the user details and verifies the email.
+  /// If the user is not authenticated, it clears the authentication store and navigates
+  /// to the welcome screen.
   Future<void> checkAuth() async {
     PocketBase pocketBase = await PocketBaseSingleton.instance;
 
@@ -145,6 +152,9 @@ class ConnectobiaState extends State<Connectobia> {
     }
   }
 
+  /// Initializes the theme based on the user's preferences or system settings.
+  ///
+  /// It retrieves the theme preference from shared preferences and toggles the theme accordingly.
   Future<void> _initializeTheme(BuildContext context) async {
     final prefs = await SharedPrefs.instance;
     var brightness =
