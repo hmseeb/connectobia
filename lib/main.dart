@@ -1,4 +1,4 @@
-import 'package:connectobia/src/app.dart';
+import 'package:connectobia/app.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart'; // Import the Rive package
 
