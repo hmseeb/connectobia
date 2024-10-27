@@ -2,11 +2,18 @@ import 'package:connectobia/src/globals/constants/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+// [CustomShadSelect] is a custom widget that wraps the [ShadSelect] widget
+// and provides a sorted list of items to display in the dropdown.
+
 class CustomShadSelect extends StatefulWidget {
+  // [items] is a map of key-value pairs where the key is the value to be
   final Map<String, String> items;
+  // [placeholder] is displayed in the dropdown when no item is selected
   final String placeholder;
+  // [onSelected] is a callback function that is called when an item is selected
   final void Function(String selectedValue) onSelected;
-  final FocusNode focusNode; // Add focusNode as a parameter
+  // [focusNode] is used to control the focus of the dropdown
+  final FocusNode focusNode;
 
   const CustomShadSelect({
     super.key,
