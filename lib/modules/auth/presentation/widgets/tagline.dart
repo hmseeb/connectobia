@@ -1,6 +1,10 @@
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
+/// A widget that displays the tagline of the application
+/// This widget is used to display the tagline of the application. It is
+///
+/// {@category Widgets}
 class Tagline extends StatelessWidget {
   final String tagline;
   const Tagline(

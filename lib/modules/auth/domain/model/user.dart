@@ -12,6 +12,14 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 String userToJson(User data) => json.encode(data.toJson());
 
 @JsonSerializable()
+
+/// User is a class that represents a user in the application.
+///
+/// This class is used to store the user's information such as their id, username,
+/// email, and other details. This class is used to maintain the user's information
+/// throughout the application.
+///
+/// {@category Models}
 class User {
   String id;
   String collectionId;

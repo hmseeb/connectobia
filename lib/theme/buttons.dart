@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A primary button for authentication screens
+///
+/// This button is used in the authentication screens
+/// to provide a consistent look and feel for the buttons.
+///
+/// {@category Theme}
 class PrimaryAuthButton extends StatelessWidget {
   final String text;
   final bool isLoading;

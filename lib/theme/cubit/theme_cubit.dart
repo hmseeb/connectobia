@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 
 part 'theme_state.dart';
 
+/// A cubit to manage the theme of the application
+///
+/// This cubit is used to manage the theme of the application. It is used to
+/// toggle between the light and dark themes of the application.
+///
+/// {@category Theme}
 class ThemeCubit extends Cubit<ThemeState> {
   ThemeCubit() : super(ThemeInitial());
 

@@ -1,6 +1,5 @@
 part of 'subscription_bloc.dart';
 
-// email verified state
 final class EmailVerifiedState extends SubscriptionState {}
 
 final class SubscriptionInitial extends SubscriptionState {}

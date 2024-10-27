@@ -2,12 +2,12 @@ import 'package:connectobia/globals/constants/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+/// A custom shad selector
+///
+/// [CustomShadSelect] is a custom widget that wraps the [ShadSelect] widget
+/// and provides a sorted list of items to display in the dropdown.
+///
 class CustomShadSelect extends StatefulWidget {
-  /// Creates a custom shad selector
-
-  /// [CustomShadSelect] is a custom widget that wraps the [ShadSelect] widget
-  /// and provides a sorted list of items to display in the dropdown.
-
   /// [items] is a map of key-value pairs where the key is the value to be
   final Map<String, String> items;
 

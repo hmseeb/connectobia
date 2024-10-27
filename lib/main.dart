@@ -1,9 +1,15 @@
 import 'package:connectobia/app.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart'; // Import the Rive package
+import 'package:rive/rive.dart';
 
+/// The entry point of the application
+///
+/// {@category Main}
 void main() async {
+  /// Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  await RiveFile.initialize(); // Ensure Rive is initialized
+
+  /// Initialize Rive
+  await RiveFile.initialize();
   runApp(const Connectobia());
 }

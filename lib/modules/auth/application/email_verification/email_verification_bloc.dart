@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 part 'email_verification_event.dart';
 part 'email_verification_state.dart';
 
+/// A BLoC that manages the email verification process.
+///
+/// This BLoC is responsible for managing the email verification process.
+/// It listens for events that are dispatched by the application and updates
+///
+/// {@category EmailVerification}
 class EmailVerificationBloc
     extends Bloc<EmailVerificationEvent, EmailVerificationState> {
   EmailVerificationBloc() : super(EmailVerificationInitialState()) {

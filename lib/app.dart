@@ -21,6 +21,15 @@ import 'package:rive_splash_screen/rive_splash_screen.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// The main widget for the Connectobia application.
+///
+/// The widget initializes the application and checks the authentication status of the user.
+/// It also initializes the theme based on the user's preferences or system settings.
+///
+/// The widget uses the [ShadApp] widget as the root widget for the application.
+///
+/// The [ShadApp] widget provides the theme, navigator key, and initial route for the application.
+///
+/// {@category App}
 class Connectobia extends StatefulWidget {
   const Connectobia({super.key});
 
@@ -30,10 +39,10 @@ class Connectobia extends StatefulWidget {
 
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
-  late bool isDarkMode;
-  User? user;
   late final bool isAuthenticated;
+  late bool isDarkMode;
   ThemeCubit themeCubit = ThemeCubit();
+  User? user;
 
   @override
   Widget build(BuildContext context) {

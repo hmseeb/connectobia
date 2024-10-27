@@ -6,6 +6,13 @@ import 'package:meta/meta.dart';
 part 'signup_event.dart';
 part 'signup_state.dart';
 
+/// A BLoC that manages the signup process.
+///
+/// This BLoC is responsible for managing the signup process.
+/// It listens for events that are dispatched by the application and updates
+/// the state of the application based on the event.
+///
+/// {@category Signup}
 class SignupBloc extends Bloc<SignupEvent, SignupState> {
   SignupBloc() : super(SignupInitial()) {
     on<SignupBrandSubmitted>((event, emit) async {

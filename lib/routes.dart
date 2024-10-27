@@ -23,6 +23,14 @@ import 'package:connectobia/modules/home/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.
+///
+/// The class contains a static method `onGenerateRoute` which generates
+/// a route based on the provided [RouteSettings].
+///
+/// The method uses a switch-case to determine which screen to display
+/// based on the route name provided in [settings.name].
+///
+/// {@category Routing}
 class GenerateRoutes {
   /// Generates a route based on the given [RouteSettings].
   ///

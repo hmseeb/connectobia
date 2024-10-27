@@ -5,6 +5,8 @@ import 'package:pocketbase/pocketbase.dart';
 
 /// [AuthRepo] is a repository class that contains all the methods that are
 /// responsible for handling authentication related operations.
+///
+/// {@category Repositories}
 class AuthRepo {
   /// [createAccount] is a method that creates a new user account.
   static Future<RecordModel> createAccount(

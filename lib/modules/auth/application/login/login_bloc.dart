@@ -6,6 +6,13 @@ import 'package:meta/meta.dart';
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';
 
+/// A BLoC that manages the login process.
+///
+/// This BLoC is responsible for managing the login process.
+/// It listens for events that are dispatched by the application and updates
+/// the state of the application based on the event.
+///
+/// {@category Login}
 class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
   LoginBloc() : super(LoginBlocInitial()) {
     on<LoginSubmitted>((event, emit) async {
