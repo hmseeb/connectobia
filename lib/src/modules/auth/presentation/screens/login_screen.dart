@@ -29,92 +29,95 @@ class _SigninScreenState extends State<SigninScreen> {
     final height = ScreenSize.height(context);
 
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: transparentAppBar('Sign in to your account'),
-        body: SingleChildScrollView(
-            child: Center(
-          child: SizedBox(
-            width: 350,
-            child: BlocConsumer<LoginBloc, LoginBlocState>(
-              listener: (context, state) {
-                if (state is LoginFailure) {
-                  ShadToaster.of(context).show(
-                    ShadToast.destructive(
-                      title: Text(state.error),
-                    ),
-                  );
-                } else if (state is LoginSuccess) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/home', (route) => false);
-                } else if (state is LoginUnverified) {
-                  Navigator.pushNamed(
-                    context,
-                    '/verify-email',
-                    arguments: {'email': emailController.text},
-                  );
-                }
-              },
-              builder: (context, state) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(height: height * 2),
-                    SvgPicture.asset(
-                      AssetsPath.login,
-                      height: 150,
-                      width: 150,
-                    ),
-                    const SizedBox(height: 20),
-                    const HeadingText(
-                      'Log in to your account',
-                    ),
-                    const SizedBox(height: 20),
-                    LoginForm(
-                        emailController: emailController,
-                        passwordController: passwordController),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
+        body: PopScope(
+          child: SingleChildScrollView(
+              child: Center(
+            child: SizedBox(
+              width: 350,
+              child: BlocConsumer<LoginBloc, LoginBlocState>(
+                listener: (context, state) {
+                  if (state is LoginFailure) {
+                    ShadToaster.of(context).show(
+                      ShadToast.destructive(
+                        title: Text(state.error),
+                      ),
+                    );
+                  } else if (state is LoginSuccess) {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/home', (route) => false);
+                  } else if (state is LoginUnverified) {
+                    Navigator.pushNamed(
+                      context,
+                      '/verify-email',
+                      arguments: {'email': emailController.text},
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: height * 2),
+                      SvgPicture.asset(
+                        AssetsPath.login,
+                        height: 150,
+                        width: 150,
+                      ),
+                      const SizedBox(height: 20),
+                      const HeadingText(
+                        'Log in to your account',
+                      ),
+                      const SizedBox(height: 20),
+                      LoginForm(
+                          emailController: emailController,
+                          passwordController: passwordController),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              HapticFeedback.mediumImpact();
+                              showShadSheet(
+                                side: ShadSheetSide.bottom,
+                                context: context,
+                                builder: (context) => const ForgotPasswordSheet(
+                                    side: ShadSheetSide.bottom),
+                              );
+                            },
+                            child: const Text('Forgot password?'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      PrimaryAuthButton(
+                          text: 'Sign in',
                           onPressed: () {
                             HapticFeedback.mediumImpact();
-                            showShadSheet(
-                              side: ShadSheetSide.bottom,
-                              context: context,
-                              builder: (context) => const ForgotPasswordSheet(
-                                  side: ShadSheetSide.bottom),
-                            );
+
+                            loginBloc.add(LoginSubmitted(
+                                email: emailController.text,
+                                password: passwordController.text));
                           },
-                          child: const Text('Forgot password?'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    PrimaryAuthButton(
-                        text: 'Sign in',
+                          isLoading: state is LoginLoading),
+                      const SizedBox(height: 20),
+                      AuthFlow(
+                        title: 'Don\'t have an account? ',
+                        buttonText: 'Sign up',
                         onPressed: () {
                           HapticFeedback.mediumImpact();
-
-                          loginBloc.add(LoginSubmitted(
-                              email: emailController.text,
-                              password: passwordController.text));
+                          Navigator.pop(context);
                         },
-                        isLoading: state is LoginLoading),
-                    const SizedBox(height: 20),
-                    AuthFlow(
-                      title: 'Don\'t have an account? ',
-                      buttonText: 'Sign up',
-                      onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                );
-              },
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        )));
+          )),
+        ));
   }
 
   @override
