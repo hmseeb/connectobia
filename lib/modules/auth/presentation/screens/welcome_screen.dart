@@ -1,8 +1,8 @@
 import 'package:connectobia/globals/constants/screen_size.dart';
 import 'package:connectobia/globals/widgets/logo.dart';
 import 'package:connectobia/globals/widgets/transparent_appbar.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/app_title.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/signup_card.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/tagline.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
@@ -66,8 +66,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Logo(size: 48),
-                HeadingText('onnectobia'),
+                Logo(size: 50),
+                AppTitle('onnectobia'),
               ],
             ),
             const SizedBox(height: 10),
