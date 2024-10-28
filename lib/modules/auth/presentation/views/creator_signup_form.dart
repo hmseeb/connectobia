@@ -39,6 +39,7 @@ class _CreatorSignupFormState extends State<CreatorSignupForm> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),
             controller: widget.emailController,
+            keyboardType: TextInputType.emailAddress,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
               if (error != null) {
@@ -49,6 +50,7 @@ class _CreatorSignupFormState extends State<CreatorSignupForm> {
         ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           placeholder: const Text('Password'),
+          keyboardType: TextInputType.visiblePassword,
           suffix: GestureDetector(
             child: Icon(
               obscureText

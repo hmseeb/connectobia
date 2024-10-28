@@ -28,6 +28,7 @@ class FirstLastName extends StatelessWidget {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   placeholder: const Text('First Name'),
                   controller: firstName,
+                  keyboardType: TextInputType.name,
                   validator: (value) {
                     final error = InputValidation.validateFirstName(value);
                     if (error != null) {
@@ -48,6 +49,7 @@ class FirstLastName extends StatelessWidget {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   placeholder: const Text('Last Name'),
                   controller: lastName,
+                  keyboardType: TextInputType.name,
                   validator: (value) {
                     final error = InputValidation.validateLastName(value);
                     if (error != null) {

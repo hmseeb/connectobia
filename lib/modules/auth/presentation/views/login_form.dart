@@ -31,6 +31,7 @@ class _LoginFormState extends State<LoginForm> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),
             controller: widget.emailController,
+            keyboardType: TextInputType.emailAddress,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
               if (error != null) {

@@ -93,6 +93,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                   controller: emailController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   id: 'Email',
+                  keyboardType: TextInputType.emailAddress,
                   label: const Text('Email'),
                   placeholder: const Text('Enter your email'),
                   validator: (value) {

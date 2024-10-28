@@ -40,6 +40,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),
             controller: widget.emailController,
+            keyboardType: TextInputType.emailAddress,
             validator: (value) {
               final error = InputValidation.validateEmail(value);
               if (error != null) {
@@ -50,6 +51,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
         ShadInputFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           placeholder: const Text('Password'),
+          keyboardType: TextInputType.visiblePassword,
           suffix: GestureDetector(
             child: Icon(
               obscureText
@@ -78,6 +80,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Business Website (optional)'),
+            keyboardType: TextInputType.url,
             controller: widget.websiteController,
             validator: (value) {
               final error = InputValidation.validateWebsite(value);
