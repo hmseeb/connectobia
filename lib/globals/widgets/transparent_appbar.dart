@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 /// A function that returns a transparent app bar
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 AppBar transparentAppBar(String? title, {List<Widget>? actions}) {
   return AppBar(
     title: Text(title ?? ''),
-    backgroundColor: Colors.transparent,
+    backgroundColor: ShadColors.kBackground,
     actions: actions,
   );
 }
