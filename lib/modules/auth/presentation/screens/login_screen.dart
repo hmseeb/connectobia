@@ -35,7 +35,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: transparentAppBar('Sign in to your account'),
+        appBar: transparentAppBar('Welcome back'),
         body: PopScope(
           child: SingleChildScrollView(
               child: Center(
