@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:open_mail_app/open_mail_app.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// A screen that allows a user to verify their email.
@@ -134,7 +135,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   void initState() {
     super.initState();
     _startResendTimer();
-    _authListener();
+    _authChecker();
   }
 
   Future<void> openEmailApp() async {
@@ -152,8 +153,16 @@ class VerifyEmailState extends State<VerifyEmail> {
     }
   }
 
-  Future<void> _authListener() async {
+  Future<void> _authChecker() async {
     final pb = await PocketBaseSingleton.instance;
+    if (pb.authStore.isValid) {
+      blocProvider.add(EmailSubscribeEvent());
+    } else {
+      _authListener(pb);
+    }
+  }
+
+  Future<void> _authListener(PocketBase pb) async {
     pb.authStore.onChange.listen((event) {
       if (event.token.isNotEmpty) blocProvider.add(EmailSubscribeEvent());
     });
