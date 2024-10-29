@@ -28,7 +28,7 @@ class EmailVerificationBloc
             }
           },
         );
-        debugPrint('Subscribed to verification updates');
+        debugPrint('Subscribed to email verification updates');
       } catch (e) {
         debugPrint(e.toString());
         rethrow;
@@ -39,7 +39,7 @@ class EmailVerificationBloc
       try {
         final pb = await PocketBaseSingleton.instance;
         await pb.collection('users').unsubscribe();
-        debugPrint('Unsubscribed to verification updates');
+        debugPrint('Unsubscribed to email verification updates');
         emit(EmailVerified());
       } catch (e) {
         debugPrint(e.toString());

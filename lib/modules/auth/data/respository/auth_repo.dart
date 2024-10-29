@@ -34,7 +34,10 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       RecordModel user = await pb.collection('users').create(body: body);
       await pb.collection('users').requestVerification(email);
-      await AuthRepo.login(email, password);
+      Future.delayed(const Duration(milliseconds: 1000), () async {
+        await AuthRepo.login(email, password);
+      });
+      debugPrint('Created account for $email');
       return user;
     } catch (e) {
       debugPrint(e.toString());

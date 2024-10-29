@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectobia/db/db.dart';
 import 'package:connectobia/globals/constants/path.dart';
 import 'package:connectobia/modules/auth/application/email_verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
@@ -29,6 +30,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   int _secondsRemaining = 30; // Countdown duration
   int _resendEmailCount = 1;
   bool isLoading = false;
+
   late final blocProvider = BlocProvider.of<EmailVerificationBloc>(context);
 
   Timer? _timer;
@@ -130,7 +132,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   void initState() {
     super.initState();
     _startResendTimer();
-    blocProvider.add(EmailSubscribeEvent());
+    _authListener();
   }
 
   Future<void> openEmailApp() async {
@@ -146,6 +148,13 @@ class VerifyEmailState extends State<VerifyEmail> {
         );
       }
     }
+  }
+
+  Future<void> _authListener() async {
+    final pb = await PocketBaseSingleton.instance;
+    pb.authStore.onChange.listen((event) {
+      if (event.token.isNotEmpty) blocProvider.add(EmailSubscribeEvent());
+    });
   }
 
   void _resendEmail(BuildContext context) async {

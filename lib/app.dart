@@ -34,7 +34,7 @@ class Connectobia extends StatefulWidget {
 
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
-  late final bool isAuthenticated;
+  late bool isAuthenticated;
   late bool isDarkMode;
   User? user;
 
@@ -73,26 +73,17 @@ class ConnectobiaState extends State<Connectobia> {
                   backgroundColor: ShadColors.kSecondary,
                   name: AssetsPath.splash,
                   next: (context) {
-                    if (isAuthenticated) {
-                      if (user == null) {
-                        PocketBaseSingleton.instance.then((pb) {
-                          pb.authStore.clear();
-                          if (context.mounted) {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/welcome',
-                              (route) => false,
-                              arguments: {'isDarkMode': isDarkMode},
-                            );
-                          }
-                        });
-                      }
+                    if (user == null) {
+                      PocketBaseSingleton.instance.then((pb) {
+                        pb.authStore.clear();
+                      });
+                      return WelcomeScreen(isDarkMode: isDarkMode);
+                    } else {
                       if (user!.verified) {
                         return const HomeScreen();
                       } else {
                         return VerifyEmail(email: user!.email);
                       }
-                    } else {
-                      return WelcomeScreen(isDarkMode: isDarkMode);
                     }
                   },
                   until: () async {},
@@ -121,14 +112,6 @@ class ConnectobiaState extends State<Connectobia> {
         }
       } catch (e) {
         pocketBase.authStore.clear();
-        isAuthenticated = false;
-        if (mounted) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/welcome',
-            (route) => false,
-            arguments: {'isDarkMode': isDarkMode},
-          );
-        }
       }
     }
   }
