@@ -91,9 +91,11 @@ class VerifyEmailState extends State<VerifyEmail> {
                             }
                           : null,
                       child: Text(
-                        _canResendEmail
-                            ? 'Resend email'
-                            : 'Resend in $_secondsRemaining seconds',
+                        isLoading
+                            ? 'Sending...'
+                            : _canResendEmail
+                                ? 'Resend email'
+                                : 'Resend in $_secondsRemaining seconds',
                         style: TextStyle(
                           color: _canResendEmail
                               ? ShadColors.kSecondary
@@ -158,6 +160,9 @@ class VerifyEmailState extends State<VerifyEmail> {
   }
 
   void _resendEmail(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       await AuthRepo.verifyEmail(widget.email);
       if (context.mounted) {
@@ -175,6 +180,10 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
 
     _resendEmailCount++;
