@@ -81,7 +81,6 @@ class VerifyEmailState extends State<VerifyEmail> {
                   children: [
                     const Text(
                       'Didn\'t get the email? ',
-                      style: TextStyle(color: ShadColors.kPrimary),
                     ),
                     GestureDetector(
                       onTap: _canResendEmail
