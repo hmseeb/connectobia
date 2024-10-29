@@ -92,7 +92,7 @@ class VerifyEmailState extends State<VerifyEmail> {
                           : null,
                       child: Text(
                         isLoading
-                            ? 'Sending...'
+                            ? 'Resending email...'
                             : _canResendEmail
                                 ? 'Resend email'
                                 : 'Resend in $_secondsRemaining seconds',
