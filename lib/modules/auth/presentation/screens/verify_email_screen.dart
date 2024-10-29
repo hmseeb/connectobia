@@ -138,6 +138,9 @@ class VerifyEmailState extends State<VerifyEmail> {
     _authChecker();
   }
 
+  /// Open the email app
+  ///
+  /// This function uses the [OpenMailApp] package to open the email app.
   Future<void> openEmailApp() async {
     try {
       await OpenMailApp.openMailApp();
@@ -153,6 +156,10 @@ class VerifyEmailState extends State<VerifyEmail> {
     }
   }
 
+  /// Check if the user is authenticated
+  ///
+  /// This function checks if the user is authenticated and if not
+  /// listens for changes in the authentication state.
   Future<void> _authChecker() async {
     final pb = await PocketBaseSingleton.instance;
     if (pb.authStore.isValid) {
@@ -162,12 +169,19 @@ class VerifyEmailState extends State<VerifyEmail> {
     }
   }
 
+  /// Listen for changes in the authentication state
+  ///
+  /// This function listens for changes in the authentication state and
+  /// dispatches an [EmailSubscribeEvent] when the user is authenticated.
   Future<void> _authListener(PocketBase pb) async {
     pb.authStore.onChange.listen((event) {
       if (event.token.isNotEmpty) blocProvider.add(EmailSubscribeEvent());
     });
   }
 
+  /// Resend the verification email
+  ///
+  /// This function resends the verification email to the user's email address.
   void _resendEmail(BuildContext context) async {
     setState(() {
       isLoading = true;
@@ -199,6 +213,9 @@ class VerifyEmailState extends State<VerifyEmail> {
     _startResendTimer();
   }
 
+  /// Start the resend email timer
+  ///
+  /// This function starts the resend email timer and updates the UI
   void _startResendTimer() {
     setState(() {
       _secondsRemaining += 30 * _resendEmailCount; // Reset timer to 30 seconds
