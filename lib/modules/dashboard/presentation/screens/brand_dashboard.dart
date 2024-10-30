@@ -99,6 +99,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                         '${widget.user!.firstName[0]} ${widget.user!.lastName[0]}'),
                   ),
                 ),
+                const SizedBox(width: 16),
               ],
             ),
           ],
