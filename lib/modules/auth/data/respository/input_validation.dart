@@ -8,7 +8,7 @@ class InputValidation {
     required String lastName,
     required String email,
     required String password,
-    required String website,
+    required String brandName,
     required String industry,
   }) {
     String? error;
@@ -28,7 +28,7 @@ class InputValidation {
     if (error.isNotEmpty) {
       return error;
     }
-    error = validateWebsite(website);
+    error = validateBrandName(brandName);
     if (error != null) {
       return error;
     }
@@ -36,6 +36,17 @@ class InputValidation {
     error = validateIndustry(industry);
     if (error != null) {
       return error;
+    }
+    return null;
+  }
+
+  static String? validateBrandName(String? brandName) {
+    if (brandName == null || brandName.isEmpty) {
+      return 'Brand name is required';
+    }
+
+    if (brandName.length < 2) {
+      return 'Brand name must be at least 2 characters';
     }
     return null;
   }
@@ -139,20 +150,5 @@ class InputValidation {
     }
 
     return errors;
-  }
-
-  static String? validateWebsite(String? website) {
-    if (website == null || website.isEmpty) {
-      return null;
-    }
-    // Regular expression for a valid website address pattern
-    String pattern =
-        r"^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$";
-    RegExp regex = RegExp(pattern);
-
-    if (!regex.hasMatch(website)) {
-      return 'Invalid website format';
-    }
-    return null;
   }
 }

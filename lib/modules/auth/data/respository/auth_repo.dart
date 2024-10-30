@@ -13,7 +13,7 @@ class AuthRepo {
       String firstName,
       String lastName,
       String email,
-      String website,
+      String brandName,
       String password,
       String accountType,
       String industry) async {
@@ -25,7 +25,7 @@ class AuthRepo {
       "passwordConfirm": password,
       "first_name": firstName,
       "last_name": lastName,
-      "company_website": website,
+      "brand_name": brandName,
       "account_type": accountType,
       "industry": industry,
     };
@@ -80,6 +80,17 @@ class AuthRepo {
 
       debugPrint('Logged in as ${authData.record!.data['email']}');
       return authData;
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
+
+  /// [logout] is a method that logs out the current user.
+  static Future<void> logout() async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      pb.authStore.clear();
     } catch (e) {
       debugPrint(e.toString());
       rethrow;
