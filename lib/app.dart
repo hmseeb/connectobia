@@ -8,7 +8,8 @@ import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
-import 'package:connectobia/modules/home/presentation/screens/home_screen.dart';
+import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:connectobia/theme/colors.dart';
@@ -55,6 +56,7 @@ class ConnectobiaState extends State<Connectobia> {
           BlocProvider(create: (context) => LoginBloc()),
           BlocProvider(create: (context) => SignupBloc()),
           BlocProvider(create: (context) => EmailVerificationBloc()),
+          BlocProvider(create: (context) => BrandDashboardBloc()),
         ],
         child: BlocConsumer<ThemeBloc, ThemeState>(
           listener: (context, state) {},
@@ -75,12 +77,12 @@ class ConnectobiaState extends State<Connectobia> {
                   next: (context) {
                     if (user == null) {
                       PocketBaseSingleton.instance.then((pb) {
-                        pb.authStore.clear();
+                        if (!pb.authStore.isValid) pb.authStore.clear();
                       });
                       return WelcomeScreen(isDarkMode: isDarkMode);
                     } else {
                       if (user!.verified) {
-                        return const HomeScreen();
+                        return BrandDashboard(user: user!);
                       } else {
                         return VerifyEmail(email: user!.email);
                       }
@@ -111,7 +113,8 @@ class ConnectobiaState extends State<Connectobia> {
           await AuthRepo.verifyEmail(user!.email);
         }
       } catch (e) {
-        pocketBase.authStore.clear();
+        if (!pocketBase.authStore.isValid) pocketBase.authStore.clear();
+        debugPrint(e.toString());
       }
     }
   }
