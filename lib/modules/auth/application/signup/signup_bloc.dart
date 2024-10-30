@@ -22,7 +22,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         firstName: event.firstName,
         lastName: event.lastName,
         email: event.email,
-        website: event.website ?? '',
+        brandName: event.brandName,
         password: event.password,
         industry: event.industry,
       );
@@ -37,7 +37,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           event.firstName,
           event.lastName,
           event.email,
-          event.website ?? '',
+          event.brandName,
           event.password,
           event.accountType,
           event.industry,

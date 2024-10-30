@@ -4,7 +4,7 @@ class SignupBrandSubmitted extends SignupEvent {
   final String firstName;
   final String lastName;
   final String email;
-  final String? website;
+  final String brandName;
   final String password;
   final String accountType = 'brand';
   final String industry;
@@ -13,7 +13,7 @@ class SignupBrandSubmitted extends SignupEvent {
     required this.firstName,
     required this.lastName,
     required this.email,
-    this.website,
+    required this.brandName,
     required this.password,
     required this.industry,
   });
