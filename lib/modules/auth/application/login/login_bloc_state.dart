@@ -13,7 +13,10 @@ final class LoginFailure extends LoginBlocState {
 
 final class LoginLoading extends LoginBlocState {}
 
-final class LoginSuccess extends LoginBlocState {}
+final class LoginSuccess extends LoginBlocState {
+  final User user;
+  LoginSuccess(this.user);
+}
 
 final class LoginUnverified extends LoginBlocState {
   LoginUnverified();

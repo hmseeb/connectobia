@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
+import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:meta/meta.dart';
 
 part 'login_bloc_event.dart';
@@ -30,8 +31,9 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       try {
         final authData = await AuthRepo.login(event.email, event.password);
         bool isVerified = authData.record!.data['verified'];
+        User user = await AuthRepo.getUser();
         if (isVerified) {
-          emit(LoginSuccess());
+          emit(LoginSuccess(user));
         } else {
           await AuthRepo.verifyEmail(event.email);
           emit(LoginUnverified());
