@@ -5,4 +5,7 @@ final class EmailVerificationInitialState extends EmailVerificationState {}
 @immutable
 sealed class EmailVerificationState {}
 
-final class EmailVerified extends EmailVerificationState {}
+final class EmailVerified extends EmailVerificationState {
+  final User user;
+  EmailVerified(this.user);
+}

@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/db/db.dart';
+import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
+import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:flutter/material.dart';
 
 part 'email_verification_event.dart';
@@ -40,7 +42,8 @@ class EmailVerificationBloc
         final pb = await PocketBaseSingleton.instance;
         await pb.collection('users').unsubscribe();
         debugPrint('Unsubscribed to email verification updates');
-        emit(EmailVerified());
+        final User user = await AuthRepo.getUser();
+        emit(EmailVerified(user));
       } catch (e) {
         debugPrint(e.toString());
         rethrow;
