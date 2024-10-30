@@ -1,10 +1,9 @@
 import 'package:connectobia/globals/constants/screen_size.dart';
-import 'package:connectobia/globals/widgets/logo.dart';
 import 'package:connectobia/globals/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/app_title.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/signup_card.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/tagline.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/title_logo.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +38,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       appBar: transparentAppBar(
         '',
+        context: context,
         actions: [
           IconButton(
             icon: Icon(isDarkMode
@@ -63,13 +63,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         child: Column(
           children: [
             SizedBox(height: height * 15),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Logo(size: 50),
-                AppTitle('onnectobia'),
-              ],
-            ),
+            const AppTitleLogo(),
             const SizedBox(height: 10),
             const Tagline('where brands and influencers meet'),
             const SizedBox(height: 30),

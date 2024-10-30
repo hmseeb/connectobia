@@ -35,7 +35,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: transparentAppBar('Welcome back'),
+        appBar: transparentAppBar('Welcome back', context: context),
         body: PopScope(
           child: SingleChildScrollView(
               child: Center(
@@ -51,7 +51,11 @@ class _SigninScreenState extends State<SigninScreen> {
                     );
                   } else if (state is LoginSuccess) {
                     Navigator.pushNamedAndRemoveUntil(
-                        context, '/home', (route) => false);
+                      context,
+                      '/home',
+                      (route) => false,
+                      arguments: {'user': state.user},
+                    );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
                       context,

@@ -46,10 +46,10 @@ class VerifyEmailState extends State<VerifyEmail> {
               title: Text('Email verified successfully'),
             ),
           );
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/home',
-            (route) => false,
-          );
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/home', (route) => false, arguments: {
+            'user': state.user,
+          });
         }
       },
       child: Scaffold(
