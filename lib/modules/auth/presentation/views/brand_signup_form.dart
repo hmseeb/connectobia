@@ -12,15 +12,17 @@ class BrandSignupForm extends StatefulWidget {
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController emailController;
-  final TextEditingController websiteController;
+  final TextEditingController brandNameController;
   final TextEditingController passwordController;
+  final Widget industry;
   const BrandSignupForm({
     super.key,
     required this.emailController,
-    required this.websiteController,
+    required this.brandNameController,
     required this.passwordController,
     required this.firstNameController,
     required this.lastNameController,
+    required this.industry,
   });
 
   @override
@@ -36,6 +38,18 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
         FirstLastName(
             firstName: widget.firstNameController,
             lastName: widget.lastNameController),
+        ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            placeholder: const Text('Brand Name'),
+            keyboardType: TextInputType.name,
+            controller: widget.brandNameController,
+            validator: (value) {
+              final error = InputValidation.validateBrandName(value);
+              if (error != null) {
+                return error;
+              }
+              return null;
+            }),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),
@@ -77,18 +91,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
           },
           obscureText: obscureText,
         ),
-        ShadInputFormField(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            placeholder: const Text('Business Website (optional)'),
-            keyboardType: TextInputType.url,
-            controller: widget.websiteController,
-            validator: (value) {
-              final error = InputValidation.validateWebsite(value);
-              if (error != null) {
-                return error;
-              }
-              return null;
-            }),
+        widget.industry,
       ],
     );
   }
