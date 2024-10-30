@@ -52,6 +52,9 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_keyboard_visibility: ^6.0.0
   flutter_native_splash: ^2.4.2
+  cached_network_image: ^3.4.1
+  skeletonizer: ^1.4.2
+  colorful_safe_area: ^1.0.0
 
 dev_dependencies:
   flutter_test:
