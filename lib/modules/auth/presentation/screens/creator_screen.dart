@@ -38,7 +38,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
   FocusNode focusNodes = FocusNode();
 
   Map<String, String> get filteredIndustries => {
-        for (final industry in industries.entries)
+        for (final industry in IndustryList.industries.entries)
           if (industry.value.toLowerCase().contains(searchValue.toLowerCase()))
             industry.key: industry.value
       };
@@ -49,7 +49,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: transparentAppBar('Create your account'),
+      appBar: transparentAppBar('Create your account', context: context),
       body: SingleChildScrollView(
         child: BlocConsumer<SignupBloc, SignupState>(
           listener: (context, state) {
@@ -90,7 +90,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                         emailController: emailController,
                         passwordController: passwordController),
                     CustomShadSelect(
-                      items: industries,
+                      items: IndustryList.industries,
                       placeholder: 'Select industry...',
                       onSelected: (selectedIndustry) {
                         industry = selectedIndustry;

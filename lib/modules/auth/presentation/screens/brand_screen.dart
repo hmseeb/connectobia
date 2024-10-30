@@ -30,7 +30,7 @@ class _BrandScreenState extends State<BrandScreen> {
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;
   late final TextEditingController emailController;
-  late final TextEditingController websiteController;
+  late final TextEditingController brandNameController;
   late final TextEditingController passwordController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
 
@@ -47,7 +47,7 @@ class _BrandScreenState extends State<BrandScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: transparentAppBar('Create your account'),
+      appBar: transparentAppBar('Create your account', context: context),
       body: SingleChildScrollView(
         controller: scrollController,
         child: BlocConsumer<SignupBloc, SignupState>(
@@ -86,16 +86,16 @@ class _BrandScreenState extends State<BrandScreen> {
                       firstNameController: firstNameController,
                       lastNameController: lastNameController,
                       emailController: emailController,
-                      websiteController: websiteController,
+                      brandNameController: brandNameController,
                       passwordController: passwordController,
-                    ),
-                    CustomShadSelect(
-                      items: industries,
-                      placeholder: 'Select industry...',
-                      onSelected: (selectedIndustry) {
-                        industry = selectedIndustry;
-                      },
-                      focusNode: industryFocusNode,
+                      industry: CustomShadSelect(
+                        items: IndustryList.industries,
+                        placeholder: 'Select industry...',
+                        onSelected: (selectedIndustry) {
+                          industry = selectedIndustry;
+                        },
+                        focusNode: industryFocusNode,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     const PrivacyPolicy(),
@@ -109,7 +109,7 @@ class _BrandScreenState extends State<BrandScreen> {
                           firstName: firstNameController.text,
                           lastName: lastNameController.text,
                           email: emailController.text,
-                          website: websiteController.text,
+                          brandName: brandNameController.text,
                           password: passwordController.text,
                           industry: industry,
                         ));
@@ -139,7 +139,7 @@ class _BrandScreenState extends State<BrandScreen> {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
-    websiteController.dispose();
+    brandNameController.dispose();
     passwordController.dispose();
     industryFocusNode.dispose();
     scrollController.dispose();
@@ -152,7 +152,7 @@ class _BrandScreenState extends State<BrandScreen> {
     firstNameController = TextEditingController();
     lastNameController = TextEditingController();
     emailController = TextEditingController();
-    websiteController = TextEditingController();
+    brandNameController = TextEditingController();
     passwordController = TextEditingController();
 
     // Listen to focus changes to trigger scroll adjustments
