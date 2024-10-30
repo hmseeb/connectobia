@@ -33,7 +33,7 @@ class User {
   String firstName;
   String avatar;
   String lastName;
-  String companyWebsite;
+  String brandName;
   String accountType;
 
   User({
@@ -49,7 +49,7 @@ class User {
     required this.firstName,
     required this.avatar,
     required this.lastName,
-    required this.companyWebsite,
+    required this.brandName,
     required this.accountType,
   });
 
@@ -66,7 +66,7 @@ class User {
         firstName: json["first_name"],
         avatar: json["avatar"],
         lastName: json["last_name"],
-        companyWebsite: json["company_website"],
+        brandName: json["brand_name"],
         accountType: json["account_type"],
       );
 
@@ -85,7 +85,7 @@ class User {
         "first_name": firstName,
         "avatar": avatar,
         "last_name": lastName,
-        "company_website": companyWebsite,
+        "brand_name": brandName,
         "account_type": accountType,
       };
 }
