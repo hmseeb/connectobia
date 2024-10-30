@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import 'shared_prefs.dart';
@@ -19,6 +20,8 @@ class PocketBaseSingleton {
         save: (String data) async => prefs.setString('pb_auth', data),
         initial: prefs.getString('pb_auth'),
       );
+
+      debugPrint('PocketBase initialized');
 
       _pocketBase =
           PocketBase('https://connectobia.pockethost.io', authStore: store);
