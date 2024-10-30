@@ -19,7 +19,7 @@ import 'package:connectobia/modules/auth/presentation/screens/creator_screen.dar
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
-import 'package:connectobia/modules/home/presentation/screens/home_screen.dart';
+import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.
@@ -65,9 +65,12 @@ class GenerateRoutes {
       case '/creator-signup':
         return _buildPageRoute(const CreatorScreen());
       case '/home':
+        final args = settings.arguments as Map<String, dynamic>;
         return PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (_, animation, secondaryAnimation) => const HomeScreen(),
+          pageBuilder: (_, animation, secondaryAnimation) => BrandDashboard(
+            user: args['user'],
+          ),
         );
       default:
         final args = settings.arguments as Map<String, dynamic>;
