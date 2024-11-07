@@ -16,7 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class BrandDashboard extends StatefulWidget {
-  final User? user;
+  final User user;
   const BrandDashboard({super.key, required this.user});
 
   @override
@@ -50,7 +50,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
               centerTitle: false,
               // search field
               // add search field at bottom
-              title: Text(Greetings.getGreeting(widget.user!.firstName)),
+              title: Text(Greetings.getGreeting(widget.user.firstName)),
               bottom: const PreferredSize(
                 preferredSize: Size.fromHeight(69),
                 child: Padding(
@@ -87,16 +87,16 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     context: context,
                     builder: (context) => EditProfileSheet(
                       side: ShadSheetSide.right,
-                      firstName: widget.user!.firstName,
-                      lastName: widget.user!.lastName,
-                      username: widget.user!.username,
+                      firstName: widget.user.firstName,
+                      lastName: widget.user.lastName,
+                      username: widget.user.username,
                     ),
                     isDismissible: false,
                   ),
                   child: ShadAvatar(
                     'https://app.requestly.io/delay/2000/avatars.githubusercontent.com/u/124599?v=4',
                     placeholder: Text(
-                        '${widget.user!.firstName[0]} ${widget.user!.lastName[0]}'),
+                        '${widget.user.firstName[0]} ${widget.user.lastName[0]}'),
                   ),
                 ),
                 const SizedBox(width: 16),
