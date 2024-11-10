@@ -36,8 +36,10 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
     return Column(
       children: [
         FirstLastName(
-            firstName: widget.firstNameController,
-            lastName: widget.lastNameController),
+          firstName: widget.firstNameController,
+          lastName: widget.lastNameController,
+          showLabels: false,
+        ),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Brand Name'),

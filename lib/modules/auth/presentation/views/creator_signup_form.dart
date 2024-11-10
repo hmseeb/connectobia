@@ -33,8 +33,10 @@ class _CreatorSignupFormState extends State<CreatorSignupForm> {
     return Column(
       children: [
         FirstLastName(
-            firstName: widget.firstNameController,
-            lastName: widget.lastNameController),
+          firstName: widget.firstNameController,
+          lastName: widget.lastNameController,
+          showLabels: false,
+        ),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),
