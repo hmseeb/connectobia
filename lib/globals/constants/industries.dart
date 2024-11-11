@@ -7,10 +7,12 @@ library;
 
 class IndustryFormatter {
   static String keyToValue(String industry) {
-    return industry
-        .split('_')
-        .map((word) => word[0].toUpperCase() + word.substring(1))
-        .join(' ');
+    return industry.split('_').map((word) {
+      if (word.toLowerCase() == 'and') {
+        return word;
+      }
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
   }
 
   static String valueToKey(String industry) {

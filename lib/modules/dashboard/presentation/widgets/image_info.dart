@@ -1,3 +1,4 @@
+import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:connectobia/globals/constants/industries.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +33,12 @@ class FeatureImageInfo extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const ShadAvatar(
-                  'https://app.requestly.io/delay/2000/avatars.githubusercontent.com/u/124599?v=4',
-                  placeholder: Text('HA'),
+                ShadAvatar(
+                  UserAvatar.getAvatarUrl(
+                    state.influencers.items[index].firstName,
+                    state.influencers.items[index].lastName,
+                  ),
+                  placeholder: const Text('HA'),
                 ),
                 const SizedBox(width: 16),
                 Column(

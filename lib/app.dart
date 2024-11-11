@@ -9,6 +9,7 @@ import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/application/edit_profile/edit_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
@@ -57,6 +58,7 @@ class ConnectobiaState extends State<Connectobia> {
           BlocProvider(create: (context) => SignupBloc()),
           BlocProvider(create: (context) => EmailVerificationBloc()),
           BlocProvider(create: (context) => BrandDashboardBloc()),
+          BlocProvider(create: (context) => EditProfileBloc()),
         ],
         child: BlocConsumer<ThemeBloc, ThemeState>(
           listener: (context, state) {},

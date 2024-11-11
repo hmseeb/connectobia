@@ -29,7 +29,7 @@ class CustomShadSelect extends StatefulWidget {
     required this.items,
     required this.placeholder,
     required this.onSelected,
-    required this.focusNode, // Accept focusNode here
+    required this.focusNode,
   });
 
   @override
@@ -52,7 +52,6 @@ class CustomShadSelectState extends State<CustomShadSelect> {
       enabled: true,
       focusNode: widget.focusNode, // Use the provided focus node
       minWidth: 350,
-      maxWidth: 350,
       maxHeight: height * 30,
       placeholder: Text(widget.placeholder),
       options: [

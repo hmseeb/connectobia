@@ -1,4 +1,5 @@
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
+import 'package:connectobia/modules/dashboard/presentation/views/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -8,10 +9,12 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// {@category Forms}
 class FirstLastName extends StatelessWidget {
   final TextEditingController firstName, lastName;
+  final bool showLabels;
   const FirstLastName({
     super.key,
     required this.firstName,
     required this.lastName,
+    required this.showLabels,
   });
 
   @override
@@ -24,6 +27,9 @@ class FirstLastName extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                showLabels == true
+                    ? const LabeledTextField('First Name')
+                    : const SizedBox.shrink(),
                 ShadInputFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   placeholder: const Text('First Name'),
@@ -45,6 +51,9 @@ class FirstLastName extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                showLabels == true
+                    ? const LabeledTextField('Last Name')
+                    : const SizedBox.shrink(),
                 ShadInputFormField(
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   placeholder: const Text('Last Name'),

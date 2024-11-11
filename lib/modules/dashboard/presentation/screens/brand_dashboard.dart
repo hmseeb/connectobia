@@ -1,14 +1,15 @@
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:connectobia/globals/constants/greetings.dart';
 import 'package:connectobia/globals/constants/industries.dart';
 import 'package:connectobia/globals/constants/screen_size.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/presentation/views/edit_profile.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/featured_listing.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/popular_categories.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/bottom_navigation.dart';
-import 'package:connectobia/modules/dashboard/presentation/widgets/edit_profile.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/section_title.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class BrandDashboard extends StatefulWidget {
 }
 
 class _BrandDashboardState extends State<BrandDashboard> {
+  late User user = widget.user;
   late final List<String> _industries;
   late final influencerBloc = BlocProvider.of<BrandDashboardBloc>(context);
   late final brightness = ShadTheme.of(context).brightness;
@@ -50,7 +52,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
               centerTitle: false,
               // search field
               // add search field at bottom
-              title: Text(Greetings.getGreeting(widget.user.firstName)),
+              title: Text(Greetings.getGreeting(user.firstName)),
               bottom: const PreferredSize(
                 preferredSize: Size.fromHeight(69),
                 child: Padding(
@@ -82,21 +84,13 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     },
                     icon: const Icon(Icons.logout)),
                 GestureDetector(
-                  onTap: () => showShadSheet(
-                    side: ShadSheetSide.right,
-                    context: context,
-                    builder: (context) => EditProfileSheet(
-                      side: ShadSheetSide.right,
-                      firstName: widget.user.firstName,
-                      lastName: widget.user.lastName,
-                      username: widget.user.username,
-                    ),
-                    isDismissible: false,
-                  ),
+                  onTap: () {
+                    _navigateAndDisplaySelection(context);
+                  },
                   child: ShadAvatar(
-                    'https://app.requestly.io/delay/2000/avatars.githubusercontent.com/u/124599?v=4',
-                    placeholder: Text(
-                        '${widget.user.firstName[0]} ${widget.user.lastName[0]}'),
+                    UserAvatar.getAvatarUrl(user.firstName, user.lastName),
+                    placeholder:
+                        Text('${user.firstName[0]} ${user.lastName[0]}'),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -149,5 +143,22 @@ class _BrandDashboardState extends State<BrandDashboard> {
     super.initState();
     _industries = getSortedIndustries();
     influencerBloc.add(BrandDashboardLoadInfluencers());
+  }
+
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+    final userParam = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfileSheet(
+          user: user,
+        ),
+      ),
+    );
+    if (userParam == null) return;
+    setState(() {
+      user = userParam;
+    });
   }
 }

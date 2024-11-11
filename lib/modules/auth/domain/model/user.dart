@@ -4,37 +4,29 @@
 
 import 'dart:convert';
 
-import 'package:json_annotation/json_annotation.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 User userFromJson(String str) => User.fromJson(json.decode(str));
 
 String userToJson(User data) => json.encode(data.toJson());
 
-@JsonSerializable()
-
-/// User is a class that represents a user in the application.
-///
-/// This class is used to store the user's information such as their id, username,
-/// email, and other details. This class is used to maintain the user's information
-/// throughout the application.
-///
-/// {@category Models}
 class User {
-  String id;
-  String collectionId;
-  String collectionName;
-  String username;
-  bool verified;
-  bool emailVisibility;
-  String email;
-  DateTime created;
-  DateTime updated;
-  String firstName;
-  String avatar;
-  String lastName;
-  String brandName;
-  String accountType;
+  final String id;
+  final String collectionId;
+  final String collectionName;
+  final String username;
+  final bool verified;
+  final bool emailVisibility;
+  final String email;
+  final DateTime created;
+  final DateTime updated;
+  final String firstName;
+  final String avatar;
+  final String lastName;
+  final String accountType;
+  final String industry;
+  final String banner;
+  final String brandName;
 
   User({
     required this.id,
@@ -49,8 +41,10 @@ class User {
     required this.firstName,
     required this.avatar,
     required this.lastName,
-    required this.brandName,
     required this.accountType,
+    required this.industry,
+    required this.banner,
+    required this.brandName,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -66,11 +60,50 @@ class User {
         firstName: json["first_name"],
         avatar: json["avatar"],
         lastName: json["last_name"],
-        brandName: json["brand_name"],
         accountType: json["account_type"],
+        industry: json["industry"],
+        banner: json["banner"],
+        brandName: json["brand_name"],
       );
 
   factory User.fromRecord(RecordModel record) => User.fromJson(record.toJson());
+
+  User copyWith({
+    String? id,
+    String? collectionId,
+    String? collectionName,
+    String? username,
+    bool? verified,
+    bool? emailVisibility,
+    String? email,
+    DateTime? created,
+    DateTime? updated,
+    String? firstName,
+    String? avatar,
+    String? lastName,
+    String? accountType,
+    String? industry,
+    String? banner,
+    String? brandName,
+  }) =>
+      User(
+        id: id ?? this.id,
+        collectionId: collectionId ?? this.collectionId,
+        collectionName: collectionName ?? this.collectionName,
+        username: username ?? this.username,
+        verified: verified ?? this.verified,
+        emailVisibility: emailVisibility ?? this.emailVisibility,
+        email: email ?? this.email,
+        created: created ?? this.created,
+        updated: updated ?? this.updated,
+        firstName: firstName ?? this.firstName,
+        avatar: avatar ?? this.avatar,
+        lastName: lastName ?? this.lastName,
+        accountType: accountType ?? this.accountType,
+        industry: industry ?? this.industry,
+        banner: banner ?? this.banner,
+        brandName: brandName ?? this.brandName,
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -85,7 +118,9 @@ class User {
         "first_name": firstName,
         "avatar": avatar,
         "last_name": lastName,
-        "brand_name": brandName,
         "account_type": accountType,
+        "industry": industry,
+        "banner": banner,
+        "brand_name": brandName,
       };
 }
