@@ -11,6 +11,7 @@ import 'package:connectobia/modules/dashboard/presentation/views/featured_listin
 import 'package:connectobia/modules/dashboard/presentation/views/popular_categories.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/bottom_navigation.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/section_title.dart';
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,9 +40,11 @@ class _BrandDashboardState extends State<BrandDashboard> {
           ? ShadColors.kForeground
           : ShadColors.kBackground,
       child: Scaffold(
+        endDrawer: profileDrawer(context),
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               snap: true,
               floating: true,
               pinned: true,
@@ -67,25 +70,10 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 ),
               ),
               actions: [
-                IconButton(
-                    onPressed: () async {
-                      final theme = ShadTheme.of(context);
-                      await AuthRepo.logout();
-                      if (context.mounted) {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          '/welcome',
-                          (route) => false,
-                          arguments: {
-                            'isDarkMode': theme.brightness == Brightness.dark
-                          },
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.logout)),
                 GestureDetector(
                   onTap: () {
-                    _navigateAndDisplaySelection(context);
+                    // _navigateAndDisplaySelection(context);
+                    Scaffold.of(context).openEndDrawer();
                   },
                   child: ShadAvatar(
                     UserAvatar.getAvatarUrl(user.firstName, user.lastName),
@@ -143,6 +131,131 @@ class _BrandDashboardState extends State<BrandDashboard> {
     super.initState();
     _industries = getSortedIndustries();
     influencerBloc.add(BrandDashboardLoadInfluencers());
+  }
+
+  BlocConsumer<ThemeBloc, ThemeState> profileDrawer(BuildContext context) {
+    return BlocConsumer<ThemeBloc, ThemeState>(
+      listener: (context, state) {
+        // TODO: implement listener
+      },
+      builder: (context, state) {
+        return Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: brightness == Brightness.dark
+                      ? ShadColors.kForeground
+                      : ShadColors.kBackground,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        ShadAvatar(
+                          UserAvatar.getAvatarUrl(
+                              user.firstName, user.lastName),
+                          placeholder:
+                              Text('${user.firstName[0]} ${user.lastName[0]}'),
+                        ),
+
+                        // toggle theme button
+                        const Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            brightness == Brightness.dark
+                                ? LucideIcons.sun
+                                : LucideIcons.moon,
+                            color: brightness == Brightness.dark
+                                ? ShadColors.kBackground
+                                : ShadColors.kForeground,
+                          ),
+                          onPressed: () {
+                            bool isDarkMode = brightness == Brightness.dark;
+                            isDarkMode = !isDarkMode;
+                            // TODO: Fix theme breaks when toggling
+                            BlocProvider.of<ThemeBloc>(context).add(
+                              ThemeChanged(isDarkMode),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${user.firstName} ${user.lastName}',
+                      style: TextStyle(
+                        color: brightness == Brightness.dark
+                            ? ShadColors.kBackground
+                            : ShadColors.kForeground,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.email,
+                      style: TextStyle(
+                        color: brightness == Brightness.dark
+                            ? ShadColors.kBackground
+                            : ShadColors.kForeground,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(LucideIcons.userCog),
+                    SizedBox(width: 16),
+                    Text('Edit Profile'),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _navigateAndDisplaySelection(context);
+                },
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(
+                      LucideIcons.logOut,
+                      color: Colors.redAccent,
+                    ),
+                    SizedBox(width: 16),
+                    Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () async {
+                  final theme = ShadTheme.of(context);
+                  await AuthRepo.logout();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/welcome',
+                      (route) => false,
+                      arguments: {
+                        'isDarkMode': theme.brightness == Brightness.dark
+                      },
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _navigateAndDisplaySelection(BuildContext context) async {

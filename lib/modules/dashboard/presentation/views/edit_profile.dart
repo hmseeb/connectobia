@@ -87,6 +87,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                   Center(
                     child: Column(
                       children: [
+                        const SizedBox(height: 8),
                         ShadAvatar(
                           UserAvatar.getAvatarUrl(
                               widget.user.firstName, widget.user.lastName),
