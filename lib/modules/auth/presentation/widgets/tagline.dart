@@ -19,7 +19,7 @@ class Tagline extends StatelessWidget {
       style: const TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.bold,
-        color: ShadColors.kSecondary,
+        color: ShadColors.primary,
       ),
     );
   }

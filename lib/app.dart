@@ -70,11 +70,11 @@ class ConnectobiaState extends State<Connectobia> {
               debugShowCheckedModeBanner: false,
               onGenerateRoute: (settings) =>
                   GenerateRoutes.onGenerateRoute(settings),
-              themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
-              theme: shadThemeData(state is DarkTheme),
+              // themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
+              theme: shadThemeData(state),
               home: SizedBox(
                 child: SplashScreen.navigate(
-                  backgroundColor: ShadColors.kSecondary,
+                  backgroundColor: ShadColors.primary,
                   name: AssetsPath.splash,
                   next: (context) {
                     if (user == null) {

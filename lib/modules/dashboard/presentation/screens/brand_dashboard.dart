@@ -35,82 +35,85 @@ class _BrandDashboardState extends State<BrandDashboard> {
   @override
   Widget build(BuildContext context) {
     final width = ScreenSize.width(context);
-    return Scaffold(
-      endDrawer: profileDrawer(context),
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            snap: true,
-            floating: true,
-            pinned: true,
-            scrolledUnderElevation: 0,
-            backgroundColor: brightness == Brightness.dark
-                ? ShadColors.kForeground
-                : ShadColors.kBackground,
-            centerTitle: false,
-            // search field
-            // add search field at bottom
-            title: Text(Greetings.getGreeting(user.firstName)),
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(69),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: ShadInput(
-                  placeholder: Text('Search for services or influencers'),
-                  prefix: Icon(LucideIcons.search),
-                ),
-              ),
-            ),
-            actions: [
-              GestureDetector(
-                onTap: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-                child: CircleAvatar(
-                  backgroundImage: CachedNetworkImageProvider(
-                    Avatar.getUserImage(
-                      id: user.id,
-                      image: user.avatar,
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, state) {
+        return Scaffold(
+          endDrawer: profileDrawer(context),
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverAppBar(
+                automaticallyImplyLeading: false,
+                snap: true,
+                floating: true,
+                pinned: true,
+                scrolledUnderElevation: 0,
+                backgroundColor:
+                    state is DarkTheme ? ShadColors.dark : ShadColors.light,
+                centerTitle: false,
+                // search field
+                // add search field at bottom
+                title: Text(Greetings.getGreeting(user.firstName)),
+                bottom: const PreferredSize(
+                  preferredSize: Size.fromHeight(69),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: ShadInput(
+                      placeholder: Text('Search for services or influencers'),
+                      prefix: Icon(LucideIcons.search),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-            ],
-          ),
-        ],
-        body: Center(
-          child: SizedBox(
-            width: width * 95,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SectionTitle('Popular Categories'),
-                  const SizedBox(height: 16),
-                  PopularCategories(industries: _industries),
-                  const SectionTitle('Featured Listings'),
-                  const SizedBox(height: 16),
-                  const FeaturedListings(),
+                actions: [
+                  GestureDetector(
+                    onTap: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(
+                        Avatar.getUserImage(
+                          id: user.id,
+                          image: user.avatar,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
                 ],
+              ),
+            ],
+            body: Center(
+              child: SizedBox(
+                width: width * 95,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SectionTitle('Popular Categories'),
+                      const SizedBox(height: 16),
+                      PopularCategories(industries: _industries),
+                      const SectionTitle('Featured Listings'),
+                      const SizedBox(height: 16),
+                      const FeaturedListings(),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: buildBottomNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        brightness: brightness,
-      ),
+          bottomNavigationBar: buildBottomNavigationBar(
+            selectedIndex: _selectedIndex,
+            onItemTapped: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            state: state,
+          ),
+        );
+      },
     );
   }
 
@@ -130,11 +133,8 @@ class _BrandDashboardState extends State<BrandDashboard> {
     influencerBloc.add(BrandDashboardLoadInfluencers());
   }
 
-  BlocConsumer<ThemeBloc, ThemeState> profileDrawer(BuildContext context) {
-    return BlocConsumer<ThemeBloc, ThemeState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+  BlocBuilder<ThemeBloc, ThemeState> profileDrawer(BuildContext context) {
+    return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         return Drawer(
           child: ListView(
@@ -142,9 +142,8 @@ class _BrandDashboardState extends State<BrandDashboard> {
             children: [
               DrawerHeader(
                 decoration: BoxDecoration(
-                  color: brightness == Brightness.dark
-                      ? ShadColors.kForeground
-                      : ShadColors.kBackground,
+                  color:
+                      state is DarkTheme ? ShadColors.dark : ShadColors.light,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,17 +162,13 @@ class _BrandDashboardState extends State<BrandDashboard> {
                         const Spacer(),
                         IconButton(
                           icon: Icon(
-                            brightness == Brightness.dark
-                                ? LucideIcons.sun
-                                : LucideIcons.moon,
-                            color: brightness == Brightness.dark
-                                ? ShadColors.kBackground
-                                : ShadColors.kForeground,
+                            state is DarkTheme
+                                ? Icons.dark_mode_outlined
+                                : Icons.light_mode_outlined,
                           ),
                           onPressed: () {
-                            bool isDarkMode = brightness == Brightness.dark;
+                            bool isDarkMode = state is DarkTheme;
                             isDarkMode = !isDarkMode;
-                            // TODO: Fix theme breaks when toggling
                             BlocProvider.of<ThemeBloc>(context).add(
                               ThemeChanged(isDarkMode),
                             );
@@ -185,9 +180,9 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     Text(
                       '${user.firstName} ${user.lastName}',
                       style: TextStyle(
-                        color: brightness == Brightness.dark
-                            ? ShadColors.kBackground
-                            : ShadColors.kForeground,
+                        color: state is DarkTheme
+                            ? ShadColors.light
+                            : ShadColors.dark,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -196,9 +191,9 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     Text(
                       user.email,
                       style: TextStyle(
-                        color: brightness == Brightness.dark
-                            ? ShadColors.kBackground
-                            : ShadColors.kForeground,
+                        color: state is DarkTheme
+                            ? ShadColors.light
+                            : ShadColors.dark,
                         fontSize: 14,
                       ),
                     ),

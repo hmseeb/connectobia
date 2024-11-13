@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -11,24 +12,22 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// throughout the application.
 ///
 /// {@category Theme}
-ShadThemeData shadThemeData(bool isDarkMode) {
+ShadThemeData shadThemeData(ThemeState state) {
   return ShadThemeData(
     textTheme: ShadTextTheme(
       family: GoogleFonts.varelaRound().fontFamily,
     ),
-    brightness: isDarkMode ? Brightness.dark : Brightness.light,
-    colorScheme: isDarkMode
+    brightness: state is DarkTheme ? Brightness.dark : Brightness.light,
+    colorScheme: state is DarkTheme
         ? const ShadSlateColorScheme.dark(
-            primary: ShadColors.kPrimary,
-            secondary: ShadColors.kSecondary,
-            foreground: ShadColors.kBackground,
-            background: ShadColors.kForeground,
+            secondary: ShadColors.primary,
+            foreground: ShadColors.light,
+            background: ShadColors.dark,
           )
         : const ShadSlateColorScheme.light(
-            primary: ShadColors.kPrimary,
-            secondary: ShadColors.kSecondary,
-            foreground: ShadColors.kForeground,
-            background: ShadColors.kBackground,
+            secondary: ShadColors.primary,
+            foreground: ShadColors.dark,
+            background: ShadColors.light,
           ),
   );
 }

@@ -127,8 +127,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                           },
                           icon: const Icon(Icons.camera_alt),
                           color: brightness == Brightness.light
-                              ? ShadColors.kBackground
-                              : ShadColors.kForeground,
+                              ? ShadColors.light
+                              : ShadColors.dark,
                         ),
                       ),
                       // Avatar image with camera icon
@@ -174,13 +174,13 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                     child: CircleAvatar(
                                       backgroundColor:
                                           brightness == Brightness.light
-                                              ? ShadColors.kBackground
-                                              : ShadColors.kForeground,
+                                              ? ShadColors.light
+                                              : ShadColors.dark,
                                       child: Icon(
                                         Icons.camera_alt,
                                         color: brightness == Brightness.light
-                                            ? ShadColors.kForeground
-                                            : ShadColors.kBackground,
+                                            ? ShadColors.dark
+                                            : ShadColors.light,
                                         size: 15,
                                       ),
                                     ),
@@ -250,8 +250,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       color: brightness == Brightness.light
-                                          ? ShadColors.kBackground
-                                          : ShadColors.kForeground,
+                                          ? ShadColors.light
+                                          : ShadColors.dark,
                                     ),
                                   )
                                 : const Text('Save'),

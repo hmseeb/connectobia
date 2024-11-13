@@ -29,7 +29,7 @@ class PopularCategories extends StatelessWidget {
                     backgroundColor: Color(0xffEFF1F5),
                     child: Icon(
                       LucideIcons.briefcase,
-                      color: ShadColors.kPrimary,
+                      color: ShadColors.dark,
                     ),
                   ),
                   const SizedBox(height: 8),

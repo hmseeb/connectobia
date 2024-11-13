@@ -15,8 +15,8 @@ AppBar transparentAppBar(String? title,
   return AppBar(
     title: Text(title ?? ''),
     backgroundColor: theme.brightness == Brightness.dark
-        ? ShadColors.kForeground
-        : ShadColors.kBackground,
+        ? ShadColors.dark
+        : ShadColors.light,
     actions: actions,
   );
 }

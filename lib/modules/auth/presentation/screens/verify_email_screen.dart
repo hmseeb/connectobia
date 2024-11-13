@@ -99,8 +99,8 @@ class VerifyEmailState extends State<VerifyEmail> {
                                 : 'Resend in $_secondsRemaining seconds',
                         style: TextStyle(
                           color: _canResendEmail
-                              ? ShadColors.kSecondary
-                              : ShadColors.kDisabled,
+                              ? ShadColors.primary
+                              : ShadColors.disabled,
                           fontWeight: _canResendEmail
                               ? FontWeight.bold
                               : FontWeight.normal,
