@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/globals/constants/path.dart';
-import 'package:connectobia/modules/auth/application/email_verification/email_verification_bloc.dart';
+import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/colors.dart';

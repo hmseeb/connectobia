@@ -57,6 +57,27 @@ class AuthRepo {
     }
   }
 
+  static Future<User?> getCurrentUser() async {
+    PocketBase pocketBase = await PocketBaseSingleton.instance;
+
+    bool isAuthenticated = pocketBase.authStore.isValid;
+    if (isAuthenticated) {
+      try {
+        User user = await AuthRepo.getUser();
+        if (!user.verified) {
+          await AuthRepo.verifyEmail(user.email);
+        }
+        return user;
+      } catch (e) {
+        debugPrint(e.toString());
+        rethrow;
+      }
+    } else {
+      pocketBase.authStore.clear();
+    }
+    return null;
+  }
+
   /// [getUser] is a method that returns the current user's information.
   static Future<User> getUser() async {
     try {
