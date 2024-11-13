@@ -81,7 +81,7 @@ class ConnectobiaState extends State<Connectobia> {
                       PocketBaseSingleton.instance.then((pb) {
                         if (!pb.authStore.isValid) pb.authStore.clear();
                       });
-                      return WelcomeScreen(isDarkMode: isDarkMode);
+                      return const WelcomeScreen();
                     } else {
                       if (user!.verified) {
                         return BrandDashboard(user: user!);

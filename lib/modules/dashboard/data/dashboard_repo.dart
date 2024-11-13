@@ -10,8 +10,9 @@ class DashboardRepo {
       final resultList = await pb.collection('users').getList(
             page: 1,
             perPage: 20,
-            // where account type = inflencer
-            filter: 'account_type = "influencer"',
+            // where account type = inflencer and avatar and banner is not empty
+            filter:
+                'account_type = "influencer" && avatar != "" && banner != ""',
           );
       userLists = UserList.fromRecord(resultList);
       debugPrint('Fetched ${userLists.items.length} influencers');

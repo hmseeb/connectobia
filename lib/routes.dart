@@ -46,12 +46,10 @@ class GenerateRoutes {
                   isDarkMode: args['isDarkMode'],
                 ));
       case '/welcome':
-        final args = settings.arguments as Map<String, dynamic>;
         return PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (_, animation, secondaryAnimation) => WelcomeScreen(
-            isDarkMode: args['isDarkMode'],
-          ),
+          pageBuilder: (_, animation, secondaryAnimation) =>
+              const WelcomeScreen(),
         );
       case '/signin':
         return _buildPageRoute(const SigninScreen());

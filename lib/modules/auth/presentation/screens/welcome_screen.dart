@@ -16,10 +16,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 ///
 /// {@category Screens}
 class WelcomeScreen extends StatefulWidget {
-  final bool isDarkMode;
   const WelcomeScreen({
     super.key,
-    required this.isDarkMode,
   });
 
   @override
