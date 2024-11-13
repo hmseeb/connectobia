@@ -254,7 +254,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
                                 (route) => false,
                               );
                             }
-                            return Navigator.of(context).pop(true);
                           },
                         ),
                       ],
