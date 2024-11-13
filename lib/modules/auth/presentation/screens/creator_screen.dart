@@ -100,7 +100,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                     const SizedBox(height: 20),
                     const PrivacyPolicy(),
                     const SizedBox(height: 20),
-                    PrimaryAuthButton(
+                    PrimaryButton(
                         isLoading: state is SignupLoading,
                         text: 'Create account',
                         onPressed: () {

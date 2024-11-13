@@ -7,11 +7,11 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// to provide a consistent look and feel for the buttons.
 ///
 /// {@category Theme}
-class PrimaryAuthButton extends StatelessWidget {
+class PrimaryButton extends StatelessWidget {
   final String text;
   final bool isLoading;
   final void Function() onPressed;
-  const PrimaryAuthButton(
+  const PrimaryButton(
       {super.key,
       required this.text,
       required this.onPressed,

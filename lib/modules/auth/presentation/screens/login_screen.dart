@@ -101,7 +101,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      PrimaryAuthButton(
+                      PrimaryButton(
                           text: 'Sign in',
                           onPressed: () {
                             HapticFeedback.mediumImpact();

@@ -100,7 +100,7 @@ class _BrandScreenState extends State<BrandScreen> {
                     const SizedBox(height: 20),
                     const PrivacyPolicy(),
                     const SizedBox(height: 20),
-                    PrimaryAuthButton(
+                    PrimaryButton(
                       text: 'Create account',
                       isLoading: state is SignupLoading,
                       onPressed: () {
