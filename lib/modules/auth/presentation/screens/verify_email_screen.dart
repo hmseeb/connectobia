@@ -55,7 +55,7 @@ class VerifyEmailState extends State<VerifyEmail> {
       child: Scaffold(
         body: Center(
           child: SizedBox(
-            width: 350,
+            width: 400,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

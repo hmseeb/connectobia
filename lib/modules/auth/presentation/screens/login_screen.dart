@@ -40,7 +40,7 @@ class _SigninScreenState extends State<SigninScreen> {
           child: SingleChildScrollView(
               child: Center(
             child: SizedBox(
-              width: 350,
+              width: 400,
               child: BlocConsumer<LoginBloc, LoginBlocState>(
                 listener: (context, state) {
                   if (state is LoginFailure) {
