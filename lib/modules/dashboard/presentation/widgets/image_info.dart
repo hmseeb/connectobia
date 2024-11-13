@@ -2,7 +2,6 @@ import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:connectobia/globals/constants/industries.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FeatureImageInfo extends StatelessWidget {
   final BrandDashboardLoadedInflueners state;
@@ -33,13 +32,23 @@ class FeatureImageInfo extends StatelessWidget {
             ),
             child: Row(
               children: [
-                ShadAvatar(
-                  UserAvatar.getAvatarUrl(
-                    state.influencers.items[index].firstName,
-                    state.influencers.items[index].lastName,
-                  ),
-                  placeholder: const Text('HA'),
-                ),
+                state.influencers.items[index].avatar.isNotEmpty
+                    ? CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          Avatar.getUserImage(
+                            id: state.influencers.items[index].id,
+                            image: state.influencers.items[index].avatar,
+                          ),
+                        ),
+                      )
+                    : CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          Avatar.getAvatarPlaceholder(
+                            state.influencers.items[index].firstName,
+                            state.influencers.items[index].lastName,
+                          ),
+                        ),
+                      ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

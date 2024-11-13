@@ -1,4 +1,4 @@
-import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:connectobia/globals/constants/greetings.dart';
 import 'package:connectobia/globals/constants/industries.dart';
@@ -35,84 +35,81 @@ class _BrandDashboardState extends State<BrandDashboard> {
   @override
   Widget build(BuildContext context) {
     final width = ScreenSize.width(context);
-    return ColorfulSafeArea(
-      color: brightness == Brightness.dark
-          ? ShadColors.kForeground
-          : ShadColors.kBackground,
-      child: Scaffold(
-        endDrawer: profileDrawer(context),
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverAppBar(
-              automaticallyImplyLeading: false,
-              snap: true,
-              floating: true,
-              pinned: true,
-              scrolledUnderElevation: 0,
-              backgroundColor: brightness == Brightness.dark
-                  ? ShadColors.kForeground
-                  : ShadColors.kBackground,
-              centerTitle: false,
-              // search field
-              // add search field at bottom
-              title: Text(Greetings.getGreeting(user.firstName)),
-              bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(69),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: ShadInput(
-                    placeholder: Text('Search for services or influencers'),
-                    prefix: Icon(LucideIcons.search),
+    return Scaffold(
+      endDrawer: profileDrawer(context),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            automaticallyImplyLeading: false,
+            snap: true,
+            floating: true,
+            pinned: true,
+            scrolledUnderElevation: 0,
+            backgroundColor: brightness == Brightness.dark
+                ? ShadColors.kForeground
+                : ShadColors.kBackground,
+            centerTitle: false,
+            // search field
+            // add search field at bottom
+            title: Text(Greetings.getGreeting(user.firstName)),
+            bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(69),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: ShadInput(
+                  placeholder: Text('Search for services or influencers'),
+                  prefix: Icon(LucideIcons.search),
+                ),
+              ),
+            ),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                child: CircleAvatar(
+                  backgroundImage: CachedNetworkImageProvider(
+                    Avatar.getUserImage(
+                      id: user.id,
+                      image: user.avatar,
+                    ),
                   ),
                 ),
               ),
-              actions: [
-                GestureDetector(
-                  onTap: () {
-                    // _navigateAndDisplaySelection(context);
-                    Scaffold.of(context).openEndDrawer();
-                  },
-                  child: ShadAvatar(
-                    UserAvatar.getAvatarUrl(user.firstName, user.lastName),
-                    placeholder:
-                        Text('${user.firstName[0]} ${user.lastName[0]}'),
-                  ),
-                ),
-                const SizedBox(width: 16),
-              ],
-            ),
-          ],
-          body: Center(
-            child: SizedBox(
-              width: width * 95,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionTitle('Popular Categories'),
-                    const SizedBox(height: 16),
-                    PopularCategories(industries: _industries),
-                    const SectionTitle('Featured Listings'),
-                    const SizedBox(height: 16),
-                    const FeaturedListings(),
-                  ],
-                ),
+              const SizedBox(width: 16),
+            ],
+          ),
+        ],
+        body: Center(
+          child: SizedBox(
+            width: width * 95,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SectionTitle('Popular Categories'),
+                  const SizedBox(height: 16),
+                  PopularCategories(industries: _industries),
+                  const SectionTitle('Featured Listings'),
+                  const SizedBox(height: 16),
+                  const FeaturedListings(),
+                ],
               ),
             ),
           ),
         ),
-        bottomNavigationBar: buildBottomNavigationBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          brightness: brightness,
-        ),
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        brightness: brightness,
       ),
     );
   }
@@ -154,13 +151,14 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   children: [
                     Row(
                       children: [
-                        ShadAvatar(
-                          UserAvatar.getAvatarUrl(
-                              user.firstName, user.lastName),
-                          placeholder:
-                              Text('${user.firstName[0]} ${user.lastName[0]}'),
+                        CircleAvatar(
+                          backgroundImage: CachedNetworkImageProvider(
+                            Avatar.getUserImage(
+                              id: user.id,
+                              image: user.avatar,
+                            ),
+                          ),
                         ),
-
                         // toggle theme button
                         const Spacer(),
                         IconButton(

@@ -1,15 +1,21 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:flutter/material.dart';
 
 class FeatureImage extends StatelessWidget {
+  final String image;
+  final String id;
   const FeatureImage({
     super.key,
+    required this.image,
+    required this.id,
   });
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: 'https://via.assets.so/img.jpg?w=400&h=300&tc=#A9A9A9&bg=grey',
+    return Image.network(
+      image.isEmpty
+          ? Avatar.getBannerPlaceholder()
+          : Avatar.getUserImage(id: id, image: image),
       width: 400,
       height: 300,
       fit: BoxFit.cover,

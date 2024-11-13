@@ -1,3 +1,4 @@
+import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/featured_image.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/heart_icon.dart';
@@ -29,8 +30,14 @@ class FeaturedListings extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   child: Stack(
                     children: [
-                      const Center(
-                        child: FeatureImage(),
+                      Center(
+                        child: FeatureImage(
+                            image: state is BrandDashboardLoadedInflueners
+                                ? state.influencers.items[index].banner
+                                : '',
+                            id: state is BrandDashboardLoadedInflueners
+                                ? state.influencers.items[index].id
+                                : Avatar.getBannerPlaceholder()),
                       ),
                       state is BrandDashboardLoadedInflueners
                           ? FeatureImageInfo(
