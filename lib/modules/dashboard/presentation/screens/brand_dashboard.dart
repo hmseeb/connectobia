@@ -233,34 +233,33 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   showShadDialog(
                     context: context,
                     builder: (context) => ShadDialog.alert(
-                      title: const Text('Are you absolutely sure?'),
-                      description: const Padding(
-                        padding: EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          'This action cannot be undone. This will permanently delete your account and remove your data from our servers.',
-                        ),
-                      ),
+                      title: const Text('You\'ll be logged out immediately!'),
                       actions: [
                         ShadButton.outline(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           child: const Text('Cancel'),
                           onPressed: () => Navigator.of(context).pop(false),
                         ),
                         ShadButton(
-                          child: const Text('Continue'),
-                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text('Confirm'),
+                          onPressed: () async {
+                            await AuthRepo.logout();
+                            if (context.mounted) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/welcome',
+                                (route) => false,
+                              );
+                            }
+                            return Navigator.of(context).pop(true);
+                          },
                         ),
                       ],
                     ),
                   );
-                  final theme = ShadTheme.of(context);
-                  await AuthRepo.logout();
-                  if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/welcome',
-                      (route) => false,
-                    );
-                  }
                 },
               ),
             ],
