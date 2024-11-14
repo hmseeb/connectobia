@@ -1,5 +1,7 @@
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class PopularCategories extends StatelessWidget {
@@ -24,13 +26,21 @@ class PopularCategories extends StatelessWidget {
               padding: const EdgeInsets.only(right: 16),
               child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 36,
-                    backgroundColor: Color(0xffEFF1F5),
-                    child: Icon(
-                      LucideIcons.briefcase,
-                      color: ShadColors.dark,
-                    ),
+                  BlocBuilder<ThemeBloc, ThemeState>(
+                    builder: (context, state) {
+                      return CircleAvatar(
+                        radius: 36,
+                        backgroundColor: state is DarkTheme
+                            ? ShadColors.darkForeground.withOpacity(0.5)
+                            : ShadColors.lightForeground,
+                        child: Icon(
+                          LucideIcons.briefcase,
+                          color: state is DarkTheme
+                              ? ShadColors.light
+                              : ShadColors.dark,
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   Text(

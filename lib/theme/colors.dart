@@ -27,5 +27,8 @@ class ShadColors {
   static const Color disabled = Colors.grey;
   static const Color primary = Colors.redAccent;
   static const Color light = Color(0xfffaf8f6);
+  static const Color lightForeground = Color(0xffEFF1F5);
+
   static const Color dark = Color(0xFF060b14);
+  static const Color darkForeground = Colors.black;
 }

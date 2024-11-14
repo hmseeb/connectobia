@@ -7,7 +7,6 @@ import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select
 import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
 import 'package:connectobia/modules/dashboard/application/edit_profile/edit_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/data/user_repo.dart';
-import 'package:connectobia/theme/buttons.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -268,7 +267,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                 ),
                 Center(
                   child: SizedBox(
-                    width: 350,
+                    width: 400,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -313,8 +312,9 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        PrimaryButton(
-                            text: 'Save',
+                        SizedBox(
+                          width: double.infinity,
+                          child: ShadButton(
                             onPressed: () {
                               editProfileBloc.add(
                                 EditProfileSave(
@@ -326,7 +326,16 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                 ),
                               );
                             },
-                            isLoading: state is EditProfileLoading),
+                            child: state is EditProfileLoading
+                                ? Center(
+                                    child: CircularProgressIndicator(
+                                    color: brightness == Brightness.light
+                                        ? ShadColors.dark
+                                        : ShadColors.light,
+                                  ))
+                                : const Text('Save Changes'),
+                          ),
+                        ),
                       ],
                     ),
                   ),
