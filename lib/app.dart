@@ -69,7 +69,7 @@ class ConnectobiaState extends State<Connectobia> {
               debugShowCheckedModeBanner: false,
               onGenerateRoute: (settings) =>
                   GenerateRoutes.onGenerateRoute(settings),
-              // themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
+              themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
               theme: shadThemeData(state),
               home: BlocConsumer<AuthBloc, AuthState>(
                 listener: (context, state) {
