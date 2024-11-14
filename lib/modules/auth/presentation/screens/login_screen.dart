@@ -7,6 +7,7 @@ import 'package:connectobia/modules/auth/presentation/views/login_form.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/buttons.dart';
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,7 +83,6 @@ class _SigninScreenState extends State<SigninScreen> {
                       LoginForm(
                           emailController: emailController,
                           passwordController: passwordController),
-                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -96,11 +96,15 @@ class _SigninScreenState extends State<SigninScreen> {
                                     side: ShadSheetSide.bottom),
                               );
                             },
-                            child: const Text('Forgot password?'),
+                            child: const Text(
+                              'Forgot password?',
+                              style: TextStyle(
+                                color: ShadColors.primary,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
                       PrimaryButton(
                           text: 'Sign in',
                           onPressed: () {

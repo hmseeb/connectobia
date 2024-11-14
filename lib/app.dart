@@ -90,12 +90,6 @@ class ConnectobiaState extends State<Connectobia> {
                         } else if (state is Unverified) {
                           return VerifyEmail(email: state.email);
                         } else {
-                          ShadToaster.of(context).show(
-                            const ShadToast.destructive(
-                              title: Text(
-                                  'Something went wrong, please try again.'),
-                            ),
-                          );
                           return const WelcomeScreen();
                         }
                       },

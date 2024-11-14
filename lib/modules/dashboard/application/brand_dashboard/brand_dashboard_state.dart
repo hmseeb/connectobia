@@ -9,5 +9,7 @@ final class BrandDashboardLoadedInflueners extends BrandDashboardState {
 
 final class BrandDashboardLoadingInflueners extends BrandDashboardState {}
 
+final class BrandDashboardLoadingMoreInflueners extends BrandDashboardState {}
+
 @immutable
 sealed class BrandDashboardState {}

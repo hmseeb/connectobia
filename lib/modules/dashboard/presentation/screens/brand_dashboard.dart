@@ -30,6 +30,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
   late final List<String> _industries;
   late final influencerBloc = BlocProvider.of<BrandDashboardBloc>(context);
   late final brightness = ShadTheme.of(context).brightness;
+  final ScrollController scrollController = ScrollController();
 
   int _selectedIndex = 0;
   @override
@@ -42,6 +43,8 @@ class _BrandDashboardState extends State<BrandDashboard> {
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
+                backgroundColor:
+                    state is DarkTheme ? ShadColors.dark : ShadColors.light,
                 automaticallyImplyLeading: true,
                 snap: true,
                 floating: true,
@@ -86,6 +89,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
               child: SizedBox(
                 width: width * 95,
                 child: SingleChildScrollView(
+                  controller: scrollController,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -115,6 +119,14 @@ class _BrandDashboardState extends State<BrandDashboard> {
     );
   }
 
+  @override
+  void dispose() {
+    scrollController
+        .removeListener(_scrollListener); // Properly remove the listener
+    scrollController.dispose(); // Dispose of the ScrollController
+    super.dispose();
+  }
+
   List<String> getSortedIndustries() {
     final industriesList =
         IndustryList.industries.entries.map((e) => e.value).toList();
@@ -129,6 +141,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
     super.initState();
     _industries = getSortedIndustries();
     influencerBloc.add(BrandDashboardLoadInfluencers());
+    scrollController.addListener(_scrollListener); // Pass the function directly
   }
 
   BlocBuilder<ThemeBloc, ThemeState> profileDrawer(BuildContext context) {
@@ -277,5 +290,12 @@ class _BrandDashboardState extends State<BrandDashboard> {
     setState(() {
       user = userParam;
     });
+  }
+
+  _scrollListener() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      // TODO: Load more influencers
+    }
   }
 }

@@ -1,17 +1,24 @@
 import 'package:connectobia/globals/constants/avatar.dart';
 import 'package:connectobia/globals/constants/industries.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/application/domain/user_list.dart';
 import 'package:flutter/material.dart';
 
-class FeatureImageInfo extends StatelessWidget {
+class FeatureImageInfo extends StatefulWidget {
   final BrandDashboardLoadedInflueners state;
-  final int index;
+  final Item user;
   const FeatureImageInfo({
     super.key,
     required this.state,
-    required this.index,
+    required this.user,
   });
 
+  @override
+  State<FeatureImageInfo> createState() => _FeatureImageInfoState();
+}
+
+class _FeatureImageInfoState extends State<FeatureImageInfo> {
+  int page = BrandDashboardBloc().page;
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -32,20 +39,20 @@ class FeatureImageInfo extends StatelessWidget {
             ),
             child: Row(
               children: [
-                state.influencers.items[index].avatar.isNotEmpty
+                widget.user.avatar.isNotEmpty
                     ? CircleAvatar(
                         backgroundImage: NetworkImage(
                           Avatar.getUserImage(
-                            id: state.influencers.items[index].id,
-                            image: state.influencers.items[index].avatar,
+                            id: widget.user.id,
+                            image: widget.user.avatar,
                           ),
                         ),
                       )
                     : CircleAvatar(
                         backgroundImage: NetworkImage(
                           Avatar.getAvatarPlaceholder(
-                            state.influencers.items[index].firstName,
-                            state.influencers.items[index].lastName,
+                            widget.user.firstName,
+                            widget.user.lastName,
                           ),
                         ),
                       ),
@@ -54,7 +61,7 @@ class FeatureImageInfo extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${state.influencers.items[index].firstName} ${state.influencers.items[index].lastName}',
+                      '${widget.user.firstName} ${widget.user.lastName}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -62,7 +69,7 @@ class FeatureImageInfo extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${IndustryFormatter.keyToValue(state.influencers.items[index].industry)} ',
+                      '${IndustryFormatter.keyToValue(widget.user.industry)} ',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,

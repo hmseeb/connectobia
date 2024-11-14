@@ -8,11 +8,17 @@ part 'brand_dashboard_state.dart';
 
 class BrandDashboardBloc
     extends Bloc<BrandDashboardEvent, BrandDashboardState> {
+  int page = 0;
   BrandDashboardBloc() : super(BrandDashboardInitial()) {
     on<BrandDashboardLoadInfluencers>((event, emit) async {
       emit(BrandDashboardLoadingInflueners());
-      final influencers = await DashboardRepo.getUserList();
-      emit(BrandDashboardLoadedInflueners(influencers));
+      try {
+        final influencers = await DashboardRepo.getInfluencersList();
+        emit(BrandDashboardLoadedInflueners(influencers));
+        page++;
+      } catch (e) {
+        rethrow;
+      }
     });
   }
 }

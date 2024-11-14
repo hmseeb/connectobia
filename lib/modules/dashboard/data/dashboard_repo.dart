@@ -3,7 +3,7 @@ import 'package:connectobia/modules/dashboard/application/domain/user_list.dart'
 import 'package:flutter/foundation.dart';
 
 class DashboardRepo {
-  static Future<UserList> getUserList() async {
+  static Future<UserList> getInfluencersList() async {
     final pb = await PocketBaseSingleton.instance;
     late final UserList userLists;
     try {
