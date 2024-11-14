@@ -60,7 +60,7 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                               )
                             : const SizedBox(),
                         // Favorite button
-                        FeatureHeartIcon(theme: theme),
+                        const FeatureHeartIcon(),
                       ],
                     ),
                   ),
