@@ -21,7 +21,7 @@ class SignupCard extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: SizedBox(
-        width: 400,
+        width: 350,
         child: ShadCard(
           title: Text(title),
           description: Text(description),

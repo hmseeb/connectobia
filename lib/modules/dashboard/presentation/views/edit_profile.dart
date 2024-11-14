@@ -268,7 +268,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                 ),
                 Center(
                   child: SizedBox(
-                    width: 400,
+                    width: 350,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

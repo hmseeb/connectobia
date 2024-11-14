@@ -22,7 +22,7 @@ class PrimaryButton extends StatelessWidget {
     // get shad theme data
     final shadTheme = ShadTheme.of(context);
     return SizedBox(
-      width: 400,
+      width: 350,
       child: ShadButton(
         onPressed: onPressed,
         child: isLoading

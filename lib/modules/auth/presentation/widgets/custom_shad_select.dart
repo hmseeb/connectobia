@@ -51,7 +51,7 @@ class CustomShadSelectState extends State<CustomShadSelect> {
     return ShadSelect<String>(
       enabled: true,
       focusNode: widget.focusNode, // Use the provided focus node
-      minWidth: 400,
+      minWidth: 350,
       maxHeight: height * 30,
       placeholder: Text(widget.placeholder),
       options: [

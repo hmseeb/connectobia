@@ -16,7 +16,7 @@ class FeatureImage extends StatelessWidget {
       image.isEmpty
           ? Avatar.getBannerPlaceholder()
           : Avatar.getUserImage(id: id, image: image),
-      width: 400,
+      width: 350,
       height: 300,
       fit: BoxFit.cover,
     );

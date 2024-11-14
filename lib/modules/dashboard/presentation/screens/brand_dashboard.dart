@@ -42,13 +42,11 @@ class _BrandDashboardState extends State<BrandDashboard> {
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
-                automaticallyImplyLeading: false,
+                automaticallyImplyLeading: true,
                 snap: true,
                 floating: true,
                 pinned: true,
                 scrolledUnderElevation: 0,
-                backgroundColor:
-                    state is DarkTheme ? ShadColors.dark : ShadColors.light,
                 centerTitle: false,
                 // search field
                 // add search field at bottom
@@ -141,10 +139,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
-                  color:
-                      state is DarkTheme ? ShadColors.dark : ShadColors.light,
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

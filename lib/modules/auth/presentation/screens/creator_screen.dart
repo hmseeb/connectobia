@@ -71,7 +71,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
           builder: (context, state) {
             return Center(
               child: SizedBox(
-                width: 400,
+                width: 350,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
