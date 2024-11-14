@@ -1,6 +1,6 @@
 import 'package:connectobia/common/constants/navigation_service.dart';
 import 'package:connectobia/common/constants/path.dart';
-import 'package:connectobia/modules/auth/application/bloc/auth_bloc.dart';
+import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/dashboard/application/animation/animation_cubit.dart';
 import 'package:connectobia/routes.dart';

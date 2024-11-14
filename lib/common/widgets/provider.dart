@@ -1,5 +1,5 @@
 import 'package:connectobia/app.dart';
-import 'package:connectobia/modules/auth/application/bloc/auth_bloc.dart';
+import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
 import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
