@@ -45,14 +45,11 @@ class _BrandDashboardState extends State<BrandDashboard> {
               SliverAppBar(
                 backgroundColor:
                     state is DarkTheme ? ShadColors.dark : ShadColors.light,
-                automaticallyImplyLeading: true,
-                snap: true,
                 floating: true,
+                automaticallyImplyLeading: false,
                 pinned: true,
                 scrolledUnderElevation: 0,
                 centerTitle: false,
-                // search field
-                // add search field at bottom
                 title: Text(Greetings.getGreeting(user.firstName)),
                 bottom: const PreferredSize(
                   preferredSize: Size.fromHeight(69),
