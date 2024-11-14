@@ -164,8 +164,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                           },
                           icon: const Icon(Icons.camera_alt),
                           color: brightness == Brightness.light
-                              ? ShadColors.light
-                              : ShadColors.dark,
+                              ? ShadColors.dark
+                              : ShadColors.light,
                         ),
                       ),
                       // Avatar image with camera icon
