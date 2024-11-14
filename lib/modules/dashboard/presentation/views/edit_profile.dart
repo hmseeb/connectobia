@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/globals/constants/avatar.dart';
-import 'package:connectobia/globals/constants/industries.dart';
-import 'package:connectobia/globals/widgets/transparent_appbar.dart';
+import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/constants/industries.dart';
+import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';

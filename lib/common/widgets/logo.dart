@@ -1,4 +1,4 @@
-import 'package:connectobia/globals/constants/path.dart';
+import 'package:connectobia/common/constants/path.dart';
 import 'package:flutter/material.dart';
 
 /// A class that holds the logo widget

@@ -1,4 +1,4 @@
-import 'package:connectobia/globals/widgets/logo.dart';
+import 'package:connectobia/common/widgets/logo.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/app_title.dart';
 import 'package:flutter/material.dart';
 

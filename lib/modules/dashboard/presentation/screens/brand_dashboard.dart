@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/globals/constants/avatar.dart';
-import 'package:connectobia/globals/constants/greetings.dart';
-import 'package:connectobia/globals/constants/industries.dart';
-import 'package:connectobia/globals/constants/screen_size.dart';
+import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/constants/greetings.dart';
+import 'package:connectobia/common/constants/industries.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
@@ -46,7 +46,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 backgroundColor:
                     state is DarkTheme ? ShadColors.dark : ShadColors.light,
                 floating: true,
-                automaticallyImplyLeading: false,
                 pinned: true,
                 scrolledUnderElevation: 0,
                 centerTitle: false,
@@ -254,7 +253,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                             if (context.mounted) {
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
-                                '/welcome',
+                                '/welcomeScreen',
                                 (route) => false,
                               );
                             }

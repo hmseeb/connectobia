@@ -1,5 +1,5 @@
-import 'package:connectobia/globals/constants/avatar.dart';
-import 'package:connectobia/globals/constants/industries.dart';
+import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/application/domain/user_list.dart';
 import 'package:flutter/material.dart';

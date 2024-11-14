@@ -1,4 +1,4 @@
-import 'package:connectobia/globals/constants/screen_size.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 

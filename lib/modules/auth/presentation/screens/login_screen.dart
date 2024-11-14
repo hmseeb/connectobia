@@ -1,6 +1,6 @@
-import 'package:connectobia/globals/constants/path.dart';
-import 'package:connectobia/globals/constants/screen_size.dart';
-import 'package:connectobia/globals/widgets/transparent_appbar.dart';
+import 'package:connectobia/common/constants/path.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
+import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
 import 'package:connectobia/modules/auth/presentation/views/forget_password_sheet.dart';
 import 'package:connectobia/modules/auth/presentation/views/login_form.dart';
@@ -53,14 +53,14 @@ class _SigninScreenState extends State<SigninScreen> {
                   } else if (state is LoginSuccess) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/home',
+                      '/homeScreen',
                       (route) => false,
                       arguments: {'user': state.user},
                     );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
                       context,
-                      '/verify-email',
+                      '/verifyEmailScreen',
                       arguments: {'email': emailController.text},
                     );
                   }

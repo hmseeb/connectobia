@@ -1,5 +1,5 @@
-import 'package:connectobia/globals/constants/screen_size.dart';
-import 'package:connectobia/globals/widgets/transparent_appbar.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
+import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/signup_card.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/tagline.dart';
@@ -69,7 +69,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               title: 'Brand or Agency',
               description: 'I want to grow my business',
               onPressed: () {
-                Navigator.pushNamed(context, '/brand-agency-signup');
+                Navigator.pushNamed(context, '/brandSignupScreen');
                 HapticFeedback.mediumImpact();
               },
             ),
@@ -78,7 +78,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               title: 'Influencer',
               description: 'I want to monetize my content',
               onPressed: () {
-                Navigator.pushNamed(context, '/creator-signup');
+                Navigator.pushNamed(context, '/creatorSignupScreen');
                 HapticFeedback.mediumImpact();
               },
             ),
@@ -87,7 +87,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               title: 'Already have an account? ',
               buttonText: 'Sign in',
               onPressed: () {
-                Navigator.pushNamed(context, '/signin');
+                Navigator.pushNamed(context, '/signinScreen');
                 HapticFeedback.mediumImpact();
               },
             ),

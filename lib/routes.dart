@@ -4,11 +4,11 @@
 ///
 /// The routes are defined as follows:
 /// - `/`: Displays the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart).
-/// - `/welcome`: Displays the [WelcomeScreen](package:connectobia/modules/auth/presentation/screens/welcome_screen.dart) with arguments.
-/// - `/signin`: Displays the [SigninScreen](package:connectobia/modules/auth/presentation/screens/login_screen.dart).
-/// - `/brand-agency-signup`: Displays the [BrandAgencyScreen](package:connectobia/modules/auth/presentation/screens/brand_agency_screen.dart).
-/// - `/creator-signup`: Displays the [CreatorScreen](package:connectobia/modules/auth/presentation/screens/creator_screen.dart).
-/// - `/home`: Displays the [HomeScreen](package:connectobia/modules/Home/presentation/screens/home_screen.dart).
+/// - `/welcomeScreen`: Displays the [WelcomeScreen](package:connectobia/modules/auth/presentation/screens/welcomeScreen_screen.dart) with arguments.
+/// - `/signinScreen`: Displays the [SigninScreen](package:connectobia/modules/auth/presentation/screens/login_screen.dart).
+/// - `/brandSignupScreen`: Displays the [BrandAgencyScreen](package:connectobia/modules/auth/presentation/screens/brand_agency_screen.dart).
+/// - `/creatorSignupScreen`: Displays the [CreatorScreen](package:connectobia/modules/auth/presentation/screens/creator_screen.dart).
+/// - `/homeScreen`: Displays the [HomeScreen](package:connectobia/modules/homeScreen/presentation/screens/homeScreen_screen.dart).
 ///
 /// If an unknown route is provided, the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart) is displayed by default.
 library;
@@ -45,24 +45,29 @@ class GenerateRoutes {
             pageBuilder: (_, animation, secondaryAnimation) => Connectobia(
                   isDarkMode: args['isDarkMode'],
                 ));
-      case '/welcome':
+      case '/welcomeScreen':
         return PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 600),
           pageBuilder: (_, animation, secondaryAnimation) =>
               const WelcomeScreen(),
         );
-      case '/signin':
+      case '/signinScreen':
         return _buildPageRoute(const SigninScreen());
-      case '/verify-email':
+      case '/verifyEmailScreen':
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(VerifyEmail(
           email: args['email'],
         ));
-      case '/brand-agency-signup':
+      case '/brandSignupScreen':
         return _buildPageRoute(const BrandScreen());
-      case '/creator-signup':
+      case '/brandDashboard':
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildPageRoute(BrandDashboard(
+          user: args['user'],
+        ));
+      case '/creatorSignupScreen':
         return _buildPageRoute(const CreatorScreen());
-      case '/home':
+      case '/homeScreen':
         final args = settings.arguments as Map<String, dynamic>;
         return PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 600),

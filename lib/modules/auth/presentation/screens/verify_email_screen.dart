@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/db/db.dart';
-import 'package:connectobia/globals/constants/path.dart';
 import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
@@ -46,10 +46,11 @@ class VerifyEmailState extends State<VerifyEmail> {
               title: Text('Email verified successfully'),
             ),
           );
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/home', (route) => false, arguments: {
-            'user': state.user,
-          });
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/homeScreen', (route) => false,
+              arguments: {
+                'user': state.user,
+              });
         }
       },
       child: Scaffold(

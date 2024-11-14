@@ -1,7 +1,7 @@
-import 'package:connectobia/globals/constants/industries.dart';
-import 'package:connectobia/globals/constants/path.dart';
-import 'package:connectobia/globals/constants/screen_size.dart';
-import 'package:connectobia/globals/widgets/transparent_appbar.dart';
+import 'package:connectobia/common/constants/industries.dart';
+import 'package:connectobia/common/constants/path.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
+import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/modules/auth/presentation/views/creator_signup_form.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
@@ -57,7 +57,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
               // Navigator.of(context).pushNamed('/login');
               Navigator.pushNamed(
                 context,
-                '/verify-email',
+                '/verifyEmailScreen',
                 arguments: {'email': emailController.text},
               );
             } else if (state is SignupFailure) {
@@ -118,7 +118,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                       title: 'Already have an account? ',
                       buttonText: 'Sign in',
                       onPressed: () {
-                        Navigator.pushNamed(context, '/signin');
+                        Navigator.pushNamed(context, '/signinScreen');
                         HapticFeedback.mediumImpact();
                       },
                     ),

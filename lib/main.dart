@@ -1,4 +1,4 @@
-import 'package:connectobia/app.dart';
+import 'package:connectobia/common/widgets/provider.dart';
 import 'package:connectobia/db/shared_prefs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -24,7 +24,5 @@ void main() async {
 
   /// Initialize Rive
   await RiveFile.initialize();
-  runApp(Connectobia(
-    isDarkMode: isDarkMode,
-  ));
+  runApp(BlocProviders(isDarkMode: isDarkMode));
 }
