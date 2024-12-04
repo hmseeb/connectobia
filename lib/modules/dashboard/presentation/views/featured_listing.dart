@@ -1,6 +1,7 @@
 import 'package:connectobia/common/constants/avatar.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/application/domain/user_list.dart';
+import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/featured_image.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/heart_icon.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/image_info.dart';
@@ -38,30 +39,44 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                   : 10,
               (index) {
                 if (index == 20) page++;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: FeatureImage(
-                              image: state is BrandDashboardLoadedInflueners
-                                  ? influencers[page].items[index].avatar
-                                  : '',
-                              id: state is BrandDashboardLoadedInflueners
-                                  ? influencers[page].items[index].id
-                                  : Avatar.getBannerPlaceholder()),
-                        ),
-                        state is BrandDashboardLoadedInflueners
-                            ? FeatureImageInfo(
-                                state: state,
-                                user: influencers[page].items[index],
-                              )
-                            : const SizedBox(),
-                        // Favorite button
-                        const FeatureHeartIcon(),
-                      ],
+                return GestureDetector(
+                  onTap: () {
+                    if (state is BrandDashboardLoadedInflueners) {
+                      final id = influencers[page].items[index].id;
+                      print(id);
+                      BlocProvider.of<InfluencerProfileBloc>(context)
+                          .add(InfluencerProfileLoad(id));
+                      Navigator.pushNamed(context, '/influencerProfile',
+                          arguments: {
+                            'userId': id,
+                          });
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: FeatureImage(
+                                image: state is BrandDashboardLoadedInflueners
+                                    ? influencers[page].items[index].avatar
+                                    : '',
+                                id: state is BrandDashboardLoadedInflueners
+                                    ? influencers[page].items[index].id
+                                    : Avatar.getBannerPlaceholder()),
+                          ),
+                          state is BrandDashboardLoadedInflueners
+                              ? FeatureImageInfo(
+                                  state: state,
+                                  user: influencers[page].items[index],
+                                )
+                              : const SizedBox(),
+                          // Favorite button
+                          const FeatureHeartIcon(),
+                        ],
+                      ),
                     ),
                   ),
                 );

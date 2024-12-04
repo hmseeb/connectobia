@@ -30,5 +30,5 @@ class ShadColors {
   static const Color lightForeground = Color(0xffEFF1F5);
 
   static const Color dark = Color(0xFF060b14);
-  static const Color darkForeground = Colors.black;
+  static const Color darkForeground = Color(0xFF282828);
 }

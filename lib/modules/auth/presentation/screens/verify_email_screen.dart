@@ -9,7 +9,6 @@ import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:open_mail_app/open_mail_app.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -143,9 +142,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   ///
   /// This function uses the [OpenMailApp] package to open the email app.
   Future<void> openEmailApp() async {
-    try {
-      await OpenMailApp.openMailApp();
-    } catch (e) {
+    try {} catch (e) {
       if (mounted) {
         // Show error toast
         ShadToaster.of(context).show(

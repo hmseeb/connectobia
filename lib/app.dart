@@ -91,7 +91,7 @@ class ConnectobiaState extends State<Connectobia> {
   ///
   /// If the user is authenticated, it fetches the user details and verifies the email.
   void handleNavigation(
-      {required AuthState state, required BuildContext context}) {
+      {required AuthState state, required BuildContext context}) async {
     if (state is Authenticated) {
       Navigator.pushReplacementNamed(
         context,
@@ -114,6 +114,14 @@ class ConnectobiaState extends State<Connectobia> {
         },
       );
     }
+    // Uncomment this once if deleted an account
+    // else {
+    //   Navigator.pushReplacementNamed(
+    //     context,
+    //     '/welcomeScreen',
+    //   );
+    //   await AuthRepo.logout();
+    // }
   }
 
   @override

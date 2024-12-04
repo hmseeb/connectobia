@@ -1,5 +1,5 @@
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/dashboard/presentation/views/edit_profile.dart';
+import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 

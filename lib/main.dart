@@ -1,4 +1,4 @@
-import 'package:connectobia/common/widgets/provider.dart';
+import 'package:connectobia/common/widgets/bloc_providers.dart';
 import 'package:connectobia/db/shared_prefs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';

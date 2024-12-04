@@ -4,17 +4,11 @@ part of 'edit_profile_bloc.dart';
 sealed class EditProfileEvent {}
 
 class EditProfileSave extends EditProfileEvent {
-  final String firstName;
-  final String lastName;
-  final String username;
-  final String industry;
-  final String brandName;
+  final String title;
+  final String description;
 
   EditProfileSave({
-    required this.firstName,
-    required this.lastName,
-    required this.username,
-    required this.industry,
-    required this.brandName,
+    required this.title,
+    required this.description,
   });
 }

@@ -13,6 +13,7 @@ AppBar transparentAppBar(String? title,
     {List<Widget>? actions, required BuildContext context}) {
   final shadTheme = ShadTheme.of(context);
   return AppBar(
+    elevation: 0,
     title: Text(title ?? ''),
     backgroundColor: shadTheme.brightness == Brightness.dark
         ? ShadColors.dark

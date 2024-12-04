@@ -5,7 +5,7 @@ import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
-import 'package:connectobia/modules/dashboard/application/edit_profile/edit_profile_bloc.dart';
+import 'package:connectobia/modules/dashboard/application/profile_settings/profile_settings.dart';
 import 'package:connectobia/modules/dashboard/data/user_repo.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,15 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-class EditProfileSheet extends StatefulWidget {
-  final User user;
-
-  const EditProfileSheet({super.key, required this.user});
-
-  @override
-  State<EditProfileSheet> createState() => _EditProfileSheetState();
-}
 
 class LabeledTextField extends StatelessWidget {
   final String text;
@@ -41,12 +32,21 @@ class LabeledTextField extends StatelessWidget {
   }
 }
 
-class _EditProfileSheetState extends State<EditProfileSheet> {
+class UserSettingSheet extends StatefulWidget {
+  final User user;
+
+  const UserSettingSheet({super.key, required this.user});
+
+  @override
+  State<UserSettingSheet> createState() => _UserSettingSheetState();
+}
+
+class _UserSettingSheetState extends State<UserSettingSheet> {
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _usernameController;
   late final TextEditingController _brandNameController;
-  late final editProfileBloc = BlocProvider.of<EditProfileBloc>(context);
+  late final editProfileBloc = BlocProvider.of<ProfileSettingsBloc>(context);
   late String industry = widget.user.industry;
   final FocusNode industryFocusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
@@ -54,9 +54,9 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<EditProfileBloc, EditProfileState>(
+    return BlocConsumer<ProfileSettingsBloc, ProfileSettingsState>(
       listener: (context, state) {
-        if (state is EditProfileSuccess) {
+        if (state is ProfileSettingsSuccess) {
           ShadToaster.of(context).show(
             const ShadToast(
               title: Text('Profile updated successfully'),
@@ -71,7 +71,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                 brandName: _brandNameController.text,
                 industry: industry,
               ));
-        } else if (state is EditProfileFailure) {
+        } else if (state is ProfileSettingsFailure) {
           ShadToaster.of(context).show(
             const ShadToast(
               title: Text('Profile update failed'),
@@ -82,7 +82,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       builder: (context, state) {
         final Brightness brightness = ShadTheme.of(context).brightness;
         return Scaffold(
-          appBar: transparentAppBar('Edit Profile', context: context),
+          appBar: transparentAppBar('User Settings', context: context),
           body: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,10 +230,14 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                 CircleAvatar(
                                   radius: 50,
                                   backgroundImage: CachedNetworkImageProvider(
-                                    Avatar.getUserImage(
-                                      id: widget.user.id,
-                                      image: widget.user.avatar,
-                                    ),
+                                    widget.user.avatar.isEmpty
+                                        ? Avatar.getAvatarPlaceholder(
+                                            widget.user.firstName,
+                                            widget.user.lastName)
+                                        : Avatar.getUserImage(
+                                            id: widget.user.id,
+                                            image: widget.user.avatar,
+                                          ),
                                   ),
                                 ),
                                 Positioned(
@@ -317,7 +321,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                           child: ShadButton(
                             onPressed: () {
                               editProfileBloc.add(
-                                EditProfileSave(
+                                ProfileSettingsSave(
                                   firstName: _firstNameController.text,
                                   lastName: _lastNameController.text,
                                   username: _usernameController.text,
@@ -326,7 +330,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                 ),
                               );
                             },
-                            child: state is EditProfileLoading
+                            child: state is ProfileSettingsLoading
                                 ? Center(
                                     child: CircularProgressIndicator(
                                     color: brightness == Brightness.light

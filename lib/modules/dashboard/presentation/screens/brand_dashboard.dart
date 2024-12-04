@@ -6,9 +6,10 @@ import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/presentation/views/edit_profile.dart';
+import 'package:connectobia/modules/dashboard/presentation/views/edit_influencer_profile.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/featured_listing.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/popular_categories.dart';
+import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/bottom_navigation.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/section_title.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
@@ -43,6 +44,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
+                elevation: 0,
                 backgroundColor:
                     state is DarkTheme ? ShadColors.dark : ShadColors.light,
                 floating: true,
@@ -50,16 +52,18 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 scrolledUnderElevation: 0,
                 centerTitle: false,
                 title: Text(Greetings.getGreeting(user.firstName)),
-                bottom: const PreferredSize(
-                  preferredSize: Size.fromHeight(69),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(69),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    child: ShadInput(
-                      placeholder: Text('Search for services or influencers'),
-                      prefix: Icon(LucideIcons.search),
+                    child: ShadInputFormField(
+                      placeholder:
+                          const Text('Search for services or influencers'),
+                      prefix: const Icon(LucideIcons.search),
+                      suffix: const Icon(LucideIcons.filter),
                     ),
                   ),
                 ),
@@ -70,10 +74,13 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     },
                     child: CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
-                        Avatar.getUserImage(
-                          id: user.id,
-                          image: user.avatar,
-                        ),
+                        user.avatar.isNotEmpty
+                            ? Avatar.getUserImage(
+                                id: user.id,
+                                image: user.avatar,
+                              )
+                            : Avatar.getAvatarPlaceholder(
+                                user.firstName, user.lastName),
                       ),
                     ),
                   ),
@@ -153,11 +160,23 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage: CachedNetworkImageProvider(
-                            Avatar.getUserImage(
-                              id: user.id,
-                              image: user.avatar,
+                        ShadTooltip(
+                          builder: (context) => const Text('Edit Profile'),
+                          child: GestureDetector(
+                            onTap: () {
+                              _displayEditUserSettings(context);
+                            },
+                            child: CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(
+                                  user.avatar.isNotEmpty
+                                      ? Avatar.getUserImage(
+                                          id: user.id,
+                                          image: user.avatar,
+                                        )
+                                      : Avatar.getAvatarPlaceholder(
+                                          user.firstName,
+                                          user.lastName,
+                                        )),
                             ),
                           ),
                         ),
@@ -206,14 +225,13 @@ class _BrandDashboardState extends State<BrandDashboard> {
               ListTile(
                 title: const Row(
                   children: [
-                    Icon(LucideIcons.userCog),
+                    Icon(LucideIcons.settings),
                     SizedBox(width: 16),
-                    Text('Edit Profile'),
+                    Text('Settings'),
                   ],
                 ),
                 onTap: () {
-                  Navigator.pop(context);
-                  _navigateAndDisplaySelection(context);
+                  _displayEditInfluencerProfile(context);
                 },
               ),
               ListTile(
@@ -271,13 +289,28 @@ class _BrandDashboardState extends State<BrandDashboard> {
     );
   }
 
-  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+  Future<void> _displayEditInfluencerProfile(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+    final influencerParam = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const EditInfluencerProfile(),
+      ),
+    );
+    if (influencerParam == null) return;
+    setState(() {
+      user = influencerParam;
+    });
+  }
+
+  Future<void> _displayEditUserSettings(BuildContext context) async {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
     final userParam = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditProfileSheet(
+        builder: (context) => UserSettingSheet(
           user: user,
         ),
       ),

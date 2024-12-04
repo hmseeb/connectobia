@@ -34,10 +34,20 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       RecordModel user = await pb.collection('users').create(body: body);
       await pb.collection('users').requestVerification(email);
+
+      // TODO: Find a workaround for this delay
       Future.delayed(const Duration(milliseconds: 1000), () async {
         await AuthRepo.login(email, password);
       });
       debugPrint('Created account for $email');
+
+      if (accountType == 'influencer') {
+        String id = user.id;
+        final body = <String, dynamic>{
+          "user": id,
+        };
+        await pb.collection('influencers').create(body: body);
+      }
       return user;
     } catch (e) {
       debugPrint(e.toString());
