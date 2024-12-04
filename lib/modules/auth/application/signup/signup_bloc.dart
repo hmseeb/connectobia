@@ -21,6 +21,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       String? error = InputValidation.validateBrandForm(
         firstName: event.firstName,
         lastName: event.lastName,
+        username: event.username,
         email: event.email,
         brandName: event.brandName,
         password: event.password,
@@ -36,6 +37,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await AuthRepo.createAccount(
           event.firstName,
           event.lastName,
+          event.username,
           event.email,
           event.brandName,
           event.password,
@@ -54,6 +56,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       String? error = InputValidation.validateInfluencerForm(
         firstName: event.firstName,
         lastName: event.lastName,
+        username: event.username,
         email: event.email,
         password: event.password,
         industry: event.industry,
@@ -68,6 +71,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await AuthRepo.createAccount(
           event.firstName,
           event.lastName,
+          event.username,
           event.email,
           '',
           event.password,

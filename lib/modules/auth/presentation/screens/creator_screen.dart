@@ -31,6 +31,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
   late final TextEditingController lastNameController;
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
+  late final TextEditingController usernameController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
   String industry = '';
   var searchValue = '';
@@ -88,6 +89,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                         firstNameController: firstNameController,
                         lastNameController: lastNameController,
                         emailController: emailController,
+                        usernameController: usernameController,
                         passwordController: passwordController),
                     CustomShadSelect(
                       items: IndustryList.industries,
@@ -108,6 +110,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                           signupBloc.add(SignupInfluencerSubmitted(
                             firstName: firstNameController.text,
                             lastName: lastNameController.text,
+                            username: usernameController.text,
                             email: emailController.text,
                             password: passwordController.text,
                             industry: industry,
@@ -138,6 +141,8 @@ class _CreatorScreenState extends State<CreatorScreen> {
     lastNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    usernameController.dispose();
+
     super.dispose();
   }
 
@@ -147,6 +152,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
     lastNameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    usernameController = TextEditingController();
     super.initState();
   }
 }

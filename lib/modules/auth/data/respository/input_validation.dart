@@ -6,6 +6,7 @@ class InputValidation {
   static String? validateBrandForm({
     required String firstName,
     required String lastName,
+    required String username,
     required String email,
     required String password,
     required String brandName,
@@ -17,6 +18,10 @@ class InputValidation {
       return error;
     }
     error = validateLastName(lastName);
+    if (error != null) {
+      return error;
+    }
+    error = validateUsername(username);
     if (error != null) {
       return error;
     }
@@ -86,6 +91,7 @@ class InputValidation {
   static String? validateInfluencerForm({
     required String firstName,
     required String lastName,
+    required String username,
     required String email,
     required String password,
     required String industry,
@@ -99,6 +105,11 @@ class InputValidation {
     if (error != null) {
       return error;
     }
+    error = validateUsername(username);
+    if (error != null) {
+      return error;
+    }
+
     error = validateEmail(email);
     if (error != null) {
       return error;
@@ -150,5 +161,45 @@ class InputValidation {
     }
 
     return errors;
+  }
+
+  static String? validateUsername(String? username) {
+    // Check if username length is between 8 and 20 characters
+
+    if (username == null || username.isEmpty) {
+      return "Username is required.";
+    }
+
+    final lengthRegex = RegExp(r"^.{3,20}$");
+    if (!lengthRegex.hasMatch(username)) {
+      return "Username must be between 3 and 20 characters.";
+    }
+
+    // Check if username starts with _ or .
+    final startRegex = RegExp(r"^[_.]");
+    if (startRegex.hasMatch(username)) {
+      return "Username cannot start with '_' or '.'.";
+    }
+
+    // Check if username ends with _ or .
+    final endRegex = RegExp(r"[_.]$");
+    if (endRegex.hasMatch(username)) {
+      return "Username cannot end with '_' or '.'.";
+    }
+
+    // Check if username contains consecutive __, .., _. or ._
+    final consecutiveRegex = RegExp(r".*[_.]{2,}.*");
+    if (consecutiveRegex.hasMatch(username)) {
+      return "Username cannot contain '__', '_.', '._', or '..'.";
+    }
+
+    // Check if username contains only allowed characters (letters, digits, _, .)
+    final validCharsRegex = RegExp(r"^[a-zA-Z0-9._]+$");
+    if (!validCharsRegex.hasMatch(username)) {
+      return "Username can only contain letters, digits, '_', or '.'.";
+    }
+
+    // If all checks pass, return null (valid username)
+    return null;
   }
 }

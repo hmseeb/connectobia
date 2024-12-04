@@ -29,6 +29,7 @@ class BrandScreen extends StatefulWidget {
 class _BrandScreenState extends State<BrandScreen> {
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;
+  late final TextEditingController usernameController;
   late final TextEditingController emailController;
   late final TextEditingController brandNameController;
   late final TextEditingController passwordController;
@@ -85,6 +86,7 @@ class _BrandScreenState extends State<BrandScreen> {
                     BrandSignupForm(
                       firstNameController: firstNameController,
                       lastNameController: lastNameController,
+                      usernameController: usernameController,
                       emailController: emailController,
                       brandNameController: brandNameController,
                       passwordController: passwordController,
@@ -108,6 +110,7 @@ class _BrandScreenState extends State<BrandScreen> {
                         signupBloc.add(SignupBrandSubmitted(
                           firstName: firstNameController.text,
                           lastName: lastNameController.text,
+                          username: usernameController.text,
                           email: emailController.text,
                           brandName: brandNameController.text,
                           password: passwordController.text,
@@ -138,19 +141,23 @@ class _BrandScreenState extends State<BrandScreen> {
   void dispose() {
     firstNameController.dispose();
     lastNameController.dispose();
+    usernameController.dispose();
     emailController.dispose();
     brandNameController.dispose();
     passwordController.dispose();
     industryFocusNode.dispose();
     scrollController.dispose();
+
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+
     firstNameController = TextEditingController();
     lastNameController = TextEditingController();
+    usernameController = TextEditingController();
     emailController = TextEditingController();
     brandNameController = TextEditingController();
     passwordController = TextEditingController();

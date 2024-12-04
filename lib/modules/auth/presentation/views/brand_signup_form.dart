@@ -11,6 +11,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 class BrandSignupForm extends StatefulWidget {
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
+  final TextEditingController usernameController;
   final TextEditingController emailController;
   final TextEditingController brandNameController;
   final TextEditingController passwordController;
@@ -23,6 +24,7 @@ class BrandSignupForm extends StatefulWidget {
     required this.firstNameController,
     required this.lastNameController,
     required this.industry,
+    required this.usernameController,
   });
 
   @override
@@ -40,6 +42,18 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
           lastName: widget.lastNameController,
           showLabels: false,
         ),
+        ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            placeholder: const Text('Username'),
+            controller: widget.usernameController,
+            keyboardType: TextInputType.name,
+            validator: (value) {
+              final error = InputValidation.validateUsername(value);
+              if (error != null) {
+                return error;
+              }
+              return null;
+            }),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Brand Name'),

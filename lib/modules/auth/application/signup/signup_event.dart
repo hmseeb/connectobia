@@ -3,6 +3,7 @@ part of 'signup_bloc.dart';
 class SignupBrandSubmitted extends SignupEvent {
   final String firstName;
   final String lastName;
+  final String username;
   final String email;
   final String brandName;
   final String password;
@@ -12,6 +13,7 @@ class SignupBrandSubmitted extends SignupEvent {
   SignupBrandSubmitted({
     required this.firstName,
     required this.lastName,
+    required this.username,
     required this.email,
     required this.brandName,
     required this.password,
@@ -25,6 +27,7 @@ sealed class SignupEvent {}
 class SignupInfluencerSubmitted extends SignupEvent {
   final String firstName;
   final String lastName;
+  final String username;
   final String email;
   final String password;
   final String industry;
@@ -32,6 +35,7 @@ class SignupInfluencerSubmitted extends SignupEvent {
   SignupInfluencerSubmitted({
     required this.firstName,
     required this.lastName,
+    required this.username,
     required this.email,
     required this.password,
     required this.industry,

@@ -13,13 +13,15 @@ class CreatorSignupForm extends StatefulWidget {
   final TextEditingController lastNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController usernameController;
 
   const CreatorSignupForm(
       {super.key,
       required this.firstNameController,
       required this.lastNameController,
       required this.emailController,
-      required this.passwordController});
+      required this.passwordController,
+      required this.usernameController});
 
   @override
   State<CreatorSignupForm> createState() => _CreatorSignupFormState();
@@ -37,6 +39,18 @@ class _CreatorSignupFormState extends State<CreatorSignupForm> {
           lastName: widget.lastNameController,
           showLabels: false,
         ),
+        ShadInputFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            placeholder: const Text('Username'),
+            controller: widget.usernameController,
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              final error = InputValidation.validateUsername(value);
+              if (error != null) {
+                return error;
+              }
+              return null;
+            }),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),

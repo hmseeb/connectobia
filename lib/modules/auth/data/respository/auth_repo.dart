@@ -12,6 +12,7 @@ class AuthRepo {
   static Future<RecordModel> createAccount(
       String firstName,
       String lastName,
+      String username,
       String email,
       String brandName,
       String password,
@@ -25,6 +26,7 @@ class AuthRepo {
       "passwordConfirm": password,
       "first_name": firstName,
       "last_name": lastName,
+      "username": username,
       "brand_name": brandName,
       "account_type": accountType,
       "industry": industry,
