@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/common/extensions/string_extention.dart';
+import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
 import 'package:connectobia/theme/colors.dart';
@@ -29,6 +31,14 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
       },
       builder: (context, state) {
         return Scaffold(
+          // message floating action button
+          appBar: transparentAppBar('', context: context),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: const Icon(
+              Icons.message,
+            ),
+          ),
           body: Skeletonizer(
             enabled: state is InfluencerProfileLoading,
             child: Center(
@@ -136,7 +146,12 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                             color: Colors.blue,
                                           )
                                         : const SizedBox(),
-
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(IndustryFormatter.keyToValue(
+                                        state.influencer.expand.user.industry)),
                                     // location
                                     const Spacer(),
                                     // location icon
@@ -151,12 +166,6 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                         fontSize: 14,
                                       ),
                                     ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                        '@${state.influencer.expand.user.username}'),
                                   ],
                                 ),
 
@@ -195,6 +204,51 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                           color: Colors.blue,
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // analytics
+                                const SizedBox(height: 16),
+
+                                const Row(
+                                  children: [
+                                    Expanded(
+                                      child: ShadCard(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text('ENG. RATE'),
+                                            Text(
+                                              '0.0%',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    // average engagement per post
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: ShadCard(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text('ENG. PER POST'),
+                                            Text(
+                                              '0.0%',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
