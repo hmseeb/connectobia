@@ -43,7 +43,6 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                   onTap: () {
                     if (state is BrandDashboardLoadedInflueners) {
                       final id = influencers[page].items[index].id;
-                      print(id);
                       BlocProvider.of<InfluencerProfileBloc>(context)
                           .add(InfluencerProfileLoad(id));
                       Navigator.pushNamed(context, '/influencerProfile',
@@ -61,7 +60,7 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                           Center(
                             child: FeatureImage(
                                 image: state is BrandDashboardLoadedInflueners
-                                    ? influencers[page].items[index].avatar
+                                    ? influencers[page].items[index].banner
                                     : '',
                                 id: state is BrandDashboardLoadedInflueners
                                     ? influencers[page].items[index].id
