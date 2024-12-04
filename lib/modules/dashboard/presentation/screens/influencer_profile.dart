@@ -32,7 +32,18 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
       builder: (context, state) {
         return Scaffold(
           // message floating action button
-          appBar: transparentAppBar('', context: context),
+          appBar: transparentAppBar(
+            state is InfluencerProfileLoaded
+                ? state.influencer.expand.user.username
+                : '',
+            context: context,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.more_vert),
+                onPressed: () {},
+              ),
+            ],
+          ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
             child: const Icon(
