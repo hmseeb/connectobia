@@ -7,6 +7,7 @@ import 'package:connectobia/modules/dashboard/application/influencer_profile/inf
 import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:readmore/readmore.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -18,9 +19,38 @@ class InfluencerProfile extends StatefulWidget {
   State createState() => _InfluencerProfileState();
 }
 
-class _InfluencerProfileState extends State<InfluencerProfile> {
-  bool _isExpanded = false;
+class ProfileAnalyticsCard extends StatelessWidget {
+  final String title;
+  final String value;
+  const ProfileAnalyticsCard({
+    super.key,
+    required this.title,
+    required this.value,
+  });
 
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ShadCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfluencerProfileState extends State<InfluencerProfile> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
@@ -153,82 +183,30 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                 // about influencer
                                 const SizedBox(height: 16),
                                 // description in rich text with "View More" gesture
-                                Wrap(
-                                  children: [
-                                    Text(
-                                      _isExpanded
-                                          ? state.influencer.description
-                                              .removeAllHtmlTags()
-                                          : (state.influencer.description
-                                                      .removeAllHtmlTags()
-                                                      .length >
-                                                  100
-                                              ? '${state.influencer.description.removeAllHtmlTags().substring(0, 100)}...'
-                                              : state.influencer.description
-                                                  .removeAllHtmlTags()),
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _isExpanded = !_isExpanded;
-                                        });
-                                      },
-                                      child: Text(
-                                        _isExpanded ? 'View Less' : 'View More',
-                                        style: const TextStyle(
-                                          color: Colors.blue,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                ReadMoreText(
+                                  state.influencer.description
+                                      .removeAllHtmlTags(),
+                                  trimMode: TrimMode.Line,
+                                  trimLines: 2,
+                                  trimCollapsedText: 'Show more',
+                                  trimExpandedText: ' Show less',
+                                  moreStyle: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 // analytics
                                 const SizedBox(height: 16),
 
                                 const Row(
                                   children: [
-                                    Expanded(
-                                      child: ShadCard(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('ENG. RATE'),
-                                            Text(
-                                              '0.0%',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                    ProfileAnalyticsCard(
+                                      title: 'FOLLOWERS',
+                                      value: '80K',
                                     ),
-                                    // average engagement per post
                                     SizedBox(width: 16),
-                                    Expanded(
-                                      child: ShadCard(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('ENG. PER POST'),
-                                            Text(
-                                              '0.0%',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                    ProfileAnalyticsCard(
+                                      title: 'ENG. RATE',
+                                      value: '2.3%',
                                     ),
                                   ],
                                 ),

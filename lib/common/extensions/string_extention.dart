@@ -2,8 +2,6 @@ extension HtmlString on String {
   String removeAllHtmlTags() {
     RegExp exp = RegExp(
       r"<[^>]*>",
-      multiLine: true,
-      caseSensitive: true,
     );
     return replaceAll(exp, '');
   }
