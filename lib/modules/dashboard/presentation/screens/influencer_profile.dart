@@ -23,7 +23,6 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final Brightness brightness = ShadTheme.of(context).brightness;
     return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
       listener: (context, state) {
         if (state is InfluencerProfileLoaded) {}
