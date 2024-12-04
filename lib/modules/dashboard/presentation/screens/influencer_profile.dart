@@ -79,7 +79,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
           ),
           body: Skeletonizer(
             enabled: state is InfluencerProfileLoading,
-            child: Center(
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -130,87 +130,89 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                       ? Center(
                           child: SizedBox(
                             width: 400,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // influencer public profile details
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${state.influencer.expand.user.firstName} ${state.influencer.expand.user.lastName}',
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // influencer public profile details
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${state.influencer.expand.user.firstName} ${state.influencer.expand.user.lastName}',
+                                        style: const TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    // verified badge
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    state.influencer.expand.user.verified
-                                        ? const Icon(
-                                            Icons.verified,
-                                            color: Colors.blue,
-                                          )
-                                        : const SizedBox(),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(IndustryFormatter.keyToValue(
-                                        state.influencer.expand.user.industry)),
-                                    // location
-                                    const Spacer(),
-                                    // location icon
-                                    const Icon(
-                                      Icons.location_on,
-                                      color: Colors.grey,
-                                      size: 14,
-                                    ),
-                                    Text(
-                                      state.influencer.location,
-                                      style: const TextStyle(
+                                      // verified badge
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      state.influencer.expand.user.verified
+                                          ? const Icon(
+                                              Icons.verified,
+                                              color: Colors.green,
+                                            )
+                                          : const SizedBox(),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(IndustryFormatter.keyToValue(state
+                                          .influencer.expand.user.industry)),
+                                      // location
+                                      const Spacer(),
+                                      // location icon
+                                      const Icon(
+                                        Icons.location_on,
+                                        color: Colors.grey,
+                                        size: 14,
+                                      ),
+                                      Text(
+                                        state.influencer.location,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  // influencer private profile details
+                                  const SizedBox(height: 16),
+                                  LabeledTextField(state.influencer.title),
+                                  // about influencer
+                                  const SizedBox(height: 16),
+                                  // description in rich text with "View More" gesture
+                                  ReadMoreText(
+                                    state.influencer.description
+                                        .removeAllHtmlTags(),
+                                    trimMode: TrimMode.Line,
+                                    trimLines: 2,
+                                    trimCollapsedText: 'Show more',
+                                    trimExpandedText: ' Show less',
+                                    moreStyle: const TextStyle(
                                         fontSize: 14,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  // analytics
+                                  const SizedBox(height: 16),
+
+                                  const Row(
+                                    children: [
+                                      ProfileAnalyticsCard(
+                                        title: 'FOLLOWERS',
+                                        value: '80K',
                                       ),
-                                    ),
-                                  ],
-                                ),
-
-                                // influencer private profile details
-                                const SizedBox(height: 16),
-                                LabeledTextField(state.influencer.title),
-                                // about influencer
-                                const SizedBox(height: 16),
-                                // description in rich text with "View More" gesture
-                                ReadMoreText(
-                                  state.influencer.description
-                                      .removeAllHtmlTags(),
-                                  trimMode: TrimMode.Line,
-                                  trimLines: 2,
-                                  trimCollapsedText: 'Show more',
-                                  trimExpandedText: ' Show less',
-                                  moreStyle: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                // analytics
-                                const SizedBox(height: 16),
-
-                                const Row(
-                                  children: [
-                                    ProfileAnalyticsCard(
-                                      title: 'FOLLOWERS',
-                                      value: '80K',
-                                    ),
-                                    SizedBox(width: 16),
-                                    ProfileAnalyticsCard(
-                                      title: 'ENG. RATE',
-                                      value: '2.3%',
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      SizedBox(width: 16),
+                                      ProfileAnalyticsCard(
+                                        title: 'ENG. RATE',
+                                        value: '2.3%',
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         )

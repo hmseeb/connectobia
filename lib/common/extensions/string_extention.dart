@@ -1,9 +1,12 @@
 extension HtmlString on String {
   String removeAllHtmlTags() {
-    RegExp exp = RegExp(
-      r"<[^>]*>",
-    );
-    return replaceAll(exp, '');
+    // Replace <br> with newline
+    String cleanedString = replaceAll(RegExp(r'<br\s*/?>'), '\n');
+
+    // Remove other HTML tags
+    cleanedString = cleanedString.replaceAll(RegExp(r'<[^>]*>'), '');
+
+    return cleanedString;
   }
 }
 
