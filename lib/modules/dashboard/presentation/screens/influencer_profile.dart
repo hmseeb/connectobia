@@ -84,7 +84,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                               id: state
                                                   .influencer.expand.user.id,
                                               image: state.influencer.expand
-                                                  .user.banner)
+                                                  .user.avatar)
                                           : Avatar.getAvatarPlaceholder(
                                               'H', 'A'),
                                     ),
