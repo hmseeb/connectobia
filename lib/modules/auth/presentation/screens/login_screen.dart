@@ -51,12 +51,23 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                     );
                   } else if (state is LoginSuccess) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/homeScreen',
-                      (route) => false,
-                      arguments: {'user': state.user},
-                    );
+                    if (state.user.hasCompletedOnboarding) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/homeScreen',
+                        (route) => false,
+                        arguments: {'user': state.user},
+                      );
+                    } else {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        state.user.accountType == 'influencer'
+                            ? '/influencerOnboarding'
+                            : '/brandOnboarding',
+                        (route) => false,
+                        arguments: {'user': state.user},
+                      );
+                    }
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
                       context,

@@ -45,8 +45,12 @@ class VerifyEmailState extends State<VerifyEmail> {
               title: Text('Email verified successfully'),
             ),
           );
+
           Navigator.of(context).pushNamedAndRemoveUntil(
-              '/homeScreen', (route) => false,
+              state.user.accountType == 'influencer'
+                  ? '/influencerOnboarding'
+                  : '/brandOnboarding',
+              (route) => false,
               arguments: {
                 'user': state.user,
               });

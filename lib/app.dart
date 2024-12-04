@@ -93,13 +93,23 @@ class ConnectobiaState extends State<Connectobia> {
   void handleNavigation(
       {required AuthState state, required BuildContext context}) async {
     if (state is Authenticated) {
-      Navigator.pushReplacementNamed(
-        context,
-        '/brandDashboard',
-        arguments: {
-          'user': state.user,
-        },
-      );
+      if (state.user.hasCompletedOnboarding) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/homeScreen',
+          (route) => false,
+          arguments: {'user': state.user},
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          state.user.accountType == 'influencer'
+              ? '/influencerOnboarding'
+              : '/brandOnboarding',
+          (route) => false,
+          arguments: {'user': state.user},
+        );
+      }
     } else if (state is Unauthenticated) {
       Navigator.pushReplacementNamed(
         context,

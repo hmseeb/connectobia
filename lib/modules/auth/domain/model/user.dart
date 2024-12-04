@@ -27,6 +27,7 @@ class User {
   final String industry;
   final String banner;
   final String brandName;
+  final bool hasCompletedOnboarding;
 
   User({
     required this.id,
@@ -45,6 +46,7 @@ class User {
     required this.industry,
     required this.banner,
     required this.brandName,
+    required this.hasCompletedOnboarding,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -64,8 +66,8 @@ class User {
         industry: json["industry"],
         banner: json["banner"],
         brandName: json["brand_name"],
+        hasCompletedOnboarding: json["hasCompletedOnboarding"],
       );
-
   factory User.fromRecord(RecordModel record) => User.fromJson(record.toJson());
 
   User copyWith({
@@ -85,6 +87,7 @@ class User {
     String? industry,
     String? banner,
     String? brandName,
+    bool? hasCompletedOnboarding,
   }) =>
       User(
         id: id ?? this.id,
@@ -103,6 +106,8 @@ class User {
         industry: industry ?? this.industry,
         banner: banner ?? this.banner,
         brandName: brandName ?? this.brandName,
+        hasCompletedOnboarding:
+            hasCompletedOnboarding ?? this.hasCompletedOnboarding,
       );
 
   Map<String, dynamic> toJson() => {
@@ -122,5 +127,6 @@ class User {
         "industry": industry,
         "banner": banner,
         "brand_name": brandName,
+        "hasCompletedOnboarding": hasCompletedOnboarding,
       };
 }
