@@ -6,7 +6,8 @@ class EditProfileRepo {
     required String description,
   }) async {
     final pb = await PocketBaseSingleton.instance;
-    final id = pb.authStore.model.id;
+    final id = pb.authStore.record!.id;
+    ;
     final body = <String, dynamic>{
       "title": title,
       "description": description,

@@ -15,7 +15,8 @@ class UserRepo {
         filename: username, // You can change this to any file name
       );
       final pb = await PocketBaseSingleton.instance;
-      final String recordId = pb.authStore.model.id;
+      final String recordId = pb.authStore.record!.id;
+      ;
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
       rethrow;
@@ -30,7 +31,8 @@ class UserRepo {
     required String brandName,
   }) async {
     final pb = await PocketBaseSingleton.instance;
-    final String recordId = pb.authStore.model.id;
+    final String recordId = pb.authStore.record!.id;
+    ;
     final body = <String, dynamic>{
       "first_name": firstName,
       "last_name": lastName,

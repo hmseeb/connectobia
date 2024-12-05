@@ -19,7 +19,7 @@ class EmailVerificationBloc
     on<EmailSubscribeEvent>((event, emit) async {
       try {
         final pb = await PocketBaseSingleton.instance;
-        final id = pb.authStore.model.id;
+        final id = pb.authStore.record!.id;
         await pb.collection('users').subscribe(
           id,
           (e) {

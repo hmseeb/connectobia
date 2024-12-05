@@ -90,7 +90,8 @@ class AuthRepo {
   static Future<User> getUser() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final id = pb.authStore.model.id;
+      final id = pb.authStore.record!.id;
+      ;
       RecordModel record = await pb.collection('users').getOne(id);
       User user = User.fromRecord(record);
       return user;
