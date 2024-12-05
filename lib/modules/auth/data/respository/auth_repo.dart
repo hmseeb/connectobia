@@ -107,7 +107,7 @@ class AuthRepo {
       final authData =
           await pb.collection('users').authWithPassword(email, password);
 
-      debugPrint('Logged in as ${authData.record!.data['email']}');
+      debugPrint('Logged in as ${authData.record.data['email']}');
       return authData;
     } catch (e) {
       debugPrint(e.toString());

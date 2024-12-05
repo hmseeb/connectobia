@@ -30,7 +30,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
 
       try {
         final authData = await AuthRepo.login(event.email, event.password);
-        bool isVerified = authData.record!.data['verified'];
+        bool isVerified = authData.record.data['verified'];
         User user = await AuthRepo.getUser();
         if (isVerified) {
           emit(LoginSuccess(user));
