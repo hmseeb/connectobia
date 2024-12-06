@@ -12,3 +12,5 @@ class LoginSubmitted extends LoginBlocEvent {
     required this.password,
   });
 }
+
+class LoginWithInstagram extends LoginBlocEvent {}

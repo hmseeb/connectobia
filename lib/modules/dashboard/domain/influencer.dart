@@ -129,10 +129,9 @@ class User {
   final String collectionName;
   final DateTime created;
   final bool emailVisibility;
-  final String firstName;
+  final String fullName;
   final String id;
   final String industry;
-  final String lastName;
   final DateTime updated;
   final String username;
   final bool verified;
@@ -146,10 +145,9 @@ class User {
     required this.collectionName,
     required this.created,
     required this.emailVisibility,
-    required this.firstName,
+    required this.fullName,
     required this.id,
     required this.industry,
-    required this.lastName,
     required this.updated,
     required this.username,
     required this.verified,
@@ -164,10 +162,9 @@ class User {
         collectionName: json["collectionName"],
         created: DateTime.parse(json["created"]),
         emailVisibility: json["emailVisibility"],
-        firstName: json["first_name"],
+        fullName: json["full_name"],
         id: json["id"],
         industry: json["industry"],
-        lastName: json["last_name"],
         updated: DateTime.parse(json["updated"]),
         username: json["username"],
         verified: json["verified"],
@@ -184,10 +181,9 @@ class User {
     String? collectionName,
     DateTime? created,
     bool? emailVisibility,
-    String? firstName,
+    String? fullName,
     String? id,
     String? industry,
-    String? lastName,
     DateTime? updated,
     String? username,
     bool? verified,
@@ -201,10 +197,9 @@ class User {
         collectionName: collectionName ?? this.collectionName,
         created: created ?? this.created,
         emailVisibility: emailVisibility ?? this.emailVisibility,
-        firstName: firstName ?? this.firstName,
+        fullName: fullName ?? this.fullName,
         id: id ?? this.id,
         industry: industry ?? this.industry,
-        lastName: lastName ?? this.lastName,
         updated: updated ?? this.updated,
         username: username ?? this.username,
         verified: verified ?? this.verified,
@@ -218,10 +213,9 @@ class User {
         "collectionName": collectionName,
         "created": created.toIso8601String(),
         "emailVisibility": emailVisibility,
-        "first_name": firstName,
+        "full_name": fullName,
         "id": id,
         "industry": industry,
-        "last_name": lastName,
         "updated": updated.toIso8601String(),
         "username": username,
         "verified": verified,

@@ -20,9 +20,8 @@ class Item {
   final String? email;
   final DateTime created;
   final DateTime updated;
-  final String firstName;
+  final String fullName;
   final String avatar;
-  final String lastName;
   final String brandName;
   final String accountType;
   final String industry;
@@ -38,9 +37,8 @@ class Item {
     this.email,
     required this.created,
     required this.updated,
-    required this.firstName,
+    required this.fullName,
     required this.avatar,
-    required this.lastName,
     required this.brandName,
     required this.accountType,
     required this.industry,
@@ -57,9 +55,8 @@ class Item {
         email: json["email"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
-        firstName: json["first_name"],
+        fullName: json["full_name"],
         avatar: json["avatar"],
-        lastName: json["last_name"],
         brandName: json["brand_name"],
         accountType: json["account_type"],
         industry: json["industry"],
@@ -76,9 +73,8 @@ class Item {
         "email": email,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
-        "first_name": firstName,
+        "full_name": fullName,
         "avatar": avatar,
-        "last_name": lastName,
         "brand_name": brandName,
         "account_type": accountType,
         "industry": industry,

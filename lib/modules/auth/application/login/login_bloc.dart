@@ -42,5 +42,15 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         emit(LoginFailure(e.toString()));
       }
     });
+
+    on<LoginWithInstagram>((event, emit) async {
+      emit(InstagramLoading());
+      try {
+        await AuthRepo.authWithInstagram();
+        emit(LoginSuccess(await AuthRepo.getUser()));
+      } catch (e) {
+        emit(LoginFailure(e.toString()));
+      }
+    });
   }
 }

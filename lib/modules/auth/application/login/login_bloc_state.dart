@@ -1,5 +1,7 @@
 part of 'login_bloc.dart';
 
+final class InstagramLoading extends LoginBlocState {}
+
 final class LoginBlocInitial extends LoginBlocState {}
 
 @immutable

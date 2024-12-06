@@ -51,7 +51,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 pinned: true,
                 scrolledUnderElevation: 0,
                 centerTitle: false,
-                title: Text(Greetings.getGreeting(user.firstName)),
+                title: Text(Greetings.getGreeting(user.fullName.split(' ')[0])),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(69),
                   child: Padding(
@@ -79,8 +79,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                                 id: user.id,
                                 image: user.avatar,
                               )
-                            : Avatar.getAvatarPlaceholder(
-                                user.firstName, user.lastName),
+                            : Avatar.getAvatarPlaceholder(user.fullName),
                       ),
                     ),
                   ),
@@ -174,8 +173,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                                           image: user.avatar,
                                         )
                                       : Avatar.getAvatarPlaceholder(
-                                          user.firstName,
-                                          user.lastName,
+                                          user.fullName,
                                         )),
                             ),
                           ),
@@ -200,7 +198,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${user.firstName} ${user.lastName}',
+                      user.fullName,
                       style: TextStyle(
                         color: state is DarkTheme
                             ? ShadColors.light

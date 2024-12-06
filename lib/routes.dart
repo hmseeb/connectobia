@@ -21,8 +21,8 @@ import 'package:connectobia/modules/auth/presentation/screens/verify_email_scree
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/influencer_profile.dart';
-import 'package:connectobia/modules/onboarding/presentation/screens/brand_onboarding.dart';
-import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboarding.dart';
+import 'package:connectobia/modules/onboarding/presentation/screens/brand_onboard_screen.dart';
+import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.

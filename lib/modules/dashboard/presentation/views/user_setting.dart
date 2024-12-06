@@ -4,7 +4,7 @@ import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/full_name.dart';
 import 'package:connectobia/modules/dashboard/application/profile_settings/profile_settings.dart';
 import 'package:connectobia/modules/dashboard/data/user_repo.dart';
 import 'package:connectobia/theme/colors.dart';
@@ -65,8 +65,8 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
           Navigator.pop(
               context,
               widget.user.copyWith(
-                firstName: _firstNameController.text,
-                lastName: _lastNameController.text,
+                fullName:
+                    '${_firstNameController.text} ${_lastNameController.text}',
                 username: _usernameController.text,
                 brandName: _brandNameController.text,
                 industry: industry,
@@ -232,8 +232,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                                   backgroundImage: CachedNetworkImageProvider(
                                     widget.user.avatar.isEmpty
                                         ? Avatar.getAvatarPlaceholder(
-                                            widget.user.firstName,
-                                            widget.user.lastName)
+                                            widget.user.fullName)
                                         : Avatar.getUserImage(
                                             id: widget.user.id,
                                             image: widget.user.avatar,
@@ -307,8 +306,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                           width: double.infinity,
                           child: CustomShadSelect(
                             items: IndustryList.industries,
-                            placeholder: IndustryFormatter.keyToValue(
-                                widget.user.industry),
+                            placeholder: widget.user.industry,
                             onSelected: (value) {
                               industry = value;
                             },
@@ -364,8 +362,10 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.user.firstName);
-    _lastNameController = TextEditingController(text: widget.user.lastName);
+    _firstNameController =
+        TextEditingController(text: widget.user.fullName.split(' ')[0]);
+    _lastNameController =
+        TextEditingController(text: widget.user.fullName.split(' ')[1]);
     _usernameController = TextEditingController(text: widget.user.username);
     _brandNameController = TextEditingController(text: widget.user.brandName);
   }

@@ -20,9 +20,8 @@ class User {
   final String email;
   final DateTime created;
   final DateTime updated;
-  final String firstName;
+  final String fullName;
   final String avatar;
-  final String lastName;
   final String accountType;
   final String industry;
   final String banner;
@@ -39,9 +38,8 @@ class User {
     required this.email,
     required this.created,
     required this.updated,
-    required this.firstName,
+    required this.fullName,
     required this.avatar,
-    required this.lastName,
     required this.accountType,
     required this.industry,
     required this.banner,
@@ -59,9 +57,8 @@ class User {
         email: json["email"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
-        firstName: json["first_name"],
+        fullName: json["full_name"],
         avatar: json["avatar"],
-        lastName: json["last_name"],
         accountType: json["account_type"],
         industry: json["industry"],
         banner: json["banner"],
@@ -80,9 +77,8 @@ class User {
     String? email,
     DateTime? created,
     DateTime? updated,
-    String? firstName,
+    String? fullName,
     String? avatar,
-    String? lastName,
     String? accountType,
     String? industry,
     String? banner,
@@ -99,9 +95,8 @@ class User {
         email: email ?? this.email,
         created: created ?? this.created,
         updated: updated ?? this.updated,
-        firstName: firstName ?? this.firstName,
+        fullName: fullName ?? this.fullName,
         avatar: avatar ?? this.avatar,
-        lastName: lastName ?? this.lastName,
         accountType: accountType ?? this.accountType,
         industry: industry ?? this.industry,
         banner: banner ?? this.banner,
@@ -120,9 +115,8 @@ class User {
         "email": email,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
-        "first_name": firstName,
+        "full_name": fullName,
         "avatar": avatar,
-        "last_name": lastName,
         "account_type": accountType,
         "industry": industry,
         "banner": banner,

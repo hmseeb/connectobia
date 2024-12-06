@@ -2,17 +2,17 @@ import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
+import 'package:connectobia/modules/auth/presentation/screens/brand_screen.dart';
 import 'package:connectobia/modules/auth/presentation/views/forget_password_sheet.dart';
 import 'package:connectobia/modules/auth/presentation/views/login_form.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/theme/buttons.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
 /// A screen that allows a user to sign in.
 ///
@@ -87,10 +87,6 @@ class _SigninScreenState extends State<SigninScreen> {
                         width: 150,
                       ),
                       const SizedBox(height: 20),
-                      const HeadingText(
-                        'Log in to your account',
-                      ),
-                      const SizedBox(height: 20),
                       LoginForm(
                           emailController: emailController,
                           passwordController: passwordController),
@@ -126,6 +122,26 @@ class _SigninScreenState extends State<SigninScreen> {
                                 password: passwordController.text));
                           },
                           isLoading: state is LoginLoading),
+                      const SizedBox(height: 20),
+                      const SizedBox(height: 20),
+                      const OrDivider(),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: SocialAuthBtn(
+                          icon: 'assets/icons/instagram.png',
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            BlocProvider.of<LoginBloc>(context)
+                                .add(LoginWithInstagram());
+                          },
+                          text: state is InstagramLoading
+                              ? 'Signing in with Instagram...'
+                              : 'Sign in with Instagram',
+                          borderSide: const BorderSide(),
+                          backgroundColor: ShadColors.lightForeground,
+                        ),
+                      ),
                       const SizedBox(height: 20),
                       AuthFlow(
                         title: 'Don\'t have an account? ',

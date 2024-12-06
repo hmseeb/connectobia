@@ -1,5 +1,4 @@
 import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/application/domain/user_list.dart';
 import 'package:flutter/material.dart';
@@ -51,8 +50,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                     : CircleAvatar(
                         backgroundImage: NetworkImage(
                           Avatar.getAvatarPlaceholder(
-                            widget.user.firstName,
-                            widget.user.lastName,
+                            widget.user.fullName,
                           ),
                         ),
                       ),
@@ -61,7 +59,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${widget.user.firstName} ${widget.user.lastName}',
+                      widget.user.fullName,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -69,7 +67,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                       ),
                     ),
                     Text(
-                      '${IndustryFormatter.keyToValue(widget.user.industry)} ',
+                      widget.user.industry,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,

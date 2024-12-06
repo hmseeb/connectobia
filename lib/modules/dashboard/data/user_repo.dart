@@ -1,3 +1,4 @@
+import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -16,7 +17,6 @@ class UserRepo {
       );
       final pb = await PocketBaseSingleton.instance;
       final String recordId = pb.authStore.record!.id;
-      ;
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
       rethrow;
@@ -32,12 +32,11 @@ class UserRepo {
   }) async {
     final pb = await PocketBaseSingleton.instance;
     final String recordId = pb.authStore.record!.id;
-    ;
     final body = <String, dynamic>{
-      "first_name": firstName,
+      "full_name": firstName,
       "last_name": lastName,
       "username": username,
-      "industry": industry,
+      "industry": IndustryFormatter.keyToValue(industry),
       "brand_name": brandName
     };
 

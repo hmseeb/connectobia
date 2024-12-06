@@ -14,10 +14,6 @@ class IndustryFormatter {
       return word[0].toUpperCase() + word.substring(1);
     }).join(' ');
   }
-
-  static String valueToKey(String industry) {
-    return industry.toLowerCase().replaceAll(' ', '_');
-  }
 }
 
 class IndustryList {

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/common/extensions/string_extention.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
@@ -116,7 +115,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                             id: state.influencer.expand.user.id,
                                             image: state
                                                 .influencer.expand.user.avatar)
-                                        : Avatar.getAvatarPlaceholder('H', 'A'),
+                                        : Avatar.getAvatarPlaceholder('HA'),
                                   ),
                                 ),
                               ],
@@ -139,7 +138,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                   Row(
                                     children: [
                                       Text(
-                                        '${state.influencer.expand.user.firstName} ${state.influencer.expand.user.lastName}',
+                                        state.influencer.expand.user.fullName,
                                         style: const TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
@@ -159,8 +158,8 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                   ),
                                   Row(
                                     children: [
-                                      Text(IndustryFormatter.keyToValue(state
-                                          .influencer.expand.user.industry)),
+                                      Text(state
+                                          .influencer.expand.user.industry),
                                       // location
                                       const Spacer(),
                                       // location icon

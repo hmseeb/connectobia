@@ -1,13 +1,30 @@
+import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// [AuthRepo] is a repository class that contains all the methods that are
 /// responsible for handling authentication related operations.
 ///
 /// {@category Repositories}
 class AuthRepo {
+  ///  [authWithInstagram] is a method that authenticates a user with their Instagram business account.
+  static Future<RecordAuth> authWithInstagram() async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final user = await pb.collection('users').authWithOAuth2('instagram2',
+          (url) async {
+        await launchUrl(url);
+      });
+      return user;
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
+
   /// [createAccount] is a method that creates a new user account.
   static Future<RecordModel> createAccount(
       String firstName,
@@ -24,12 +41,11 @@ class AuthRepo {
       "emailVisibility": false, // hide email
       "password": password,
       "passwordConfirm": password,
-      "first_name": firstName,
-      "last_name": lastName,
+      "full_name": '$firstName $lastName',
       "username": username,
       "brand_name": brandName,
       "account_type": accountType,
-      "industry": industry,
+      "industry": IndustryFormatter.keyToValue(industry),
     };
 
     try {
@@ -91,7 +107,6 @@ class AuthRepo {
     try {
       final pb = await PocketBaseSingleton.instance;
       final id = pb.authStore.record!.id;
-      ;
       RecordModel record = await pb.collection('users').getOne(id);
       User user = User.fromRecord(record);
       return user;

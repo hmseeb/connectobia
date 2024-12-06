@@ -1,5 +1,9 @@
 part of 'signup_bloc.dart';
 
+class InstagramSignup extends SignupEvent {
+  InstagramSignup();
+}
+
 class SignupBrandSubmitted extends SignupEvent {
   final String firstName;
   final String lastName;

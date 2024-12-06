@@ -1,19 +1,18 @@
 import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/modules/auth/presentation/views/brand_signup_form.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/privacy_policy.dart';
 import 'package:connectobia/theme/buttons.dart';
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
 /// A screen that allows a brand to sign up.
 /// [BrandScreen] contains a form for a brand to sign up.
@@ -24,6 +23,32 @@ class BrandScreen extends StatefulWidget {
 
   @override
   State<BrandScreen> createState() => _BrandScreenState();
+}
+
+class OrDivider extends StatelessWidget {
+  const OrDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: Colors.grey,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Text('OR'),
+        ),
+        Expanded(
+          child: Divider(
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _BrandScreenState extends State<BrandScreen> {
@@ -75,13 +100,11 @@ class _BrandScreenState extends State<BrandScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: height * 2),
-                    SvgPicture.asset(
-                      AssetsPath.brand,
-                      height: 150,
-                      width: 150,
-                    ),
-                    const SizedBox(height: 20),
-                    const HeadingText('Match with the best creators'),
+                    // SvgPicture.asset(
+                    //   AssetsPath.brand,
+                    //   height: 150,
+                    //   width: 150,
+                    // ),
                     const SizedBox(height: 20),
                     BrandSignupForm(
                       firstNameController: firstNameController,
@@ -117,6 +140,23 @@ class _BrandScreenState extends State<BrandScreen> {
                           industry: industry,
                         ));
                       },
+                    ),
+                    const SizedBox(height: 20),
+                    const OrDivider(),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SocialAuthBtn(
+                        icon: 'assets/icons/instagram.png',
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          BlocProvider.of<SignupBloc>(context)
+                              .add(InstagramSignup());
+                        },
+                        text: 'Sign up with Instagram',
+                        borderSide: const BorderSide(),
+                        backgroundColor: ShadColors.lightForeground,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     AuthFlow(
