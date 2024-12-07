@@ -17,6 +17,7 @@ class UserRepo {
       );
       final pb = await PocketBaseSingleton.instance;
       final String recordId = pb.authStore.record!.id;
+      assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
       rethrow;
@@ -24,8 +25,7 @@ class UserRepo {
   }
 
   static Future<void> updateUserProfile({
-    required String firstName,
-    required String lastName,
+    required String fullName,
     required String username,
     required String industry,
     required String brandName,
@@ -33,14 +33,14 @@ class UserRepo {
     final pb = await PocketBaseSingleton.instance;
     final String recordId = pb.authStore.record!.id;
     final body = <String, dynamic>{
-      "full_name": firstName,
-      "last_name": lastName,
+      "fullName": fullName,
       "username": username,
       "industry": IndustryFormatter.keyToValue(industry),
-      "brand_name": brandName
+      "brandName": brandName
     };
 
     try {
+      assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, body: body);
     } catch (e) {
       rethrow;

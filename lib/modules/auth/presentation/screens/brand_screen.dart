@@ -1,18 +1,16 @@
 import 'package:connectobia/common/constants/industries.dart';
+import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
 import 'package:connectobia/modules/auth/presentation/views/brand_signup_form.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/privacy_policy.dart';
 import 'package:connectobia/theme/buttons.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
 /// A screen that allows a brand to sign up.
 /// [BrandScreen] contains a form for a brand to sign up.
@@ -52,11 +50,9 @@ class OrDivider extends StatelessWidget {
 }
 
 class _BrandScreenState extends State<BrandScreen> {
-  late final TextEditingController firstNameController;
-  late final TextEditingController lastNameController;
+  late final TextEditingController brandNameController;
   late final TextEditingController usernameController;
   late final TextEditingController emailController;
-  late final TextEditingController brandNameController;
   late final TextEditingController passwordController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
 
@@ -79,11 +75,12 @@ class _BrandScreenState extends State<BrandScreen> {
         child: BlocConsumer<SignupBloc, SignupState>(
           listener: (context, state) {
             if (state is SignupSuccess) {
-              Navigator.pushNamed(
-                context,
-                '/verifyEmailScreen',
-                arguments: {'email': emailController.text},
+              ShadToaster.of(context).show(
+                ShadToast(
+                  title: Text('Account created successfully!'),
+                ),
               );
+              Navigator.pop(context);
             } else if (state is SignupFailure) {
               ShadToaster.of(context).show(
                 ShadToast.destructive(
@@ -99,19 +96,17 @@ class _BrandScreenState extends State<BrandScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: height * 2),
-                    // SvgPicture.asset(
-                    //   AssetsPath.brand,
-                    //   height: 150,
-                    //   width: 150,
-                    // ),
+                    SizedBox(height: height * 2.5),
+                    SvgPicture.asset(
+                      AssetsPath.brand,
+                      height: 150,
+                      width: 150,
+                    ),
                     const SizedBox(height: 20),
                     BrandSignupForm(
-                      firstNameController: firstNameController,
-                      lastNameController: lastNameController,
+                      brandNameController: brandNameController,
                       usernameController: usernameController,
                       emailController: emailController,
-                      brandNameController: brandNameController,
                       passwordController: passwordController,
                       industry: CustomShadSelect(
                         items: IndustryList.industries,
@@ -131,40 +126,12 @@ class _BrandScreenState extends State<BrandScreen> {
                       onPressed: () {
                         HapticFeedback.mediumImpact();
                         signupBloc.add(SignupBrandSubmitted(
-                          firstName: firstNameController.text,
-                          lastName: lastNameController.text,
+                          brandName: brandNameController.text,
                           username: usernameController.text,
                           email: emailController.text,
-                          brandName: brandNameController.text,
                           password: passwordController.text,
                           industry: industry,
                         ));
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    const OrDivider(),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: SocialAuthBtn(
-                        icon: 'assets/icons/instagram.png',
-                        onPressed: () {
-                          HapticFeedback.mediumImpact();
-                          BlocProvider.of<SignupBloc>(context)
-                              .add(InstagramSignup());
-                        },
-                        text: 'Sign up with Instagram',
-                        borderSide: const BorderSide(),
-                        backgroundColor: ShadColors.lightForeground,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    AuthFlow(
-                      title: 'Already have an account? ',
-                      buttonText: 'Sign in',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signinScreen');
-                        HapticFeedback.mediumImpact();
                       },
                     ),
                   ],
@@ -179,11 +146,9 @@ class _BrandScreenState extends State<BrandScreen> {
 
   @override
   void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
+    brandNameController.dispose();
     usernameController.dispose();
     emailController.dispose();
-    brandNameController.dispose();
     passwordController.dispose();
     industryFocusNode.dispose();
     scrollController.dispose();
@@ -195,8 +160,6 @@ class _BrandScreenState extends State<BrandScreen> {
   void initState() {
     super.initState();
 
-    firstNameController = TextEditingController();
-    lastNameController = TextEditingController();
     usernameController = TextEditingController();
     emailController = TextEditingController();
     brandNameController = TextEditingController();

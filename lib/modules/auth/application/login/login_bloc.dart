@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
+import 'package:connectobia/modules/auth/domain/model/brand.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:meta/meta.dart';
 
 part 'login_bloc_event.dart';
@@ -21,6 +22,11 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       String? passwordError =
           InputValidation.validatePassword(event.password).firstOrNull;
 
+      if (event.accountType == null) {
+        emit(LoginFailure('Account type is required'));
+        return;
+      }
+
       if (emailError != null || passwordError != null) {
         emit(LoginFailure(emailError ?? passwordError ?? ''));
         return;
@@ -29,13 +35,17 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       emit(LoginLoading());
 
       try {
-        final authData = await AuthRepo.login(event.email, event.password);
-        bool isVerified = authData.record.data['verified'];
-        User user = await AuthRepo.getUser();
+        final authData = await AuthRepo.login(
+            email: event.email, password: event.password, accountType: 'brand');
+        Brand user = Brand.fromJson(authData.record.data);
+        // FIXME: This is a temporary fix.
+        // bool isVerified = authData.record.data['verified'];
+        bool isVerified = user.verified;
+        // Brand user = await AuthRepo.getUser();
         if (isVerified) {
-          emit(LoginSuccess(user));
+          emit(BrandLoginSuccess(user));
         } else {
-          await AuthRepo.verifyEmail(event.email);
+          await AuthRepo.verifyEmail(email: event.email);
           emit(LoginUnverified());
         }
       } catch (e) {
@@ -45,9 +55,13 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
 
     on<LoginWithInstagram>((event, emit) async {
       emit(InstagramLoading());
+      if (event.accountType == null) {
+        return emit(LoginFailure('Account type is required'));
+      }
       try {
-        await AuthRepo.authWithInstagram();
-        emit(LoginSuccess(await AuthRepo.getUser()));
+        // FIXME: If above fixme works remove get user from this as well.
+        await AuthRepo.loginWithInstagram(collectionName: event.accountType!);
+        emit(InfluencerLoginSuccess(await AuthRepo.getUser()));
       } catch (e) {
         emit(LoginFailure(e.toString()));
       }

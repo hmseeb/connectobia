@@ -1,5 +1,5 @@
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
 class InfluencerOnboarding extends StatefulWidget {
-  final User user;
+  final Influencer user;
 
   const InfluencerOnboarding({super.key, required this.user});
 

@@ -1,7 +1,6 @@
 import 'package:connectobia/common/constants/navigation_service.dart';
 import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/dashboard/application/animation/animation_cubit.dart';
 import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
@@ -31,7 +30,7 @@ class ConnectobiaState extends State<Connectobia> {
   late bool isDarkMode;
   late RiveAnimationController _riveAnimationcontroller;
   AuthState currentState = AuthInitial();
-  User? user;
+  dynamic user;
 
   @override
   Widget build(BuildContext context) {
@@ -93,15 +92,13 @@ class ConnectobiaState extends State<Connectobia> {
   void handleNavigation(
       {required AuthState state, required BuildContext context}) async {
     debugPrint('User is: ${state.runtimeType}');
-    // // Uncomment this once if deleted an account
-    // await AuthRepo.logout();
     Navigator.pushReplacementNamed(
       context,
       '/welcomeScreen',
     );
 
-    if (state is Authenticated) {
-      if (!state.user.hasCompletedOnboarding) {
+    if (state is InfluencerAuthenticated) {
+      if (state.user.onboarded) {
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/homeScreen',
@@ -111,9 +108,23 @@ class ConnectobiaState extends State<Connectobia> {
       } else {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          state.user.accountType == 'influencer'
-              ? '/influencerOnboarding'
-              : '/brandOnboarding',
+          '/influencerOnboarding',
+          (route) => false,
+          arguments: {'user': state.user},
+        );
+      }
+    } else if (state is BrandAuthenticated) {
+      if (state.user.onboarded) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/homeScreen',
+          (route) => false,
+          arguments: {'user': state.user},
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/brandOnboarding',
           (route) => false,
           arguments: {'user': state.user},
         );

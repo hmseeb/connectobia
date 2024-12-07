@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:flutter/cupertino.dart';
 
 part 'influencer_onboard_event.dart';
@@ -10,8 +9,9 @@ class InfluencerOnboardBloc
   InfluencerOnboardBloc() : super(InfluencerOnboardInitial()) {
     on<ConnectInstagram>((event, emit) async {
       try {
+        assert(false, 'Not implemented');
         emit(ConnectingInstagram());
-        await AuthRepo.authWithInstagram();
+        // await AuthRepo.loginWithInstagram();
         emit(ConnectedInstagram());
       } catch (e) {
         emit(ConnectingInstagramFailure(e.toString()));

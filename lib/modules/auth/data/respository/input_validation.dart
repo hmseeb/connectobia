@@ -4,37 +4,23 @@
 /// {@category Repositories}
 class InputValidation {
   static String? validateBrandForm({
-    required String firstName,
-    required String lastName,
-    required String username,
+    required String brandName,
     required String email,
     required String password,
-    required String brandName,
     required String industry,
   }) {
     String? error;
-    error = validateFirstName(firstName);
+    error = validateBrandName(brandName);
     if (error != null) {
       return error;
     }
-    error = validateLastName(lastName);
-    if (error != null) {
-      return error;
-    }
-    error = validateUsername(username);
-    if (error != null) {
-      return error;
-    }
+
     error = validateEmail(email);
     if (error != null) {
       return error;
     }
     error = validatePassword(password).join('\n');
     if (error.isNotEmpty) {
-      return error;
-    }
-    error = validateBrandName(brandName);
-    if (error != null) {
       return error;
     }
 
@@ -70,17 +56,6 @@ class InputValidation {
     return null;
   }
 
-  // First name shouldn't be less than 2 characters
-  static String? validateFirstName(String? firstName) {
-    if (firstName == null || firstName.isEmpty) {
-      return 'First name is required';
-    }
-    if (firstName.length < 2) {
-      return 'First name must be at least 2 characters';
-    }
-    return null;
-  }
-
   static String? validateIndustry(String? industry) {
     if (industry == null || industry.isEmpty) {
       return 'Industry is required';
@@ -97,7 +72,7 @@ class InputValidation {
     required String industry,
   }) {
     String? error;
-    error = validateFirstName(firstName);
+    error = validateBrandName(firstName);
     if (error != null) {
       return error;
     }

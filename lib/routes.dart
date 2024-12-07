@@ -55,7 +55,10 @@ class GenerateRoutes {
               const WelcomeScreen(),
         );
       case '/signinScreen':
-        return _buildPageRoute(const SigninScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildPageRoute(SigninScreen(
+          accountType: args['accountType'],
+        ));
       case '/influencerOnboarding':
         final args = settings.arguments as Map<String, dynamic>;
 

@@ -1,11 +1,11 @@
 part of 'email_verification_bloc.dart';
 
+final class BrandEmailVerified extends EmailVerificationState {
+  final Brand brand;
+  BrandEmailVerified(this.brand);
+}
+
 final class EmailVerificationInitialState extends EmailVerificationState {}
 
 @immutable
 sealed class EmailVerificationState {}
-
-final class EmailVerified extends EmailVerificationState {
-  final User user;
-  EmailVerified(this.user);
-}

@@ -58,7 +58,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               isLoading = true;
             });
             try {
-              await AuthRepo.forgotPassword(emailController.text);
+              await AuthRepo.forgotPassword(email: emailController.text);
               if (context.mounted) {
                 ShadToaster.of(context).show(
                   const ShadToast(

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/extensions/string_extention.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
@@ -59,9 +58,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
       builder: (context, state) {
         return Scaffold(
           appBar: transparentAppBar(
-            state is InfluencerProfileLoaded
-                ? state.influencer.expand.user.username
-                : '',
+            state is InfluencerProfileLoaded ? state.influencer.fullName : '',
             context: context,
             actions: [
               IconButton(
@@ -92,11 +89,13 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                           height: 150,
                           width: double.infinity,
                           child: CachedNetworkImage(
-                            imageUrl: state is InfluencerProfileLoaded
-                                ? Avatar.getUserImage(
-                                    id: state.influencer.expand.user.id,
-                                    image: state.influencer.expand.user.banner)
-                                : Avatar.getBannerPlaceholder(),
+                            imageUrl:
+                                // state is InfluencerProfileLoaded
+                                //     ? Avatar.getUserImage(
+                                //         id: state.influencer.expand.user.id,
+                                //         image: state.influencer.expand.user.banner)
+                                //     :
+                                Avatar.getBannerPlaceholder(),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -110,12 +109,13 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                 CircleAvatar(
                                   radius: 50,
                                   backgroundImage: CachedNetworkImageProvider(
-                                    state is InfluencerProfileLoaded
-                                        ? Avatar.getUserImage(
-                                            id: state.influencer.expand.user.id,
-                                            image: state
-                                                .influencer.expand.user.avatar)
-                                        : Avatar.getAvatarPlaceholder('HA'),
+                                    // state is InfluencerProfileLoaded
+                                    // ? Avatar.getUserImage(
+                                    //     id: state.influencer.expand.user.id,
+                                    //     image: state
+                                    //         .influencer.expand.user.avatar)
+                                    // :
+                                    Avatar.getAvatarPlaceholder('HA'),
                                   ),
                                 ),
                               ],
@@ -138,7 +138,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                   Row(
                                     children: [
                                       Text(
-                                        state.influencer.expand.user.fullName,
+                                        state.influencer.fullName,
                                         style: const TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                       const SizedBox(
                                         width: 8,
                                       ),
-                                      state.influencer.expand.user.verified
+                                      state.influencer.verified
                                           ? const Icon(
                                               Icons.verified,
                                               color: Colors.green,
@@ -158,8 +158,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                   ),
                                   Row(
                                     children: [
-                                      Text(state
-                                          .influencer.expand.user.industry),
+                                      Text(state.influencer.industry),
                                       // location
                                       const Spacer(),
                                       // location icon
@@ -169,7 +168,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                         size: 14,
                                       ),
                                       Text(
-                                        state.influencer.location,
+                                        'Location...',
                                         style: const TextStyle(
                                           fontSize: 14,
                                         ),
@@ -179,13 +178,12 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
 
                                   // influencer private profile details
                                   const SizedBox(height: 16),
-                                  LabeledTextField(state.influencer.title),
+                                  LabeledTextField('Title...'),
                                   // about influencer
                                   const SizedBox(height: 16),
                                   // description in rich text with "View More" gesture
                                   ReadMoreText(
-                                    state.influencer.description
-                                        .removeAllHtmlTags(),
+                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat',
                                     trimMode: TrimMode.Line,
                                     trimLines: 2,
                                     trimCollapsedText: 'Show more',

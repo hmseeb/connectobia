@@ -1,5 +1,4 @@
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/full_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -34,10 +33,18 @@ class _CreatorSignupFormState extends State<CreatorSignupForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FirstLastName(
-          firstName: widget.firstNameController,
-          lastName: widget.lastNameController,
-          showLabels: false,
+        ShadInputFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          placeholder: const Text('Full Name'),
+          controller: widget.firstNameController,
+          keyboardType: TextInputType.name,
+          validator: (value) {
+            final error = InputValidation.validateLastName(value);
+            if (error != null) {
+              return error;
+            }
+            return null;
+          },
         ),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,

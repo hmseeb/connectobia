@@ -19,9 +19,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(SignupLoading());
 
       String? error = InputValidation.validateBrandForm(
-        firstName: event.firstName,
-        lastName: event.lastName,
-        username: event.username,
         email: event.email,
         brandName: event.brandName,
         password: event.password,
@@ -34,15 +31,12 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
-        await AuthRepo.createAccount(
-          event.firstName,
-          event.lastName,
-          event.username,
-          event.email,
-          event.brandName,
-          event.password,
-          event.accountType,
-          event.industry,
+        await AuthRepo.createBrandAccount(
+          brandName: event.brandName,
+          username: event.username,
+          email: event.email,
+          password: event.password,
+          industry: event.industry,
         );
         emit(SignupSuccess());
       } catch (e) {
@@ -68,15 +62,12 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
-        await AuthRepo.createAccount(
-          event.firstName,
-          event.lastName,
-          event.username,
-          event.email,
-          '',
-          event.password,
-          'influencer',
-          event.industry,
+        await AuthRepo.createInfluencerAccount(
+          fullName: '${event.firstName} ${event.lastName}',
+          username: event.username,
+          email: event.email,
+          password: event.password,
+          industry: event.industry,
         );
         emit(SignupSuccess());
       } catch (e) {
@@ -87,7 +78,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     on<InstagramSignup>((event, emit) async {
       emit(InstagramLoading());
       try {
-        await AuthRepo.authWithInstagram();
+        await AuthRepo.loginWithInstagram(collectionName: event.accountType);
         emit(SignupSuccess());
       } catch (e) {
         emit(SignupFailure(e.toString()));

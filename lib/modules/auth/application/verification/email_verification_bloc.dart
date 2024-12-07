@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/db/db.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
+import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:flutter/material.dart';
 
 part 'email_verification_event.dart';
@@ -20,10 +19,11 @@ class EmailVerificationBloc
       try {
         final pb = await PocketBaseSingleton.instance;
         final id = pb.authStore.record!.id;
-        await pb.collection('users').subscribe(
+        await pb.collection('brand').subscribe(
           id,
           (e) {
             if (e.action == 'update') {
+              debugPrint('Verification status updated');
               if (e.record!.data['verified']) {
                 add(EmailVerify());
               }
@@ -40,10 +40,10 @@ class EmailVerificationBloc
     on<EmailVerify>((event, emit) async {
       try {
         final pb = await PocketBaseSingleton.instance;
-        await pb.collection('users').unsubscribe();
+        await pb.collection('brand').unsubscribe();
         debugPrint('Unsubscribed to email verification updates');
-        final User user = await AuthRepo.getUser();
-        emit(EmailVerified(user));
+        final Brand user = Brand.fromRecord(pb.authStore.record!);
+        emit(BrandEmailVerified(user));
       } catch (e) {
         debugPrint(e.toString());
         rethrow;

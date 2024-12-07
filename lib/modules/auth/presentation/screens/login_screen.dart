@@ -20,7 +20,8 @@ import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 ///
 /// {@category Screens}
 class SigninScreen extends StatefulWidget {
-  const SigninScreen({super.key});
+  final String accountType;
+  const SigninScreen({super.key, required this.accountType});
 
   @override
   State<SigninScreen> createState() => _SigninScreenState();
@@ -30,8 +31,14 @@ class _SigninScreenState extends State<SigninScreen> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
   late final loginBloc = BlocProvider.of<LoginBloc>(context);
+  final accountTypes = {
+    'brand': 'Brand',
+    'influencer': 'Influencer',
+  };
   @override
   Widget build(BuildContext context) {
+    String accountType = widget.accountType;
+    final theme = ShadTheme.of(context);
     final height = ScreenSize.height(context);
 
     return Scaffold(
@@ -50,24 +57,30 @@ class _SigninScreenState extends State<SigninScreen> {
                         title: Text(state.error),
                       ),
                     );
-                  } else if (state is LoginSuccess) {
-                    if (state.user.hasCompletedOnboarding) {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        '/homeScreen',
-                        (route) => false,
-                        arguments: {'user': state.user},
-                      );
-                    } else {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        state.user.accountType == 'influencer'
-                            ? '/influencerOnboarding'
-                            : '/brandOnboarding',
-                        (route) => false,
-                        arguments: {'user': state.user},
-                      );
-                    }
+                  } else if (state is BrandLoginSuccess) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homeScreen',
+                      (route) => false,
+                      arguments: {'user': state.user},
+                    );
+                    // else {
+                    //   Navigator.pushNamedAndRemoveUntil(
+                    //     context,
+                    //     state.user.accountTypes == 'influencer'
+                    //         ? '/influencerOnboarding'
+                    //         : '/brandOnboarding',
+                    //     (route) => false,
+                    //     arguments: {'user': state.user},
+                    //   );
+                    // }
+                  } else if (state is InfluencerLoginSuccess) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/homeScreen',
+                      (route) => false,
+                      arguments: {'user': state.user},
+                    );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
                       context,
@@ -80,7 +93,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      SizedBox(height: height * 2),
+                      SizedBox(height: height * 2.5),
                       SvgPicture.asset(
                         AssetsPath.login,
                         height: 150,
@@ -90,6 +103,58 @@ class _SigninScreenState extends State<SigninScreen> {
                       LoginForm(
                           emailController: emailController,
                           passwordController: passwordController),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ShadSelect<String>(
+                          initialValue: widget.accountType,
+                          placeholder:
+                              const Text('Select account type (required)'),
+                          options: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
+                              child: Text(
+                                'Account type',
+                                style: theme.textTheme.muted.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.popoverForeground,
+                                ),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                            ...accountTypes.entries.map((e) =>
+                                ShadOption(value: e.key, child: Text(e.value))),
+                          ],
+                          selectedOptionBuilder: (context, value) =>
+                              Text(accountTypes[value]!),
+                          onChanged: (value) {
+                            // FIXME: Instagram icon still showing after changing account type
+                            setState(() {
+                              accountType = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      if (accountType == 'influencer') ...[
+                        const SizedBox(height: 20),
+                        const OrDivider(),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: SocialAuthBtn(
+                            icon: 'assets/icons/instagram.png',
+                            onPressed: () {
+                              HapticFeedback.mediumImpact();
+                              BlocProvider.of<LoginBloc>(context).add(
+                                  LoginWithInstagram(accountType: accountType));
+                            },
+                            text: state is InstagramLoading
+                                ? 'Signing in with Instagram...'
+                                : 'Sign in with Instagram',
+                            borderSide: const BorderSide(),
+                            backgroundColor: ShadColors.lightForeground,
+                          ),
+                        ),
+                      ],
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -118,37 +183,30 @@ class _SigninScreenState extends State<SigninScreen> {
                             HapticFeedback.mediumImpact();
 
                             loginBloc.add(LoginSubmitted(
-                                email: emailController.text,
-                                password: passwordController.text));
+                              email: emailController.text,
+                              password: passwordController.text,
+                              accountType: accountType,
+                            ));
                           },
                           isLoading: state is LoginLoading),
-                      const SizedBox(height: 20),
-                      const SizedBox(height: 20),
-                      const OrDivider(),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: SocialAuthBtn(
-                          icon: 'assets/icons/instagram.png',
-                          onPressed: () {
-                            HapticFeedback.mediumImpact();
-                            BlocProvider.of<LoginBloc>(context)
-                                .add(LoginWithInstagram());
-                          },
-                          text: state is InstagramLoading
-                              ? 'Signing in with Instagram...'
-                              : 'Sign in with Instagram',
-                          borderSide: const BorderSide(),
-                          backgroundColor: ShadColors.lightForeground,
-                        ),
-                      ),
                       const SizedBox(height: 20),
                       AuthFlow(
                         title: 'Don\'t have an account? ',
                         buttonText: 'Sign up',
                         onPressed: () {
+                          if (accountType == 'brand') {
+                            Navigator.pushNamed(
+                              context,
+                              '/brandSignupScreen',
+                            );
+                            debugPrint('Pressend signup');
+                          } else {
+                            Navigator.pushNamed(
+                              context,
+                              '/creatorSignupScreen',
+                            );
+                          }
                           HapticFeedback.mediumImpact();
-                          Navigator.pop(context);
                         },
                       ),
                     ],

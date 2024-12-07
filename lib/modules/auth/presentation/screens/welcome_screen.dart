@@ -1,6 +1,5 @@
 import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/signup_card.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/tagline.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/title_logo.dart';
@@ -67,9 +66,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const SizedBox(height: 30),
             SignupCard(
               title: 'Brand or Agency',
-              description: 'I want to grow my business',
+              description: 'I want to grow my brand',
               onPressed: () {
-                Navigator.pushNamed(context, '/brandSignupScreen');
+                Navigator.pushNamed(
+                  context,
+                  '/signinScreen',
+                  arguments: {
+                    'accountType': 'brand',
+                  },
+                );
                 HapticFeedback.mediumImpact();
               },
             ),
@@ -78,19 +83,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               title: 'Influencer',
               description: 'I want to monetize my content',
               onPressed: () {
-                Navigator.pushNamed(context, '/creatorSignupScreen');
+                Navigator.pushNamed(
+                  context,
+                  '/signinScreen',
+                  arguments: {'accountType': 'influencer'},
+                );
                 HapticFeedback.mediumImpact();
               },
             ),
-            const SizedBox(height: 30),
-            AuthFlow(
-              title: 'Already have an account? ',
-              buttonText: 'Sign in',
-              onPressed: () {
-                Navigator.pushNamed(context, '/signinScreen');
-                HapticFeedback.mediumImpact();
-              },
-            ),
+            // const SizedBox(height: 30),
+            // AuthFlow(
+            //   title: 'Already have an account? ',
+            //   buttonText: 'Sign in',
+            //   onPressed: () {
+            //     Navigator.pushNamed(context, '/signinScreen');
+            //     HapticFeedback.mediumImpact();
+            //   },
+            // ),
           ],
         ),
       ),

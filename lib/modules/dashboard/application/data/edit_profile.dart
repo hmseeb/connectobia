@@ -7,18 +7,17 @@ class EditProfileRepo {
   }) async {
     final pb = await PocketBaseSingleton.instance;
     final id = pb.authStore.record!.id;
-    ;
     final body = <String, dynamic>{
       "title": title,
       "description": description,
     };
 
-    final record = await pb.collection('influencers').getFirstListItem(
+    final record = await pb.collection('influencer').getFirstListItem(
           'user = "$id"',
         );
 
     final influencerID = record.id;
 
-    await pb.collection('influencers').update(influencerID, body: body);
+    await pb.collection('influencer').update(influencerID, body: body);
   }
 }

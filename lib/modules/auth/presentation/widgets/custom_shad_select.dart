@@ -52,7 +52,7 @@ class CustomShadSelectState extends State<CustomShadSelect> {
       enabled: true,
       focusNode: widget.focusNode, // Use the provided focus node
       minWidth: 350,
-      maxHeight: height * 30,
+      maxHeight: height * 2.50,
       placeholder: Text(widget.placeholder),
       options: [
         ...sortedItems.entries.map(

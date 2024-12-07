@@ -8,7 +8,6 @@ import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart'
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -39,7 +38,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   Widget build(BuildContext context) {
     return BlocListener<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
-        if (state is EmailVerified) {
+        if (state is BrandEmailVerified) {
           ShadToaster.of(context).show(
             const ShadToast(
               title: Text('Email verified successfully'),
@@ -47,12 +46,9 @@ class VerifyEmailState extends State<VerifyEmail> {
           );
 
           Navigator.of(context).pushNamedAndRemoveUntil(
-              state.user.accountType == 'influencer'
-                  ? '/influencerOnboarding'
-                  : '/brandOnboarding',
-              (route) => false,
+              '/brandOnboarding', (route) => false,
               arguments: {
-                'user': state.user,
+                'user': state.brand,
               });
         }
       },
@@ -189,7 +185,7 @@ class VerifyEmailState extends State<VerifyEmail> {
       isLoading = true;
     });
     try {
-      await AuthRepo.verifyEmail(widget.email);
+      await AuthRepo.verifyEmail(email: widget.email);
       if (context.mounted) {
         ShadToaster.of(context).show(
           const ShadToast(

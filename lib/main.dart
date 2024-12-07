@@ -20,7 +20,7 @@ void main() async {
 
   /// Check if the user has set the dark mode preference
   bool isDarkMode =
-      prefs.getBool('darkMode') ?? (brightness == Brightness.dark);
+      prefs.getBool('darkMode') ?? (brightness == Brightness.light);
 
   /// Initialize Rive
   await RiveFile.initialize();
