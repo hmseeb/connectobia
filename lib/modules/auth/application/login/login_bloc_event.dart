@@ -1,5 +1,10 @@
 part of 'login_bloc.dart';
 
+class InstagramAuth extends LoginBlocEvent {
+  final String accountType;
+  InstagramAuth({required this.accountType});
+}
+
 @immutable
 sealed class LoginBlocEvent {}
 
@@ -10,9 +15,4 @@ class LoginSubmitted extends LoginBlocEvent {
 
   LoginSubmitted(
       {required this.email, required this.password, required this.accountType});
-}
-
-class LoginWithInstagram extends LoginBlocEvent {
-  final String accountType;
-  LoginWithInstagram({required this.accountType});
 }

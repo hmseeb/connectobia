@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/common/models/user.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';
@@ -61,13 +62,22 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       }
     });
 
-    on<LoginWithInstagram>((event, emit) async {
+    on<InstagramAuth>((event, emit) async {
       emit(InstagramLoading());
       try {
-        // FIXME: If above fixme works remove get user from this as well.
-        await AuthRepo.loginWithInstagram(collectionName: event.accountType);
-        emit(InfluencerLoginSuccess(await AuthRepo.getUser()));
+        debugPrint('Logging in with Instagram');
+        final recordAuth =
+            await AuthRepo.instagramAuth(collectionName: event.accountType);
+
+        // TODO: Do something with the data
+        final Influencer influencer = Influencer.fromRecord(recordAuth.record);
+        final Meta meta = Meta.fromJson(recordAuth.meta);
+        final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
+
+        emit(InfluencerLoginSuccess(influencer));
+        debugPrint('Logged in with Instagram');
       } catch (e) {
+        debugPrint(e.toString());
         emit(LoginFailure(e.toString()));
       }
     });

@@ -105,7 +105,7 @@ class Item {
       );
 
   factory Item.fromRawJson(String str) => Item.fromJson(json.decode(str));
-
+  factory Item.fromRecord(RecordModel record) => Item.fromJson(record.toJson());
   Item copyWith({
     String? collectionId,
     String? collectionName,

@@ -11,7 +11,7 @@ class InfluencerOnboardBloc
       try {
         assert(false, 'Not implemented');
         emit(ConnectingInstagram());
-        // await AuthRepo.loginWithInstagram();
+        // await AuthRepo.instagramAuth();
         emit(ConnectedInstagram());
       } catch (e) {
         emit(ConnectingInstagramFailure(e.toString()));

@@ -78,7 +78,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     on<InstagramSignup>((event, emit) async {
       emit(InstagramLoading());
       try {
-        await AuthRepo.loginWithInstagram(collectionName: event.accountType);
+        await AuthRepo.instagramAuth(collectionName: event.accountType);
         emit(SignupSuccess());
       } catch (e) {
         emit(SignupFailure(e.toString()));

@@ -133,6 +133,25 @@ class AuthRepo {
     }
   }
 
+  ///  [instagramAuth] is a method that authenticates a user with their Instagram brand account.
+  static Future<RecordAuth> instagramAuth(
+      {required String collectionName}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      final user = await pb
+          .collection(collectionName)
+          .authWithOAuth2('instagram2', (url) async {
+        await launchUrl(url);
+      });
+
+      return user;
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
+
   /// [login] is a method that logs in a user with their email and password.
   static Future<RecordAuth> login(
       {required String email,
@@ -146,23 +165,6 @@ class AuthRepo {
 
       debugPrint('Logged in as ${authData.record.data['email']}');
       return authData;
-    } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
-    }
-  }
-
-  ///  [loginWithInstagram] is a method that authenticates a user with their Instagram brand account.
-  static Future<RecordAuth> loginWithInstagram(
-      {required String collectionName}) async {
-    try {
-      final pb = await PocketBaseSingleton.instance;
-      final user = await pb
-          .collection('influencer')
-          .authWithOAuth2('instagram2', (url) async {
-        await launchUrl(url);
-      });
-      return user;
     } catch (e) {
       debugPrint(e.toString());
       rethrow;

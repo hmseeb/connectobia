@@ -57,6 +57,7 @@ class Brands {
 
 class Item {
   final String collectionId;
+
   final String collectionName;
   final String id;
   final String email;
@@ -68,7 +69,6 @@ class Item {
   final String profile;
   final DateTime created;
   final DateTime updated;
-
   Item({
     required this.collectionId,
     required this.collectionName,
@@ -100,6 +100,8 @@ class Item {
       );
 
   factory Item.fromRawJson(String str) => Item.fromJson(json.decode(str));
+
+  factory Item.fromRecord(RecordModel record) => Item.fromJson(record.toJson());
 
   Item copyWith({
     String? collectionId,

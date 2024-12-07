@@ -1,4 +1,5 @@
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
+import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'package:connectobia/theme/colors.dart';
@@ -44,130 +45,143 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
       builder: (context, state) {
         return Scaffold(
           appBar: transparentAppBar('Onboarding', context: context),
-          body: Stepper(
-            currentStep: _currentStep,
-            onStepTapped: (step) {
-              setState(() {
-                _currentStep = step;
-              });
-            },
-            onStepCancel: () {
-              setState(() {
-                if (_currentStep > 0) {
-                  _currentStep -= 1;
-                } else {
-                  _currentStep = 0;
-                }
-              });
-            },
-            onStepContinue: () {
-              setState(() {
-                if (_currentStep < 2) {
-                  _currentStep += 1;
-                } else {
-                  _currentStep = 0;
-                }
-              });
-            },
-            steps: [
-              Step(
-                title: const Text('Personal Details'),
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Date of birth'),
-                    const ShadDatePicker(),
-                    const SizedBox(height: 8),
-                    Text('Gender'),
-                    ShadRadioGroup<String>(
-                      items: [
-                        ShadRadio(
-                          label: Text('Male'),
-                          value: 'male',
-                        ),
-                        ShadRadio(
-                          label: Text('Female'),
-                          value: 'female',
-                        ),
-                        ShadRadio(
-                          label: Text('Other'),
-                          value: 'other',
+          body: Column(
+            children: [
+              Stepper(
+                currentStep: _currentStep,
+                onStepTapped: (step) {
+                  setState(() {
+                    _currentStep = step;
+                  });
+                },
+                onStepCancel: () {
+                  setState(() {
+                    if (_currentStep > 0) {
+                      _currentStep -= 1;
+                    } else {
+                      _currentStep = 0;
+                    }
+                  });
+                },
+                onStepContinue: () {
+                  setState(() {
+                    if (_currentStep < 2) {
+                      _currentStep += 1;
+                    } else {
+                      _currentStep = 0;
+                    }
+                  });
+                },
+                steps: [
+                  Step(
+                    title: const Text('Personal Details'),
+                    content: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Date of birth'),
+                        const ShadDatePicker(),
+                        const SizedBox(height: 8),
+                        Text('Gender'),
+                        ShadRadioGroup<String>(
+                          items: [
+                            ShadRadio(
+                              label: Text('Male'),
+                              value: 'male',
+                            ),
+                            ShadRadio(
+                              label: Text('Female'),
+                              value: 'female',
+                            ),
+                            ShadRadio(
+                              label: Text('Other'),
+                              value: 'other',
+                            ),
+                          ],
+                          axis: Axis.horizontal,
+                        )
+                      ],
+                    ),
+                    state: _currentStep == 0
+                        ? StepState.editing
+                        : StepState.complete,
+                    subtitle: _currentStep == 0 ? null : Text('Completed'),
+                  ),
+                  Step(
+                    title: const Text('Pick your location'),
+                    content: Column(
+                      children: <Widget>[
+                        const SizedBox(height: 8),
+                        LocationPicker(
+                          label: 'Location',
+                          controller: locationName,
+                          onSelect: (data) {
+                            locationName.text = data.displayname;
+                          },
                         ),
                       ],
-                      axis: Axis.horizontal,
-                    )
-                  ],
-                ),
-                state:
-                    _currentStep == 0 ? StepState.editing : StepState.complete,
-                subtitle: _currentStep == 0 ? null : Text('Completed'),
-              ),
-              Step(
-                title: const Text('Pick your location'),
-                content: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 8),
-                    LocationPicker(
-                      label: 'Location',
-                      controller: locationName,
-                      onSelect: (data) {
-                        locationName.text = data.displayname;
-                      },
                     ),
-                  ],
-                ),
-                state:
-                    _currentStep == 1 ? StepState.editing : StepState.complete,
-                isActive: _currentStep == 1,
-                subtitle: _currentStep == 1 ? null : Text('Completed'),
-              ),
-              Step(
-                title: const Text('Connect Social'),
-                content: Column(
-                  children: [
-                    SocialAuthBtn(
-                      icon: 'assets/icons/instagram.png',
-                      onPressed: () {
-                        BlocProvider.of<InfluencerOnboardBloc>(context)
-                            .add(ConnectInstagram());
-                      },
-                      text: instagramButtonText,
-                      borderSide: const BorderSide(),
-                      backgroundColor: ShadColors.lightForeground,
+                    state: _currentStep == 1
+                        ? StepState.editing
+                        : StepState.complete,
+                    isActive: _currentStep == 1,
+                    subtitle: _currentStep == 1 ? null : Text('Completed'),
+                  ),
+                  Step(
+                    title: const Text('Connect Social'),
+                    content: Column(
+                      children: [
+                        SocialAuthBtn(
+                          icon: 'assets/icons/instagram.png',
+                          onPressed: () {
+                            BlocProvider.of<InfluencerOnboardBloc>(context)
+                                .add(ConnectInstagram());
+                          },
+                          text: instagramButtonText,
+                          borderSide: const BorderSide(),
+                          backgroundColor: ShadColors.lightForeground,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                state:
-                    _currentStep == 2 ? StepState.editing : StepState.complete,
-                isActive: _currentStep == 2,
-                subtitle: _currentStep == 2 ? null : Text('Completed'),
+                    state: _currentStep == 2
+                        ? StepState.editing
+                        : StepState.complete,
+                    isActive: _currentStep == 2,
+                    subtitle: _currentStep == 2 ? null : Text('Completed'),
+                  ),
+                ],
+                controlsBuilder:
+                    (BuildContext context, ControlsDetails details) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Row(
+                      children: <Widget>[
+                        details.stepIndex == 0
+                            ? const SizedBox(width: 10)
+                            : ShadButton.outline(
+                                onPressed: details.onStepCancel,
+                                child: const Text('Back'),
+                              ),
+                        const SizedBox(width: 10),
+                        details.stepIndex == 2
+                            ? ShadButton(
+                                onPressed: details.onStepContinue,
+                                child: const Text('Submit'),
+                              )
+                            : ShadButton(
+                                onPressed: details.onStepContinue,
+                                child: const Text('Next'),
+                              ),
+                      ],
+                    ),
+                  );
+                },
               ),
+              ShadButton(
+                  onPressed: () async {
+                    await AuthRepo.logout();
+                  },
+                  child: const Text('Logout')),
             ],
-            controlsBuilder: (BuildContext context, ControlsDetails details) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Row(
-                  children: <Widget>[
-                    details.stepIndex == 0
-                        ? const SizedBox(width: 10)
-                        : ShadButton.outline(
-                            onPressed: details.onStepCancel,
-                            child: const Text('Back'),
-                          ),
-                    const SizedBox(width: 10),
-                    details.stepIndex == 2
-                        ? ShadButton(
-                            onPressed: details.onStepContinue,
-                            child: const Text('Submit'),
-                          )
-                        : ShadButton(
-                            onPressed: details.onStepContinue,
-                            child: const Text('Next'),
-                          ),
-                  ],
-                ),
-              );
-            },
           ),
         );
       },

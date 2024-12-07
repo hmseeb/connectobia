@@ -6,6 +6,7 @@ import 'package:connectobia/modules/auth/presentation/screens/brand_screen.dart'
 import 'package:connectobia/modules/auth/presentation/views/forget_password_sheet.dart';
 import 'package:connectobia/modules/auth/presentation/views/login_form.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/auth_flow.dart';
+import 'package:connectobia/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'package:connectobia/theme/buttons.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +85,13 @@ class _SigninScreenState extends State<SigninScreen> {
                       '/verifyEmailScreen',
                       arguments: {'email': emailController.text},
                     );
+                  } else if (state is ConnectingInstagramFailure) {
+                    ShadToaster.of(context).show(
+                      ShadToast.destructive(
+                        title: Text(
+                            'An error occurred while connecting Instagram'),
+                      ),
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -141,8 +149,8 @@ class _SigninScreenState extends State<SigninScreen> {
                             icon: 'assets/icons/instagram.png',
                             onPressed: () {
                               HapticFeedback.mediumImpact();
-                              BlocProvider.of<LoginBloc>(context).add(
-                                  LoginWithInstagram(accountType: accountType));
+                              BlocProvider.of<LoginBloc>(context)
+                                  .add(InstagramAuth(accountType: accountType));
                             },
                             text: state is InstagramLoading
                                 ? 'Signing in with Instagram...'
@@ -162,7 +170,6 @@ class _SigninScreenState extends State<SigninScreen> {
                               context,
                               '/brandSignupScreen',
                             );
-                            debugPrint('Pressend signup');
                           } else {
                             Navigator.pushNamed(
                               context,

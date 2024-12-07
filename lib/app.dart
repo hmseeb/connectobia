@@ -91,12 +91,11 @@ class ConnectobiaState extends State<Connectobia> {
   /// If the user is authenticated, it fetches the user details and verifies the email.
   void handleNavigation(
       {required AuthState state, required BuildContext context}) async {
-    debugPrint('User is: ${state.runtimeType}');
+    debugPrint('Current user auth state is ${state.runtimeType}');
     Navigator.pushReplacementNamed(
       context,
       '/welcomeScreen',
     );
-
     if (state is InfluencerAuthenticated) {
       if (state.user.onboarded) {
         Navigator.pushNamedAndRemoveUntil(

@@ -20,7 +20,7 @@ class CollectionNameSingleton {
 
   // Setter to manually set the collection name
   static set instance(String? newCollectionName) {
-    debugPrint('User account type initialized');
+    debugPrint('User is a $newCollectionName');
     _collectionName = newCollectionName;
   }
 }
