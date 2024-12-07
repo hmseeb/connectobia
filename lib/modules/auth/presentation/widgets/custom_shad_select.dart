@@ -1,4 +1,3 @@
-import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -47,20 +46,26 @@ class CustomShadSelectState extends State<CustomShadSelect> {
 
   @override
   Widget build(BuildContext context) {
-    final height = ScreenSize.height(context);
+    final theme = ShadTheme.of(context);
     return ShadSelect<String>(
       enabled: true,
       focusNode: widget.focusNode, // Use the provided focus node
       minWidth: 350,
-      maxHeight: height * 2.50,
       placeholder: Text(widget.placeholder),
       options: [
-        ...sortedItems.entries.map(
-          (item) => ShadOption(
-            value: item.key,
-            child: Text(item.value),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
+          child: Text(
+            'Select industry',
+            style: theme.textTheme.muted.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.popoverForeground,
+            ),
+            textAlign: TextAlign.start,
           ),
         ),
+        ...sortedItems.entries
+            .map((e) => ShadOption(value: e.key, child: Text(e.value))),
       ],
       selectedOptionBuilder: (context, value) {
         widget.onSelected(value);

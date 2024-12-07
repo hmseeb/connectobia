@@ -86,8 +86,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                     ),
                     const SizedBox(height: 20),
                     CreatorSignupForm(
-                        firstNameController: firstNameController,
-                        lastNameController: lastNameController,
+                        brandNameController: firstNameController,
                         emailController: emailController,
                         usernameController: usernameController,
                         passwordController: passwordController),

@@ -33,11 +33,11 @@ class InputValidation {
 
   static String? validateBrandName(String? brandName) {
     if (brandName == null || brandName.isEmpty) {
-      return 'Brand name is required';
+      return 'Name is required';
     }
 
     if (brandName.length < 2) {
-      return 'Brand name must be at least 2 characters';
+      return 'Name must be at least 2 characters';
     }
     return null;
   }
@@ -76,10 +76,7 @@ class InputValidation {
     if (error != null) {
       return error;
     }
-    error = validateLastName(lastName);
-    if (error != null) {
-      return error;
-    }
+
     error = validateUsername(username);
     if (error != null) {
       return error;
@@ -98,17 +95,6 @@ class InputValidation {
       return error;
     }
 
-    return null;
-  }
-
-  // Last name shouldn't be less than 2 characters
-  static String? validateLastName(String? lastName) {
-    if (lastName == null || lastName.isEmpty) {
-      return 'Last name is required';
-    }
-    if (lastName.length < 2) {
-      return 'Last name must be at least 2 characters';
-    }
     return null;
   }
 

@@ -31,9 +31,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           }
         }
 
-        // TODO: apply this logic once the onboarding is implemented
-        // else if (!user.onboarded) {
-
         // }
         else {
           emit(Unverified(user.email));

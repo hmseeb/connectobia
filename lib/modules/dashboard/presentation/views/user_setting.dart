@@ -282,7 +282,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                           keyboardType: TextInputType.name,
                           validator: (value) {
                             final error =
-                                InputValidation.validateLastName(value);
+                                InputValidation.validateBrandName(value);
                             if (error != null) {
                               return error;
                             }

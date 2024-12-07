@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:flutter/material.dart';
 
 part 'email_verification_event.dart';
@@ -19,12 +21,12 @@ class EmailVerificationBloc
       try {
         final pb = await PocketBaseSingleton.instance;
         final id = pb.authStore.record!.id;
-        await pb.collection('brand').subscribe(
+        await pb.collection(event.accountType).subscribe(
           id,
           (e) {
             if (e.action == 'update') {
-              debugPrint('Verification status updated');
               if (e.record!.data['verified']) {
+                debugPrint('Email verified!');
                 add(EmailVerify());
               }
             }
@@ -40,10 +42,17 @@ class EmailVerificationBloc
     on<EmailVerify>((event, emit) async {
       try {
         final pb = await PocketBaseSingleton.instance;
-        await pb.collection('brand').unsubscribe();
+        String accountType = CollectionNameSingleton.instance;
+        await pb.collection(accountType).unsubscribe();
         debugPrint('Unsubscribed to email verification updates');
-        final Brand user = Brand.fromRecord(pb.authStore.record!);
-        emit(BrandEmailVerified(user));
+
+        if (accountType == 'brand') {
+          final Brand user = Brand.fromRecord(pb.authStore.record!);
+          emit(BrandEmailVerified(user));
+        } else if (accountType == 'influencer') {
+          final Influencer user = Influencer.fromRecord(pb.authStore.record!);
+          emit(InfluencerEmailVerified(user));
+        }
       } catch (e) {
         debugPrint(e.toString());
         rethrow;

@@ -9,3 +9,8 @@ final class EmailVerificationInitialState extends EmailVerificationState {}
 
 @immutable
 sealed class EmailVerificationState {}
+
+final class InfluencerEmailVerified extends EmailVerificationState {
+  final Influencer influencer;
+  InfluencerEmailVerified(this.influencer);
+}

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectobia/common/constants/path.dart';
+import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
@@ -29,6 +30,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   int _secondsRemaining = 30; // Countdown duration
   int _resendEmailCount = 1;
   bool isLoading = false;
+  String accountType = CollectionNameSingleton.instance;
 
   late final blocProvider = BlocProvider.of<EmailVerificationBloc>(context);
 
@@ -44,11 +46,22 @@ class VerifyEmailState extends State<VerifyEmail> {
               title: Text('Email verified successfully'),
             ),
           );
-
           Navigator.of(context).pushNamedAndRemoveUntil(
               '/brandOnboarding', (route) => false,
               arguments: {
                 'user': state.brand,
+              });
+        } else if (state is InfluencerEmailVerified) {
+          ShadToaster.of(context).show(
+            const ShadToast(
+              title: Text('Email verified successfully'),
+            ),
+          );
+
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/influencerOnboarding', (route) => false,
+              arguments: {
+                'user': state.influencer,
               });
         }
       },
@@ -161,7 +174,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   Future<void> _authChecker() async {
     final pb = await PocketBaseSingleton.instance;
     if (pb.authStore.isValid) {
-      blocProvider.add(EmailSubscribeEvent());
+      blocProvider.add(EmailSubscribeEvent(accountType: accountType));
     } else {
       _authListener(pb);
     }
@@ -173,7 +186,11 @@ class VerifyEmailState extends State<VerifyEmail> {
   /// dispatches an [EmailSubscribeEvent] when the user is authenticated.
   Future<void> _authListener(PocketBase pb) async {
     pb.authStore.onChange.listen((event) {
-      if (event.token.isNotEmpty) blocProvider.add(EmailSubscribeEvent());
+      if (event.token.isNotEmpty) {
+        blocProvider.add(EmailSubscribeEvent(
+          accountType: accountType,
+        ));
+      }
     });
   }
 

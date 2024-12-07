@@ -22,11 +22,6 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       String? passwordError =
           InputValidation.validatePassword(event.password).firstOrNull;
 
-      if (event.accountType == null) {
-        emit(LoginFailure('Account type is required'));
-        return;
-      }
-
       if (emailError != null || passwordError != null) {
         emit(LoginFailure(emailError ?? passwordError ?? ''));
         return;
@@ -36,17 +31,30 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
 
       try {
         final authData = await AuthRepo.login(
-            email: event.email, password: event.password, accountType: 'brand');
-        Brand user = Brand.fromJson(authData.record.data);
-        // FIXME: This is a temporary fix.
-        // bool isVerified = authData.record.data['verified'];
-        bool isVerified = user.verified;
-        // Brand user = await AuthRepo.getUser();
-        if (isVerified) {
-          emit(BrandLoginSuccess(user));
+            email: event.email,
+            password: event.password,
+            accountType: event.accountType);
+
+        if (event.accountType == 'influencer') {
+          Influencer user = Influencer.fromJson(authData.record.data);
+          bool isVerified = user.verified;
+          if (isVerified) {
+            emit(InfluencerLoginSuccess(user));
+          } else {
+            await AuthRepo.verifyEmail(email: event.email);
+            emit(LoginUnverified());
+          }
         } else {
-          await AuthRepo.verifyEmail(email: event.email);
-          emit(LoginUnverified());
+          Brand user = Brand.fromJson(authData.record.data);
+          // FIXME: This is a temporary fix.
+          // bool isVerified = authData.record.data['verified'];
+          bool isVerified = user.verified;
+          if (isVerified) {
+            emit(BrandLoginSuccess(user));
+          } else {
+            await AuthRepo.verifyEmail(email: event.email);
+            emit(LoginUnverified());
+          }
         }
       } catch (e) {
         emit(LoginFailure(e.toString()));
@@ -55,12 +63,9 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
 
     on<LoginWithInstagram>((event, emit) async {
       emit(InstagramLoading());
-      if (event.accountType == null) {
-        return emit(LoginFailure('Account type is required'));
-      }
       try {
         // FIXME: If above fixme works remove get user from this as well.
-        await AuthRepo.loginWithInstagram(collectionName: event.accountType!);
+        await AuthRepo.loginWithInstagram(collectionName: event.accountType);
         emit(InfluencerLoginSuccess(await AuthRepo.getUser()));
       } catch (e) {
         emit(LoginFailure(e.toString()));

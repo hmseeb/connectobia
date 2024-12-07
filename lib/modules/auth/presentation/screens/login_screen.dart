@@ -31,19 +31,16 @@ class _SigninScreenState extends State<SigninScreen> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
   late final loginBloc = BlocProvider.of<LoginBloc>(context);
-  final accountTypes = {
-    'brand': 'Brand',
-    'influencer': 'Influencer',
-  };
   @override
   Widget build(BuildContext context) {
     String accountType = widget.accountType;
-    final theme = ShadTheme.of(context);
     final height = ScreenSize.height(context);
 
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: transparentAppBar('Welcome back', context: context),
+        appBar: transparentAppBar(
+            accountType == 'brand' ? 'Brand or Agency' : 'Influencer',
+            context: context),
         body: PopScope(
           child: SingleChildScrollView(
               child: Center(
@@ -103,37 +100,37 @@ class _SigninScreenState extends State<SigninScreen> {
                       LoginForm(
                           emailController: emailController,
                           passwordController: passwordController),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ShadSelect<String>(
-                          initialValue: widget.accountType,
-                          placeholder:
-                              const Text('Select account type (required)'),
-                          options: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
-                              child: Text(
-                                'Account type',
-                                style: theme.textTheme.muted.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: theme.colorScheme.popoverForeground,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
+                      TextButton(
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          showShadSheet(
+                            side: ShadSheetSide.bottom,
+                            context: context,
+                            builder: (context) => const ForgotPasswordSheet(
+                                side: ShadSheetSide.bottom),
+                          );
+                        },
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: const Text(
+                            'Forgot password?',
+                            style: TextStyle(
+                              color: ShadColors.primary,
                             ),
-                            ...accountTypes.entries.map((e) =>
-                                ShadOption(value: e.key, child: Text(e.value))),
-                          ],
-                          selectedOptionBuilder: (context, value) =>
-                              Text(accountTypes[value]!),
-                          onChanged: (value) {
-                            // FIXME: Instagram icon still showing after changing account type
-                            setState(() {
-                              accountType = value!;
-                            });
-                          },
+                          ),
                         ),
                       ),
+                      PrimaryButton(
+                          text: 'Sign in',
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            loginBloc.add(LoginSubmitted(
+                              email: emailController.text,
+                              password: passwordController.text,
+                              accountType: accountType,
+                            ));
+                          },
+                          isLoading: state is LoginLoading),
                       if (accountType == 'influencer') ...[
                         const SizedBox(height: 20),
                         const OrDivider(),
@@ -155,40 +152,6 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                         ),
                       ],
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              HapticFeedback.mediumImpact();
-                              showShadSheet(
-                                side: ShadSheetSide.bottom,
-                                context: context,
-                                builder: (context) => const ForgotPasswordSheet(
-                                    side: ShadSheetSide.bottom),
-                              );
-                            },
-                            child: const Text(
-                              'Forgot password?',
-                              style: TextStyle(
-                                color: ShadColors.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      PrimaryButton(
-                          text: 'Sign in',
-                          onPressed: () {
-                            HapticFeedback.mediumImpact();
-
-                            loginBloc.add(LoginSubmitted(
-                              email: emailController.text,
-                              password: passwordController.text,
-                              accountType: accountType,
-                            ));
-                          },
-                          isLoading: state is LoginLoading),
                       const SizedBox(height: 20),
                       AuthFlow(
                         title: 'Don\'t have an account? ',
