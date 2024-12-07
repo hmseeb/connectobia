@@ -101,22 +101,32 @@ class InputValidation {
   static List<String> validatePassword(String? password) {
     List<String> errors = [];
 
+    // Check if password is null or empty
     if (password == null || password.isEmpty) {
       errors.add('Password is required');
     } else {
+      // Check password length
       if (password.length < 8) {
         errors.add('Password must be at least 8 characters');
       }
-      if (!RegExp(r'(?=.*[A-Z])').hasMatch(password)) {
+
+      // Check for at least one uppercase letter
+      if (!RegExp(r'[A-Z]').hasMatch(password)) {
         errors.add('Password must contain at least one uppercase letter');
       }
-      if (!RegExp(r'(?=.*[a-z])').hasMatch(password)) {
+
+      // Check for at least one lowercase letter
+      if (!RegExp(r'[a-z]').hasMatch(password)) {
         errors.add('Password must contain at least one lowercase letter');
       }
-      if (!RegExp(r'(?=.*\d)').hasMatch(password)) {
+
+      // Check for at least one number
+      if (!RegExp(r'\d').hasMatch(password)) {
         errors.add('Password must contain at least one number');
       }
-      if (!RegExp(r'(?=.*[@$!%*?&#])').hasMatch(password)) {
+
+      // Check for at least one special character
+      if (!RegExp(r'[@$!%*?&#]').hasMatch(password)) {
         errors.add('Password must contain at least one special character');
       }
     }
