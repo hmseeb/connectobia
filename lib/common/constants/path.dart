@@ -4,13 +4,13 @@
 ///
 /// {@category Constants}
 class AssetsPath {
-  static String logo = 'assets/icons/logo.png';
-  static String emailIcon = 'assets/illustrations/email.svg';
-  static String brand = 'assets/illustrations/brand.svg';
-  static String login = 'assets/illustrations/login.svg';
-  static String creator = 'assets/illustrations/creator.svg';
-  static String onboardInfluencer =
+  static const String logo = 'assets/icons/logo.png';
+  static const String emailIcon = 'assets/illustrations/email.svg';
+  static const String brand = 'assets/illustrations/brand.svg';
+  static const String login = 'assets/illustrations/login.svg';
+  static const String creator = 'assets/illustrations/creator.svg';
+  static const String onboardInfluencer =
       'assets/illustrations/onboard_influencer.svg';
-  static String splash = 'assets/animations/splash.riv';
-  static String instagram = 'assets/icons/instagram.png';
+  static const String splash = 'assets/animations/splash.riv';
+  static const String instagram = 'assets/icons/instagram.png';
 }
