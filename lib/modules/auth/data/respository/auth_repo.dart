@@ -85,32 +85,16 @@ class AuthRepo {
     }
   }
 
-  static Future<dynamic> getCurrentUser() async {
-    PocketBase pocketBase = await PocketBaseSingleton.instance;
-    // pocketBase.collection(CollectionNameSingleton.instance).authRefresh();
-
-    try {
-      bool isAuthenticated = pocketBase.authStore.isValid;
-      if (isAuthenticated) {
-        CollectionNameSingleton.instance =
-            pocketBase.authStore.record!.collectionName;
-        dynamic user = await getUser();
-        return user;
-      } else {
-        pocketBase.authStore.clear();
-      }
-      return null;
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
-
   /// [getUser] is a method that returns the current user's information.
   static Future<dynamic> getUser() async {
     try {
       final pb = await PocketBaseSingleton.instance;
+      if (pb.authStore.record == null) {
+        return null;
+      }
       final id = pb.authStore.record!.id;
-      String collectionName = CollectionNameSingleton.instance;
+      final collectionName = pb.authStore.record!.collectionName;
+      CollectionNameSingleton.instance = collectionName;
       RecordModel record = await pb.collection(collectionName).getOne(id);
       if (collectionName == 'brand') {
         final Brand user = Brand.fromRecord(record);

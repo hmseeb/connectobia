@@ -58,7 +58,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                       ),
                     ),
                     Text(
-                      widget.user.industry,
+                      '@${widget.user.username}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,

@@ -1,5 +1,4 @@
 import 'package:connectobia/common/models/influencers.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/featured_image.dart';
@@ -63,9 +62,7 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                           state is BrandDashboardLoadedInflueners
                               ? FeatureImageInfo(
                                   state: state,
-                                  user: influencers[page].items[index]
-                                      as Influencer,
-                                )
+                                  user: influencers[page].items[index])
                               : const SizedBox(),
                           // Favorite button
                           const FeatureHeartIcon(),

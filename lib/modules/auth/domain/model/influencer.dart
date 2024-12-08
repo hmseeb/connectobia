@@ -6,13 +6,13 @@ class Influencer {
   final String collectionId;
   final String collectionName;
   final String id;
-  final String email;
+  final String? email;
   final bool emailVisibility;
   final bool verified;
   final String fullName;
   final String username;
   final bool onboarded;
-  final String industry;
+  final String? industry;
   final String profile;
   final DateTime created;
   final DateTime updated;

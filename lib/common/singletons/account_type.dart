@@ -7,8 +7,7 @@ class CollectionNameSingleton {
 
   static String get instance {
     if (_collectionName == null) {
-      // FIXME: This is a temporary fix.
-      assert(false, 'User not logged in');
+      assert(false, 'Collection name is not initialized');
       // final pb = await PocketBaseSingleton.instance;
       // final id = pb.authStore.record!.id;
       // CollectionModel collectionModel = await pb.collections.getOne(id);

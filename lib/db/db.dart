@@ -21,10 +21,10 @@ class PocketBaseSingleton {
         initial: prefs.getString('pb_auth'),
       );
 
-      debugPrint('PocketBase initialized');
-
       _pocketBase =
           PocketBase('https://connectobia.pockethost.io', authStore: store);
+
+      debugPrint('PocketBase initialized');
     }
     return _pocketBase!;
   }

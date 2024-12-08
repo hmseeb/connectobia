@@ -14,7 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuth>((event, emit) async {
       emit(AuthLoading());
       try {
-        dynamic user = await AuthRepo.getCurrentUser();
+        dynamic user = await AuthRepo.getUser();
         if (user == null) {
           return emit(Unauthenticated());
         }
