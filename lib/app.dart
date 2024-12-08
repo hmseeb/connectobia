@@ -1,4 +1,3 @@
-import 'package:connectobia/common/constants/navigation_service.dart';
 import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
 import 'package:connectobia/modules/dashboard/application/animation/animation_cubit.dart';
@@ -47,7 +46,6 @@ class ConnectobiaState extends State<Connectobia> {
           return ShadApp(
             title: 'Connectobia',
             initialRoute: '/',
-            navigatorKey: NavigationService.navigatorKey,
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) =>
                 GenerateRoutes.onGenerateRoute(settings),
