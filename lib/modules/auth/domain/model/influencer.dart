@@ -9,6 +9,7 @@ class Influencer {
   final String? email;
   final bool emailVisibility;
   final bool verified;
+  final bool connectedSocial;
   final String fullName;
   final String username;
   final bool onboarded;
@@ -26,6 +27,7 @@ class Influencer {
     required this.verified,
     required this.fullName,
     required this.username,
+    required this.connectedSocial,
     required this.onboarded,
     required this.industry,
     required this.profile,
@@ -43,6 +45,7 @@ class Influencer {
         fullName: json["fullName"],
         username: json["username"],
         onboarded: json["onboarded"],
+        connectedSocial: json["connectedSocial"],
         industry: json["industry"],
         profile: json["profile"],
         created: DateTime.parse(json["created"]),
@@ -62,6 +65,7 @@ class Influencer {
     String? email,
     bool? emailVisibility,
     bool? verified,
+    bool? connectedSocial,
     String? fullName,
     String? username,
     bool? onboarded,
@@ -80,6 +84,7 @@ class Influencer {
         fullName: fullName ?? this.fullName,
         username: username ?? this.username,
         onboarded: onboarded ?? this.onboarded,
+        connectedSocial: connectedSocial ?? this.connectedSocial,
         industry: industry ?? this.industry,
         profile: profile ?? this.profile,
         created: created ?? this.created,
@@ -95,6 +100,7 @@ class Influencer {
         "verified": verified,
         "fullName": fullName,
         "username": username,
+        "connectedSocial": connectedSocial,
         "onboarded": onboarded,
         "industry": industry,
         "profile": profile,
