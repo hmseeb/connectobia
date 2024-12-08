@@ -158,7 +158,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                   ),
                                   Row(
                                     children: [
-                                      Text(state.influencer.industry),
+                                      Text('state.influencer.industry'),
                                       // location
                                       const Spacer(),
                                       // location icon

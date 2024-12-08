@@ -65,6 +65,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                       title: Text(
                           'If the email exists, you will receive a link to reset your password.')),
                 );
+                Navigator.pop(context);
               }
             } catch (e) {
               if (context.mounted) {

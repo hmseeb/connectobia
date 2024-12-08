@@ -1,4 +1,4 @@
-import 'package:connectobia/common/models/influencer.dart';
+import 'package:connectobia/common/models/influencers.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:flutter/foundation.dart';
 

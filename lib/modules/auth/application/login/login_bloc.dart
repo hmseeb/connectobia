@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/models/user.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
@@ -66,13 +65,8 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       emit(InstagramLoading());
       try {
         debugPrint('Logging in with Instagram');
-        final recordAuth =
+        final influencer =
             await AuthRepo.instagramAuth(collectionName: event.accountType);
-
-        // TODO: Do something with the data
-        final Influencer influencer = Influencer.fromRecord(recordAuth.record);
-        final Meta meta = Meta.fromJson(recordAuth.meta);
-        final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
 
         emit(InfluencerLoginSuccess(influencer));
         debugPrint('Logged in with Instagram');

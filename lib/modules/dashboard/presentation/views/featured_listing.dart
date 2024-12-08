@@ -1,4 +1,4 @@
-import 'package:connectobia/common/models/influencer.dart';
+import 'package:connectobia/common/models/influencers.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';

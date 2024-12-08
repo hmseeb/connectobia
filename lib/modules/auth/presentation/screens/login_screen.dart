@@ -75,9 +75,9 @@ class _SigninScreenState extends State<SigninScreen> {
                   } else if (state is InfluencerLoginSuccess) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/homeScreen',
+                      '/influencerDashboard',
                       (route) => false,
-                      arguments: {'user': state.user},
+                      arguments: {'influencer': state.user},
                     );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
@@ -146,7 +146,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: SocialAuthBtn(
-                            icon: 'assets/icons/instagram.png',
+                            icon: AssetsPath.instagram,
                             onPressed: () {
                               HapticFeedback.mediumImpact();
                               BlocProvider.of<LoginBloc>(context)

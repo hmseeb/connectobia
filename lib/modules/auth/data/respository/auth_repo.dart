@@ -1,4 +1,5 @@
 import 'package:connectobia/common/constants/industries.dart';
+import 'package:connectobia/common/models/user.dart';
 import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
@@ -134,22 +135,82 @@ class AuthRepo {
   }
 
   ///  [instagramAuth] is a method that authenticates a user with their Instagram brand account.
-  static Future<RecordAuth> instagramAuth(
+  static Future<Influencer> instagramAuth(
       {required String collectionName}) async {
     try {
       final pb = await PocketBaseSingleton.instance;
 
-      final user = await pb
+      final recordAuth = await pb
           .collection(collectionName)
           .authWithOAuth2('instagram2', (url) async {
         await launchUrl(url);
       });
 
-      return user;
+      // Implement brand if instagram auth is introduced for brands in future
+
+      final Influencer influencer = Influencer.fromRecord(recordAuth.record);
+      final Meta meta = Meta.fromJson(recordAuth.meta);
+      final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
+      final String influencerId = influencer.id;
+      final influencerProfileId = await createInfluencerProfile(
+          pocketBase: pb, meta: meta, rawUser: rawUser);
+
+      debugPrint('Created influencer profile');
+      await linkProfileWithAccount(
+          userId: influencerId,
+          profileId: influencerProfileId,
+          pb: pb,
+          collectionName: 'influencer');
+      debugPrint('Linked profile with account');
+
+      return influencer;
     } catch (e) {
       debugPrint(e.toString());
       rethrow;
     }
+  }
+
+  static Future<void> linkProfileWithAccount(
+      {required String userId,
+      required String profileId,
+      required String collectionName,
+      required PocketBase pb}) async {
+    final body = <String, dynamic>{
+      "profile": profileId,
+      "onboarded": true,
+    };
+
+    await pb.collection(collectionName).update(userId, body: body);
+  }
+
+  static Future<void> updateOnboardValue(
+      {required String collectionName}) async {
+    final pb = await PocketBaseSingleton.instance;
+    final id = pb.authStore.record!.id;
+    final body = <String, dynamic>{
+      "onboarded": true,
+    };
+    await pb.collection(collectionName).update(id, body: body);
+  }
+
+  static Future<String> createInfluencerProfile(
+      {required PocketBase pocketBase,
+      required Meta meta,
+      required RawUser rawUser}) async {
+    final body = <String, dynamic>{
+      "title": null,
+      "description": null,
+      "followers": rawUser.followersCount,
+      "engRate": null,
+      "location": null,
+      "mediaCount": rawUser.mediaCount,
+      "followings": rawUser.followsCount,
+    };
+
+    final record =
+        await pocketBase.collection('influencerProfile').create(body: body);
+    final String influencerProfileId = record.id;
+    return influencerProfileId;
   }
 
   /// [login] is a method that logs in a user with their email and password.

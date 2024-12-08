@@ -103,9 +103,9 @@ class ConnectobiaState extends State<Connectobia> {
       if (state.user.onboarded) {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/homeScreen',
+          '/influencerDashboard',
           (route) => false,
-          arguments: {'user': state.user},
+          arguments: {'influencer': state.user},
         );
       } else {
         Navigator.pushNamedAndRemoveUntil(

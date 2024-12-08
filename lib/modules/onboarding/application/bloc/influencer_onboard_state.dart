@@ -1,6 +1,6 @@
 part of 'influencer_onboard_bloc.dart';
 
-class ConnectedInstagram extends InfluencerOnboardState {}
+class Onboarded extends InfluencerOnboardState {}
 
 class ConnectingInstagram extends InfluencerOnboardState {}
 

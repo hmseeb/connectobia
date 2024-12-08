@@ -11,6 +11,10 @@ class SubmitLocation extends InfluencerOnboardEvent {
   SubmitLocation(this.location);
 }
 
+class UpdateOnboardBool extends InfluencerOnboardEvent {
+  UpdateOnboardBool();
+}
+
 class SubmitPersonalDetails extends InfluencerOnboardEvent {
   final DateTime dob;
   final String gender;

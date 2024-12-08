@@ -20,6 +20,7 @@ import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart'
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
+import 'package:connectobia/modules/dashboard/presentation/screens/influencer_dashboard.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/influencer_profile.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/brand_onboard_screen.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
@@ -87,6 +88,11 @@ class GenerateRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(BrandDashboard(
           user: args['user'],
+        ));
+      case '/influencerDashboard':
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildPageRoute(InfluencerDashboard(
+          influencer: args['influencer'],
         ));
       case '/creatorSignupScreen':
         return _buildPageRoute(const CreatorScreen());

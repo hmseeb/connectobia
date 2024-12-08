@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/models/influencer.dart';
+import 'package:connectobia/common/models/influencers.dart';
 import 'package:connectobia/modules/dashboard/application/data/dashboard_repo.dart';
 import 'package:meta/meta.dart';
 

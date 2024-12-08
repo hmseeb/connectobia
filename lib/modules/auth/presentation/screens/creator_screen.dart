@@ -121,7 +121,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: SocialAuthBtn(
-                        icon: 'assets/icons/instagram.png',
+                        icon: AssetsPath.instagram,
                         onPressed: () {
                           HapticFeedback.mediumImpact();
                           BlocProvider.of<SignupBloc>(context)

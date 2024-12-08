@@ -10,6 +10,7 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
+    debugPrint(state.runtimeType.toString());
     on<CheckAuth>((event, emit) async {
       // // Uncomment this once if deleted an account
       // await AuthRepo.logout();
@@ -29,10 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           } else {
             emit(Unauthenticated());
           }
-        }
-
-        // }
-        else {
+        } else {
           emit(Unverified(user.email));
         }
       } catch (e) {

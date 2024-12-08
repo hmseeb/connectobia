@@ -46,7 +46,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
   late final TextEditingController _usernameController;
   late final TextEditingController _brandNameController;
   late final editProfileBloc = BlocProvider.of<ProfileSettingsBloc>(context);
-  late String industry = widget.user.industry;
+  late String industry = 'widget.user.industry';
   final FocusNode industryFocusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
   late final Brightness brightness = ShadTheme.of(context).brightness;
@@ -62,12 +62,13 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
             ),
           );
           Navigator.pop(
-              context,
-              widget.user.copyWith(
-                fullName: _fullNameController.text,
-                username: _usernameController.text,
-                industry: industry,
-              ));
+            context,
+            // widget.user.copyWith(
+            //   fullName: _fullNameController.text,
+            //   username: _usernameController.text,
+            //   industry: industry,
+            // )
+          );
         } else if (state is ProfileSettingsFailure) {
           ShadToaster.of(context).show(
             const ShadToast(
@@ -126,7 +127,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                       if (bannerImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: bannerImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: false,
                                         );
                                       }
@@ -143,7 +144,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                       if (bannerImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: bannerImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: false,
                                         );
                                       }
@@ -188,7 +189,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                       if (avatarImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: avatarImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: true,
                                         );
                                       }
@@ -205,7 +206,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                       if (avatarImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: avatarImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: true,
                                         );
                                       }
@@ -315,7 +316,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                           width: double.infinity,
                           child: CustomShadSelect(
                             items: IndustryList.industries,
-                            placeholder: widget.user.industry,
+                            placeholder: 'widget.user.industry',
                             onSelected: (value) {
                               industry = value;
                             },
@@ -372,7 +373,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
     _fullNameController =
         TextEditingController(text: widget.user.fullName.split(' ')[0]);
     TextEditingController(text: widget.user.fullName.split(' ')[1]);
-    _usernameController = TextEditingController(text: widget.user.username);
+    _usernameController = TextEditingController(text: 'widget.user.username');
     _brandNameController = TextEditingController(text: widget.user.fullName);
   }
 }
