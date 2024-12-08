@@ -49,13 +49,24 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.user.fullName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          widget.user.fullName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.verified,
+                          color: widget.user.connectedSocial
+                              ? Colors.blue
+                              : Colors.green,
+                        ),
+                      ],
                     ),
                     Text(
                       '@${widget.user.username}',
@@ -65,14 +76,6 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                       ),
                     ),
                   ],
-                ),
-                const Spacer(),
-                const Text(
-                  '\$100',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
                 ),
               ],
             ),
