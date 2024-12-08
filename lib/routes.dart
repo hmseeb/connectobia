@@ -14,6 +14,7 @@
 library;
 
 import 'package:connectobia/app.dart';
+import 'package:connectobia/common/constants/screens.dart';
 import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/creator__signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
@@ -42,59 +43,56 @@ class GenerateRoutes {
   /// based on the route name provided in [settings.name].
   static onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
+      case splashScreen:
         final args = settings.arguments as Map<String, dynamic>;
-
         return PageRouteBuilder(
             pageBuilder: (_, animation, secondaryAnimation) => Connectobia(
                   isDarkMode: args['isDarkMode'],
                 ));
-      case '/welcomeScreen':
+      case welcomeScreen:
         return PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 600),
           pageBuilder: (_, animation, secondaryAnimation) =>
               const WelcomeScreen(),
         );
-      case '/signinScreen':
+      case signinScreen:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(SigninScreen(
           accountType: args['accountType'],
         ));
-      case '/influencerOnboarding':
+      case influencerOnboarding:
         final args = settings.arguments as Map<String, dynamic>;
-
         return _buildPageRoute(InfluencerOnboarding(
           user: args['user'],
         ));
-      case '/brandOnboarding':
+      case brandOnboarding:
         final args = settings.arguments as Map<String, dynamic>;
-
         return _buildPageRoute(BrandOnboarding(
           user: args['user'],
         ));
-      case '/influencerProfile':
+      case influencerProfile:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(InfluencerProfile(
           userId: args['userId'],
         ));
-      case '/verifyEmailScreen':
+      case verifyEmailScreen:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(VerifyEmail(
           email: args['email'],
         ));
-      case '/brandSignupScreen':
+      case brandSignupScreen:
         return _buildPageRoute(const BrandScreen());
-      case '/brandDashboard':
+      case brandDashboard:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(BrandDashboard(
           user: args['user'],
         ));
-      case '/influencerDashboard':
+      case influencerDashboard:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(InfluencerDashboard(
           influencer: args['influencer'],
         ));
-      case '/creatorSignupScreen':
+      case creatorSignupScreen:
         return _buildPageRoute(const CreatorScreen());
 
       default:
