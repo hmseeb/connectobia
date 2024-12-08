@@ -3,7 +3,7 @@ part of 'brand_dashboard_bloc.dart';
 final class BrandDashboardInitial extends BrandDashboardState {}
 
 final class BrandDashboardLoadedInflueners extends BrandDashboardState {
-  final UserList influencers;
+  final Influencers influencers;
   BrandDashboardLoadedInflueners(this.influencers);
 }
 

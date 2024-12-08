@@ -1,5 +1,4 @@
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -9,16 +8,14 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 ///
 /// {@category Forms}
 class CreatorSignupForm extends StatefulWidget {
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
+  final TextEditingController brandNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController usernameController;
 
   const CreatorSignupForm(
       {super.key,
-      required this.firstNameController,
-      required this.lastNameController,
+      required this.brandNameController,
       required this.emailController,
       required this.passwordController,
       required this.usernameController});
@@ -34,10 +31,18 @@ class _CreatorSignupFormState extends State<CreatorSignupForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FirstLastName(
-          firstName: widget.firstNameController,
-          lastName: widget.lastNameController,
-          showLabels: false,
+        ShadInputFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          placeholder: const Text('Full Name'),
+          controller: widget.brandNameController,
+          keyboardType: TextInputType.name,
+          validator: (value) {
+            final error = InputValidation.validateBrandName(value);
+            if (error != null) {
+              return error;
+            }
+            return null;
+          },
         ),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,

@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
-import 'package:meta/meta.dart';
+import 'package:connectobia/modules/auth/domain/model/brand.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
+import 'package:flutter/material.dart';
 
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';
@@ -29,16 +30,48 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       emit(LoginLoading());
 
       try {
-        final authData = await AuthRepo.login(event.email, event.password);
-        bool isVerified = authData.record!.data['verified'];
-        User user = await AuthRepo.getUser();
-        if (isVerified) {
-          emit(LoginSuccess(user));
+        final authData = await AuthRepo.login(
+            email: event.email,
+            password: event.password,
+            accountType: event.accountType);
+
+        if (event.accountType == 'influencer') {
+          Influencer user = Influencer.fromJson(authData.record.data);
+          bool isVerified = user.verified;
+          if (isVerified) {
+            emit(InfluencerLoginSuccess(user));
+          } else {
+            await AuthRepo.verifyEmail(email: event.email);
+            emit(LoginUnverified());
+          }
         } else {
-          await AuthRepo.verifyEmail(event.email);
-          emit(LoginUnverified());
+          Brand user = Brand.fromJson(authData.record.data);
+          // FIXME: This is a temporary fix.
+          // bool isVerified = authData.record.data['verified'];
+          bool isVerified = user.verified;
+          if (isVerified) {
+            emit(BrandLoginSuccess(user));
+          } else {
+            await AuthRepo.verifyEmail(email: event.email);
+            emit(LoginUnverified());
+          }
         }
       } catch (e) {
+        emit(LoginFailure(e.toString()));
+      }
+    });
+
+    on<InstagramAuth>((event, emit) async {
+      emit(InstagramLoading());
+      try {
+        debugPrint('Logging in with Instagram');
+        final influencer =
+            await AuthRepo.instagramAuth(collectionName: event.accountType);
+
+        emit(InfluencerLoginSuccess(influencer));
+        debugPrint('Logged in with Instagram');
+      } catch (e) {
+        debugPrint(e.toString());
         emit(LoginFailure(e.toString()));
       }
     });

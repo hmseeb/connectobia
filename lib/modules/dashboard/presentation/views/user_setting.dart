@@ -2,17 +2,26 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
 import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
+import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/firstlast_name.dart';
+import 'package:connectobia/modules/dashboard/application/data/user_repo.dart';
 import 'package:connectobia/modules/dashboard/application/profile_settings/profile_settings.dart';
-import 'package:connectobia/modules/dashboard/data/user_repo.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+class InfluencerSettingSheet extends StatefulWidget {
+  final Influencer user;
+
+  const InfluencerSettingSheet({super.key, required this.user});
+
+  @override
+  State<InfluencerSettingSheet> createState() => _InfluencerSettingSheetState();
+}
 
 class LabeledTextField extends StatelessWidget {
   final String text;
@@ -32,22 +41,12 @@ class LabeledTextField extends StatelessWidget {
   }
 }
 
-class UserSettingSheet extends StatefulWidget {
-  final User user;
-
-  const UserSettingSheet({super.key, required this.user});
-
-  @override
-  State<UserSettingSheet> createState() => _UserSettingSheetState();
-}
-
-class _UserSettingSheetState extends State<UserSettingSheet> {
-  late final TextEditingController _firstNameController;
-  late final TextEditingController _lastNameController;
+class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
+  late final TextEditingController _fullNameController;
   late final TextEditingController _usernameController;
   late final TextEditingController _brandNameController;
   late final editProfileBloc = BlocProvider.of<ProfileSettingsBloc>(context);
-  late String industry = widget.user.industry;
+  late String industry = 'widget.user.industry';
   final FocusNode industryFocusNode = FocusNode();
   final ImagePicker picker = ImagePicker();
   late final Brightness brightness = ShadTheme.of(context).brightness;
@@ -63,14 +62,13 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
             ),
           );
           Navigator.pop(
-              context,
-              widget.user.copyWith(
-                firstName: _firstNameController.text,
-                lastName: _lastNameController.text,
-                username: _usernameController.text,
-                brandName: _brandNameController.text,
-                industry: industry,
-              ));
+            context,
+            // widget.user.copyWith(
+            //   fullName: _fullNameController.text,
+            //   username: _usernameController.text,
+            //   industry: industry,
+            // )
+          );
         } else if (state is ProfileSettingsFailure) {
           ShadToaster.of(context).show(
             const ShadToast(
@@ -97,12 +95,14 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                         height: 150,
                         width: double.infinity,
                         child: CachedNetworkImage(
-                          imageUrl: widget.user.banner.isEmpty
-                              ? Avatar.getBannerPlaceholder()
-                              : Avatar.getUserImage(
-                                  id: widget.user.id,
-                                  image: widget.user.banner,
-                                ),
+                          imageUrl:
+                              // widget.user.banner.isEmpty
+                              // ?
+                              Avatar.getBannerPlaceholder()
+                          // : Avatar.getUserImage(
+                          //     id: widget.user.id,
+                          //     image: widget.user.banner,
+                          ,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -127,7 +127,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                                       if (bannerImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: bannerImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: false,
                                         );
                                       }
@@ -144,7 +144,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                                       if (bannerImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: bannerImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: false,
                                         );
                                       }
@@ -189,7 +189,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                                       if (avatarImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: avatarImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: true,
                                         );
                                       }
@@ -206,7 +206,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                                       if (avatarImage != null) {
                                         await UserRepo.updateUserImage(
                                           image: avatarImage,
-                                          username: widget.user.username,
+                                          username: 'widget.user.username',
                                           isAvatar: true,
                                         );
                                       }
@@ -230,15 +230,15 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                                 CircleAvatar(
                                   radius: 50,
                                   backgroundImage: CachedNetworkImageProvider(
-                                    widget.user.avatar.isEmpty
-                                        ? Avatar.getAvatarPlaceholder(
-                                            widget.user.firstName,
-                                            widget.user.lastName)
-                                        : Avatar.getUserImage(
-                                            id: widget.user.id,
-                                            image: widget.user.avatar,
-                                          ),
-                                  ),
+                                      // widget.user.avatar.isEmpty
+                                      //     ?
+                                      Avatar.getAvatarPlaceholder(
+                                          widget.user.fullName)
+                                      // : Avatar.getUserImage(
+                                      //     id: widget.user.id,
+                                      //     image: widget.user.avatar,
+                                      //   ),
+                                      ),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -276,10 +276,19 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 16),
-                        FirstLastName(
-                          firstName: _firstNameController,
-                          lastName: _lastNameController,
-                          showLabels: true,
+                        ShadInputFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          placeholder: const Text('Full Name'),
+                          controller: _fullNameController,
+                          keyboardType: TextInputType.name,
+                          validator: (value) {
+                            final error =
+                                InputValidation.validateBrandName(value);
+                            if (error != null) {
+                              return error;
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 8),
                         const LabeledTextField('Username'),
@@ -288,7 +297,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                           controller: _usernameController,
                         ),
                         const SizedBox(height: 8),
-                        widget.user.brandName.isEmpty
+                        widget.user.fullName.isEmpty
                             ? const SizedBox.shrink()
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,8 +316,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                           width: double.infinity,
                           child: CustomShadSelect(
                             items: IndustryList.industries,
-                            placeholder: IndustryFormatter.keyToValue(
-                                widget.user.industry),
+                            placeholder: 'widget.user.industry',
                             onSelected: (value) {
                               industry = value;
                             },
@@ -322,8 +330,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
                             onPressed: () {
                               editProfileBloc.add(
                                 ProfileSettingsSave(
-                                  firstName: _firstNameController.text,
-                                  lastName: _lastNameController.text,
+                                  fullName: _fullNameController.text,
                                   username: _usernameController.text,
                                   brandName: _brandNameController.text,
                                   industry: industry,
@@ -354,8 +361,7 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _fullNameController.dispose();
     _usernameController.dispose();
     _brandNameController.dispose();
     super.dispose();
@@ -364,9 +370,10 @@ class _UserSettingSheetState extends State<UserSettingSheet> {
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: widget.user.firstName);
-    _lastNameController = TextEditingController(text: widget.user.lastName);
-    _usernameController = TextEditingController(text: widget.user.username);
-    _brandNameController = TextEditingController(text: widget.user.brandName);
+    _fullNameController =
+        TextEditingController(text: widget.user.fullName.split(' ')[0]);
+    TextEditingController(text: widget.user.fullName.split(' ')[1]);
+    _usernameController = TextEditingController(text: 'widget.user.username');
+    _brandNameController = TextEditingController(text: widget.user.fullName);
   }
 }

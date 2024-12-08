@@ -1,6 +1,6 @@
-import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/models/influencers.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/application/domain/user_list.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/featured_image.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/heart_icon.dart';
@@ -18,7 +18,7 @@ class FeaturedListings extends StatefulWidget {
 }
 
 class _FeaturedListingsState extends State<FeaturedListings> {
-  late List<UserList> influencers = [];
+  late List<Influencers> influencers = [];
   late final ShadThemeData theme = ShadTheme.of(context);
   int page = 0;
   @override
@@ -58,18 +58,13 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                       child: Stack(
                         children: [
                           Center(
-                            child: FeatureImage(
-                                image: state is BrandDashboardLoadedInflueners
-                                    ? influencers[page].items[index].banner
-                                    : '',
-                                id: state is BrandDashboardLoadedInflueners
-                                    ? influencers[page].items[index].id
-                                    : Avatar.getBannerPlaceholder()),
+                            child: FeatureImage(image: '', id: ''),
                           ),
                           state is BrandDashboardLoadedInflueners
                               ? FeatureImageInfo(
                                   state: state,
-                                  user: influencers[page].items[index],
+                                  user: influencers[page].items[index]
+                                      as Influencer,
                                 )
                               : const SizedBox(),
                           // Favorite button

@@ -1,11 +1,5 @@
 part of 'auth_bloc.dart';
 
-final class Authenticated extends AuthState {
-  final User user;
-
-  Authenticated(this.user);
-}
-
 final class AuthFailed extends AuthState {
   final String message;
 
@@ -18,6 +12,18 @@ final class AuthLoading extends AuthState {}
 
 @immutable
 sealed class AuthState {}
+
+final class BrandAuthenticated extends AuthState {
+  final Brand user;
+
+  BrandAuthenticated(this.user);
+}
+
+final class InfluencerAuthenticated extends AuthState {
+  final Influencer user;
+
+  InfluencerAuthenticated(this.user);
+}
 
 final class Unauthenticated extends AuthState {}
 

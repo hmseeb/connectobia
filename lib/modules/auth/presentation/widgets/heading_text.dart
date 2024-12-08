@@ -19,7 +19,7 @@ class HeadingText extends StatelessWidget {
       child: Text(
         heading,
         style: const TextStyle(
-          fontSize: 21,
+          fontSize: 27,
           fontWeight: FontWeight.bold,
         ),
         textAlign: TextAlign.center,

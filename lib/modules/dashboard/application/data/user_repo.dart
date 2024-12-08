@@ -1,3 +1,4 @@
+import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +16,8 @@ class UserRepo {
         filename: username, // You can change this to any file name
       );
       final pb = await PocketBaseSingleton.instance;
-      final String recordId = pb.authStore.model.id;
+      final String recordId = pb.authStore.record!.id;
+      assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
       rethrow;
@@ -23,23 +25,22 @@ class UserRepo {
   }
 
   static Future<void> updateUserProfile({
-    required String firstName,
-    required String lastName,
+    required String fullName,
     required String username,
     required String industry,
     required String brandName,
   }) async {
     final pb = await PocketBaseSingleton.instance;
-    final String recordId = pb.authStore.model.id;
+    final String recordId = pb.authStore.record!.id;
     final body = <String, dynamic>{
-      "first_name": firstName,
-      "last_name": lastName,
+      "fullName": fullName,
       "username": username,
-      "industry": industry,
-      "brand_name": brandName
+      "industry": IndustryFormatter.keyToValue(industry),
+      "brandName": brandName
     };
 
     try {
+      assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, body: body);
     } catch (e) {
       rethrow;

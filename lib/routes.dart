@@ -14,13 +14,16 @@
 library;
 
 import 'package:connectobia/app.dart';
-import 'package:connectobia/modules/auth/presentation/screens/brand_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/creator_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/creator__signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
+import 'package:connectobia/modules/dashboard/presentation/screens/influencer_dashboard.dart';
 import 'package:connectobia/modules/dashboard/presentation/screens/influencer_profile.dart';
+import 'package:connectobia/modules/onboarding/presentation/screens/brand_onboard_screen.dart';
+import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.
@@ -53,7 +56,22 @@ class GenerateRoutes {
               const WelcomeScreen(),
         );
       case '/signinScreen':
-        return _buildPageRoute(const SigninScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildPageRoute(SigninScreen(
+          accountType: args['accountType'],
+        ));
+      case '/influencerOnboarding':
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return _buildPageRoute(InfluencerOnboarding(
+          user: args['user'],
+        ));
+      case '/brandOnboarding':
+        final args = settings.arguments as Map<String, dynamic>;
+
+        return _buildPageRoute(BrandOnboarding(
+          user: args['user'],
+        ));
       case '/influencerProfile':
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(InfluencerProfile(
@@ -71,22 +89,16 @@ class GenerateRoutes {
         return _buildPageRoute(BrandDashboard(
           user: args['user'],
         ));
+      case '/influencerDashboard':
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildPageRoute(InfluencerDashboard(
+          influencer: args['influencer'],
+        ));
       case '/creatorSignupScreen':
         return _buildPageRoute(const CreatorScreen());
-      case '/homeScreen':
-        final args = settings.arguments as Map<String, dynamic>;
-        return PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (_, animation, secondaryAnimation) => BrandDashboard(
-            user: args['user'],
-          ),
-        );
+
       default:
-        final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-            builder: (_) => Connectobia(
-                  isDarkMode: args['isDarkMode'],
-                ));
+        return MaterialPageRoute(builder: (_) => WelcomeScreen());
     }
   }
 

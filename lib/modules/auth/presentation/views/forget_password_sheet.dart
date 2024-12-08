@@ -58,13 +58,14 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               isLoading = true;
             });
             try {
-              await AuthRepo.forgotPassword(emailController.text);
+              await AuthRepo.forgotPassword(email: emailController.text);
               if (context.mounted) {
                 ShadToaster.of(context).show(
                   const ShadToast(
                       title: Text(
                           'If the email exists, you will receive a link to reset your password.')),
                 );
+                Navigator.pop(context);
               }
             } catch (e) {
               if (context.mounted) {

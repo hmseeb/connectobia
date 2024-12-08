@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:meta/meta.dart';
@@ -19,9 +20,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(SignupLoading());
 
       String? error = InputValidation.validateBrandForm(
-        firstName: event.firstName,
-        lastName: event.lastName,
-        username: event.username,
         email: event.email,
         brandName: event.brandName,
         password: event.password,
@@ -34,17 +32,21 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
-        await AuthRepo.createAccount(
-          event.firstName,
-          event.lastName,
-          event.username,
-          event.email,
-          event.brandName,
-          event.password,
-          event.accountType,
-          event.industry,
+        await AuthRepo.createBrandAccount(
+          brandName: event.brandName,
+          username: event.username,
+          email: event.email,
+          password: event.password,
+          industry: event.industry,
         );
-        emit(SignupSuccess());
+        emit(SignupSuccess(
+          email: event.email,
+        ));
+
+        CollectionNameSingleton.instance = 'brand';
+
+        await AuthRepo.login(
+            email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
         emit(SignupFailure(e.toString()));
       }
@@ -68,17 +70,32 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
-        await AuthRepo.createAccount(
-          event.firstName,
-          event.lastName,
-          event.username,
-          event.email,
-          '',
-          event.password,
-          'influencer',
-          event.industry,
+        await AuthRepo.createInfluencerAccount(
+          fullName: '${event.firstName} ${event.lastName}',
+          username: event.username,
+          email: event.email,
+          password: event.password,
+          industry: event.industry,
         );
-        emit(SignupSuccess());
+        emit(SignupSuccess(email: event.email));
+        CollectionNameSingleton.instance = 'infuencer';
+        await AuthRepo.login(
+            email: event.email,
+            password: event.password,
+            accountType: 'influencer');
+      } catch (e) {
+        emit(SignupFailure(e.toString()));
+      }
+    });
+
+    on<InstagramSignup>((event, emit) async {
+      emit(InstagramLoading());
+      try {
+        await AuthRepo.instagramAuth(collectionName: event.accountType);
+        emit(SignupSuccess(
+          email: null,
+        ));
+        CollectionNameSingleton.instance = 'influencer';
       } catch (e) {
         emit(SignupFailure(e.toString()));
       }

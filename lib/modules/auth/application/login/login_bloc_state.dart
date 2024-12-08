@@ -1,5 +1,17 @@
 part of 'login_bloc.dart';
 
+final class BrandLoginSuccess extends LoginBlocState {
+  final Brand user;
+  BrandLoginSuccess(this.user);
+}
+
+final class InfluencerLoginSuccess extends LoginBlocState {
+  final Influencer user;
+  InfluencerLoginSuccess(this.user);
+}
+
+final class InstagramLoading extends LoginBlocState {}
+
 final class LoginBlocInitial extends LoginBlocState {}
 
 @immutable
@@ -12,11 +24,6 @@ final class LoginFailure extends LoginBlocState {
 }
 
 final class LoginLoading extends LoginBlocState {}
-
-final class LoginSuccess extends LoginBlocState {
-  final User user;
-  LoginSuccess(this.user);
-}
 
 final class LoginUnverified extends LoginBlocState {
   LoginUnverified();

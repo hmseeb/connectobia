@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/dashboard/data/user_repo.dart';
+import 'package:connectobia/modules/dashboard/application/data/user_repo.dart';
 import 'package:meta/meta.dart';
 
 part 'profile_settings_event.dart';
@@ -12,8 +12,7 @@ class ProfileSettingsBloc
       emit(ProfileSettingsLoading());
       try {
         await UserRepo.updateUserProfile(
-          firstName: event.firstName,
-          lastName: event.lastName,
+          fullName: event.fullName,
           username: event.username,
           industry: event.industry,
           brandName: event.brandName,

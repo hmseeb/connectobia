@@ -4,37 +4,23 @@
 /// {@category Repositories}
 class InputValidation {
   static String? validateBrandForm({
-    required String firstName,
-    required String lastName,
-    required String username,
+    required String brandName,
     required String email,
     required String password,
-    required String brandName,
     required String industry,
   }) {
     String? error;
-    error = validateFirstName(firstName);
+    error = validateBrandName(brandName);
     if (error != null) {
       return error;
     }
-    error = validateLastName(lastName);
-    if (error != null) {
-      return error;
-    }
-    error = validateUsername(username);
-    if (error != null) {
-      return error;
-    }
+
     error = validateEmail(email);
     if (error != null) {
       return error;
     }
     error = validatePassword(password).join('\n');
     if (error.isNotEmpty) {
-      return error;
-    }
-    error = validateBrandName(brandName);
-    if (error != null) {
       return error;
     }
 
@@ -47,11 +33,11 @@ class InputValidation {
 
   static String? validateBrandName(String? brandName) {
     if (brandName == null || brandName.isEmpty) {
-      return 'Brand name is required';
+      return 'Name is required';
     }
 
     if (brandName.length < 2) {
-      return 'Brand name must be at least 2 characters';
+      return 'Name must be at least 2 characters';
     }
     return null;
   }
@@ -66,17 +52,6 @@ class InputValidation {
 
     if (!regex.hasMatch(email)) {
       return 'Invalid email format';
-    }
-    return null;
-  }
-
-  // First name shouldn't be less than 2 characters
-  static String? validateFirstName(String? firstName) {
-    if (firstName == null || firstName.isEmpty) {
-      return 'First name is required';
-    }
-    if (firstName.length < 2) {
-      return 'First name must be at least 2 characters';
     }
     return null;
   }
@@ -97,14 +72,11 @@ class InputValidation {
     required String industry,
   }) {
     String? error;
-    error = validateFirstName(firstName);
+    error = validateBrandName(firstName);
     if (error != null) {
       return error;
     }
-    error = validateLastName(lastName);
-    if (error != null) {
-      return error;
-    }
+
     error = validateUsername(username);
     if (error != null) {
       return error;
@@ -126,36 +98,35 @@ class InputValidation {
     return null;
   }
 
-  // Last name shouldn't be less than 2 characters
-  static String? validateLastName(String? lastName) {
-    if (lastName == null || lastName.isEmpty) {
-      return 'Last name is required';
-    }
-    if (lastName.length < 2) {
-      return 'Last name must be at least 2 characters';
-    }
-    return null;
-  }
-
   static List<String> validatePassword(String? password) {
     List<String> errors = [];
 
+    // Check if password is null or empty
     if (password == null || password.isEmpty) {
       errors.add('Password is required');
     } else {
+      // Check password length
       if (password.length < 8) {
         errors.add('Password must be at least 8 characters');
       }
-      if (!RegExp(r'(?=.*[A-Z])').hasMatch(password)) {
+
+      // Check for at least one uppercase letter
+      if (!RegExp(r'[A-Z]').hasMatch(password)) {
         errors.add('Password must contain at least one uppercase letter');
       }
-      if (!RegExp(r'(?=.*[a-z])').hasMatch(password)) {
+
+      // Check for at least one lowercase letter
+      if (!RegExp(r'[a-z]').hasMatch(password)) {
         errors.add('Password must contain at least one lowercase letter');
       }
-      if (!RegExp(r'(?=.*\d)').hasMatch(password)) {
+
+      // Check for at least one number
+      if (!RegExp(r'\d').hasMatch(password)) {
         errors.add('Password must contain at least one number');
       }
-      if (!RegExp(r'(?=.*[@$!%*?&#])').hasMatch(password)) {
+
+      // Check for at least one special character
+      if (!RegExp(r'[@$!%*?&#]').hasMatch(password)) {
         errors.add('Password must contain at least one special character');
       }
     }

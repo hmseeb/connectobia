@@ -1,6 +1,6 @@
 class Avatar {
-  static String getAvatarPlaceholder(String firstName, String lastName) {
-    return 'https://ui-avatars.com/api/?background=F1F5F9&name=$firstName+$lastName';
+  static String getAvatarPlaceholder(String fullName) {
+    return 'https://ui-avatars.com/api/?background=F1F5F9&name=$fullName';
   }
 
   static String getBannerPlaceholder() {

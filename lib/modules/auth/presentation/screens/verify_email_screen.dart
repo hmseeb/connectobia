@@ -1,14 +1,16 @@
 import 'dart:async';
 
 import 'package:connectobia/common/constants/path.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
+import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/sub_heading.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -30,6 +32,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   int _secondsRemaining = 30; // Countdown duration
   int _resendEmailCount = 1;
   bool isLoading = false;
+  String accountType = CollectionNameSingleton.instance;
 
   late final blocProvider = BlocProvider.of<EmailVerificationBloc>(context);
 
@@ -37,18 +40,20 @@ class VerifyEmailState extends State<VerifyEmail> {
 
   @override
   Widget build(BuildContext context) {
+    final height = ScreenSize.height(context);
     return BlocListener<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
-        if (state is EmailVerified) {
-          ShadToaster.of(context).show(
-            const ShadToast(
-              title: Text('Email verified successfully'),
-            ),
-          );
+        if (state is BrandEmailVerified) {
           Navigator.of(context).pushNamedAndRemoveUntil(
-              '/homeScreen', (route) => false,
+              '/brandDashboard', (route) => false,
               arguments: {
-                'user': state.user,
+                'user': state.brand,
+              });
+        } else if (state is InfluencerEmailVerified) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/influencerOnboarding', (route) => false,
+              arguments: {
+                'user': state.influencer,
               });
         }
       },
@@ -62,21 +67,17 @@ class VerifyEmailState extends State<VerifyEmail> {
                 const SizedBox(height: 20),
                 SvgPicture.asset(
                   AssetsPath.emailIcon,
-                  height: 100,
-                  width: 100,
+                  height: height * 30,
                 ),
+                const HeadingText('Verify your email'),
                 const SizedBox(height: 20),
-                const HeadingText('Almost done!'),
-                const SizedBox(height: 20),
-                const Text('A verification email has been sent to'),
+                const SubHeading('A verification email has been sent to'),
                 const SizedBox(height: 10),
                 Text(widget.email,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                const Text(
-                  'Please check your inbox and follow the link to activate your account.',
-                  textAlign: TextAlign.center,
-                ),
+                const SubHeading(
+                    'Please check your inbox and follow the link to activate your account.'),
                 const SizedBox(height: 20),
                 // Didn't get the email?
                 Row(
@@ -111,11 +112,14 @@ class VerifyEmailState extends State<VerifyEmail> {
                 ),
                 const SizedBox(height: 20),
                 // open email button using url launcher
-                ShadButton(
-                  onPressed: () {
-                    openEmailApp();
-                  },
-                  child: const Text('Open Email App'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ShadButton(
+                    onPressed: () {
+                      openEmailApp();
+                    },
+                    child: const Text('Open Email App'),
+                  ),
                 ),
               ],
             ),
@@ -161,7 +165,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   Future<void> _authChecker() async {
     final pb = await PocketBaseSingleton.instance;
     if (pb.authStore.isValid) {
-      blocProvider.add(EmailSubscribeEvent());
+      blocProvider.add(EmailSubscribeEvent(accountType: accountType));
     } else {
       _authListener(pb);
     }
@@ -173,7 +177,11 @@ class VerifyEmailState extends State<VerifyEmail> {
   /// dispatches an [EmailSubscribeEvent] when the user is authenticated.
   Future<void> _authListener(PocketBase pb) async {
     pb.authStore.onChange.listen((event) {
-      if (event.token.isNotEmpty) blocProvider.add(EmailSubscribeEvent());
+      if (event.token.isNotEmpty) {
+        blocProvider.add(EmailSubscribeEvent(
+          accountType: accountType,
+        ));
+      }
     });
   }
 
@@ -185,7 +193,7 @@ class VerifyEmailState extends State<VerifyEmail> {
       isLoading = true;
     });
     try {
-      await AuthRepo.verifyEmail(widget.email);
+      await AuthRepo.verifyEmail(email: widget.email);
       if (context.mounted) {
         ShadToaster.of(context).show(
           const ShadToast(

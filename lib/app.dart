@@ -1,7 +1,6 @@
 import 'package:connectobia/common/constants/navigation_service.dart';
 import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
 import 'package:connectobia/modules/dashboard/application/animation/animation_cubit.dart';
 import 'package:connectobia/routes.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
@@ -27,11 +26,11 @@ class Connectobia extends StatefulWidget {
 
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
-  late bool isAuthenticated;
   late bool isDarkMode;
   late RiveAnimationController _riveAnimationcontroller;
-  AuthState currentState = AuthInitial();
-  User? user;
+  AuthState authState = AuthInitial();
+
+  dynamic user;
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +55,18 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                currentState = state;
+                authState = state;
+                if (state is AuthLoading || state is AuthInitial) {
+                  return;
+                } else if (state is Unauthenticated) {
+                  return;
+                }
+                handleNavigation(state: state, context: context);
               },
               child: BlocListener<AnimationCubit, AnimationState>(
                 listener: (context, state) {
                   if (state is AnimationStopped) {
-                    handleNavigation(state: currentState, context: context);
+                    handleNavigation(state: authState, context: context);
                   }
                 },
                 child: Scaffold(
@@ -92,14 +97,40 @@ class ConnectobiaState extends State<Connectobia> {
   /// If the user is authenticated, it fetches the user details and verifies the email.
   void handleNavigation(
       {required AuthState state, required BuildContext context}) async {
-    if (state is Authenticated) {
-      Navigator.pushReplacementNamed(
+    if (state is InfluencerAuthenticated) {
+      if (state.user.onboarded) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/influencerDashboard',
+          (route) => false,
+          arguments: {'influencer': state.user},
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/influencerOnboarding',
+          (route) => false,
+          arguments: {'user': state.user},
+        );
+      }
+    } else if (state is BrandAuthenticated) {
+      Navigator.pushNamedAndRemoveUntil(
         context,
         '/brandDashboard',
-        arguments: {
-          'user': state.user,
-        },
+        (route) => false,
+        arguments: {'user': state.user},
       );
+
+      // Add onboarding check after brand onboarding screens are implemented
+      // if (state.user.onboarded) {
+      // } else {
+      //   Navigator.pushNamedAndRemoveUntil(
+      //     context,
+      //     '/brandOnboarding',
+      //     (route) => false,
+      //     arguments: {'user': state.user},
+      //   );
+      // }
     } else if (state is Unauthenticated) {
       Navigator.pushReplacementNamed(
         context,
@@ -113,15 +144,7 @@ class ConnectobiaState extends State<Connectobia> {
           'email': state.email,
         },
       );
-    }
-    // Uncomment this once if deleted an account
-    // else {
-    //   Navigator.pushReplacementNamed(
-    //     context,
-    //     '/welcomeScreen',
-    //   );
-    //   await AuthRepo.logout();
-    // }
+    } else {}
   }
 
   @override

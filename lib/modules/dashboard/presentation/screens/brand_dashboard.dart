@@ -4,12 +4,11 @@ import 'package:connectobia/common/constants/greetings.dart';
 import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/domain/model/user.dart';
+import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/edit_influencer_profile.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/featured_listing.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/popular_categories.dart';
-import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/bottom_navigation.dart';
 import 'package:connectobia/modules/dashboard/presentation/widgets/section_title.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
@@ -19,7 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class BrandDashboard extends StatefulWidget {
-  final User user;
+  final Brand user;
   const BrandDashboard({super.key, required this.user});
 
   @override
@@ -27,7 +26,7 @@ class BrandDashboard extends StatefulWidget {
 }
 
 class _BrandDashboardState extends State<BrandDashboard> {
-  late User user = widget.user;
+  late Brand user = widget.user;
   late final List<String> _industries;
   late final influencerBloc = BlocProvider.of<BrandDashboardBloc>(context);
   late final brightness = ShadTheme.of(context).brightness;
@@ -51,7 +50,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 pinned: true,
                 scrolledUnderElevation: 0,
                 centerTitle: false,
-                title: Text(Greetings.getGreeting(user.firstName)),
+                title: Text(Greetings.getGreeting(user.brandName)),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(69),
                   child: Padding(
@@ -74,13 +73,13 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     },
                     child: CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
-                        user.avatar.isNotEmpty
-                            ? Avatar.getUserImage(
-                                id: user.id,
-                                image: user.avatar,
-                              )
-                            : Avatar.getAvatarPlaceholder(
-                                user.firstName, user.lastName),
+                        // user.avatar.isNotEmpty
+                        //     ? Avatar.getUserImage(
+                        //         id: user.id,
+                        //         image: user.avatar,
+                        //       )
+                        //     :
+                        Avatar.getAvatarPlaceholder('HA'),
                       ),
                     ),
                   ),
@@ -168,15 +167,16 @@ class _BrandDashboardState extends State<BrandDashboard> {
                             },
                             child: CircleAvatar(
                               backgroundImage: CachedNetworkImageProvider(
-                                  user.avatar.isNotEmpty
-                                      ? Avatar.getUserImage(
-                                          id: user.id,
-                                          image: user.avatar,
-                                        )
-                                      : Avatar.getAvatarPlaceholder(
-                                          user.firstName,
-                                          user.lastName,
-                                        )),
+                                  // user.avatar.isNotEmpty
+                                  //     ? Avatar.getUserImage(
+                                  //         id: user.id,
+                                  //         image: user.avatar,
+                                  //       )
+                                  //     :
+
+                                  Avatar.getAvatarPlaceholder(
+                                'HA',
+                              )),
                             ),
                           ),
                         ),
@@ -200,7 +200,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${user.firstName} ${user.lastName}',
+                      user.brandName,
                       style: TextStyle(
                         color: state is DarkTheme
                             ? ShadColors.light
@@ -305,20 +305,21 @@ class _BrandDashboardState extends State<BrandDashboard> {
   }
 
   Future<void> _displayEditUserSettings(BuildContext context) async {
+    assert(false, 'Not implemented');
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
-    final userParam = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserSettingSheet(
-          user: user,
-        ),
-      ),
-    );
-    if (userParam == null) return;
-    setState(() {
-      user = userParam;
-    });
+    // final userParam = await Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => InfluencerSettingSheet(
+    //       user: user,
+    //     ),
+    //   ),
+    // );
+    // if (userParam == null) return;
+    // setState(() {
+    //   user = userParam;
+    // });
   }
 
   _scrollListener() {

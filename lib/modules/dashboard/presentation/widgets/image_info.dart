@@ -1,12 +1,11 @@
 import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/constants/industries.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/application/domain/user_list.dart';
 import 'package:flutter/material.dart';
 
 class FeatureImageInfo extends StatefulWidget {
   final BrandDashboardLoadedInflueners state;
-  final Item user;
+  final Influencer user;
   const FeatureImageInfo({
     super.key,
     required this.state,
@@ -39,29 +38,19 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
             ),
             child: Row(
               children: [
-                widget.user.avatar.isNotEmpty
-                    ? CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          Avatar.getUserImage(
-                            id: widget.user.id,
-                            image: widget.user.avatar,
-                          ),
-                        ),
-                      )
-                    : CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          Avatar.getAvatarPlaceholder(
-                            widget.user.firstName,
-                            widget.user.lastName,
-                          ),
-                        ),
-                      ),
+                CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    Avatar.getAvatarPlaceholder(
+                      widget.user.fullName,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${widget.user.firstName} ${widget.user.lastName}',
+                      widget.user.fullName,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -69,7 +58,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                       ),
                     ),
                     Text(
-                      '${IndustryFormatter.keyToValue(widget.user.industry)} ',
+                      widget.user.industry,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,

@@ -4,15 +4,13 @@ part of 'profile_settings.dart';
 sealed class ProfileSettingsEvent {}
 
 class ProfileSettingsSave extends ProfileSettingsEvent {
-  final String firstName;
-  final String lastName;
+  final String fullName;
   final String username;
   final String industry;
   final String brandName;
 
   ProfileSettingsSave({
-    required this.firstName,
-    required this.lastName,
+    required this.fullName,
     required this.username,
     required this.industry,
     required this.brandName,
