@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
 import 'package:connectobia/common/constants/greetings.dart';
 import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
@@ -35,7 +34,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    final width = ScreenSize.width(context);
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         return Scaffold(
@@ -87,22 +85,20 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 ],
               ),
             ],
-            body: Center(
-              child: SizedBox(
-                width: width * 95,
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SectionTitle('Popular Categories'),
-                      const SizedBox(height: 16),
-                      PopularCategories(industries: _industries),
-                      const SectionTitle('Featured Listings'),
-                      const SizedBox(height: 16),
-                      const FeaturedListings(),
-                    ],
-                  ),
+            body: SingleChildScrollView(
+              controller: scrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SectionTitle('Popular Categories'),
+                    const SizedBox(height: 16),
+                    PopularCategories(industries: _industries),
+                    const SectionTitle('Featured Listings'),
+                    const SizedBox(height: 16),
+                    const FeaturedListings(),
+                  ],
                 ),
               ),
             ),
