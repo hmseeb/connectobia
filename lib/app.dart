@@ -56,11 +56,12 @@ class ConnectobiaState extends State<Connectobia> {
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 currentState = state;
+                handleNavigation(state: state, context: context);
               },
               child: BlocListener<AnimationCubit, AnimationState>(
                 listener: (context, state) {
                   if (state is AnimationStopped) {
-                    handleNavigation(state: currentState, context: context);
+                    // Do nothing
                   }
                 },
                 child: Scaffold(
@@ -91,7 +92,9 @@ class ConnectobiaState extends State<Connectobia> {
   /// If the user is authenticated, it fetches the user details and verifies the email.
   void handleNavigation(
       {required AuthState state, required BuildContext context}) async {
-    debugPrint('Current user auth state is ${state.runtimeType}');
+    if (state is AuthLoading) {
+      return;
+    }
     Navigator.pushReplacementNamed(
       context,
       '/welcomeScreen',
@@ -140,6 +143,15 @@ class ConnectobiaState extends State<Connectobia> {
         arguments: {
           'email': state.email,
         },
+      );
+    } else if (state is AuthLoading) {
+      // Do nothing
+    } else if (state is AuthInitial) {
+      // Do nothing
+    } else {
+      Navigator.pushReplacementNamed(
+        context,
+        '/welcomeScreen',
       );
     }
   }
