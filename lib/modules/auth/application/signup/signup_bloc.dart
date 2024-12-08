@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:meta/meta.dart';
@@ -38,7 +39,14 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           password: event.password,
           industry: event.industry,
         );
-        emit(SignupSuccess());
+        emit(SignupSuccess(
+          email: event.email,
+        ));
+
+        CollectionNameSingleton.instance = 'brand';
+
+        await AuthRepo.login(
+            email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
         emit(SignupFailure(e.toString()));
       }
@@ -69,7 +77,12 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           password: event.password,
           industry: event.industry,
         );
-        emit(SignupSuccess());
+        emit(SignupSuccess(email: event.email));
+        CollectionNameSingleton.instance = 'infuencer';
+        await AuthRepo.login(
+            email: event.email,
+            password: event.password,
+            accountType: 'influencer');
       } catch (e) {
         emit(SignupFailure(e.toString()));
       }
@@ -79,7 +92,10 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(InstagramLoading());
       try {
         await AuthRepo.instagramAuth(collectionName: event.accountType);
-        emit(SignupSuccess());
+        emit(SignupSuccess(
+          email: null,
+        ));
+        CollectionNameSingleton.instance = 'influencer';
       } catch (e) {
         emit(SignupFailure(e.toString()));
       }

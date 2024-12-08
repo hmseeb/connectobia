@@ -15,4 +15,7 @@ final class SignupLoading extends SignupState {}
 @immutable
 sealed class SignupState {}
 
-final class SignupSuccess extends SignupState {}
+final class SignupSuccess extends SignupState {
+  final String? email;
+  SignupSuccess({required this.email});
+}

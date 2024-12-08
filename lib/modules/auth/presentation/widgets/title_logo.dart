@@ -13,7 +13,7 @@ class AppTitleLogo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Logo(size: 50),
-        AppTitle('onnectobia'),
+        AppTitle('nnectobia'),
       ],
     );
   }

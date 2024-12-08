@@ -14,8 +14,8 @@
 library;
 
 import 'package:connectobia/app.dart';
-import 'package:connectobia/modules/auth/presentation/screens/brand_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/creator_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/creator__signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
@@ -96,20 +96,9 @@ class GenerateRoutes {
         ));
       case '/creatorSignupScreen':
         return _buildPageRoute(const CreatorScreen());
-      case '/homeScreen':
-        final args = settings.arguments as Map<String, dynamic>;
-        return PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (_, animation, secondaryAnimation) => BrandDashboard(
-            user: args['user'],
-          ),
-        );
+
       default:
-        final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-            builder: (_) => Connectobia(
-                  isDarkMode: args['isDarkMode'],
-                ));
+        return MaterialPageRoute(builder: (_) => WelcomeScreen());
     }
   }
 

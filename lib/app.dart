@@ -26,10 +26,10 @@ class Connectobia extends StatefulWidget {
 
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
-  late bool isAuthenticated;
   late bool isDarkMode;
   late RiveAnimationController _riveAnimationcontroller;
-  AuthState currentState = AuthInitial();
+  AuthState authState = AuthInitial();
+
   dynamic user;
 
   @override
@@ -55,13 +55,18 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                currentState = state;
+                authState = state;
+                if (state is AuthLoading || state is AuthInitial) {
+                  return;
+                } else if (state is Unauthenticated) {
+                  return;
+                }
                 handleNavigation(state: state, context: context);
               },
               child: BlocListener<AnimationCubit, AnimationState>(
                 listener: (context, state) {
                   if (state is AnimationStopped) {
-                    // Do nothing
+                    handleNavigation(state: authState, context: context);
                   }
                 },
                 child: Scaffold(
@@ -92,13 +97,6 @@ class ConnectobiaState extends State<Connectobia> {
   /// If the user is authenticated, it fetches the user details and verifies the email.
   void handleNavigation(
       {required AuthState state, required BuildContext context}) async {
-    if (state is AuthLoading) {
-      return;
-    }
-    Navigator.pushReplacementNamed(
-      context,
-      '/welcomeScreen',
-    );
     if (state is InfluencerAuthenticated) {
       if (state.user.onboarded) {
         Navigator.pushNamedAndRemoveUntil(
@@ -116,21 +114,23 @@ class ConnectobiaState extends State<Connectobia> {
         );
       }
     } else if (state is BrandAuthenticated) {
-      if (state.user.onboarded) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/homeScreen',
-          (route) => false,
-          arguments: {'user': state.user},
-        );
-      } else {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/brandOnboarding',
-          (route) => false,
-          arguments: {'user': state.user},
-        );
-      }
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/brandDashboard',
+        (route) => false,
+        arguments: {'user': state.user},
+      );
+
+      // Add onboarding check after brand onboarding screens are implemented
+      // if (state.user.onboarded) {
+      // } else {
+      //   Navigator.pushNamedAndRemoveUntil(
+      //     context,
+      //     '/brandOnboarding',
+      //     (route) => false,
+      //     arguments: {'user': state.user},
+      //   );
+      // }
     } else if (state is Unauthenticated) {
       Navigator.pushReplacementNamed(
         context,
@@ -144,16 +144,7 @@ class ConnectobiaState extends State<Connectobia> {
           'email': state.email,
         },
       );
-    } else if (state is AuthLoading) {
-      // Do nothing
-    } else if (state is AuthInitial) {
-      // Do nothing
-    } else {
-      Navigator.pushReplacementNamed(
-        context,
-        '/welcomeScreen',
-      );
-    }
+    } else {}
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/modules/auth/presentation/screens/brand_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/views/creator_signup_form.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/privacy_policy.dart';
@@ -33,7 +33,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
   late final TextEditingController passwordController;
   late final TextEditingController usernameController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
-  String accountType = '';
+  String accountType = 'influencer';
   String industry = '';
   var searchValue = '';
   bool enabled = true;
@@ -61,7 +61,11 @@ class _CreatorScreenState extends State<CreatorScreen> {
                   title: Text('Account created successfully!'),
                 ),
               );
-              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                '/verifyEmailScreen',
+                arguments: {'email': state.email},
+              );
             } else if (state is SignupFailure) {
               ShadToaster.of(context).show(
                 ShadToast.destructive(

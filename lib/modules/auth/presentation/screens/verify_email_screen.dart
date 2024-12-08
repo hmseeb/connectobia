@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:connectobia/common/constants/path.dart';
+import 'package:connectobia/common/constants/screen_size.dart';
 import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/sub_heading.dart';
 import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,26 +40,16 @@ class VerifyEmailState extends State<VerifyEmail> {
 
   @override
   Widget build(BuildContext context) {
+    final height = ScreenSize.height(context);
     return BlocListener<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
         if (state is BrandEmailVerified) {
-          ShadToaster.of(context).show(
-            const ShadToast(
-              title: Text('Email verified successfully'),
-            ),
-          );
           Navigator.of(context).pushNamedAndRemoveUntil(
-              '/brandOnboarding', (route) => false,
+              '/brandDashboard', (route) => false,
               arguments: {
                 'user': state.brand,
               });
         } else if (state is InfluencerEmailVerified) {
-          ShadToaster.of(context).show(
-            const ShadToast(
-              title: Text('Email verified successfully'),
-            ),
-          );
-
           Navigator.of(context).pushNamedAndRemoveUntil(
               '/influencerOnboarding', (route) => false,
               arguments: {
@@ -75,21 +67,17 @@ class VerifyEmailState extends State<VerifyEmail> {
                 const SizedBox(height: 20),
                 SvgPicture.asset(
                   AssetsPath.emailIcon,
-                  height: 100,
-                  width: 100,
+                  height: height * 30,
                 ),
+                const HeadingText('Verify your email'),
                 const SizedBox(height: 20),
-                const HeadingText('Almost done!'),
-                const SizedBox(height: 20),
-                const Text('A verification email has been sent to'),
+                const SubHeading('A verification email has been sent to'),
                 const SizedBox(height: 10),
                 Text(widget.email,
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                const Text(
-                  'Please check your inbox and follow the link to activate your account.',
-                  textAlign: TextAlign.center,
-                ),
+                const SubHeading(
+                    'Please check your inbox and follow the link to activate your account.'),
                 const SizedBox(height: 20),
                 // Didn't get the email?
                 Row(
@@ -124,11 +112,14 @@ class VerifyEmailState extends State<VerifyEmail> {
                 ),
                 const SizedBox(height: 20),
                 // open email button using url launcher
-                ShadButton(
-                  onPressed: () {
-                    openEmailApp();
-                  },
-                  child: const Text('Open Email App'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ShadButton(
+                    onPressed: () {
+                      openEmailApp();
+                    },
+                    child: const Text('Open Email App'),
+                  ),
                 ),
               ],
             ),

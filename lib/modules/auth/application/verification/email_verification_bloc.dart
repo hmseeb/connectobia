@@ -26,7 +26,7 @@ class EmailVerificationBloc
           (e) {
             if (e.action == 'update') {
               if (e.record!.data['verified']) {
-                debugPrint('Email verified!');
+                debugPrint('Email verified');
                 add(EmailVerify());
               }
             }

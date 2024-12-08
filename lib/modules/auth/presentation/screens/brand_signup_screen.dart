@@ -80,7 +80,11 @@ class _BrandScreenState extends State<BrandScreen> {
                   title: Text('Account created successfully!'),
                 ),
               );
-              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                '/verifyEmailScreen',
+                arguments: {'email': state.email},
+              );
             } else if (state is SignupFailure) {
               ShadToaster.of(context).show(
                 ShadToast.destructive(

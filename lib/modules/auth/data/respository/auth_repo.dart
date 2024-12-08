@@ -36,11 +36,6 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       RecordModel user = await pb.collection('brand').create(body: body);
       await pb.collection('brand').requestVerification(email);
-      // TODO: Find a workaround for this delay
-      Future.delayed(const Duration(milliseconds: 1000), () async {
-        await AuthRepo.login(
-            email: email, password: password, accountType: 'brand');
-      });
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
@@ -49,7 +44,7 @@ class AuthRepo {
     }
   }
 
-  /// [createBrandAccount] is a method that creates a new user account.
+  /// [createInfluencer] is a method that creates a new user account.
   static Future<RecordModel> createInfluencerAccount({
     required String fullName,
     required String username,
@@ -220,7 +215,6 @@ class AuthRepo {
       required String accountType}) async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      CollectionNameSingleton.instance = accountType;
       final authData =
           await pb.collection(accountType).authWithPassword(email, password);
 
