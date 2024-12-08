@@ -131,12 +131,12 @@ class AuthRepo {
 
       debugPrint('Created influencer profile');
       await linkProfileWithAccount(
-          userId: influencerId,
-          profileId: influencerProfileId,
-          pb: pb,
-          collectionName: 'influencer');
+        userId: influencerId,
+        profileId: influencerProfileId,
+        pb: pb,
+        collectionName: 'influencer',
+      );
       debugPrint('Linked profile with account');
-
       return influencer;
     } catch (e) {
       throw Exception(e);
@@ -151,6 +151,7 @@ class AuthRepo {
     final body = <String, dynamic>{
       "profile": profileId,
       "onboarded": true,
+      "connectedSocial": true,
     };
 
     await pb.collection(collectionName).update(userId, body: body);
