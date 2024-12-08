@@ -7,6 +7,8 @@ class Influencer {
   final String collectionName;
   final String id;
   final String? email;
+  final String? avatar;
+  final String? banner;
   final bool emailVisibility;
   final bool verified;
   final bool connectedSocial;
@@ -23,6 +25,8 @@ class Influencer {
     required this.collectionName,
     required this.id,
     required this.email,
+    required this.avatar,
+    required this.banner,
     required this.emailVisibility,
     required this.verified,
     required this.fullName,
@@ -40,6 +44,8 @@ class Influencer {
         collectionName: json["collectionName"],
         id: json["id"],
         email: json["email"],
+        avatar: json["avatar"] ?? '',
+        banner: json["banner"] ?? '',
         emailVisibility: json["emailVisibility"],
         verified: json["verified"],
         fullName: json["fullName"],
@@ -63,6 +69,8 @@ class Influencer {
     String? collectionName,
     String? id,
     String? email,
+    String? avatar,
+    String? banner,
     bool? emailVisibility,
     bool? verified,
     bool? connectedSocial,
@@ -79,6 +87,8 @@ class Influencer {
         collectionName: collectionName ?? this.collectionName,
         id: id ?? this.id,
         email: email ?? this.email,
+        avatar: avatar ?? this.avatar,
+        banner: banner ?? this.banner,
         emailVisibility: emailVisibility ?? this.emailVisibility,
         verified: verified ?? this.verified,
         fullName: fullName ?? this.fullName,
@@ -96,6 +106,8 @@ class Influencer {
         "collectionName": collectionName,
         "id": id,
         "email": email,
+        "avatar": avatar,
+        "banner": banner,
         "emailVisibility": emailVisibility,
         "verified": verified,
         "fullName": fullName,

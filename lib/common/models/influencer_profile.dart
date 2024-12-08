@@ -11,8 +11,6 @@ class InfluencerProfile {
   final int followers;
   final int engRate;
   final String location;
-  final String avatar;
-  final String banner;
   final DateTime created;
   final DateTime updated;
 
@@ -25,8 +23,6 @@ class InfluencerProfile {
     required this.followers,
     required this.engRate,
     required this.location,
-    required this.avatar,
-    required this.banner,
     required this.created,
     required this.updated,
   });
@@ -41,8 +37,6 @@ class InfluencerProfile {
         followers: json["followers"],
         engRate: json["engRate"],
         location: json["location"],
-        avatar: json["avatar"],
-        banner: json["banner"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
       );
@@ -76,8 +70,6 @@ class InfluencerProfile {
         followers: followers ?? this.followers,
         engRate: engRate ?? this.engRate,
         location: location ?? this.location,
-        avatar: avatar ?? this.avatar,
-        banner: banner ?? this.banner,
         created: created ?? this.created,
         updated: updated ?? this.updated,
       );
@@ -91,8 +83,6 @@ class InfluencerProfile {
         "followers": followers,
         "engRate": engRate,
         "location": location,
-        "avatar": avatar,
-        "banner": banner,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
       };

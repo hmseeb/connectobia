@@ -17,15 +17,17 @@ class FeaturedListings extends StatefulWidget {
 }
 
 class _FeaturedListingsState extends State<FeaturedListings> {
-  late List<Influencers> influencers = [];
   late final ShadThemeData theme = ShadTheme.of(context);
-  int page = 0;
+  Influencers? influencers;
+  int itemsCount = 10;
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<BrandDashboardBloc, BrandDashboardState>(
       listener: (context, state) {
         if (state is BrandDashboardLoadedInflueners) {
-          influencers.add(state.influencers);
+          influencers = state.influencers;
+          itemsCount = influencers!.items.length;
         }
       },
       builder: (context, state) {
@@ -33,15 +35,12 @@ class _FeaturedListingsState extends State<FeaturedListings> {
           enabled: state is BrandDashboardLoadingInflueners,
           child: Column(
             children: List.generate(
-              state is BrandDashboardLoadedInflueners
-                  ? getTotalInfluencers()
-                  : 10,
+              state is BrandDashboardLoadedInflueners ? itemsCount : 10,
               (index) {
-                if (index == 20) page++;
                 return GestureDetector(
                   onTap: () {
                     if (state is BrandDashboardLoadedInflueners) {
-                      final id = influencers[page].items[index].id;
+                      final id = influencers!.items[index].id;
                       BlocProvider.of<InfluencerProfileBloc>(context)
                           .add(InfluencerProfileLoad(id));
                       Navigator.pushNamed(context, '/influencerProfile',
@@ -57,12 +56,17 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                       child: Stack(
                         children: [
                           Center(
-                            child: FeatureImage(image: '', id: ''),
-                          ),
+                              child: state is BrandDashboardLoadedInflueners
+                                  ? FeatureImage(
+                                      image: influencers!.items[index].banner!,
+                                      id: influencers!.items[index].id,
+                                      collectionId: influencers!
+                                          .items[index].collectionId,
+                                    )
+                                  : SizedBox()),
                           state is BrandDashboardLoadedInflueners
                               ? FeatureImageInfo(
-                                  state: state,
-                                  user: influencers[page].items[index])
+                                  state: state, user: influencers!.items[index])
                               : const SizedBox(),
                           // Favorite button
                           const FeatureHeartIcon(),
@@ -79,11 +83,11 @@ class _FeaturedListingsState extends State<FeaturedListings> {
     );
   }
 
-  int getTotalInfluencers() {
-    int length = 0;
-    for (var element in influencers) {
-      length += element.items.length;
-    }
-    return length;
-  }
+  // int getTotalInfluencers() {
+  //   int length = influencers!.totalItems;
+  //   // for (var element in influencers) {
+  //   //   length += element.items.length;
+  //   // }
+  //   return length;
+  // }
 }

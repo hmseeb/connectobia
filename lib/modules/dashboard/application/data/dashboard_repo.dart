@@ -10,8 +10,8 @@ class DashboardRepo {
       final resultList = await pb.collection('influencer').getList(
             page: 1,
             perPage: 20,
-            // where account type = inflencer and avatar and banner is not empty
-            // filter: 'avatar != "" && banner != ""',
+            // where account type = profile and avatar and banner is not empty
+            filter: 'profile != "" && banner != "" && avatar != ""',
             // expand: 'influencer',
           );
       list = Influencers.fromRecord(resultList);

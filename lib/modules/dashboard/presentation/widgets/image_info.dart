@@ -20,6 +20,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
   int page = BrandDashboardBloc().page;
   @override
   Widget build(BuildContext context) {
+    bool hasAvatar = widget.user.avatar!.isNotEmpty;
     return Positioned(
       bottom: 20,
       left: 0,
@@ -40,9 +41,15 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
               children: [
                 CircleAvatar(
                   backgroundImage: NetworkImage(
-                    Avatar.getAvatarPlaceholder(
-                      widget.user.fullName,
-                    ),
+                    hasAvatar
+                        ? Avatar.getUserImage(
+                            id: widget.user.id,
+                            image: widget.user.avatar!,
+                            collectionId: widget.user.collectionId,
+                          )
+                        : Avatar.getAvatarPlaceholder(
+                            widget.user.fullName,
+                          ),
                   ),
                 ),
                 const SizedBox(width: 16),

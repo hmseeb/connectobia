@@ -7,7 +7,10 @@ class Avatar {
     return 'https://via.assets.so/img.jpg?w=400&h=300&tc=#A9A9A9&bg=grey';
   }
 
-  static String getUserImage({required String id, required String image}) {
-    return 'https://connectobia.pockethost.io/api/files/_pb_users_auth_/$id/$image';
+  static String getUserImage(
+      {required String id,
+      required String image,
+      required String collectionId}) {
+    return 'https://connectobia.pockethost.io/api/files/$collectionId/$id/$image';
   }
 }

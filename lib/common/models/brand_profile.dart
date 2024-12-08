@@ -8,8 +8,6 @@ class BrandProfile {
   final String id;
   final String title;
   final String description;
-  final String avatar;
-  final String banner;
   final String links;
   final DateTime created;
   final DateTime updated;
@@ -20,8 +18,6 @@ class BrandProfile {
     required this.id,
     required this.title,
     required this.description,
-    required this.avatar,
-    required this.banner,
     required this.links,
     required this.created,
     required this.updated,
@@ -33,8 +29,6 @@ class BrandProfile {
         id: json["id"],
         title: json["title"],
         description: json["description"],
-        avatar: json["avatar"],
-        banner: json["banner"],
         links: json["links"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
@@ -52,8 +46,6 @@ class BrandProfile {
     String? id,
     String? title,
     String? description,
-    String? avatar,
-    String? banner,
     String? links,
     DateTime? created,
     DateTime? updated,
@@ -64,8 +56,6 @@ class BrandProfile {
         id: id ?? this.id,
         title: title ?? this.title,
         description: description ?? this.description,
-        avatar: avatar ?? this.avatar,
-        banner: banner ?? this.banner,
         links: links ?? this.links,
         created: created ?? this.created,
         updated: updated ?? this.updated,
@@ -77,8 +67,6 @@ class BrandProfile {
         "id": id,
         "title": title,
         "description": description,
-        "avatar": avatar,
-        "banner": banner,
         "links": links,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
