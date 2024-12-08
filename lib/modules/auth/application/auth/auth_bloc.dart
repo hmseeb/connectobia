@@ -12,9 +12,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     debugPrint(state.runtimeType.toString());
     on<CheckAuth>((event, emit) async {
-      // // Uncomment this once if deleted an account
-      // await AuthRepo.logout();
-
       emit(AuthLoading());
       try {
         dynamic user = await AuthRepo.getCurrentUser();
@@ -34,12 +31,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Unverified(user.email));
         }
       } catch (e) {
-        debugPrint(e.toString());
+        emit(AuthFailed('Something went wrong, please try again later.'));
         if (e.toString().contains('404')) {
           await AuthRepo.logout();
           emit(Unauthenticated());
+        } else {
+          throw Exception(e);
         }
-        emit(AuthFailed('Something went wrong, please try again later.'));
       }
     });
   }

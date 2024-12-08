@@ -76,6 +76,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                   ),
                 );
               }
+              throw Exception(e);
             }
             setState(() {
               isLoading = false;

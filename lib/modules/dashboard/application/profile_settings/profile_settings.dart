@@ -20,6 +20,7 @@ class ProfileSettingsBloc
         emit(ProfileSettingsSuccess());
       } catch (e) {
         emit(ProfileSettingsFailure(e.toString()));
+        throw Exception(e);
       }
     });
   }

@@ -145,6 +145,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   /// Open the email app
   ///
   /// This function uses the [OpenMailApp] package to open the email app.
+  /// TODO: Implement mail app
   Future<void> openEmailApp() async {
     try {} catch (e) {
       if (mounted) {
@@ -155,6 +156,7 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
+      throw Exception(e);
     }
   }
 
@@ -209,6 +211,7 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
+      throw Exception(e);
     } finally {
       setState(() {
         isLoading = false;

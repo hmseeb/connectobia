@@ -20,7 +20,7 @@ class UserRepo {
       assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -43,7 +43,7 @@ class UserRepo {
       assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, body: body);
     } catch (e) {
-      rethrow;
+      throw Exception(e);
     }
   }
 }

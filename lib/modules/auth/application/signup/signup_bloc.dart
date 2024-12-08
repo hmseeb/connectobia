@@ -48,7 +48,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await AuthRepo.login(
             email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
-        emit(SignupFailure(e.toString()));
+        throw Exception(e);
       }
     });
 
@@ -84,7 +84,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             password: event.password,
             accountType: 'influencer');
       } catch (e) {
-        emit(SignupFailure(e.toString()));
+        throw Exception(e);
       }
     });
 
@@ -97,7 +97,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
         CollectionNameSingleton.instance = 'influencer';
       } catch (e) {
-        emit(SignupFailure(e.toString()));
+        throw Exception(e);
       }
     });
   }

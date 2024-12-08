@@ -17,6 +17,7 @@ class InfluencerProfileBloc
         emit(InfluencerProfileLoaded(influencer));
       } catch (e) {
         emit(InfluencerProfileError(e.toString()));
+        throw Exception(e);
       }
     });
   }

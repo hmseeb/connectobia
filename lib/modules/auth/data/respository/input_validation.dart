@@ -110,21 +110,6 @@ class InputValidation {
         errors.add('Password must be at least 8 characters');
       }
 
-      // Check for at least one uppercase letter
-      if (!RegExp(r'[A-Z]').hasMatch(password)) {
-        errors.add('Password must contain at least one uppercase letter');
-      }
-
-      // Check for at least one lowercase letter
-      if (!RegExp(r'[a-z]').hasMatch(password)) {
-        errors.add('Password must contain at least one lowercase letter');
-      }
-
-      // Check for at least one number
-      if (!RegExp(r'\d').hasMatch(password)) {
-        errors.add('Password must contain at least one number');
-      }
-
       // Check for at least one special character
       if (!RegExp(r'[@$!%*?&#]').hasMatch(password)) {
         errors.add('Password must contain at least one special character');

@@ -39,8 +39,7 @@ class AuthRepo {
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -70,8 +69,7 @@ class AuthRepo {
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -83,8 +81,7 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestPasswordReset(email);
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -104,8 +101,7 @@ class AuthRepo {
       }
       return null;
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -124,8 +120,7 @@ class AuthRepo {
         return user;
       }
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -160,8 +155,7 @@ class AuthRepo {
 
       return influencer;
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -221,8 +215,7 @@ class AuthRepo {
       debugPrint('Logged in as ${authData.record.data['email']}');
       return authData;
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -233,8 +226,7 @@ class AuthRepo {
       pb.authStore.clear();
       debugPrint('Logged out');
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 
@@ -245,8 +237,7 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestVerification(email);
     } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
+      throw Exception(e);
     }
   }
 }

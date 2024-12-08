@@ -12,12 +12,13 @@ class DashboardRepo {
             perPage: 20,
             // where account type = inflencer and avatar and banner is not empty
             // filter: 'avatar != "" && banner != ""',
+            // expand: 'influencer',
           );
       list = Influencers.fromRecord(resultList);
       debugPrint('Fetched ${list.items.length} influencers');
       return list;
     } catch (e) {
-      rethrow;
+      throw Exception(e);
     }
   }
 }

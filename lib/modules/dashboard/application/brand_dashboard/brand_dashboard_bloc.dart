@@ -17,7 +17,7 @@ class BrandDashboardBloc
         emit(BrandDashboardLoadedInflueners(influencers));
         page++;
       } catch (e) {
-        rethrow;
+        throw Exception(e);
       }
     });
   }

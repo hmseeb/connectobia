@@ -34,8 +34,7 @@ class EmailVerificationBloc
         );
         debugPrint('Subscribed to email verification updates');
       } catch (e) {
-        debugPrint(e.toString());
-        rethrow;
+        throw Exception(e);
       }
     });
 
@@ -54,8 +53,7 @@ class EmailVerificationBloc
           emit(InfluencerEmailVerified(user));
         }
       } catch (e) {
-        debugPrint(e.toString());
-        rethrow;
+        throw Exception(e);
       }
     });
   }
