@@ -8,6 +8,8 @@ class Brand {
   final String id;
   final String email;
   final bool emailVisibility;
+  final String avatar;
+  final String banner;
   final bool verified;
   final String brandName;
   final bool onboarded;
@@ -21,6 +23,8 @@ class Brand {
     required this.collectionName,
     required this.id,
     required this.email,
+    required this.avatar,
+    required this.banner,
     required this.emailVisibility,
     required this.verified,
     required this.brandName,
@@ -38,6 +42,8 @@ class Brand {
         email: json["email"],
         emailVisibility: json["emailVisibility"],
         verified: json["verified"],
+        avatar: json["avatar"],
+        banner: json["banner"],
         brandName: json["brandName"],
         onboarded: json["onboarded"],
         industry: json["industry"],
@@ -58,6 +64,8 @@ class Brand {
     String? email,
     bool? emailVisibility,
     bool? verified,
+    String? avatar,
+    String? banner,
     String? brandName,
     bool? onboarded,
     String? industry,
@@ -73,6 +81,8 @@ class Brand {
         emailVisibility: emailVisibility ?? this.emailVisibility,
         verified: verified ?? this.verified,
         brandName: brandName ?? this.brandName,
+        avatar: avatar ?? this.avatar,
+        banner: banner ?? this.banner,
         onboarded: onboarded ?? this.onboarded,
         industry: industry ?? this.industry,
         profile: profile ?? this.profile,
@@ -88,6 +98,8 @@ class Brand {
         "emailVisibility": emailVisibility,
         "verified": verified,
         "brandName": brandName,
+        "avatar": avatar,
+        "banner": banner,
         "onboarded": onboarded,
         "industry": industry,
         "profile": profile,

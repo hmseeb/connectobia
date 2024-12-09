@@ -1,15 +1,23 @@
 import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
 
 class FeatureImageInfo extends StatefulWidget {
-  final BrandDashboardLoadedInflueners state;
-  final Influencer user;
+  final String title;
+  final String subTitle;
+  final bool connectedSocial;
+  final String avatar;
+  final String userId;
+  final String collectionId;
+
   const FeatureImageInfo({
     super.key,
-    required this.state,
-    required this.user,
+    required this.title,
+    required this.subTitle,
+    required this.connectedSocial,
+    required this.avatar,
+    required this.userId,
+    required this.collectionId,
   });
 
   @override
@@ -21,7 +29,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
-    bool hasAvatar = widget.user.avatar.isNotEmpty;
+    bool hasAvatar = widget.avatar.isNotEmpty;
     return Positioned(
       bottom: 20,
       left: 0,
@@ -46,12 +54,12 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                   backgroundImage: NetworkImage(
                     hasAvatar
                         ? Avatar.getUserImage(
-                            id: widget.user.id,
-                            image: widget.user.avatar,
-                            collectionId: widget.user.collectionId,
+                            userId: widget.userId,
+                            image: widget.avatar,
+                            collectionId: widget.collectionId,
                           )
                         : Avatar.getAvatarPlaceholder(
-                            widget.user.fullName,
+                            widget.title,
                           ),
                   ),
                 ),
@@ -62,7 +70,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                     Row(
                       children: [
                         Text(
-                          widget.user.fullName,
+                          widget.title,
                           style: TextStyle(
                             color: brightness == Brightness.dark
                                 ? Colors.white
@@ -74,19 +82,18 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                         const SizedBox(width: 8),
                         Icon(
                           Icons.verified,
-                          color: widget.user.connectedSocial
+                          color: widget.connectedSocial
                               ? Colors.blue
                               : Colors.green,
                         ),
                       ],
                     ),
                     Text(
-                      '@${widget.user.username}',
+                      widget.subTitle,
                       style: TextStyle(
                         color: brightness == Brightness.dark
                             ? Colors.white
                             : Colors.black,
-                        fontSize: 14,
                       ),
                     ),
                   ],

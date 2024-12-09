@@ -1,89 +1,79 @@
 import 'package:connectobia/common/models/influencers.dart';
-import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/presentation/widgets/featured_image.dart';
-import 'package:connectobia/modules/dashboard/presentation/widgets/image_info.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/widgets/featured_image.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/widgets/image_info.dart';
+import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
-class FeaturedListings extends StatefulWidget {
-  const FeaturedListings({super.key});
+class BrandFeaturedListings extends StatefulWidget {
+  final int itemsCount;
+  final Influencers influencers;
+  const BrandFeaturedListings(
+      {super.key, required this.itemsCount, required this.influencers});
 
   @override
-  State<FeaturedListings> createState() => _FeaturedListingsState();
+  State<BrandFeaturedListings> createState() => _BrandFeaturedListingsState();
 }
 
-class _FeaturedListingsState extends State<FeaturedListings> {
+class _BrandFeaturedListingsState extends State<BrandFeaturedListings> {
   late final ShadThemeData theme = ShadTheme.of(context);
-  Influencers? influencers;
-  int itemsCount = 10;
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BrandDashboardBloc, BrandDashboardState>(
-      listener: (context, state) {
-        if (state is BrandDashboardLoadedInflueners) {
-          influencers = state.influencers;
-          itemsCount = influencers!.items.length;
-        }
-      },
-      builder: (context, state) {
-        return Skeletonizer(
-          enabled: state is BrandDashboardLoadingInflueners,
-          child: Column(
-            children: List.generate(
-              state is BrandDashboardLoadedInflueners ? itemsCount : 10,
-              (index) {
-                return GestureDetector(
-                  onTap: () {
-                    if (state is BrandDashboardLoadedInflueners) {
-                      final id = influencers!.items[index].profile;
-                      BlocProvider.of<InfluencerProfileBloc>(context).add(
-                          InfluencerProfileLoad(
-                              profileId: id,
-                              influencer: influencers!.items[index]));
-                      Navigator.pushNamed(context, '/influencerProfile',
-                          arguments: {
-                            'profileId': id,
-                          });
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Stack(
-                        children: [
-                          Center(
-                              child: state is BrandDashboardLoadedInflueners
-                                  ? FeatureImage(
-                                      image: influencers!.items[index].banner,
-                                      id: influencers!.items[index].id,
-                                      collectionId: influencers!
-                                          .items[index].collectionId,
-                                    )
-                                  : SizedBox()),
-                          state is BrandDashboardLoadedInflueners
-                              ? FeatureImageInfo(
-                                  state: state, user: influencers!.items[index])
-                              : const SizedBox(),
-                          // Favorite button
-                          // Add heart icon after implementing the feature
-                          // const FeatureHeartIcon(),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+    return Column(
+      children: List.generate(
+        widget.itemsCount,
+        (index) {
+          return GestureDetector(
+            onTap: () {
+              final id = widget.influencers.items[index].profile;
+              BlocProvider.of<InfluencerProfileBloc>(context).add(
+                  InfluencerProfileLoad(
+                      profileId: id,
+                      influencer: widget.influencers.items[index]));
+              Navigator.pushNamed(context, '/profile', arguments: {
+                'profileId': id,
+                'self': false,
+                'profileType': 'influencer'
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Stack(
+                  children: [
+                    Center(
+                        child: FeatureImage(
+                      image: widget.influencers.items[index].banner,
+                      id: widget.influencers.items[index].id,
+                      collectionId:
+                          widget.influencers.items[index].collectionId,
+                    )),
+                    FeatureImageInfo(
+                      title: widget.influencers.items[index].fullName,
+                      subTitle: widget.influencers.items[index].industry,
+                      connectedSocial:
+                          widget.influencers.items[index].connectedSocial,
+                      avatar: widget.influencers.items[index].avatar,
+                      userId: widget.influencers.items[index].id,
+                      collectionId:
+                          widget.influencers.items[index].collectionId,
+                    )
+                    // Favorite button
+                    // Add heart icon after implementing the feature
+                    // const FeatureHeartIcon(),
+                  ],
+                ),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
+}
 
   // int getTotalInfluencers() {
   //   int length = influencers!.totalItems;
@@ -92,4 +82,4 @@ class _FeaturedListingsState extends State<FeaturedListings> {
   //   // }
   //   return length;
   // }
-}
+

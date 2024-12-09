@@ -1,17 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/constants/greetings.dart';
 import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/dashboard/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/presentation/views/edit_influencer_profile.dart';
-import 'package:connectobia/modules/dashboard/presentation/views/featured_listing.dart';
-import 'package:connectobia/modules/dashboard/presentation/views/popular_categories.dart';
-import 'package:connectobia/modules/dashboard/presentation/widgets/bottom_navigation.dart';
-import 'package:connectobia/modules/dashboard/presentation/widgets/section_title.dart';
+import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/views/edit_influencer_profile.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/views/featured_listing.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/widgets/bottom_navigation.dart';
+import 'package:connectobia/modules/dashboard/common/views/appbar.dart';
+import 'package:connectobia/modules/dashboard/common/views/drawer.dart';
+import 'package:connectobia/modules/dashboard/common/views/popular_categories.dart';
+import 'package:connectobia/modules/dashboard/common/widgets/section_title.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -37,53 +34,18 @@ class _BrandDashboardState extends State<BrandDashboard> {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, state) {
         return Scaffold(
-          endDrawer: profileDrawer(context),
+          endDrawer: CommonDrawer(
+            name: user.brandName,
+            email: user.email,
+            collectionId: user.collectionId,
+            avatar: '',
+            userId: user.id,
+          ),
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverAppBar(
-                elevation: 0,
-                backgroundColor:
-                    state is DarkTheme ? ShadColors.dark : ShadColors.light,
-                floating: true,
-                pinned: true,
-                scrolledUnderElevation: 0,
-                centerTitle: false,
-                title: Text(Greetings.getGreeting(user.brandName)),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(69),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: ShadInputFormField(
-                      placeholder:
-                          const Text('Search for services or influencers'),
-                      prefix: const Icon(LucideIcons.search),
-                      suffix: const Icon(LucideIcons.filter),
-                    ),
-                  ),
-                ),
-                actions: [
-                  GestureDetector(
-                    onTap: () {
-                      Scaffold.of(context).openEndDrawer();
-                    },
-                    child: CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(
-                        // user.avatar.isNotEmpty
-                        //     ? Avatar.getUserImage(
-                        //         id: user.id,
-                        //         image: user.avatar,
-                        //       )
-                        //     :
-                        Avatar.getAvatarPlaceholder('HA'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                ],
-              ),
+              CommonAppBar(
+                  userName: user.brandName,
+                  searchPlaceholder: 'Search for influencers'),
             ],
             body: SingleChildScrollView(
               controller: scrollController,
@@ -97,7 +59,18 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     PopularCategories(industries: _industries),
                     const SectionTitle('Featured Listings'),
                     const SizedBox(height: 16),
-                    const FeaturedListings(),
+                    BlocBuilder<BrandDashboardBloc, BrandDashboardState>(
+                      builder: (context, state) {
+                        if (state is BrandDashboardLoadedInfluencers) {
+                          return BrandFeaturedListings(
+                            itemsCount: state.influencers.items.length,
+                            influencers: state.influencers,
+                          );
+                        } else {
+                          return SizedBox();
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -140,149 +113,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
     _industries = getSortedIndustries();
     influencerBloc.add(BrandDashboardLoadInfluencers());
     scrollController.addListener(_scrollListener); // Pass the function directly
-  }
-
-  BlocBuilder<ThemeBloc, ThemeState> profileDrawer(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
-      builder: (context, state) {
-        return Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        ShadTooltip(
-                          builder: (context) => const Text('Edit Profile'),
-                          child: GestureDetector(
-                            onTap: () {
-                              _displayEditUserSettings(context);
-                            },
-                            child: CircleAvatar(
-                              backgroundImage: CachedNetworkImageProvider(
-                                  // user.avatar.isNotEmpty
-                                  //     ? Avatar.getUserImage(
-                                  //         id: user.id,
-                                  //         image: user.avatar,
-                                  //       )
-                                  //     :
-
-                                  Avatar.getAvatarPlaceholder(
-                                'HA',
-                              )),
-                            ),
-                          ),
-                        ),
-                        // toggle theme button
-                        const Spacer(),
-                        IconButton(
-                          icon: Icon(
-                            state is DarkTheme
-                                ? Icons.dark_mode_outlined
-                                : Icons.light_mode_outlined,
-                          ),
-                          onPressed: () {
-                            bool isDarkMode = state is DarkTheme;
-                            isDarkMode = !isDarkMode;
-                            BlocProvider.of<ThemeBloc>(context).add(
-                              ThemeChanged(isDarkMode),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      user.brandName,
-                      style: TextStyle(
-                        color: state is DarkTheme
-                            ? ShadColors.light
-                            : ShadColors.dark,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      user.email,
-                      style: TextStyle(
-                        color: state is DarkTheme
-                            ? ShadColors.light
-                            : ShadColors.dark,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(LucideIcons.settings),
-                    SizedBox(width: 16),
-                    Text('Settings'),
-                  ],
-                ),
-                onTap: () {
-                  _displayEditInfluencerProfile(context);
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
-                    Icon(
-                      LucideIcons.logOut,
-                      color: Colors.redAccent,
-                    ),
-                    SizedBox(width: 16),
-                    Text(
-                      'Logout',
-                      style: TextStyle(
-                        color: Colors.redAccent,
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () async {
-                  showShadDialog(
-                    context: context,
-                    builder: (context) => ShadDialog.alert(
-                      title: const Text('You\'ll be logged out immediately!'),
-                      actions: [
-                        ShadButton.outline(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: const Text('Cancel'),
-                          onPressed: () => Navigator.of(context).pop(false),
-                        ),
-                        ShadButton(
-                          child: const Text('Confirm'),
-                          onPressed: () async {
-                            await AuthRepo.logout();
-                            if (context.mounted) {
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/welcomeScreen',
-                                (route) => false,
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _displayEditInfluencerProfile(BuildContext context) async {

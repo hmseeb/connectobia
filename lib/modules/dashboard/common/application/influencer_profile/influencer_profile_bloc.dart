@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/common/models/influencer_profile.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/dashboard/data/influencer_repo.dart';
+import 'package:connectobia/modules/dashboard/common/influencer_repo.dart';
 import 'package:meta/meta.dart';
 
 part 'influencer_profile_event.dart';
@@ -15,7 +15,7 @@ class InfluencerProfileBloc
       emit(InfluencerProfileLoading());
       try {
         final InfluencerProfile influencerProfile =
-            await InfluencerRepo.getInfluencerProfile(event.profileId);
+            await SearchRepo.getInfluencerProfile(profileId: event.profileId);
         emit(InfluencerProfileLoaded(
             influencer: event.influencer,
             influencerProfile: influencerProfile));

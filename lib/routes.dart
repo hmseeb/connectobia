@@ -20,9 +20,9 @@ import 'package:connectobia/modules/auth/presentation/screens/creator__signup_sc
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
-import 'package:connectobia/modules/dashboard/presentation/screens/brand_dashboard.dart';
-import 'package:connectobia/modules/dashboard/presentation/screens/influencer_dashboard.dart';
-import 'package:connectobia/modules/dashboard/presentation/screens/influencer_profile.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/screens/influencer_dashboard.dart';
+import 'package:connectobia/modules/dashboard/common/screens/user_profile.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/brand_onboard_screen.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:flutter/material.dart';
@@ -70,10 +70,12 @@ class GenerateRoutes {
         return _buildPageRoute(BrandOnboarding(
           user: args['user'],
         ));
-      case influencerProfile:
+      case profile:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(InfluencerProfile(
+        return _buildPageRoute(UserProfile(
           userId: args['profileId'],
+          self: args['self'],
+          profileType: args['profileType'],
         ));
       case verifyEmailScreen:
         final args = settings.arguments as Map<String, dynamic>;
