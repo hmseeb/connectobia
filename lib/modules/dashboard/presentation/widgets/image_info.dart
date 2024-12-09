@@ -21,7 +21,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
-    bool hasAvatar = widget.user.avatar!.isNotEmpty;
+    bool hasAvatar = widget.user.avatar.isNotEmpty;
     return Positioned(
       bottom: 20,
       left: 0,
@@ -47,7 +47,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                     hasAvatar
                         ? Avatar.getUserImage(
                             id: widget.user.id,
-                            image: widget.user.avatar!,
+                            image: widget.user.avatar,
                             collectionId: widget.user.collectionId,
                           )
                         : Avatar.getAvatarPlaceholder(

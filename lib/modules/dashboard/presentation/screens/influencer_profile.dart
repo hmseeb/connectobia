@@ -97,7 +97,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                             imageUrl: state is InfluencerProfileLoaded
                                 ? Avatar.getUserImage(
                                     id: state.influencer.id,
-                                    image: state.influencer.banner!,
+                                    image: state.influencer.banner,
                                     collectionId: state.influencer.collectionId)
                                 : Avatar.getAvatarPlaceholder('HA'),
                             fit: BoxFit.cover,
@@ -116,7 +116,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                     state is InfluencerProfileLoaded
                                         ? Avatar.getUserImage(
                                             id: state.influencer.id,
-                                            image: state.influencer.avatar!,
+                                            image: state.influencer.avatar,
                                             collectionId:
                                                 state.influencer.collectionId)
                                         : Avatar.getAvatarPlaceholder('HA'),
@@ -150,9 +150,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                         ),
                                       ),
                                       // verified badge
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
+                                      const SizedBox(width: 8),
                                       Icon(
                                         Icons.verified,
                                         color: state.influencer.connectedSocial
@@ -179,8 +177,9 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                     ],
                                   ),
                                   Text(
-                                    state.influencer.industry ??
-                                        'Uncategorized',
+                                    state.influencer.industry.isEmpty
+                                        ? 'Uncategorized'
+                                        : state.influencer.industry,
                                     style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey,
@@ -189,27 +188,33 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
 
                                   // influencer private profile details
                                   const SizedBox(height: 16),
-                                  LabeledTextField(
-                                      state.influencerProfile.title),
-                                  // about influencer
-                                  const SizedBox(height: 16),
+                                  if (state
+                                      .influencerProfile.title.isNotEmpty) ...[
+                                    LabeledTextField(
+                                        state.influencerProfile.title),
+                                    // about influencer
+                                    const SizedBox(height: 16),
+                                  ],
                                   // description in rich text with "View More" gesture
-                                  ReadMoreText(
-                                    state.influencerProfile.description,
-                                    trimMode: TrimMode.Line,
-                                    trimLines: 2,
-                                    trimCollapsedText: 'Show more',
-                                    trimExpandedText: ' Show less',
-                                    moreStyle: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    lessStyle: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  // analytics
-                                  const SizedBox(height: 16),
 
+                                  if (state.influencerProfile.description
+                                      .isNotEmpty) ...[
+                                    ReadMoreText(
+                                      state.influencerProfile.description,
+                                      trimMode: TrimMode.Line,
+                                      trimLines: 2,
+                                      trimCollapsedText: 'Show more',
+                                      trimExpandedText: ' Show less',
+                                      moreStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      lessStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    // analytics
+                                    const SizedBox(height: 16),
+                                  ],
                                   Row(
                                     children: [
                                       ProfileAnalyticsCard(
