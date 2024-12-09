@@ -1,7 +1,7 @@
 import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
+import 'package:connectobia/modules/auth/presentation/views/brand_featured_listing.dart';
 import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/views/brand_featured_listing.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/views/edit_influencer_profile.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/widgets/bottom_navigation.dart';
 import 'package:connectobia/modules/dashboard/common/views/appbar.dart';

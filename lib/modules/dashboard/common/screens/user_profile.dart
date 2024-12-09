@@ -5,6 +5,7 @@ import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/views/user_setting.dart';
 import 'package:connectobia/modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
+import 'package:connectobia/modules/dashboard/common/widgets/user_profile_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
@@ -148,6 +149,10 @@ class _UserProfileState extends State<UserProfile> {
                                   children: [
                                     // influencer public profile details
                                     const SizedBox(height: 16),
+                                    if (widget.self) ...[
+                                      ProfileButtons(),
+                                      const SizedBox(height: 16),
+                                    ],
                                     Row(
                                       children: [
                                         Text(
@@ -216,7 +221,6 @@ class _UserProfileState extends State<UserProfile> {
                                         color: Colors.grey,
                                       ),
                                     ),
-
                                     // influencer private profile details
                                     const SizedBox(height: 16),
                                     if (state.influencerProfile.title
@@ -226,7 +230,7 @@ class _UserProfileState extends State<UserProfile> {
                                       // about influencer
                                       const SizedBox(height: 16),
                                     ],
-                                    // description in rich text with "View More" gesture
+                                    const SizedBox(height: 16),
 
                                     if (state.influencerProfile.description
                                         .isNotEmpty) ...[
@@ -361,6 +365,10 @@ class _UserProfileState extends State<UserProfile> {
                                   children: [
                                     // influencer public profile details
                                     const SizedBox(height: 16),
+                                    if (widget.self) ...[
+                                      ProfileButtons(),
+                                      const SizedBox(height: 16),
+                                    ],
                                     Row(
                                       children: [
                                         Text(
