@@ -7,7 +7,9 @@ import 'package:connectobia/modules/auth/application/verification/email_verifica
 import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/brand/application/profile_settings/profile_settings.dart';
+import 'package:connectobia/modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
+import 'package:connectobia/modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
 import 'package:connectobia/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +32,14 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => SignupBloc()),
         BlocProvider(create: (context) => EmailVerificationBloc()),
-        BlocProvider(create: (context) => BrandDashboardBloc()),
+        BlocProvider(
+            create: (context) =>
+                BrandDashboardBloc()..add(BrandDashboardLoadInfluencers())),
+        BlocProvider(
+            create: (context) => InfluencerDashboardBloc()
+              ..add(InfluencerDashboardLoadBrands())),
         BlocProvider(create: (context) => EditProfileBloc()),
+        BlocProvider(create: (context) => BrandProfileBloc()),
         BlocProvider(create: (context) => ProfileSettingsBloc()),
         BlocProvider(create: (context) => AuthBloc()..add(CheckAuth())),
         BlocProvider(create: (context) => InfluencerProfileBloc()),

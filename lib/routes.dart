@@ -92,7 +92,7 @@ class GenerateRoutes {
       case influencerDashboard:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(InfluencerDashboard(
-          influencer: args['influencer'],
+          user: args['influencer'],
         ));
       case creatorSignupScreen:
         return _buildPageRoute(const CreatorScreen());
