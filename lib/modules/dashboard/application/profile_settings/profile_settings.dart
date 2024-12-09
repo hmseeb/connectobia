@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/dashboard/application/data/user_repo.dart';
+import 'package:connectobia/modules/dashboard/data/user_repo.dart';
 import 'package:meta/meta.dart';
 
 part 'profile_settings_event.dart';

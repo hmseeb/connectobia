@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/common/models/influencer_profile.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/dashboard/application/data/influencer_repo.dart';
+import 'package:connectobia/modules/dashboard/data/influencer_repo.dart';
 import 'package:meta/meta.dart';
 
 part 'influencer_profile_event.dart';
