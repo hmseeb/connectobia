@@ -73,7 +73,7 @@ class GenerateRoutes {
       case influencerProfile:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(InfluencerProfile(
-          userId: args['userId'],
+          userId: args['profileId'],
         ));
       case verifyEmailScreen:
         final args = settings.arguments as Map<String, dynamic>;

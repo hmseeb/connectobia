@@ -9,9 +9,11 @@ final class InfluencerProfileError extends InfluencerProfileState {
 final class InfluencerProfileInitial extends InfluencerProfileState {}
 
 final class InfluencerProfileLoaded extends InfluencerProfileState {
+  final InfluencerProfile influencerProfile;
   final Influencer influencer;
 
-  InfluencerProfileLoaded(this.influencer);
+  InfluencerProfileLoaded(
+      {required this.influencerProfile, required this.influencer});
 }
 
 final class InfluencerProfileLoading extends InfluencerProfileState {}

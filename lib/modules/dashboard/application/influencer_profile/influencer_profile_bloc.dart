@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/common/models/influencer_profile.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/dashboard/application/data/influencer_repo.dart';
 import 'package:meta/meta.dart';
@@ -12,9 +13,11 @@ class InfluencerProfileBloc
     on<InfluencerProfileLoad>((event, emit) async {
       emit(InfluencerProfileLoading());
       try {
-        final Influencer influencer =
-            await InfluencerRepo.getInfluencerProfile(event.id);
-        emit(InfluencerProfileLoaded(influencer));
+        final InfluencerProfile influencerProfile =
+            await InfluencerRepo.getInfluencerProfile(event.profileId);
+        emit(InfluencerProfileLoaded(
+            influencer: event.influencer,
+            influencerProfile: influencerProfile));
       } catch (e) {
         emit(InfluencerProfileError(e.toString()));
         throw Exception(e);

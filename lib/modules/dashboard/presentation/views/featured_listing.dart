@@ -39,12 +39,14 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                 return GestureDetector(
                   onTap: () {
                     if (state is BrandDashboardLoadedInflueners) {
-                      final id = influencers!.items[index].id;
-                      BlocProvider.of<InfluencerProfileBloc>(context)
-                          .add(InfluencerProfileLoad(id));
+                      final id = influencers!.items[index].profile;
+                      BlocProvider.of<InfluencerProfileBloc>(context).add(
+                          InfluencerProfileLoad(
+                              profileId: id,
+                              influencer: influencers!.items[index]));
                       Navigator.pushNamed(context, '/influencerProfile',
                           arguments: {
-                            'userId': id,
+                            'profileId': id,
                           });
                     }
                   },
