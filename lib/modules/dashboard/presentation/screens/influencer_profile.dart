@@ -203,7 +203,7 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                       state.influencerProfile.description,
                                       trimMode: TrimMode.Line,
                                       trimLines: 2,
-                                      trimCollapsedText: 'Show more',
+                                      trimCollapsedText: 'Read more',
                                       trimExpandedText: ' Show less',
                                       moreStyle: const TextStyle(
                                         fontWeight: FontWeight.bold,
