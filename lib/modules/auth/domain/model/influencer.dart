@@ -6,16 +6,16 @@ class Influencer {
   final String collectionId;
   final String collectionName;
   final String id;
-  final String? email;
-  final String? avatar;
-  final String? banner;
+  final String email;
+  final String avatar;
+  final String banner;
   final bool emailVisibility;
   final bool verified;
   final bool connectedSocial;
   final String fullName;
   final String username;
   final bool onboarded;
-  final String? industry;
+  final String industry;
   final String profile;
   final DateTime created;
   final DateTime updated;
@@ -43,7 +43,7 @@ class Influencer {
         collectionId: json["collectionId"],
         collectionName: json["collectionName"],
         id: json["id"],
-        email: json["email"],
+        email: json["email"] ?? '',
         avatar: json["avatar"] ?? '',
         banner: json["banner"] ?? '',
         emailVisibility: json["emailVisibility"],
@@ -52,7 +52,7 @@ class Influencer {
         username: json["username"],
         onboarded: json["onboarded"],
         connectedSocial: json["connectedSocial"],
-        industry: json["industry"],
+        industry: json["industry"] ?? '',
         profile: json["profile"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),

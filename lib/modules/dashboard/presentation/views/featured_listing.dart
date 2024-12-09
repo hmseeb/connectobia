@@ -59,7 +59,7 @@ class _FeaturedListingsState extends State<FeaturedListings> {
                           Center(
                               child: state is BrandDashboardLoadedInflueners
                                   ? FeatureImage(
-                                      image: influencers!.items[index].banner!,
+                                      image: influencers!.items[index].banner,
                                       id: influencers!.items[index].id,
                                       collectionId: influencers!
                                           .items[index].collectionId,
