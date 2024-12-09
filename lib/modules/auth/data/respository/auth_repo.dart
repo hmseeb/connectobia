@@ -75,8 +75,8 @@ class AuthRepo {
 
   /// [forgotPassword] is a method that sends a password reset email to the
   /// user's email address.
-  static Future<void> forgotPassword({required String email}) async {
-    final collectionName = CollectionNameSingleton.instance;
+  static Future<void> forgotPassword(
+      {required String email, required String collectionName}) async {
     try {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestPasswordReset(email);

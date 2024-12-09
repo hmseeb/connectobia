@@ -10,8 +10,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// {@category Sheets}
 class ForgotPasswordSheet extends StatefulWidget {
   final ShadSheetSide side;
+  final String accountType;
 
-  const ForgotPasswordSheet({super.key, required this.side});
+  const ForgotPasswordSheet(
+      {super.key, required this.side, required this.accountType});
 
   @override
   State<ForgotPasswordSheet> createState() => _ForgotPasswordSheetState();
@@ -58,7 +60,10 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               isLoading = true;
             });
             try {
-              await AuthRepo.forgotPassword(email: emailController.text);
+              await AuthRepo.forgotPassword(
+                email: emailController.text,
+                collectionName: widget.accountType,
+              );
               if (context.mounted) {
                 ShadToaster.of(context).show(
                   const ShadToast(

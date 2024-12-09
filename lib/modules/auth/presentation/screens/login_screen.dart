@@ -114,8 +114,10 @@ class _SigninScreenState extends State<SigninScreen> {
                           showShadSheet(
                             side: ShadSheetSide.bottom,
                             context: context,
-                            builder: (context) => const ForgotPasswordSheet(
-                                side: ShadSheetSide.bottom),
+                            builder: (context) => ForgotPasswordSheet(
+                              side: ShadSheetSide.bottom,
+                              accountType: widget.accountType,
+                            ),
                           );
                         },
                         child: Align(

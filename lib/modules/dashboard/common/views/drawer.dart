@@ -1,0 +1,167 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
+import 'package:connectobia/theme/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+class CommonDrawer extends StatelessWidget {
+  final String name;
+  final String email;
+  final String collectionId;
+  final String avatar;
+  final String userId;
+
+  const CommonDrawer({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.collectionId,
+    required this.avatar,
+    required this.userId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ThemeBloc, ThemeState>(
+      builder: (context, state) {
+        return Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        ShadTooltip(
+                          builder: (context) => const Text('Edit Profile'),
+                          child: GestureDetector(
+                            onTap: () {
+                              // _displayEditUserSettings(context);
+                            },
+                            child: CircleAvatar(
+                              backgroundImage:
+                                  CachedNetworkImageProvider(avatar.isNotEmpty
+                                      ? Avatar.getUserImage(
+                                          collectionId: collectionId,
+                                          image: avatar,
+                                          userId: userId,
+                                        )
+                                      : Avatar.getAvatarPlaceholder(
+                                          'HA',
+                                        )),
+                            ),
+                          ),
+                        ),
+                        // toggle theme button
+                        const Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            state is DarkTheme
+                                ? Icons.dark_mode_outlined
+                                : Icons.light_mode_outlined,
+                          ),
+                          onPressed: () {
+                            bool isDarkMode = state is DarkTheme;
+                            isDarkMode = !isDarkMode;
+                            BlocProvider.of<ThemeBloc>(context).add(
+                              ThemeChanged(isDarkMode),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      name,
+                      style: TextStyle(
+                        color: state is DarkTheme
+                            ? ShadColors.light
+                            : ShadColors.dark,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      email,
+                      style: TextStyle(
+                        color: state is DarkTheme
+                            ? ShadColors.light
+                            : ShadColors.dark,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(LucideIcons.settings),
+                    SizedBox(width: 16),
+                    Text('Settings'),
+                  ],
+                ),
+                onTap: () {
+                  // _displayEditInfluencerProfile(context);
+                },
+              ),
+              ListTile(
+                title: const Row(
+                  children: [
+                    Icon(
+                      LucideIcons.logOut,
+                      color: Colors.redAccent,
+                    ),
+                    SizedBox(width: 16),
+                    Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () async {
+                  showShadDialog(
+                    context: context,
+                    builder: (context) => ShadDialog.alert(
+                      title: const Text('You\'ll be logged out immediately!'),
+                      actions: [
+                        ShadButton.outline(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: const Text('Cancel'),
+                          onPressed: () => Navigator.of(context).pop(false),
+                        ),
+                        ShadButton(
+                          child: const Text('Confirm'),
+                          onPressed: () async {
+                            await AuthRepo.logout();
+                            if (context.mounted) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/welcomeScreen',
+                                (route) => false,
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
