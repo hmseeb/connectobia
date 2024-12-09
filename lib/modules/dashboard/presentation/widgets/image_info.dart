@@ -20,6 +20,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
   int page = BrandDashboardBloc().page;
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     bool hasAvatar = widget.user.avatar!.isNotEmpty;
     return Positioned(
       bottom: 20,
@@ -29,7 +30,9 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.5), // Semi-transparent background
+            color: brightness == Brightness.dark
+                ? Colors.black.withOpacity(0.70)
+                : Colors.white.withOpacity(0.70), // Semi-transparent background
             borderRadius: BorderRadius.circular(36),
           ),
           child: Padding(
@@ -60,8 +63,10 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                       children: [
                         Text(
                           widget.user.fullName,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -77,8 +82,10 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                     ),
                     Text(
                       '@${widget.user.username}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
                         fontSize: 14,
                       ),
                     ),
