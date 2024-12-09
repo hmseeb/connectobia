@@ -189,26 +189,33 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
 
                                   // influencer private profile details
                                   const SizedBox(height: 16),
-                                  LabeledTextField(
-                                      state.influencerProfile.title),
-                                  // about influencer
-                                  const SizedBox(height: 16),
+                                  if (state
+                                      .influencerProfile.title.isNotEmpty) ...[
+                                    LabeledTextField(
+                                        state.influencerProfile.title),
+                                    // about influencer
+                                    const SizedBox(height: 16),
+                                  ],
                                   // description in rich text with "View More" gesture
-                                  ReadMoreText(
-                                    state.influencerProfile.description,
-                                    trimMode: TrimMode.Line,
-                                    trimLines: 2,
-                                    trimCollapsedText: 'Show more',
-                                    trimExpandedText: ' Show less',
-                                    moreStyle: const TextStyle(
-                                      fontWeight: FontWeight.bold,
+
+                                  if (state.influencerProfile.description
+                                      .isNotEmpty) ...[
+                                    ReadMoreText(
+                                      state.influencerProfile.description,
+                                      trimMode: TrimMode.Line,
+                                      trimLines: 2,
+                                      trimCollapsedText: 'Show more',
+                                      trimExpandedText: ' Show less',
+                                      moreStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      lessStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                    lessStyle: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  // analytics
-                                  const SizedBox(height: 16),
+                                    // analytics
+                                    const SizedBox(height: 16),
+                                  ],
 
                                   Row(
                                     children: [
