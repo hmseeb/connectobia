@@ -11,6 +11,7 @@ class InfluencerProfileBloc
     extends Bloc<InfluencerProfileEvent, InfluencerProfileState> {
   InfluencerProfileBloc() : super(InfluencerProfileInitial()) {
     on<InfluencerProfileLoad>((event, emit) async {
+      // TODO: Avoid loading the same profile twice
       emit(InfluencerProfileLoading());
       try {
         final InfluencerProfile influencerProfile =
