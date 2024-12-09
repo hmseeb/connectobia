@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/extensions/string_extention.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/views/user_setting.dart';
 import 'package:connectobia/modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
@@ -230,7 +231,8 @@ class _UserProfileState extends State<UserProfile> {
                                     if (state.influencerProfile.description
                                         .isNotEmpty) ...[
                                       ReadMoreText(
-                                        state.influencerProfile.description,
+                                        state.influencerProfile.description
+                                            .removeAllHtmlTags(),
                                         trimMode: TrimMode.Line,
                                         trimLines: 2,
                                         trimCollapsedText: 'Read more',
@@ -402,7 +404,8 @@ class _UserProfileState extends State<UserProfile> {
                                     if (state.brandProfile.description
                                         .isNotEmpty) ...[
                                       ReadMoreText(
-                                        state.brandProfile.description,
+                                        state.brandProfile.description
+                                            .removeAllHtmlTags(),
                                         trimMode: TrimMode.Line,
                                         trimLines: 2,
                                         trimCollapsedText: 'Read more',

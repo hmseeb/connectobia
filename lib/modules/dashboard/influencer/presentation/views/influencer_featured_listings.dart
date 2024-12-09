@@ -32,8 +32,10 @@ class _InfluencerFeaturedListingsState
               final id = widget.brands.items[index].profile;
               BlocProvider.of<BrandProfileBloc>(context).add(LoadBrandProfile(
                   profileId: id, brand: widget.brands.items[index]));
-              Navigator.pushNamed(context, '/brandProfile', arguments: {
+              Navigator.pushNamed(context, '/profile', arguments: {
                 'profileId': id,
+                'self': false,
+                'profileType': 'brand'
               });
             },
             child: Padding(

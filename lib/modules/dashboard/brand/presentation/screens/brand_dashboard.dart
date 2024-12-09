@@ -1,8 +1,8 @@
 import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'package:connectobia/modules/dashboard/brand/presentation/views/brand_featured_listing.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/views/edit_influencer_profile.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/views/featured_listing.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/widgets/bottom_navigation.dart';
 import 'package:connectobia/modules/dashboard/common/views/appbar.dart';
 import 'package:connectobia/modules/dashboard/common/views/drawer.dart';
@@ -24,7 +24,6 @@ class BrandDashboard extends StatefulWidget {
 class _BrandDashboardState extends State<BrandDashboard> {
   late Brand user = widget.user;
   late final List<String> _industries;
-  late final influencerBloc = BlocProvider.of<BrandDashboardBloc>(context);
   late final brightness = ShadTheme.of(context).brightness;
   final ScrollController scrollController = ScrollController();
 
@@ -57,7 +56,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     const SectionTitle('Popular Categories'),
                     const SizedBox(height: 16),
                     PopularCategories(industries: _industries),
-                    const SectionTitle('Featured Listings'),
+                    const SectionTitle('Featured Influencers'),
                     const SizedBox(height: 16),
                     BlocBuilder<BrandDashboardBloc, BrandDashboardState>(
                       builder: (context, state) {
@@ -111,7 +110,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
   void initState() {
     super.initState();
     _industries = getSortedIndustries();
-    influencerBloc.add(BrandDashboardLoadInfluencers());
     scrollController.addListener(_scrollListener); // Pass the function directly
   }
 

@@ -39,7 +39,7 @@ class Brand {
         collectionId: json["collectionId"],
         collectionName: json["collectionName"],
         id: json["id"],
-        email: json["email"],
+        email: json["email"] ?? '',
         emailVisibility: json["emailVisibility"],
         verified: json["verified"],
         avatar: json["avatar"],

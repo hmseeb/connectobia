@@ -29,7 +29,7 @@ class BrandProfile {
         id: json["id"],
         title: json["title"],
         description: json["description"],
-        links: json["links"],
+        links: json["links"] ?? '',
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
       );
