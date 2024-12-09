@@ -4,7 +4,8 @@ part of 'influencer_profile_bloc.dart';
 sealed class InfluencerProfileEvent {}
 
 final class InfluencerProfileLoad extends InfluencerProfileEvent {
-  final String id;
+  final String profileId;
+  final Influencer influencer;
 
-  InfluencerProfileLoad(this.id);
+  InfluencerProfileLoad({required this.profileId, required this.influencer});
 }

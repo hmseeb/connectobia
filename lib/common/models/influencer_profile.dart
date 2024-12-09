@@ -10,6 +10,7 @@ class InfluencerProfile {
   final String description;
   final int followers;
   final int engRate;
+  final int mediaCount;
   final String location;
   final DateTime created;
   final DateTime updated;
@@ -20,6 +21,7 @@ class InfluencerProfile {
     required this.id,
     required this.title,
     required this.description,
+    required this.mediaCount,
     required this.followers,
     required this.engRate,
     required this.location,
@@ -33,6 +35,7 @@ class InfluencerProfile {
         collectionName: json["collectionName"],
         id: json["id"],
         title: json["title"],
+        mediaCount: json["mediaCount"],
         description: json["description"],
         followers: json["followers"],
         engRate: json["engRate"],
@@ -55,6 +58,7 @@ class InfluencerProfile {
     String? description,
     int? followers,
     int? engRate,
+    int? mediaCount,
     String? location,
     String? avatar,
     String? banner,
@@ -69,6 +73,7 @@ class InfluencerProfile {
         description: description ?? this.description,
         followers: followers ?? this.followers,
         engRate: engRate ?? this.engRate,
+        mediaCount: mediaCount ?? this.mediaCount,
         location: location ?? this.location,
         created: created ?? this.created,
         updated: updated ?? this.updated,
@@ -81,6 +86,7 @@ class InfluencerProfile {
         "title": title,
         "description": description,
         "followers": followers,
+        "mediaCount": mediaCount,
         "engRate": engRate,
         "location": location,
         "created": created.toIso8601String(),

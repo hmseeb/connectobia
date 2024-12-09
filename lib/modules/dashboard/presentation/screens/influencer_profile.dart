@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/common/constants/path.dart';
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
 import 'package:connectobia/modules/dashboard/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/presentation/views/user_setting.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InfluencerProfile extends StatefulWidget {
   final String userId;
@@ -58,14 +60,17 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
       builder: (context, state) {
         return Scaffold(
           appBar: transparentAppBar(
-            state is InfluencerProfileLoaded ? state.influencer.fullName : '',
+            state is InfluencerProfileLoaded
+                ? '@${state.influencer.username}'
+                : '',
             context: context,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () {},
-              ),
-            ],
+            // Add this when more options are available
+            // actions: [
+            //   IconButton(
+            //     icon: const Icon(Icons.more_vert),
+            //     onPressed: () {},
+            //   ),
+            // ],
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
@@ -89,13 +94,12 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                           height: 150,
                           width: double.infinity,
                           child: CachedNetworkImage(
-                            imageUrl:
-                                // state is InfluencerProfileLoaded
-                                //     ? Avatar.getUserImage(
-                                //         id: state.influencer.expand.user.id,
-                                //         image: state.influencer.expand.user.banner)
-                                //     :
-                                Avatar.getBannerPlaceholder(),
+                            imageUrl: state is InfluencerProfileLoaded
+                                ? Avatar.getUserImage(
+                                    id: state.influencer.id,
+                                    image: state.influencer.banner!,
+                                    collectionId: state.influencer.collectionId)
+                                : Avatar.getAvatarPlaceholder('HA'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -109,13 +113,13 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                 CircleAvatar(
                                   radius: 50,
                                   backgroundImage: CachedNetworkImageProvider(
-                                    // state is InfluencerProfileLoaded
-                                    // ? Avatar.getUserImage(
-                                    //     id: state.influencer.expand.user.id,
-                                    //     image: state
-                                    //         .influencer.expand.user.avatar)
-                                    // :
-                                    Avatar.getAvatarPlaceholder('HA'),
+                                    state is InfluencerProfileLoaded
+                                        ? Avatar.getUserImage(
+                                            id: state.influencer.id,
+                                            image: state.influencer.avatar!,
+                                            collectionId:
+                                                state.influencer.collectionId)
+                                        : Avatar.getAvatarPlaceholder('HA'),
                                   ),
                                 ),
                               ],
@@ -148,63 +152,69 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                       const SizedBox(
                                         width: 8,
                                       ),
-                                      state.influencer.verified
-                                          ? const Icon(
-                                              Icons.verified,
-                                              color: Colors.green,
-                                            )
-                                          : const SizedBox(),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text('state.influencer.industry'),
-                                      // location
+                                      Icon(
+                                        Icons.verified,
+                                        color: state.influencer.connectedSocial
+                                            ? Colors.blue
+                                            : Colors.green,
+                                      ),
                                       const Spacer(),
                                       // location icon
-                                      const Icon(
-                                        Icons.location_on,
-                                        color: Colors.grey,
-                                        size: 14,
-                                      ),
-                                      Text(
-                                        'Location...',
-                                        style: const TextStyle(
-                                          fontSize: 14,
+                                      GestureDetector(
+                                        onTap: () {
+                                          // launch url to their instagram profile
+                                          String url =
+                                              'https://instagram.com/${state.influencer.username}';
+                                          // launch url
+                                          launchUrl(Uri.parse(url));
+                                        },
+                                        child: Image.asset(
+                                          AssetsPath.instagram,
+                                          width: 25,
+                                          height: 25,
                                         ),
                                       ),
                                     ],
                                   ),
+                                  Text(state.influencer.industry ??
+                                      'Uncategorized'),
 
                                   // influencer private profile details
                                   const SizedBox(height: 16),
-                                  LabeledTextField('Title...'),
+                                  LabeledTextField(
+                                      state.influencerProfile.title),
                                   // about influencer
                                   const SizedBox(height: 16),
                                   // description in rich text with "View More" gesture
                                   ReadMoreText(
-                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec purus feugiat',
+                                    state.influencerProfile.description,
                                     trimMode: TrimMode.Line,
                                     trimLines: 2,
                                     trimCollapsedText: 'Show more',
                                     trimExpandedText: ' Show less',
                                     moreStyle: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    lessStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   // analytics
                                   const SizedBox(height: 16),
 
-                                  const Row(
+                                  Row(
                                     children: [
                                       ProfileAnalyticsCard(
                                         title: 'FOLLOWERS',
-                                        value: '80K',
+                                        value: state.influencerProfile.followers
+                                            .toString(),
                                       ),
                                       SizedBox(width: 16),
                                       ProfileAnalyticsCard(
-                                        title: 'ENG. RATE',
-                                        value: '2.3%',
+                                        title: 'MEDIA COUNT',
+                                        value: state
+                                            .influencerProfile.mediaCount
+                                            .toString(),
                                       ),
                                     ],
                                   ),
