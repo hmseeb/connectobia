@@ -131,8 +131,9 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                   ),
                   state is InfluencerProfileLoaded
                       ? Center(
-                          child: SizedBox(
-                            width: 400,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,24 +161,31 @@ class _InfluencerProfileState extends State<InfluencerProfile> {
                                       ),
                                       const Spacer(),
                                       // location icon
-                                      GestureDetector(
-                                        onTap: () {
-                                          // launch url to their instagram profile
-                                          String url =
-                                              'https://instagram.com/${state.influencer.username}';
-                                          // launch url
-                                          launchUrl(Uri.parse(url));
-                                        },
-                                        child: Image.asset(
-                                          AssetsPath.instagram,
-                                          width: 25,
-                                          height: 25,
+                                      if (state.influencer.connectedSocial)
+                                        GestureDetector(
+                                          onTap: () {
+                                            // launch url to their instagram profile
+                                            String url =
+                                                'https://instagram.com/${state.influencer.username}';
+                                            // launch url
+                                            launchUrl(Uri.parse(url));
+                                          },
+                                          child: Image.asset(
+                                            AssetsPath.instagram,
+                                            width: 25,
+                                            height: 25,
+                                          ),
                                         ),
-                                      ),
                                     ],
                                   ),
-                                  Text(state.influencer.industry ??
-                                      'Uncategorized'),
+                                  Text(
+                                    state.influencer.industry ??
+                                        'Uncategorized',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
 
                                   // influencer private profile details
                                   const SizedBox(height: 16),
