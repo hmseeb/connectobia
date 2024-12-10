@@ -1,18 +1,20 @@
 import 'dart:async';
 
-import 'package:connectobia/common/constants/path.dart';
-import 'package:connectobia/common/constants/screen_size.dart';
-import 'package:connectobia/common/singletons/account_type.dart';
-import 'package:connectobia/db/db.dart';
-import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/heading_text.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/sub_heading.dart';
-import 'package:connectobia/theme/colors.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../common/constants/path.dart';
+import '../../../../common/constants/screen_size.dart';
+import '../../../../common/singletons/account_type.dart';
+import '../../../../db/db.dart';
+import '../../../../theme/colors.dart';
+import '../../application/verification/email_verification_bloc.dart';
+import '../../data/respository/auth_repo.dart';
+import '../widgets/heading_text.dart';
+import '../widgets/sub_heading.dart';
 
 /// A screen that allows a user to verify their email.
 ///
@@ -156,7 +158,8 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -211,7 +214,8 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     } finally {
       setState(() {
         isLoading = false;

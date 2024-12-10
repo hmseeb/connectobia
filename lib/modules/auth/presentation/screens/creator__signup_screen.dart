@@ -1,19 +1,20 @@
-import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/common/constants/path.dart';
-import 'package:connectobia/common/constants/screen_size.dart';
-import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
-import 'package:connectobia/modules/auth/presentation/views/creator_signup_form.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/privacy_policy.dart';
-import 'package:connectobia/theme/buttons.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
+
+import '../../../../common/constants/industries.dart';
+import '../../../../common/constants/path.dart';
+import '../../../../common/constants/screen_size.dart';
+import '../../../../common/widgets/transparent_appbar.dart';
+import '../../../../theme/buttons.dart';
+import '../../../../theme/colors.dart';
+import '../../application/signup/signup_bloc.dart';
+import '../views/creator_signup_form.dart';
+import '../widgets/custom_shad_select.dart';
+import '../widgets/privacy_policy.dart';
+import 'brand_signup_screen.dart';
 
 /// A screen that allows a creator to sign up.
 /// [CreatorScreen] contains a form for a creator to sign up.

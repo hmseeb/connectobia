@@ -1,7 +1,8 @@
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../auth/data/respository/auth_repo.dart';
+import '../../../auth/domain/model/brand.dart';
 
 class BrandOnboarding extends StatelessWidget {
   final Brand user;

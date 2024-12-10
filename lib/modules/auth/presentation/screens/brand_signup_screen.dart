@@ -1,16 +1,17 @@
-import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/common/constants/path.dart';
-import 'package:connectobia/common/constants/screen_size.dart';
-import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/modules/auth/presentation/views/brand_signup_form.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/privacy_policy.dart';
-import 'package:connectobia/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../common/constants/industries.dart';
+import '../../../../common/constants/path.dart';
+import '../../../../common/constants/screen_size.dart';
+import '../../../../common/widgets/transparent_appbar.dart';
+import '../../../../theme/buttons.dart';
+import '../../application/signup/signup_bloc.dart';
+import '../views/brand_signup_form.dart';
+import '../widgets/custom_shad_select.dart';
+import '../widgets/privacy_policy.dart';
 
 /// A screen that allows a brand to sign up.
 /// [BrandScreen] contains a form for a brand to sign up.

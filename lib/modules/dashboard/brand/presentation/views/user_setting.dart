@@ -1,18 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/custom_shad_select.dart';
-import 'package:connectobia/modules/dashboard/brand/application/profile_settings/profile_settings.dart';
-import 'package:connectobia/modules/dashboard/brand/data/user_repo.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../../common/constants/avatar.dart';
+import '../../../../../common/constants/industries.dart';
+import '../../../../../common/widgets/transparent_appbar.dart';
+import '../../../../../theme/colors.dart';
+import '../../../../auth/data/respository/input_validation.dart';
+import '../../../../auth/domain/model/influencer.dart';
+import '../../../../auth/presentation/widgets/custom_shad_select.dart';
+import '../../application/profile_settings/profile_settings.dart';
+import '../../data/user_repo.dart';
 
 class InfluencerSettingSheet extends StatefulWidget {
   final Influencer user;

@@ -1,14 +1,15 @@
-import 'package:connectobia/common/widgets/transparent_appbar.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/common/widgets/profile_body.dart';
-import 'package:connectobia/modules/dashboard/common/widgets/profile_header.dart';
-import 'package:connectobia/modules/dashboard/common/widgets/profile_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+import '../../../../common/widgets/transparent_appbar.dart';
+import '../../../auth/domain/model/brand.dart';
+import '../../../auth/domain/model/influencer.dart';
+import '../application/brand_profile/brand_profile_bloc.dart';
+import '../application/influencer_profile/influencer_profile_bloc.dart';
+import '../widgets/profile_body.dart';
+import '../widgets/profile_header.dart';
+import '../widgets/profile_image.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;

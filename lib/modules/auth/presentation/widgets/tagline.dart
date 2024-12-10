@@ -1,5 +1,6 @@
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../theme/colors.dart';
 
 /// A widget that displays the tagline of the application
 /// This widget is used to display the tagline of the application. It is

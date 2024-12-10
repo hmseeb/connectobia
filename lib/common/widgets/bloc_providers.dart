@@ -1,19 +1,20 @@
-import 'package:connectobia/app.dart';
-import 'package:connectobia/common/animation/animation_cubit.dart';
-import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
-import 'package:connectobia/modules/auth/application/login/login_bloc.dart';
-import 'package:connectobia/modules/auth/application/signup/signup_bloc.dart';
-import 'package:connectobia/modules/auth/application/verification/email_verification_bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/application/profile_settings/profile_settings.dart';
-import 'package:connectobia/modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
-import 'package:connectobia/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
-import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../app.dart';
+import '../../modules/auth/application/auth/auth_bloc.dart';
+import '../../modules/auth/application/login/login_bloc.dart';
+import '../../modules/auth/application/signup/signup_bloc.dart';
+import '../../modules/auth/application/verification/email_verification_bloc.dart';
+import '../../modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
+import '../../modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
+import '../../modules/dashboard/brand/application/profile_settings/profile_settings.dart';
+import '../../modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
+import '../../modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
+import '../../modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
+import '../../modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
+import '../../theme/bloc/theme_bloc.dart';
+import '../animation/animation_cubit.dart';
 
 class BlocProviders extends StatelessWidget {
   final bool isDarkMode;

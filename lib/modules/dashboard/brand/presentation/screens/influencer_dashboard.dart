@@ -1,17 +1,18 @@
-import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/views/edit_influencer_profile.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/widgets/bottom_navigation.dart';
-import 'package:connectobia/modules/dashboard/common/views/appbar.dart';
-import 'package:connectobia/modules/dashboard/common/views/drawer.dart';
-import 'package:connectobia/modules/dashboard/common/views/popular_categories.dart';
-import 'package:connectobia/modules/dashboard/common/widgets/section_title.dart';
-import 'package:connectobia/modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
-import 'package:connectobia/modules/dashboard/influencer/presentation/views/influencer_featured_listings.dart';
-import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../../common/constants/industries.dart';
+import '../../../../../theme/bloc/theme_bloc.dart';
+import '../../../../auth/domain/model/influencer.dart';
+import '../../../common/views/appbar.dart';
+import '../../../common/views/drawer.dart';
+import '../../../common/views/popular_categories.dart';
+import '../../../common/widgets/section_title.dart';
+import '../../../influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
+import '../../../influencer/presentation/views/influencer_featured_listings.dart';
+import '../views/edit_influencer_profile.dart';
+import '../widgets/bottom_navigation.dart';
 
 class InfluencerDashboard extends StatefulWidget {
   final Influencer user;

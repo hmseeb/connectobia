@@ -1,8 +1,9 @@
-import 'package:connectobia/modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/views/user_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../application/edit_profile/edit_profile_bloc.dart';
+import 'user_setting.dart';
 
 class EditInfluencerProfile extends StatefulWidget {
   const EditInfluencerProfile({super.key});

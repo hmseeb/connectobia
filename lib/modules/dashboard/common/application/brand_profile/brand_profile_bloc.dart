@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/models/brand_profile.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/dashboard/common/data/influencer_repo.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+
+import '../../../../../common/models/brand_profile.dart';
+import '../../../../auth/domain/model/brand.dart';
+import '../../data/influencer_repo.dart';
 
 part 'brand_profile_event.dart';
 part 'brand_profile_state.dart';
@@ -22,7 +23,8 @@ class BrandProfileBloc extends Bloc<BrandProfileEvent, BrandProfileState> {
             BrandProfileLoaded(brand: event.brand, brandProfile: brandProfile));
         debugPrint('Fetched ${event.brand.brandName} profile');
       } catch (e) {
-        throw ClientException(originalError: e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
   }

@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/models/influencer_profile.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/dashboard/common/data/influencer_repo.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+
+import '../../../../../common/models/influencer_profile.dart';
+import '../../../../auth/domain/model/influencer.dart';
+import '../../data/influencer_repo.dart';
 
 part 'influencer_profile_event.dart';
 part 'influencer_profile_state.dart';
@@ -25,7 +26,8 @@ class InfluencerProfileBloc
         debugPrint('Fetched ${event.influencer.fullName} profile');
       } catch (e) {
         emit(InfluencerProfileError(e.toString()));
-        throw ClientException(originalError: e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
   }

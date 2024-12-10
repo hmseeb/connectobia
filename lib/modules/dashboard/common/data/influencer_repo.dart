@@ -1,6 +1,6 @@
-import 'package:connectobia/common/models/brand_profile.dart';
-import 'package:connectobia/common/models/influencer_profile.dart';
-import 'package:connectobia/db/db.dart';
+import '../../../../common/models/brand_profile.dart';
+import '../../../../common/models/influencer_profile.dart';
+import '../../../../db/db.dart';
 
 class SearchRepo {
   static Future<InfluencerProfile> getInfluencerProfile(

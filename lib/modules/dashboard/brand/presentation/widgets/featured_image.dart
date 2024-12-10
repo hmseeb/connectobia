@@ -1,5 +1,6 @@
-import 'package:connectobia/common/constants/avatar.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../../common/constants/avatar.dart';
 
 class FeatureImage extends StatelessWidget {
   final String image;

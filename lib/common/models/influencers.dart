@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:pocketbase/pocketbase.dart';
+
+import '../../modules/auth/domain/model/influencer.dart';
 
 class Influencers {
   final int page;

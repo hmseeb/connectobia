@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/singletons/account_type.dart';
-import 'package:connectobia/db/db.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+
+import '../../../../common/singletons/account_type.dart';
+import '../../../../db/db.dart';
+import '../../domain/model/brand.dart';
+import '../../domain/model/influencer.dart';
 
 part 'email_verification_event.dart';
 part 'email_verification_state.dart';
@@ -35,7 +36,8 @@ class EmailVerificationBloc
         );
         debugPrint('Subscribed to email verification updates');
       } catch (e) {
-        throw ClientException(originalError: e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
 
@@ -54,7 +56,8 @@ class EmailVerificationBloc
           emit(InfluencerEmailVerified(user));
         }
       } catch (e) {
-        throw ClientException(originalError: e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
   }

@@ -1,12 +1,14 @@
-import 'package:connectobia/common/constants/industries.dart';
-import 'package:connectobia/common/models/user.dart';
-import 'package:connectobia/common/singletons/account_type.dart';
-import 'package:connectobia/db/db.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../common/constants/industries.dart';
+import '../../../../common/domain/repositories/error_repository.dart';
+import '../../../../common/models/user.dart';
+import '../../../../common/singletons/account_type.dart';
+import '../../../../db/db.dart';
+import '../../domain/model/brand.dart';
+import '../../domain/model/influencer.dart';
 
 /// [AuthRepo] is a repository class that contains all the methods that are
 /// responsible for handling authentication related operations.
@@ -39,7 +41,8 @@ class AuthRepo {
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -69,7 +72,8 @@ class AuthRepo {
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -81,7 +85,8 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestPasswordReset(email);
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -104,7 +109,8 @@ class AuthRepo {
         return user;
       }
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -139,7 +145,8 @@ class AuthRepo {
       debugPrint('Linked profile with account');
       return influencer;
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -200,7 +207,8 @@ class AuthRepo {
       debugPrint('Logged in as ${authData.record.data['email']}');
       return authData;
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -211,7 +219,8 @@ class AuthRepo {
       pb.authStore.clear();
       debugPrint('Logged out');
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
@@ -222,7 +231,8 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestVerification(email);
     } catch (e) {
-      throw ClientException(originalError: e);
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 }

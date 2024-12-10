@@ -1,10 +1,11 @@
-import 'package:connectobia/common/models/influencers.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/widgets/featured_image.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/widgets/image_info.dart';
-import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../common/models/influencers.dart';
+import '../../../dashboard/brand/presentation/widgets/featured_image.dart';
+import '../../../dashboard/brand/presentation/widgets/image_info.dart';
+import '../../../dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
 
 class BrandFeaturedListings extends StatefulWidget {
   final int itemsCount;

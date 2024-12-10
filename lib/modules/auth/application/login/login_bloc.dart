@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+
+import '../../data/respository/auth_repo.dart';
+import '../../data/respository/input_validation.dart';
+import '../../domain/model/brand.dart';
+import '../../domain/model/influencer.dart';
 
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';
@@ -59,7 +60,6 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         }
       } catch (e) {
         emit(LoginFailure(e.toString()));
-        throw ClientException(originalError: e);
       }
     });
 
@@ -74,7 +74,8 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         debugPrint('Logged in with Instagram');
       } catch (e) {
         emit(LoginFailure(e.toString()));
-        throw ClientException(originalError: e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
   }

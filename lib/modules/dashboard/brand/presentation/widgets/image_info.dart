@@ -1,6 +1,7 @@
-import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../../common/constants/avatar.dart';
+import '../../application/brand_dashboard/brand_dashboard_bloc.dart';
 
 class FeatureImageInfo extends StatefulWidget {
   final String title;

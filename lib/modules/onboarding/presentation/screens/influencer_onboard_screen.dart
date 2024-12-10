@@ -1,13 +1,14 @@
-import 'package:connectobia/common/constants/path.dart';
-import 'package:connectobia/common/constants/screen_size.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
-import 'package:connectobia/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
+
+import '../../../../common/constants/path.dart';
+import '../../../../common/constants/screen_size.dart';
+import '../../../../theme/colors.dart';
+import '../../../auth/domain/model/influencer.dart';
+import '../../application/bloc/influencer_onboard_bloc.dart';
 
 class InfluencerOnboarding extends StatefulWidget {
   final Influencer user;
