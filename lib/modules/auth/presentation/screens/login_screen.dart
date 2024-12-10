@@ -1,3 +1,4 @@
+import 'package:connectobia/modules/auth/presentation/views/forget_password_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +12,6 @@ import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../../onboarding/application/bloc/influencer_onboard_bloc.dart';
 import '../../application/login/login_bloc.dart';
-import '../views/forget_password_sheet.dart';
 import '../views/login_form.dart';
 import '../widgets/auth_flow.dart';
 import 'brand_signup_screen.dart';
@@ -109,26 +109,25 @@ class _SigninScreenState extends State<SigninScreen> {
                       LoginForm(
                           emailController: emailController,
                           passwordController: passwordController),
-                      TextButton(
-                        onPressed: () {
-                          HapticFeedback.mediumImpact();
-                          showShadSheet(
-                            side: ShadSheetSide.bottom,
-                            context: context,
-                            builder: (context) => ForgotPasswordSheet(
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            showShadSheet(
                               side: ShadSheetSide.bottom,
-                              accountType: widget.accountType,
-                            ),
-                          );
-                        },
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: const Text(
-                            'Forgot password?',
-                            style: TextStyle(
-                              color: ShadColors.primary,
-                            ),
-                          ),
+                              context: context,
+                              builder: (context) => ForgotPasswordSheet(
+                                side: ShadSheetSide.bottom,
+                                accountType: widget.accountType,
+                              ),
+                            );
+                          },
+                          child: Text('Forgot password?',
+                              style: TextStyle(
+                                color: ShadColors.primary,
+                                fontWeight: FontWeight.bold,
+                              )),
                         ),
                       ),
                       PrimaryButton(
