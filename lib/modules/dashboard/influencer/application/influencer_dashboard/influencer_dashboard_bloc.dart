@@ -12,6 +12,9 @@ class InfluencerDashboardBloc
     extends Bloc<InfluencerDashboardEvent, InfluencerDashboardState> {
   InfluencerDashboardBloc() : super(InfluencerDashboardInitial()) {
     on<InfluencerDashboardLoadBrands>((event, emit) async {
+      if (state is InfluencerDashboardLoadedBrands) {
+        return;
+      }
       emit((InfluencerDashboardLoadingBrands()));
       try {
         final Brands brands = await DashboardRepo.getBrandsList();
