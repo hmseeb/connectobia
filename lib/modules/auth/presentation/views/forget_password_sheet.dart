@@ -82,7 +82,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                   ),
                 );
               }
-              throw throw ClientException(originalError: e);
+              throw ClientException(originalError: e);
             }
             setState(() {
               isLoading = false;

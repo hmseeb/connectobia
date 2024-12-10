@@ -20,7 +20,7 @@ class DashboardRepo {
       debugPrint('Fetched ${list.items.length} influencers');
       return list;
     } catch (e) {
-      throw throw ClientException(originalError: e);
+      throw ClientException(originalError: e);
     }
   }
 
@@ -39,7 +39,7 @@ class DashboardRepo {
       debugPrint('Fetched ${list.items.length} brands');
       return list;
     } catch (e) {
-      throw throw ClientException(originalError: e);
+      throw ClientException(originalError: e);
     }
   }
 }

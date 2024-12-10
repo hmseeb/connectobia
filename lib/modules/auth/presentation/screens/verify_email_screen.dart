@@ -156,7 +156,7 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
-      throw throw ClientException(originalError: e);
+      throw ClientException(originalError: e);
     }
   }
 
@@ -211,7 +211,7 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
-      throw throw ClientException(originalError: e);
+      throw ClientException(originalError: e);
     } finally {
       setState(() {
         isLoading = false;

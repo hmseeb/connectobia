@@ -25,7 +25,7 @@ class InfluencerProfileBloc
         debugPrint('Fetched ${event.influencer.fullName} profile');
       } catch (e) {
         emit(InfluencerProfileError(e.toString()));
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
   }

@@ -21,7 +21,7 @@ class UserRepo {
       assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
-      throw throw ClientException(originalError: e);
+      throw ClientException(originalError: e);
     }
   }
 
@@ -44,7 +44,7 @@ class UserRepo {
       assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, body: body);
     } catch (e) {
-      throw throw ClientException(originalError: e);
+      throw ClientException(originalError: e);
     }
   }
 }

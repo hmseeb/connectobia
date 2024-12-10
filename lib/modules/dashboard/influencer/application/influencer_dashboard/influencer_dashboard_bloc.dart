@@ -16,7 +16,7 @@ class InfluencerDashboardBloc
         final Brands brands = await DashboardRepo.getBrandsList();
         emit(InfluencerDashboardLoadedBrands(brands));
       } catch (e) {
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
   }

@@ -18,7 +18,7 @@ class BrandDashboardBloc
         emit(BrandDashboardLoadedInfluencers(influencers));
         page++;
       } catch (e) {
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
   }

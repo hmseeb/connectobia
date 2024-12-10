@@ -59,7 +59,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         }
       } catch (e) {
         emit(LoginFailure(e.toString()));
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
 
@@ -74,7 +74,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         debugPrint('Logged in with Instagram');
       } catch (e) {
         emit(LoginFailure(e.toString()));
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
   }

@@ -21,7 +21,7 @@ class ProfileSettingsBloc
         emit(ProfileSettingsSuccess());
       } catch (e) {
         emit(ProfileSettingsFailure(e.toString()));
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
   }

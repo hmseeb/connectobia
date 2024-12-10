@@ -17,7 +17,7 @@ class InfluencerOnboardBloc
         await AuthRepo.updateOnboardValue(collectionName: 'influencer');
       } catch (e) {
         emit(ConnectingInstagramFailure(e.toString()));
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
     on<UpdateOnboardBool>((event, emit) async {

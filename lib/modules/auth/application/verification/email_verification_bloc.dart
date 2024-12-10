@@ -35,7 +35,7 @@ class EmailVerificationBloc
         );
         debugPrint('Subscribed to email verification updates');
       } catch (e) {
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
 
@@ -54,7 +54,7 @@ class EmailVerificationBloc
           emit(InfluencerEmailVerified(user));
         }
       } catch (e) {
-        throw throw ClientException(originalError: e);
+        throw ClientException(originalError: e);
       }
     });
   }
