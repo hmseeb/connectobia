@@ -48,8 +48,6 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
           }
         } else {
           Brand user = Brand.fromJson(authData.record.data);
-          // FIXME: This is a temporary fix.
-          // bool isVerified = authData.record.data['verified'];
           bool isVerified = user.verified;
           if (isVerified) {
             emit(BrandLoginSuccess(user));

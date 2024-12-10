@@ -132,6 +132,7 @@ class AuthRepo {
       final Meta meta = Meta.fromJson(recordAuth.meta);
       final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
       final String influencerId = influencer.id;
+      // TODO: Fix creating dublicate profile if exists already
       final influencerProfileId = await createInfluencerProfile(
           pocketBase: pb, meta: meta, rawUser: rawUser);
 
