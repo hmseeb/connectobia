@@ -1,13 +1,16 @@
 // Reusable widget for profile image
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/common/constants/avatar.dart';
+import 'package:connectobia/theme/bloc/theme_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileImage extends StatelessWidget {
   final String userId;
   final String avatar;
   final String banner;
   final String collectionId;
+  final Function() onBackButtonPressed;
 
   const ProfileImage({
     super.key,
@@ -15,6 +18,7 @@ class ProfileImage extends StatelessWidget {
     required this.avatar,
     required this.banner,
     required this.collectionId,
+    required this.onBackButtonPressed,
   });
 
   @override
@@ -52,6 +56,23 @@ class ProfileImage extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              return Positioned(
+                top: 40,
+                left: 10,
+                child: Center(
+                  child: IconButton(
+                    onPressed: onBackButtonPressed,
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: state is DarkTheme ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

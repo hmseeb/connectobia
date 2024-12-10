@@ -13,6 +13,9 @@ class BrandDashboardBloc
   int page = 0;
   BrandDashboardBloc() : super(BrandDashboardInitial()) {
     on<BrandDashboardLoadInfluencers>((event, emit) async {
+      if (state is BrandDashboardLoadedInfluencers) {
+        return;
+      }
       emit(BrandDashboardLoadingInfluencers());
       try {
         final influencers = await DashboardRepo.getInfluencersList();

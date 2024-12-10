@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../common/widgets/transparent_appbar.dart';
 import '../../../auth/domain/model/brand.dart';
 import '../../../auth/domain/model/influencer.dart';
 import '../application/brand_profile/brand_profile_bloc.dart';
@@ -49,12 +48,6 @@ class _UserProfileState extends State<UserProfile> {
           influencer =
               state is InfluencerProfileLoaded ? state.influencer : null;
           return Scaffold(
-            appBar: transparentAppBar(
-              state is InfluencerProfileLoaded
-                  ? '@${influencer!.username}'
-                  : '',
-              context: context,
-            ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {},
               child: const Icon(Icons.message),
@@ -71,6 +64,7 @@ class _UserProfileState extends State<UserProfile> {
                             avatar: influencer!.avatar,
                             banner: influencer!.banner,
                             collectionId: influencer!.collectionId,
+                            onBackButtonPressed: () => Navigator.pop(context),
                           )
                         : SizedBox(),
                     if (state is InfluencerProfileLoaded)
@@ -109,11 +103,8 @@ class _UserProfileState extends State<UserProfile> {
           }
         },
         builder: (context, state) {
+          brand = state is BrandProfileLoaded ? state.brand : null;
           return Scaffold(
-            appBar: transparentAppBar(
-              state is BrandProfileLoaded ? brand!.brandName : '',
-              context: context,
-            ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {},
               child: const Icon(Icons.message),
@@ -130,6 +121,7 @@ class _UserProfileState extends State<UserProfile> {
                         avatar: brand!.avatar,
                         banner: brand!.banner,
                         collectionId: brand!.collectionId,
+                        onBackButtonPressed: () => Navigator.pop(context),
                       )
                     else
                       SizedBox(),
