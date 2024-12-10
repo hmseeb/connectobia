@@ -4,6 +4,7 @@ import 'package:connectobia/db/db.dart';
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 part 'email_verification_event.dart';
 part 'email_verification_state.dart';
@@ -34,7 +35,7 @@ class EmailVerificationBloc
         );
         debugPrint('Subscribed to email verification updates');
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
 
@@ -53,7 +54,7 @@ class EmailVerificationBloc
           emit(InfluencerEmailVerified(user));
         }
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
   }

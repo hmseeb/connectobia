@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:connectobia/common/models/brands.dart';
 import 'package:connectobia/modules/dashboard/common/data/dashboard_repo.dart';
 import 'package:meta/meta.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 part 'influencer_dashboard_event.dart';
 part 'influencer_dashboard_state.dart';
@@ -15,7 +16,7 @@ class InfluencerDashboardBloc
         final Brands brands = await DashboardRepo.getBrandsList();
         emit(InfluencerDashboardLoadedBrands(brands));
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
   }

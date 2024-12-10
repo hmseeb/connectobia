@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/modules/dashboard/brand/data/user_repo.dart';
 import 'package:meta/meta.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 part 'profile_settings_event.dart';
 part 'profile_settings_state.dart';
@@ -20,7 +21,7 @@ class ProfileSettingsBloc
         emit(ProfileSettingsSuccess());
       } catch (e) {
         emit(ProfileSettingsFailure(e.toString()));
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
   }

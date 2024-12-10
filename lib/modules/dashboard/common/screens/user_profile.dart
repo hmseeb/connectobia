@@ -1,4 +1,6 @@
 import 'package:connectobia/common/widgets/transparent_appbar.dart';
+import 'package:connectobia/modules/auth/domain/model/brand.dart';
+import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:connectobia/modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
 import 'package:connectobia/modules/dashboard/common/widgets/profile_body.dart';
@@ -25,16 +27,30 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
+  Brand? brand;
+  Influencer? influencer;
   @override
   Widget build(BuildContext context) {
     if (widget.profileType == 'influencer') {
       return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is InfluencerProfileError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error: ${state.message}'),
+              ),
+            );
+          } else if (state is InfluencerProfileLoaded) {
+            influencer = state.influencer;
+          }
+        },
         builder: (context, state) {
+          influencer =
+              state is InfluencerProfileLoaded ? state.influencer : null;
           return Scaffold(
             appBar: transparentAppBar(
               state is InfluencerProfileLoaded
-                  ? '@${state.influencer.username}'
+                  ? '@${influencer!.username}'
                   : '',
               context: context,
             ),
@@ -50,21 +66,21 @@ class _UserProfileState extends State<UserProfile> {
                   children: [
                     state is InfluencerProfileLoaded
                         ? ProfileImage(
-                            userId: state.influencer.id,
-                            avatar: state.influencer.avatar,
-                            banner: state.influencer.banner,
-                            collectionId: state.influencer.collectionId,
+                            userId: influencer!.id,
+                            avatar: influencer!.avatar,
+                            banner: influencer!.banner,
+                            collectionId: influencer!.collectionId,
                           )
                         : SizedBox(),
                     if (state is InfluencerProfileLoaded)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ProfileHeader(
-                          name: state.influencer.fullName,
-                          industry: state.influencer.industry,
-                          username: state.influencer.username,
-                          isVerified: state.influencer.connectedSocial,
-                          connectedSocial: state.influencer.connectedSocial,
+                          name: influencer!.fullName,
+                          industry: influencer!.industry,
+                          username: influencer!.username,
+                          isVerified: influencer!.connectedSocial,
+                          connectedSocial: influencer!.connectedSocial,
                         ),
                       )
                     else
@@ -86,11 +102,15 @@ class _UserProfileState extends State<UserProfile> {
       );
     } else {
       return BlocConsumer<BrandProfileBloc, BrandProfileState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is BrandProfileLoaded) {
+            brand = state.brand;
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             appBar: transparentAppBar(
-              state is BrandProfileLoaded ? state.brand.brandName : '',
+              state is BrandProfileLoaded ? brand!.brandName : '',
               context: context,
             ),
             floatingActionButton: FloatingActionButton(
@@ -105,10 +125,10 @@ class _UserProfileState extends State<UserProfile> {
                   children: [
                     if (state is BrandProfileLoaded)
                       ProfileImage(
-                        userId: state.brand.id,
-                        avatar: state.brand.avatar,
-                        banner: state.brand.banner,
-                        collectionId: state.brand.collectionId,
+                        userId: brand!.id,
+                        avatar: brand!.avatar,
+                        banner: brand!.banner,
+                        collectionId: brand!.collectionId,
                       )
                     else
                       SizedBox(),
@@ -116,10 +136,10 @@ class _UserProfileState extends State<UserProfile> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ProfileHeader(
-                          name: state.brand.brandName,
-                          industry: state.brand.industry,
+                          name: brand!.brandName,
+                          industry: brand!.industry,
                           username: '',
-                          isVerified: state.brand.verified,
+                          isVerified: brand!.verified,
                           connectedSocial: false,
                         ),
                       )

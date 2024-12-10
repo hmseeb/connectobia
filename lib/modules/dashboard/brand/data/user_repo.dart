@@ -2,6 +2,7 @@ import 'package:connectobia/common/constants/industries.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 class UserRepo {
   static Future<void> updateUserImage({
@@ -20,7 +21,7 @@ class UserRepo {
       assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, files: [multipartFile]);
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -43,7 +44,7 @@ class UserRepo {
       assert(false, 'Not implemented');
       await pb.collection('users').update(recordId, body: body);
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 }

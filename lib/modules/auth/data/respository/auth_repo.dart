@@ -39,7 +39,7 @@ class AuthRepo {
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -69,7 +69,7 @@ class AuthRepo {
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -81,7 +81,7 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestPasswordReset(email);
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -104,7 +104,7 @@ class AuthRepo {
         return user;
       }
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -139,7 +139,7 @@ class AuthRepo {
       debugPrint('Linked profile with account');
       return influencer;
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -200,7 +200,7 @@ class AuthRepo {
       debugPrint('Logged in as ${authData.record.data['email']}');
       return authData;
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -211,7 +211,7 @@ class AuthRepo {
       pb.authStore.clear();
       debugPrint('Logged out');
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -222,7 +222,7 @@ class AuthRepo {
       final pb = await PocketBaseSingleton.instance;
       return await pb.collection(collectionName).requestVerification(email);
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 }

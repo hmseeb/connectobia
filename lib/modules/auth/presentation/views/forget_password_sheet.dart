@@ -1,6 +1,7 @@
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// A sheet that allows the user to reset their password.
@@ -81,7 +82,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
                   ),
                 );
               }
-              throw Exception(e);
+              throw throw ClientException(originalError: e);
             }
             setState(() {
               isLoading = false;

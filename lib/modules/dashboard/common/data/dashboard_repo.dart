@@ -2,6 +2,7 @@ import 'package:connectobia/common/models/brands.dart';
 import 'package:connectobia/common/models/influencers.dart';
 import 'package:connectobia/db/db.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 class DashboardRepo {
   static Future<Influencers> getInfluencersList() async {
@@ -19,7 +20,7 @@ class DashboardRepo {
       debugPrint('Fetched ${list.items.length} influencers');
       return list;
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 
@@ -38,7 +39,7 @@ class DashboardRepo {
       debugPrint('Fetched ${list.items.length} brands');
       return list;
     } catch (e) {
-      throw Exception(e);
+      throw throw ClientException(originalError: e);
     }
   }
 }

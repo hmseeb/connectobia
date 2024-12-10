@@ -3,6 +3,7 @@ import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
 import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:meta/meta.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 part 'signup_event.dart';
 part 'signup_state.dart';
@@ -48,7 +49,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await AuthRepo.login(
             email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
 
@@ -84,7 +85,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             password: event.password,
             accountType: 'influencer');
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
 
@@ -97,7 +98,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
         CollectionNameSingleton.instance = 'influencer';
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
   }

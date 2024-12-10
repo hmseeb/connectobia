@@ -4,6 +4,7 @@ import 'package:connectobia/modules/auth/data/respository/input_validation.dart'
 import 'package:connectobia/modules/auth/domain/model/brand.dart';
 import 'package:connectobia/modules/auth/domain/model/influencer.dart';
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';
@@ -58,7 +59,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         }
       } catch (e) {
         emit(LoginFailure(e.toString()));
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
 
@@ -73,7 +74,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         debugPrint('Logged in with Instagram');
       } catch (e) {
         emit(LoginFailure(e.toString()));
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
   }

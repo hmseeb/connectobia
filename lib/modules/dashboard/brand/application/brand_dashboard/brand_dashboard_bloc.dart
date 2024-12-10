@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:connectobia/common/models/influencers.dart';
 import 'package:connectobia/modules/dashboard/common/data/dashboard_repo.dart';
 import 'package:meta/meta.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 part 'brand_dashboard_event.dart';
 part 'brand_dashboard_state.dart';
@@ -17,7 +18,7 @@ class BrandDashboardBloc
         emit(BrandDashboardLoadedInfluencers(influencers));
         page++;
       } catch (e) {
-        throw Exception(e);
+        throw throw ClientException(originalError: e);
       }
     });
   }
