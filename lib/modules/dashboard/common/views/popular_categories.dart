@@ -1,8 +1,9 @@
-import 'package:connectobia/theme/bloc/theme_bloc.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../theme/bloc/theme_bloc.dart';
+import '../../../../theme/colors.dart';
 
 class PopularCategories extends StatelessWidget {
   final List<String> _industries;

@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/cupertino.dart';
+
+import '../../../auth/data/respository/auth_repo.dart';
 
 part 'influencer_onboard_event.dart';
 part 'influencer_onboard_state.dart';
@@ -16,7 +18,8 @@ class InfluencerOnboardBloc
         await AuthRepo.updateOnboardValue(collectionName: 'influencer');
       } catch (e) {
         emit(ConnectingInstagramFailure(e.toString()));
-        throw Exception(e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
     on<UpdateOnboardBool>((event, emit) async {

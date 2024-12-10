@@ -1,4 +1,4 @@
-import 'package:connectobia/db/db.dart';
+import '../../../../db/db.dart';
 
 class EditProfileRepo {
   static Future<void> updateInfluencerProfile({

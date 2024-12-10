@@ -1,7 +1,8 @@
-import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../data/respository/input_validation.dart';
 
 /// A form that allows a brand to sign up.
 /// [BrandSignupForm] contains fields for first name, last name, email, password, and website.

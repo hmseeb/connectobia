@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/data/edit_profile.dart';
 import 'package:meta/meta.dart';
+
+import '../../data/edit_profile.dart';
 
 part 'edit_profile_event.dart';
 part 'edit_profile_state.dart';

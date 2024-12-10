@@ -1,6 +1,7 @@
-import 'package:connectobia/common/widgets/logo.dart';
-import 'package:connectobia/modules/auth/presentation/widgets/app_title.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../common/widgets/logo.dart';
+import 'app_title.dart';
 
 class AppTitleLogo extends StatelessWidget {
   const AppTitleLogo({

@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/singletons/account_type.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/domain/model/brand.dart';
-import 'package:connectobia/modules/auth/domain/model/influencer.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../common/singletons/account_type.dart';
+import '../../data/respository/auth_repo.dart';
+import '../../domain/model/brand.dart';
+import '../../domain/model/influencer.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -36,7 +38,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await AuthRepo.logout();
           emit(Unauthenticated());
         } else {
-          throw Exception(e);
+          ErrorRepository errorRepo = ErrorRepository();
+          throw errorRepo.handleError(e);
         }
       }
     });

@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/data/user_repo.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:meta/meta.dart';
+
+import '../../data/user_repo.dart';
 
 part 'profile_settings_event.dart';
 part 'profile_settings_state.dart';
@@ -20,7 +22,8 @@ class ProfileSettingsBloc
         emit(ProfileSettingsSuccess());
       } catch (e) {
         emit(ProfileSettingsFailure(e.toString()));
-        throw Exception(e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
   }

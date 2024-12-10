@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/db/shared_prefs.dart';
 import 'package:flutter/material.dart';
+
+import '../../db/shared_prefs.dart';
 
 part 'theme_event.dart';
 part 'theme_state.dart';

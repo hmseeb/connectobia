@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/common/constants/avatar.dart';
-import 'package:connectobia/common/constants/greetings.dart';
-import 'package:connectobia/theme/bloc/theme_bloc.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../common/constants/avatar.dart';
+import '../../../../common/constants/greetings.dart';
+import '../../../../theme/bloc/theme_bloc.dart';
+import '../../../../theme/colors.dart';
 
 class CommonAppBar extends StatelessWidget {
   final String userName;

@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/singletons/account_type.dart';
-import 'package:connectobia/modules/auth/data/respository/auth_repo.dart';
-import 'package:connectobia/modules/auth/data/respository/input_validation.dart';
+import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:meta/meta.dart';
+
+import '../../../../common/singletons/account_type.dart';
+import '../../data/respository/auth_repo.dart';
+import '../../data/respository/input_validation.dart';
 
 part 'signup_event.dart';
 part 'signup_state.dart';
@@ -48,7 +50,8 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await AuthRepo.login(
             email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
-        throw Exception(e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
 
@@ -84,7 +87,8 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             password: event.password,
             accountType: 'influencer');
       } catch (e) {
-        throw Exception(e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
 
@@ -97,7 +101,8 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
         CollectionNameSingleton.instance = 'influencer';
       } catch (e) {
-        throw Exception(e);
+        ErrorRepository errorRepo = ErrorRepository();
+        throw errorRepo.handleError(e);
       }
     });
   }

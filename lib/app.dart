@@ -1,14 +1,15 @@
-import 'package:connectobia/common/animation/animation_cubit.dart';
-import 'package:connectobia/common/constants/path.dart';
-import 'package:connectobia/modules/auth/application/auth/auth_bloc.dart';
-import 'package:connectobia/routes.dart';
-import 'package:connectobia/theme/bloc/theme_bloc.dart';
-import 'package:connectobia/theme/colors.dart';
-import 'package:connectobia/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'common/animation/animation_cubit.dart';
+import 'common/constants/path.dart';
+import 'modules/auth/application/auth/auth_bloc.dart';
+import 'routes.dart';
+import 'theme/bloc/theme_bloc.dart';
+import 'theme/colors.dart';
+import 'theme/shad_themedata.dart';
 
 /// The main widget for the Connectobia application.
 ///

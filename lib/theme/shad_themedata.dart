@@ -1,9 +1,10 @@
 import 'dart:ui';
 
-import 'package:connectobia/theme/bloc/theme_bloc.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'bloc/theme_bloc.dart';
+import 'colors.dart';
 
 /// A class that holds the theme data for the application
 ///
