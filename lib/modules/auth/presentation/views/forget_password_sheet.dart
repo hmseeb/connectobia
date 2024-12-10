@@ -1,7 +1,7 @@
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../common/domain/repositories/error_repository.dart';
 import '../../data/respository/auth_repo.dart';
 import '../../data/respository/input_validation.dart';
 

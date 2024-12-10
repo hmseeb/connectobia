@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../../common/domain/repositories/error_repository.dart';
 import '../../../auth/data/respository/auth_repo.dart';
 
 part 'influencer_onboard_event.dart';

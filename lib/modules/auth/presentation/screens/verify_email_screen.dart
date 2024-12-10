@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -8,6 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../common/constants/path.dart';
 import '../../../../common/constants/screen_size.dart';
+import '../../../../common/domain/repositories/error_repository.dart';
 import '../../../../common/singletons/account_type.dart';
 import '../../../../db/db.dart';
 import '../../../../theme/colors.dart';

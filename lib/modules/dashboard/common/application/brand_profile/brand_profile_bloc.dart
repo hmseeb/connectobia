@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../common/domain/repositories/error_repository.dart';
 import '../../../../../common/models/brand_profile.dart';
 import '../../../../auth/domain/model/brand.dart';
 import '../../data/influencer_repo.dart';

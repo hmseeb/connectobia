@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:meta/meta.dart';
 
+import '../../../../../common/domain/repositories/error_repository.dart';
 import '../../../../../common/models/brands.dart';
 import '../../../common/data/dashboard_repo.dart';
 

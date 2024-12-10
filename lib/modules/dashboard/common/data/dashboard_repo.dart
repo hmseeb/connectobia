@@ -1,6 +1,6 @@
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../common/domain/repositories/error_repository.dart';
 import '../../../../common/models/brands.dart';
 import '../../../../common/models/influencers.dart';
 import '../../../../db/db.dart';

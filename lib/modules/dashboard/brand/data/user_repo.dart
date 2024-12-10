@@ -1,8 +1,8 @@
-import 'package:connectobia/common/domain/repositories/error_repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../common/constants/industries.dart';
+import '../../../../common/domain/repositories/error_repository.dart';
 import '../../../../db/db.dart';
 
 class UserRepo {
