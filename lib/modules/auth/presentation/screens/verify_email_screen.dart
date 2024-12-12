@@ -148,7 +148,6 @@ class VerifyEmailState extends State<VerifyEmail> {
   /// Open the email app
   ///
   /// This function uses the [OpenMailApp] package to open the email app.
-  /// TODO: Implement mail app
   Future<void> openEmailApp() async {
     try {
       if (Platform.isAndroid) {
