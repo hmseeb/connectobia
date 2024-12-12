@@ -23,12 +23,13 @@ class EmailVerificationBloc
       try {
         final pb = await PocketBaseSingleton.instance;
         final id = pb.authStore.record!.id;
-        await pb.collection(event.accountType).subscribe(
+        String collectionName = CollectionNameSingleton.instance;
+        await pb.collection(collectionName).subscribe(
           id,
           (e) {
             if (e.action == 'update') {
+              debugPrint(e.record!.data.toString());
               if (e.record!.data['verified']) {
-                debugPrint('Email verified');
                 add(EmailVerify());
               }
             }

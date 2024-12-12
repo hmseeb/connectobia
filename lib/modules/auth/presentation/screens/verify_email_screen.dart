@@ -1,14 +1,16 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../common/constants/path.dart';
 import '../../../../common/constants/screen_size.dart';
 import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../common/singletons/account_type.dart';
 import '../../../../db/db.dart';
 import '../../../../theme/colors.dart';
 import '../../application/verification/email_verification_bloc.dart';
@@ -34,7 +36,6 @@ class VerifyEmailState extends State<VerifyEmail> {
   int _secondsRemaining = 30; // Countdown duration
   int _resendEmailCount = 1;
   bool isLoading = false;
-  String accountType = CollectionNameSingleton.instance;
 
   late final blocProvider = BlocProvider.of<EmailVerificationBloc>(context);
 
@@ -117,8 +118,8 @@ class VerifyEmailState extends State<VerifyEmail> {
                 SizedBox(
                   width: double.infinity,
                   child: ShadButton(
-                    onPressed: () {
-                      openEmailApp();
+                    onPressed: () async {
+                      await openEmailApp();
                     },
                     child: const Text('Open Email App'),
                   ),
@@ -149,7 +150,19 @@ class VerifyEmailState extends State<VerifyEmail> {
   /// This function uses the [OpenMailApp] package to open the email app.
   /// TODO: Implement mail app
   Future<void> openEmailApp() async {
-    try {} catch (e) {
+    try {
+      if (Platform.isAndroid) {
+        AndroidIntent intent = AndroidIntent(
+          action: 'android.intent.action.MAIN',
+          category: 'android.intent.category.APP_EMAIL',
+        );
+        intent.launch().catchError((e) {});
+      } else if (Platform.isIOS) {
+        launchUrl(Uri.parse('message://'));
+      } else {
+        launchUrl(Uri.parse('mailto:'));
+      }
+    } catch (e) {
       if (mounted) {
         // Show error toast
         ShadToaster.of(context).show(
@@ -170,7 +183,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   Future<void> _authChecker() async {
     final pb = await PocketBaseSingleton.instance;
     if (pb.authStore.isValid) {
-      blocProvider.add(EmailSubscribeEvent(accountType: accountType));
+      blocProvider.add(EmailSubscribeEvent());
     } else {
       _authListener(pb);
     }
@@ -183,9 +196,7 @@ class VerifyEmailState extends State<VerifyEmail> {
   Future<void> _authListener(PocketBase pb) async {
     pb.authStore.onChange.listen((event) {
       if (event.token.isNotEmpty) {
-        blocProvider.add(EmailSubscribeEvent(
-          accountType: accountType,
-        ));
+        blocProvider.add(EmailSubscribeEvent());
       }
     });
   }

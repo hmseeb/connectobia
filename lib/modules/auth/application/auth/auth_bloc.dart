@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../common/domain/repositories/error_repository.dart';
 import '../../../../common/singletons/account_type.dart';
 import '../../data/respository/auth_repo.dart';
 import '../../domain/model/brand.dart';
@@ -33,14 +32,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Unverified(user.email));
         }
       } catch (e) {
-        emit(AuthFailed('Something went wrong, please try again later.'));
-        if (e.toString().contains('404')) {
-          await AuthRepo.logout();
-          emit(Unauthenticated());
-        } else {
-          ErrorRepository errorRepo = ErrorRepository();
-          throw errorRepo.handleError(e);
-        }
+        emit(Unauthenticated());
+        await AuthRepo.logout();
       }
     });
   }
