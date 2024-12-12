@@ -1,3 +1,4 @@
+import 'package:connectobia/common/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -77,6 +78,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   },
                 );
                 HapticFeedback.mediumImpact();
+                CollectionNameSingleton.instance = 'brand';
               },
             ),
             const SizedBox(height: 10),
@@ -90,6 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   arguments: {'accountType': 'influencer'},
                 );
                 HapticFeedback.mediumImpact();
+                CollectionNameSingleton.instance = 'influencer';
               },
             ),
             // const SizedBox(height: 30),

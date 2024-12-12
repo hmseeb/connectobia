@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../common/singletons/account_type.dart';
 import '../../data/respository/auth_repo.dart';
 import '../../data/respository/input_validation.dart';
 
@@ -45,8 +44,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           email: event.email,
         ));
 
-        CollectionNameSingleton.instance = 'brand';
-
         await AuthRepo.login(
             email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
@@ -81,7 +78,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           industry: event.industry,
         );
         emit(SignupSuccess(email: event.email));
-        CollectionNameSingleton.instance = 'infuencer';
         await AuthRepo.login(
             email: event.email,
             password: event.password,
@@ -99,7 +95,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         emit(SignupSuccess(
           email: null,
         ));
-        CollectionNameSingleton.instance = 'influencer';
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         throw errorRepo.handleError(e);

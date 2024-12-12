@@ -143,7 +143,9 @@ class ConnectobiaState extends State<Connectobia> {
           'email': state.email,
         },
       );
-    } else {}
+    } else {
+      debugPrint(state.toString());
+    }
   }
 
   @override

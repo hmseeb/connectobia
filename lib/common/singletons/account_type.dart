@@ -7,7 +7,7 @@ class CollectionNameSingleton {
 
   static String get instance {
     if (_collectionName == null) {
-      assert(false, 'Collection name is not initialized');
+      assert(false, 'User not defined');
       // final pb = await PocketBaseSingleton.instance;
       // final id = pb.authStore.record!.id;
       // CollectionModel collectionModel = await pb.collections.getOne(id);
@@ -19,7 +19,7 @@ class CollectionNameSingleton {
 
   // Setter to manually set the collection name
   static set instance(String? newCollectionName) {
-    debugPrint('User is a $newCollectionName');
+    debugPrint('User is $newCollectionName');
     _collectionName = newCollectionName;
   }
 }

@@ -60,6 +60,7 @@ dependencies:
   insta_login: ^0.0.9
   http: ^1.2.2
   meta: ^1.15.0
+  android_intent: ^2.0.2
 
 dev_dependencies:
   flutter_test:
