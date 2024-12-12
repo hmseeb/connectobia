@@ -28,7 +28,8 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
     return BlocConsumer<InfluencerOnboardBloc, InfluencerOnboardState>(
       listener: (context, state) {
         if (state is Onboarded) {
-          Navigator.pushNamed(context, '/influencerDashboard',
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/influencerDashboard', (route) => false,
               arguments: {'influencer': widget.user});
         } else if (state is ConnectingInstagram) {
           setState(() {
@@ -92,7 +93,8 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                       BlocProvider.of<InfluencerOnboardBloc>(context)
                           .add(UpdateOnboardBool());
                       HapticFeedback.mediumImpact();
-                      Navigator.pushNamed(context, '/influencerDashboard',
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/influencerDashboard', (route) => false,
                           arguments: {'influencer': widget.user});
                     },
                     child: Text(
