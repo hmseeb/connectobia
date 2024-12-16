@@ -39,7 +39,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
           controller: widget.brandNameController,
           keyboardType: TextInputType.name,
           validator: (value) {
-            final error = InputValidation.validateBrandName(value);
+            final error = InputValidation.validateName(value);
             if (error != null) {
               return error;
             }
