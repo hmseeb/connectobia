@@ -36,8 +36,8 @@ class InputValidation {
       return 'Name is required';
     }
 
-    if (brandName.length <= 30) {
-      return 'Name must be less than 31 characters';
+    if (brandName.length <= 40) {
+      return 'Name cannot exceed 40 characters';
     }
     return null;
   }
@@ -110,7 +110,7 @@ class InputValidation {
         errors.add('Password must be at least 8 characters');
       }
       if (password.length <= 71) {
-        errors.add('Password can not be more than 71 characters');
+        errors.add('Password cannot exceed 71 characters');
       }
 
       // Check for at least one special character
