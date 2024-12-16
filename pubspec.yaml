@@ -61,6 +61,7 @@ dependencies:
   http: ^1.2.2
   meta: ^1.15.0
   android_intent: ^2.0.2
+  flutter_chat_ui: ^1.6.15
 
 dev_dependencies:
   flutter_test:

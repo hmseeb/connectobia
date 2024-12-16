@@ -1,7 +1,7 @@
 /// This class contains methods for validating user input
-/// in the authentication process.
-///
 /// {@category Repositories}
+///
+/// in the authentication process.
 class InputValidation {
   static String? validateBrandForm({
     required String brandName,
@@ -10,11 +10,11 @@ class InputValidation {
     required String industry,
   }) {
     String? error;
-    error = validateBrandName(brandName);
+    error = validateName(brandName);
+
     if (error != null) {
       return error;
     }
-
     error = validateEmail(email);
     if (error != null) {
       return error;
@@ -31,13 +31,13 @@ class InputValidation {
     return null;
   }
 
-  static String? validateBrandName(String? brandName) {
+  static String? validateName(String? brandName) {
     if (brandName == null || brandName.isEmpty) {
       return 'Name is required';
     }
 
-    if (brandName.length < 2) {
-      return 'Name must be at least 2 characters';
+    if (brandName.length <= 30) {
+      return 'Name must be less than 31 characters';
     }
     return null;
   }
@@ -47,7 +47,7 @@ class InputValidation {
       return 'Email is required';
     }
     // Regular expression for a valid email address pattern
-    String pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+    String pattern = r"^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
     RegExp regex = RegExp(pattern);
 
     if (!regex.hasMatch(email)) {
@@ -72,7 +72,7 @@ class InputValidation {
     required String industry,
   }) {
     String? error;
-    error = validateBrandName(firstName);
+    error = validateName(firstName);
     if (error != null) {
       return error;
     }
@@ -106,12 +106,15 @@ class InputValidation {
       errors.add('Password is required');
     } else {
       // Check password length
-      if (password.length < 8) {
+      if (password.length <= 8) {
         errors.add('Password must be at least 8 characters');
+      }
+      if (password.length <= 71) {
+        errors.add('Password can not be more than 71 characters');
       }
 
       // Check for at least one special character
-      if (!RegExp(r'[@$!%*?&#]').hasMatch(password)) {
+      if (!RegExp(r'[@$!%*?&#^]').hasMatch(password)) {
         errors.add('Password must contain at least one special character');
       }
     }
