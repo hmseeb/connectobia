@@ -185,7 +185,6 @@ class AuthRepo {
       "engRate": null,
       "location": null,
       "mediaCount": rawUser.mediaCount,
-      "followings": rawUser.followsCount,
     };
 
     final record =
