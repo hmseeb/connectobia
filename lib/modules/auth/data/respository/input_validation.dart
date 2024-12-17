@@ -109,7 +109,7 @@ class InputValidation {
       if (password.length <= 8) {
         errors.add('Password must be at least 8 characters');
       }
-      if (password.length <= 71) {
+      if (password.length >= 71) {
         errors.add('Password cannot exceed 71 characters');
       }
 
