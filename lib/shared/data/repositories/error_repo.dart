@@ -17,6 +17,9 @@ class ErrorRepository {
     try {
       // If the error contains a message in the response, we return it directly
       if (e.response.containsKey('message')) {
+        if (e.response['message'].contains('Failed to authenticate')) {
+          return 'Invalid email or password.';
+        }
         if (e.statusCode == 401) {
           return 'Your session has expired. Please login again.';
         } else if (e.statusCode == 403) {
