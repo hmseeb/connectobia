@@ -21,6 +21,7 @@ class InfluencerDashboardBloc
         emit(InfluencerDashboardLoadedBrands(brands));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
+
         throw errorRepo.handleError(e);
       }
     });

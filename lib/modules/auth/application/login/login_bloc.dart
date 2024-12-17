@@ -73,7 +73,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       } catch (e) {
         emit(LoginFailure(e.toString()));
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(LoginFailure(errorRepo.handleError(e)));
       }
     });
   }

@@ -7,8 +7,7 @@ class ErrorRepository {
       return _mapClientError(e);
     }
 
-    // Handle other general errors
-    return 'An unknown error occurred. Please try again.';
+    return 'Something went wrong. Please try again.';
   }
 
   // Function to map ClientException to user-friendly message
@@ -19,6 +18,9 @@ class ErrorRepository {
       if (e.response.containsKey('message')) {
         if (e.response['message'].contains('Failed to authenticate')) {
           return 'Invalid email or password.';
+        }
+        if (e.statusCode == 400) {
+          return e.response['message'];
         }
         if (e.statusCode == 401) {
           return 'Your session has expired. Please login again.';
@@ -32,10 +34,7 @@ class ErrorRepository {
       }
     } catch (error) {
       // In case the structure is different or something goes wrong, fallback to default message
-      return 'Human Error is inevitable, but this is unacceptable. We\'ll look into the matter now.';
     }
-
-    // If no message is found, return a default error message
     return 'Human Error is inevitable, but this is unacceptable. We\'ll look into the matter now.';
   }
 }

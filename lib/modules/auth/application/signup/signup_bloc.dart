@@ -48,7 +48,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(SignupFailure(errorRepo.handleError(e)));
       }
     });
 
@@ -84,7 +84,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             accountType: 'influencer');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(SignupFailure(errorRepo.handleError(e)));
       }
     });
 
@@ -97,7 +97,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(SignupFailure(errorRepo.handleError(e)));
       }
     });
   }
