@@ -17,7 +17,7 @@ class ErrorRepository {
       // If the error contains a message in the response, we return it directly
       if (e.response.containsKey('message')) {
         if (e.response['message'].contains('Failed to authenticate')) {
-          return 'Invalid email or password.';
+          return 'Invalid credentials.';
         }
         if (e.statusCode == 400) {
           return e.response['message'];
