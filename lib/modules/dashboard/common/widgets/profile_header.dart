@@ -45,10 +45,10 @@ class ProfileHeader extends StatelessWidget {
         ),
         // Verified badge
         const SizedBox(width: 8),
-        if (isVerified)
+        if (connectedSocial)
           const Icon(
             Icons.verified,
-            color: Colors.green,
+            color: Colors.blue,
           ),
         const Spacer(),
         // Location icon or social link

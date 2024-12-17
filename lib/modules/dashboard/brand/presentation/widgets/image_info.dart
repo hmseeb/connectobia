@@ -82,12 +82,8 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Icon(
-                          Icons.verified,
-                          color: widget.connectedSocial
-                              ? Colors.blue
-                              : Colors.green,
-                        ),
+                        if (widget.connectedSocial)
+                          Icon(Icons.verified, color: Colors.blue),
                       ],
                     ),
                     Text(
