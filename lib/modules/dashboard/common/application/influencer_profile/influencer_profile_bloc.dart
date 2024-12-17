@@ -28,7 +28,7 @@ class InfluencerProfileBloc
       } catch (e) {
         emit(InfluencerProfileError(e.toString()));
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(InfluencerProfileError(errorRepo.handleError(e)));
       }
     });
   }
