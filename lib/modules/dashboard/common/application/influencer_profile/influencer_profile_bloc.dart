@@ -26,6 +26,7 @@ class InfluencerProfileBloc
             influencerProfile: influencerProfile));
         debugPrint('Fetched ${event.influencer.fullName} profile');
       } catch (e) {
+        print(e);
         emit(InfluencerProfileError(e.toString()));
         ErrorRepository errorRepo = ErrorRepository();
         throw errorRepo.handleError(e);

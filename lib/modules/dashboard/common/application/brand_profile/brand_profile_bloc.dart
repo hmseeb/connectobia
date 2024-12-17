@@ -23,6 +23,7 @@ class BrandProfileBloc extends Bloc<BrandProfileEvent, BrandProfileState> {
             BrandProfileLoaded(brand: event.brand, brandProfile: brandProfile));
         debugPrint('Fetched ${event.brand.brandName} profile');
       } catch (e) {
+        print(e);
         ErrorRepository errorRepo = ErrorRepository();
         throw errorRepo.handleError(e);
       }

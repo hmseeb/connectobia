@@ -6,9 +6,7 @@ class BrandProfile {
   final String collectionId;
   final String collectionName;
   final String id;
-  final String title;
   final String description;
-  final String links;
   final DateTime created;
   final DateTime updated;
 
@@ -16,9 +14,7 @@ class BrandProfile {
     required this.collectionId,
     required this.collectionName,
     required this.id,
-    required this.title,
     required this.description,
-    required this.links,
     required this.created,
     required this.updated,
   });
@@ -27,9 +23,7 @@ class BrandProfile {
         collectionId: json["collectionId"],
         collectionName: json["collectionName"],
         id: json["id"],
-        title: json["title"],
-        description: json["description"],
-        links: json["links"] ?? '',
+        description: json["description"] ?? "",
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
       );
@@ -46,7 +40,6 @@ class BrandProfile {
     String? id,
     String? title,
     String? description,
-    String? links,
     DateTime? created,
     DateTime? updated,
   }) =>
@@ -54,9 +47,7 @@ class BrandProfile {
         collectionId: collectionId ?? this.collectionId,
         collectionName: collectionName ?? this.collectionName,
         id: id ?? this.id,
-        title: title ?? this.title,
         description: description ?? this.description,
-        links: links ?? this.links,
         created: created ?? this.created,
         updated: updated ?? this.updated,
       );
@@ -65,9 +56,7 @@ class BrandProfile {
         "collectionId": collectionId,
         "collectionName": collectionName,
         "id": id,
-        "title": title,
         "description": description,
-        "links": links,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
       };
