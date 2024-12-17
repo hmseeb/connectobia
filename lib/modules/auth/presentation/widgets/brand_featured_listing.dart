@@ -36,7 +36,7 @@ class _BrandFeaturedListingsState extends State<BrandFeaturedListings> {
               Navigator.pushNamed(context, '/profile', arguments: {
                 'profileId': id,
                 'self': false,
-                'profileType': 'influencer'
+                'profileType': 'influencers'
               });
             },
             child: Padding(

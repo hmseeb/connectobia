@@ -37,7 +37,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
             password: event.password,
             accountType: event.accountType);
 
-        if (event.accountType == 'influencer') {
+        if (event.accountType == 'influencers') {
           Influencer user = Influencer.fromJson(authData.record.data);
           bool isVerified = user.verified;
           if (isVerified) {

@@ -41,7 +41,7 @@ class _SigninScreenState extends State<SigninScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: transparentAppBar(
-            accountType == 'brand' ? 'Brand or Agency' : 'Influencer',
+            accountType == 'brands' ? 'Brand or Agency' : 'influencers',
             context: context),
         body: PopScope(
           child: SingleChildScrollView(
@@ -66,7 +66,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     // else {
                     //   Navigator.pushNamedAndRemoveUntil(
                     //     context,
-                    //     state.user.accountTypes == 'influencer'
+                    //     state.user.accountTypes == 'influencers'
                     //         ? '/influencerOnboarding'
                     //         : '/brandOnboarding',
                     //     (route) => false,
@@ -78,7 +78,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       context,
                       '/influencerDashboard',
                       (route) => false,
-                      arguments: {'influencer': state.user},
+                      arguments: {'influencers': state.user},
                     );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
@@ -126,7 +126,6 @@ class _SigninScreenState extends State<SigninScreen> {
                           child: Text('Forgot password?',
                               style: TextStyle(
                                 color: ShadColors.primary,
-                                fontWeight: FontWeight.bold,
                               )),
                         ),
                       ),
@@ -141,7 +140,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             ));
                           },
                           isLoading: state is LoginLoading),
-                      if (accountType == 'influencer') ...[
+                      if (accountType == 'influencers') ...[
                         const SizedBox(height: 20),
                         const OrDivider(),
                         const SizedBox(height: 20),
@@ -167,7 +166,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         title: 'Don\'t have an account? ',
                         buttonText: 'Sign up',
                         onPressed: () {
-                          if (accountType == 'brand') {
+                          if (accountType == 'brands') {
                             Navigator.pushNamed(
                               context,
                               '/brandSignupScreen',

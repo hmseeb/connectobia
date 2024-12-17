@@ -74,25 +74,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   context,
                   '/signinScreen',
                   arguments: {
-                    'accountType': 'brand',
+                    'accountType': 'brands',
                   },
                 );
                 HapticFeedback.mediumImpact();
-                CollectionNameSingleton.instance = 'brand';
+                CollectionNameSingleton.instance = 'brands';
               },
             ),
             const SizedBox(height: 10),
             SignupCard(
-              title: 'Influencer',
+              title: 'influencers',
               description: 'I want to monetize my content',
               onPressed: () {
                 Navigator.pushNamed(
                   context,
                   '/signinScreen',
-                  arguments: {'accountType': 'influencer'},
+                  arguments: {'accountType': 'influencers'},
                 );
                 HapticFeedback.mediumImpact();
-                CollectionNameSingleton.instance = 'influencer';
+                CollectionNameSingleton.instance = 'influencers';
               },
             ),
             // const SizedBox(height: 30),

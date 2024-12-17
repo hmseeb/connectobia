@@ -30,7 +30,7 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
         if (state is Onboarded) {
           Navigator.pushNamedAndRemoveUntil(
               context, '/influencerDashboard', (route) => false,
-              arguments: {'influencer': widget.user});
+              arguments: {'influencers': widget.user});
         } else if (state is ConnectingInstagram) {
           setState(() {
             instagramButtonText = 'Connecting Instagram...';
@@ -95,7 +95,7 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                       HapticFeedback.mediumImpact();
                       Navigator.pushNamedAndRemoveUntil(
                           context, '/influencerDashboard', (route) => false,
-                          arguments: {'influencer': widget.user});
+                          arguments: {'influencers': widget.user});
                     },
                     child: Text(
                       'Skip for now',

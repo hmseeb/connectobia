@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/shared/data/repositories/error_repo.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../shared/data/singletons/account_type.dart';
@@ -22,9 +23,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         String accountType = CollectionNameSingleton.instance;
         if (user.verified) {
-          if (accountType == 'brand') {
+          if (accountType == 'brands') {
             emit(BrandAuthenticated(user));
-          } else if (accountType == 'influencer') {
+          } else if (accountType == 'influencers') {
             emit(InfluencerAuthenticated(user));
           } else {
             emit(Unauthenticated());
@@ -33,8 +34,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(Unverified(user.email));
         }
       } catch (e) {
-        emit(Unauthenticated());
-        await AuthRepository.logout();
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(AuthError(errorRepo.handleError(e)));
       }
     });
   }

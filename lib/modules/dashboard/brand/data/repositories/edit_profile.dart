@@ -17,13 +17,13 @@ class EditProfileRepository {
       "description": description,
     };
 
-    final record = await pb.collection('influencer').getFirstListItem(
+    final record = await pb.collection('influencers').getFirstListItem(
           'user = "$id"',
         );
 
     final influencerID = record.id;
 
-    await pb.collection('influencer').update(influencerID, body: body);
+    await pb.collection('influencers').update(influencerID, body: body);
   }
 
   static Future<void> updateUserImage({

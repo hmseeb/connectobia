@@ -34,7 +34,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
   late final TextEditingController passwordController;
   late final TextEditingController usernameController;
   late final signupBloc = BlocProvider.of<SignupBloc>(context);
-  String accountType = 'influencer';
+  String accountType = 'influencers';
   String industry = '';
   var searchValue = '';
   bool enabled = true;

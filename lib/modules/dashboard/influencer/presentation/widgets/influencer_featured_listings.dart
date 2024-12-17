@@ -36,7 +36,7 @@ class _InfluencerFeaturedListingsState
               Navigator.pushNamed(context, '/profile', arguments: {
                 'profileId': id,
                 'self': false,
-                'profileType': 'brand'
+                'profileType': 'brands'
               });
             },
             child: Padding(

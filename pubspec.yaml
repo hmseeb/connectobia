@@ -61,6 +61,8 @@ dependencies:
   meta: ^1.15.0
   android_intent_plus: ^5.2.1
   flutter_chat_ui: ^1.6.15
+  get_ip_address: ^0.0.7
+  device_info_plus: ^11.2.0
 
 dev_dependencies:
   flutter_test:
