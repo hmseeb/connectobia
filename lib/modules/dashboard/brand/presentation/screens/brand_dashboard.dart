@@ -115,8 +115,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
 
   _scrollListener() {
     if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      // TODO: Load more influencers
-    }
+        scrollController.position.maxScrollExtent) {}
   }
 }

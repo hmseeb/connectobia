@@ -116,8 +116,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
 
   _scrollListener() {
     if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      // TODO: Load more influencers
-    }
+        scrollController.position.maxScrollExtent) {}
   }
 }

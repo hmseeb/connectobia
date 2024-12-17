@@ -40,8 +40,9 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
         child: Container(
           decoration: BoxDecoration(
             color: brightness == Brightness.dark
-                ? Colors.black.withOpacity(0.70)
-                : Colors.white.withOpacity(0.70), // Semi-transparent background
+                ? Colors.black.withValues(alpha: 0.70)
+                : Colors.white
+                    .withValues(alpha: 0.70), // Semi-transparent background
             borderRadius: BorderRadius.circular(36),
           ),
           child: Padding(

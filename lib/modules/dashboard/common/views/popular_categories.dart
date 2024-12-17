@@ -32,7 +32,7 @@ class PopularCategories extends StatelessWidget {
                       return CircleAvatar(
                         radius: 36,
                         backgroundColor: state is DarkTheme
-                            ? ShadColors.darkForeground.withOpacity(0.5)
+                            ? ShadColors.darkForeground.withValues(alpha: 0.5)
                             : ShadColors.lightForeground,
                         child: Icon(
                           LucideIcons.briefcase,
