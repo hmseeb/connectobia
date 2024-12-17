@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../common/constants/industries.dart';
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../common/models/user.dart';
-import '../../../../common/singletons/account_type.dart';
-import '../../../../db/db.dart';
-import '../../domain/model/brand.dart';
-import '../../domain/model/influencer.dart';
+import '../../../../services/storage/pb.dart';
+import '../../../../shared/data/constants/industries.dart';
+import '../../../../shared/data/repositories/error_repo.dart';
+import '../../../../shared/data/singletons/account_type.dart';
+import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/influencer.dart';
+import '../../../../shared/domain/models/user.dart';
 
 /// [AuthRepo] is a repository class that contains all the methods that are
 /// responsible for handling authentication related operations.
 ///
 /// {@category Repositories}
-class AuthRepo {
+class AuthRepository {
   /// [createBrandAccount] is a method that creates a new user account.
   static Future<RecordModel> createBrandAccount({
     required String brandName,

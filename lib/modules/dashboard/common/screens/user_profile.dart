@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../auth/domain/model/brand.dart';
-import '../../../auth/domain/model/influencer.dart';
+import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/influencer.dart';
 import '../application/brand_profile/brand_profile_bloc.dart';
 import '../application/influencer_profile/influencer_profile_bloc.dart';
 import '../widgets/profile_body.dart';

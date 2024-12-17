@@ -3,13 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../common/constants/industries.dart';
-import '../../../../common/constants/path.dart';
-import '../../../../common/constants/screen_size.dart';
-import '../../../../common/widgets/transparent_appbar.dart';
+import '../../../../shared/data/constants/industries.dart';
+import '../../../../shared/data/constants/path.dart';
+import '../../../../shared/data/constants/screen_size.dart';
+import '../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../../../../theme/buttons.dart';
 import '../../application/signup/signup_bloc.dart';
-import '../views/brand_signup_form.dart';
+import '../widgets/brand_signup_form.dart';
 import '../widgets/custom_shad_select.dart';
 import '../widgets/privacy_policy.dart';
 

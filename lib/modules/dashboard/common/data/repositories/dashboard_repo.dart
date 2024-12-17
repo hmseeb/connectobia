@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../common/models/brands.dart';
-import '../../../../common/models/influencers.dart';
-import '../../../../db/db.dart';
+import '../../../../../services/storage/pb.dart';
+import '../../../../../shared/data/repositories/error_repo.dart';
+import '../../../../../shared/domain/models/brands.dart';
+import '../../../../../shared/domain/models/influencers.dart';
 
-class DashboardRepo {
+class DashboardRepository {
   static Future<Influencers> getInfluencersList() async {
     final pb = await PocketBaseSingleton.instance;
     late final Influencers list;

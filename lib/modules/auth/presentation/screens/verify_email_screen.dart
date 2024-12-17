@@ -8,13 +8,13 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../common/constants/path.dart';
-import '../../../../common/constants/screen_size.dart';
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../db/db.dart';
+import '../../../../services/storage/pb.dart';
+import '../../../../shared/data/constants/path.dart';
+import '../../../../shared/data/constants/screen_size.dart';
+import '../../../../shared/data/repositories/error_repo.dart';
 import '../../../../theme/colors.dart';
 import '../../application/verification/email_verification_bloc.dart';
-import '../../data/respository/auth_repo.dart';
+import '../../data/respositories/auth_repo.dart';
 import '../widgets/heading_text.dart';
 import '../widgets/sub_heading.dart';
 
@@ -208,7 +208,7 @@ class VerifyEmailState extends State<VerifyEmail> {
       isLoading = true;
     });
     try {
-      await AuthRepo.verifyEmail(email: widget.email);
+      await AuthRepository.verifyEmail(email: widget.email);
       if (context.mounted) {
         ShadToaster.of(context).show(
           const ShadToast(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../data/respository/input_validation.dart';
+import '../../data/helpers/validation/input_validation.dart';
 
 /// A form that allows a creator to sign up.
 /// [CreatorSignupForm] contains fields for first name, last name, email, and password.

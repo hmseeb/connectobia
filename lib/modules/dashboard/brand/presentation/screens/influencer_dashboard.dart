@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../../common/constants/industries.dart';
-import '../../../../../theme/bloc/theme_bloc.dart';
-import '../../../../auth/domain/model/influencer.dart';
-import '../../../common/views/appbar.dart';
-import '../../../common/views/drawer.dart';
-import '../../../common/views/popular_categories.dart';
+import '../../../../../shared/application/theme/theme_bloc.dart';
+import '../../../../../shared/data/constants/industries.dart';
+import '../../../../../shared/domain/models/influencer.dart';
+import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/drawer.dart';
+import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
 import '../../../influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
-import '../../../influencer/presentation/views/influencer_featured_listings.dart';
+import '../../../influencer/presentation/widgets/influencer_featured_listings.dart';
 import '../widgets/bottom_navigation.dart';
 
 class InfluencerDashboard extends StatefulWidget {

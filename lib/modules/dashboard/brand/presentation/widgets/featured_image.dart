@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../common/constants/avatar.dart';
+import '../../../../../shared/data/constants/avatar.dart';
 
 class FeatureImage extends StatelessWidget {
   final String image;

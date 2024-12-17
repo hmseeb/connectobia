@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../common/singletons/account_type.dart';
-import '../../data/respository/auth_repo.dart';
-import '../../domain/model/brand.dart';
-import '../../domain/model/influencer.dart';
+import '../../../../shared/data/singletons/account_type.dart';
+import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/influencer.dart';
+import '../../data/respositories/auth_repo.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -15,7 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuth>((event, emit) async {
       emit(AuthLoading());
       try {
-        dynamic user = await AuthRepo.getUser();
+        dynamic user = await AuthRepository.getUser();
         if (user == null) {
           return emit(Unauthenticated());
         }
@@ -34,7 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       } catch (e) {
         emit(Unauthenticated());
-        await AuthRepo.logout();
+        await AuthRepository.logout();
       }
     });
   }

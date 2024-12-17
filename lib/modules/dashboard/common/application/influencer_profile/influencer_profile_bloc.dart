@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../common/domain/repositories/error_repository.dart';
-import '../../../../../common/models/influencer_profile.dart';
-import '../../../../auth/domain/model/influencer.dart';
-import '../../data/influencer_repo.dart';
+import '../../../../../shared/data/repositories/error_repo.dart';
+import '../../../../../shared/domain/models/influencer.dart';
+import '../../../../../shared/domain/models/influencer_profile.dart';
+import '../../data/repositories/profile_repo.dart';
 
 part 'influencer_profile_event.dart';
 part 'influencer_profile_state.dart';
@@ -19,7 +19,8 @@ class InfluencerProfileBloc
       emit(InfluencerProfileLoading());
       try {
         InfluencerProfile influencerProfile =
-            await SearchRepo.getInfluencerProfile(profileId: event.profileId);
+            await ProfileRepository.getInfluencerProfile(
+                profileId: event.profileId);
         emit(InfluencerProfileLoaded(
             influencer: event.influencer,
             influencerProfile: influencerProfile));

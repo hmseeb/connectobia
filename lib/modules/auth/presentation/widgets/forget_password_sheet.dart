@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../data/respository/auth_repo.dart';
-import '../../data/respository/input_validation.dart';
+import '../../../../shared/data/repositories/error_repo.dart';
+import '../../data/helpers/validation/input_validation.dart';
+import '../../data/respositories/auth_repo.dart';
 
 /// A sheet that allows the user to reset their password.
 ///
@@ -62,7 +62,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               isLoading = true;
             });
             try {
-              await AuthRepo.forgotPassword(
+              await AuthRepository.forgotPassword(
                 email: emailController.text,
                 collectionName: widget.accountType,
               );

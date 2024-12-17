@@ -1,8 +1,8 @@
-import '../../../../common/models/brand_profile.dart';
-import '../../../../common/models/influencer_profile.dart';
-import '../../../../db/db.dart';
+import '../../../../../services/storage/pb.dart';
+import '../../../../../shared/domain/models/brand_profile.dart';
+import '../../../../../shared/domain/models/influencer_profile.dart';
 
-class SearchRepo {
+class ProfileRepository {
   static Future<InfluencerProfile> getInfluencerProfile(
       {required String profileId}) async {
     final pb = await PocketBaseSingleton.instance;

@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../common/domain/repositories/error_repository.dart';
-import '../../../../../common/models/brand_profile.dart';
-import '../../../../auth/domain/model/brand.dart';
-import '../../data/influencer_repo.dart';
+import '../../../../../shared/data/repositories/error_repo.dart';
+import '../../../../../shared/domain/models/brand.dart';
+import '../../../../../shared/domain/models/brand_profile.dart';
+import '../../data/repositories/profile_repo.dart';
 
 part 'brand_profile_event.dart';
 part 'brand_profile_state.dart';
@@ -18,7 +18,7 @@ class BrandProfileBloc extends Bloc<BrandProfileEvent, BrandProfileState> {
       emit(BrandProfileLoading());
       try {
         final BrandProfile brandProfile =
-            await SearchRepo.getBrandProfile(profileId: event.profileId);
+            await ProfileRepository.getBrandProfile(profileId: event.profileId);
         emit(
             BrandProfileLoaded(brand: event.brand, brandProfile: brandProfile));
         debugPrint('Fetched ${event.brand.brandName} profile');

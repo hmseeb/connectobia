@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../common/widgets/logo.dart';
+import '../../../../shared/presentation/widgets/logo.dart';
 import 'app_title.dart';
 
 class AppTitleLogo extends StatelessWidget {

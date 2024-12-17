@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:pocketbase/pocketbase.dart';
 
-import '../../modules/auth/domain/model/influencer.dart';
+import 'influencer.dart';
 
 class Influencers {
   final int page;

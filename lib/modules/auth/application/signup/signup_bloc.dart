@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../data/respository/auth_repo.dart';
-import '../../data/respository/input_validation.dart';
+import '../../../../shared/data/repositories/error_repo.dart';
+import '../../data/helpers/validation/input_validation.dart';
+import '../../data/respositories/auth_repo.dart';
 
 part 'signup_event.dart';
 part 'signup_state.dart';
@@ -33,7 +33,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
-        await AuthRepo.createBrandAccount(
+        await AuthRepository.createBrandAccount(
           brandName: event.brandName,
           username: event.username,
           email: event.email,
@@ -44,7 +44,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           email: event.email,
         ));
 
-        await AuthRepo.login(
+        await AuthRepository.login(
             email: event.email, password: event.password, accountType: 'brand');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
@@ -70,7 +70,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
-        await AuthRepo.createInfluencerAccount(
+        await AuthRepository.createInfluencerAccount(
           fullName: '${event.firstName} ${event.lastName}',
           username: event.username,
           email: event.email,
@@ -78,7 +78,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           industry: event.industry,
         );
         emit(SignupSuccess(email: event.email));
-        await AuthRepo.login(
+        await AuthRepository.login(
             email: event.email,
             password: event.password,
             accountType: 'influencer');
@@ -91,7 +91,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     on<InstagramSignup>((event, emit) async {
       emit(InstagramLoading());
       try {
-        await AuthRepo.instagramAuth(collectionName: event.accountType);
+        await AuthRepository.instagramAuth(collectionName: event.accountType);
         emit(SignupSuccess(
           email: null,
         ));

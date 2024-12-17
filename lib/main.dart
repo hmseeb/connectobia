@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:rive/rive.dart';
 
-import 'common/widgets/bloc_providers.dart';
-import 'db/shared_prefs.dart';
+import 'services/storage/shared_prefs.dart';
+import 'shared/data/constants/bloc_providers.dart';
 
 /// The entry point of the application
 ///

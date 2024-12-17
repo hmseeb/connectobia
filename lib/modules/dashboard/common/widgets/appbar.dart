@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../common/constants/avatar.dart';
-import '../../../../common/constants/greetings.dart';
-import '../../../../theme/bloc/theme_bloc.dart';
+import '../../../../shared/application/theme/theme_bloc.dart';
+import '../../../../shared/data/constants/avatar.dart';
+import '../../../../shared/data/constants/greetings.dart';
 import '../../../../theme/colors.dart';
 
 class CommonAppBar extends StatelessWidget {

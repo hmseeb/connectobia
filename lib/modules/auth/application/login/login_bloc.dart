@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../data/respository/auth_repo.dart';
-import '../../data/respository/input_validation.dart';
-import '../../domain/model/brand.dart';
-import '../../domain/model/influencer.dart';
+import '../../../../shared/data/repositories/error_repo.dart';
+import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/influencer.dart';
+import '../../data/helpers/validation/input_validation.dart';
+import '../../data/respositories/auth_repo.dart';
 
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';
@@ -32,7 +32,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       emit(LoginLoading());
 
       try {
-        final authData = await AuthRepo.login(
+        final authData = await AuthRepository.login(
             email: event.email,
             password: event.password,
             accountType: event.accountType);
@@ -43,7 +43,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
           if (isVerified) {
             emit(InfluencerLoginSuccess(user));
           } else {
-            await AuthRepo.verifyEmail(email: event.email);
+            await AuthRepository.verifyEmail(email: event.email);
             emit(LoginUnverified());
           }
         } else {
@@ -52,7 +52,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
           if (isVerified) {
             emit(BrandLoginSuccess(user));
           } else {
-            await AuthRepo.verifyEmail(email: event.email);
+            await AuthRepository.verifyEmail(email: event.email);
             emit(LoginUnverified());
           }
         }
@@ -65,8 +65,8 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       emit(InstagramLoading());
       try {
         debugPrint('Logging in with Instagram');
-        final influencer =
-            await AuthRepo.instagramAuth(collectionName: event.accountType);
+        final influencer = await AuthRepository.instagramAuth(
+            collectionName: event.accountType);
 
         emit(InfluencerLoginSuccess(influencer));
         debugPrint('Logged in with Instagram');

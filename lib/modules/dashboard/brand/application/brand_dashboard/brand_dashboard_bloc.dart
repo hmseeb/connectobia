@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../../../../common/domain/repositories/error_repository.dart';
-import '../../../../../common/models/influencers.dart';
-import '../../../common/data/dashboard_repo.dart';
+import '../../../../../shared/data/repositories/error_repo.dart';
+import '../../../../../shared/domain/models/influencers.dart';
+import '../../../common/data/repositories/dashboard_repo.dart';
 
 part 'brand_dashboard_event.dart';
 part 'brand_dashboard_state.dart';
@@ -18,7 +18,7 @@ class BrandDashboardBloc
       }
       emit(BrandDashboardLoadingInfluencers());
       try {
-        final influencers = await DashboardRepo.getInfluencersList();
+        final influencers = await DashboardRepository.getInfluencersList();
         emit(BrandDashboardLoadedInfluencers(influencers));
         page++;
       } catch (e) {

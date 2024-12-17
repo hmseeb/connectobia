@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../common/constants/avatar.dart';
-import '../../../../theme/bloc/theme_bloc.dart';
+import '../../../../shared/application/theme/theme_bloc.dart';
+import '../../../../shared/data/constants/avatar.dart';
 import '../../../../theme/colors.dart';
-import '../../../auth/data/respository/auth_repo.dart';
+import '../../../auth/data/respositories/auth_repo.dart';
 
 class CommonDrawer extends StatelessWidget {
   final String name;
@@ -144,7 +144,7 @@ class CommonDrawer extends StatelessWidget {
                         ShadButton(
                           child: const Text('Confirm'),
                           onPressed: () async {
-                            await AuthRepo.logout();
+                            await AuthRepository.logout();
                             if (context.mounted) {
                               Navigator.pushNamedAndRemoveUntil(
                                 context,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../common/constants/avatar.dart';
+import '../../../../../shared/data/constants/avatar.dart';
 import '../../application/brand_dashboard/brand_dashboard_bloc.dart';
 
 class FeatureImageInfo extends StatefulWidget {

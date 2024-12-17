@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:pocketbase/pocketbase.dart';
 
-import '../../modules/auth/domain/model/brand.dart';
+import 'brand.dart';
 
 class Brands {
   final int page;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../../common/models/brands.dart';
+import '../../../../../shared/domain/models/brands.dart';
 import '../../../brand/presentation/widgets/featured_image.dart';
 import '../../../brand/presentation/widgets/image_info.dart';
 import '../../../common/application/brand_profile/brand_profile_bloc.dart';

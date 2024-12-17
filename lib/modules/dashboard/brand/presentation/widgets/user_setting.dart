@@ -1,19 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/modules/dashboard/brand/data/repositories/edit_profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../../common/constants/avatar.dart';
-import '../../../../../common/constants/industries.dart';
-import '../../../../../common/widgets/transparent_appbar.dart';
+import '../../../../../shared/data/constants/avatar.dart';
+import '../../../../../shared/data/constants/industries.dart';
+import '../../../../../shared/domain/models/influencer.dart';
+import '../../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../../../../../theme/colors.dart';
-import '../../../../auth/data/respository/input_validation.dart';
-import '../../../../auth/domain/model/influencer.dart';
+import '../../../../auth/data/helpers/validation/input_validation.dart';
 import '../../../../auth/presentation/widgets/custom_shad_select.dart';
 import '../../application/profile_settings/profile_settings.dart';
-import '../../data/user_repo.dart';
 
 class InfluencerSettingSheet extends StatefulWidget {
   final Influencer user;
@@ -126,7 +126,8 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                         imageQuality: 50,
                                       );
                                       if (bannerImage != null) {
-                                        await UserRepo.updateUserImage(
+                                        await EditProfileRepository
+                                            .updateUserImage(
                                           image: bannerImage,
                                           username: 'widget.user.username',
                                           isAvatar: false,
@@ -143,7 +144,8 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                         imageQuality: 50,
                                       );
                                       if (bannerImage != null) {
-                                        await UserRepo.updateUserImage(
+                                        await EditProfileRepository
+                                            .updateUserImage(
                                           image: bannerImage,
                                           username: 'widget.user.username',
                                           isAvatar: false,
@@ -188,7 +190,8 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                         imageQuality: 50,
                                       );
                                       if (avatarImage != null) {
-                                        await UserRepo.updateUserImage(
+                                        await EditProfileRepository
+                                            .updateUserImage(
                                           image: avatarImage,
                                           username: 'widget.user.username',
                                           isAvatar: true,
@@ -205,7 +208,8 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                                         imageQuality: 50,
                                       );
                                       if (avatarImage != null) {
-                                        await UserRepo.updateUserImage(
+                                        await EditProfileRepository
+                                            .updateUserImage(
                                           image: avatarImage,
                                           username: 'widget.user.username',
                                           isAvatar: true,

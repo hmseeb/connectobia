@@ -1,19 +1,19 @@
-import 'package:connectobia/modules/auth/presentation/views/forget_password_sheet.dart';
+import 'package:connectobia/modules/auth/presentation/widgets/forget_password_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
-import '../../../../common/constants/path.dart';
-import '../../../../common/constants/screen_size.dart';
-import '../../../../common/widgets/transparent_appbar.dart';
+import '../../../../shared/data/constants/path.dart';
+import '../../../../shared/data/constants/screen_size.dart';
+import '../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../../onboarding/application/bloc/influencer_onboard_bloc.dart';
 import '../../application/login/login_bloc.dart';
-import '../views/login_form.dart';
 import '../widgets/auth_flow.dart';
+import '../widgets/login_form.dart';
 import 'brand_signup_screen.dart';
 
 /// A screen that allows a user to sign in.

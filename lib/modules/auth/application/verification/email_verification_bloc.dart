@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../common/singletons/account_type.dart';
-import '../../../../db/db.dart';
-import '../../domain/model/brand.dart';
-import '../../domain/model/influencer.dart';
+import '../../../../services/storage/pb.dart';
+import '../../../../shared/data/repositories/error_repo.dart';
+import '../../../../shared/data/singletons/account_type.dart';
+import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/influencer.dart';
 
 part 'email_verification_event.dart';
 part 'email_verification_state.dart';
