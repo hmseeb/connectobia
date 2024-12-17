@@ -38,7 +38,7 @@ class EmailVerificationBloc
         debugPrint('Subscribed to email verification updates');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(EmailVerificationError(errorRepo.handleError(e)));
       }
     });
 
@@ -58,7 +58,7 @@ class EmailVerificationBloc
         }
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        throw errorRepo.handleError(e);
+        emit(EmailVerificationError(errorRepo.handleError(e)));
       }
     });
   }

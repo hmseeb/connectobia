@@ -42,6 +42,12 @@ class _UserProfileState extends State<UserProfile> {
             );
           } else if (state is InfluencerProfileLoaded) {
             influencer = state.influencer;
+          } else if (state is InfluencerProfileError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -100,6 +106,12 @@ class _UserProfileState extends State<UserProfile> {
         listener: (context, state) {
           if (state is BrandProfileLoaded) {
             brand = state.brand;
+          } else if (state is BrandProfileError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
           }
         },
         builder: (context, state) {

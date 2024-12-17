@@ -11,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/path.dart';
 import '../../../../shared/data/constants/screen_size.dart';
-import '../../../../shared/data/repositories/error_repo.dart';
 import '../../../../theme/colors.dart';
 import '../../application/verification/email_verification_bloc.dart';
 import '../../data/respositories/auth_repo.dart';
@@ -58,6 +57,12 @@ class VerifyEmailState extends State<VerifyEmail> {
               arguments: {
                 'user': state.influencer,
               });
+        } else if (state is EmailVerificationError) {
+          ShadToaster.of(context).show(
+            ShadToast.destructive(
+              title: Text(state.error),
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -170,8 +175,6 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
     }
   }
 
@@ -224,8 +227,6 @@ class VerifyEmailState extends State<VerifyEmail> {
           ),
         );
       }
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
     } finally {
       setState(() {
         isLoading = false;

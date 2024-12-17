@@ -13,3 +13,9 @@ class BrandProfileLoaded extends BrandProfileState {
 
   BrandProfileLoaded({required this.brand, required this.brandProfile});
 }
+
+class BrandProfileError extends BrandProfileState {
+  final String message;
+
+  BrandProfileError(this.message);
+}

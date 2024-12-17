@@ -14,3 +14,9 @@ final class InfluencerEmailVerified extends EmailVerificationState {
   final Influencer influencer;
   InfluencerEmailVerified(this.influencer);
 }
+
+class EmailVerificationError extends EmailVerificationState {
+  final String error;
+
+  EmailVerificationError(this.error);
+}
