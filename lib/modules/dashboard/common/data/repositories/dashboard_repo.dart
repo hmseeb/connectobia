@@ -10,12 +10,12 @@ class DashboardRepository {
     final pb = await PocketBaseSingleton.instance;
     late final Influencers list;
     try {
-      final resultList = await pb.collection('influencer').getList(
+      final resultList = await pb.collection('influencers').getList(
             page: 1,
             perPage: 20,
             // where account type = profile and avatar and banner is not empty
             filter: 'profile != "" && banner != "" && avatar != ""',
-            // expand: 'influencer',
+            // expand: 'influencers',
           );
       list = Influencers.fromRecord(resultList);
       debugPrint('Fetched ${list.items.length} influencers');
@@ -30,12 +30,12 @@ class DashboardRepository {
     final pb = await PocketBaseSingleton.instance;
     late final Brands list;
     try {
-      final resultList = await pb.collection('brand').getList(
+      final resultList = await pb.collection('brands').getList(
             page: 1,
             perPage: 20,
             // where account type = profile and avatar and banner is not empty
             filter: 'profile != "" && banner != "" && avatar != ""',
-            // expand: 'influencer',
+            // expand: 'influencers',
           );
       list = Brands.fromRecord(resultList);
       debugPrint('Fetched ${list.items.length} brands');

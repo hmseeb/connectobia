@@ -45,7 +45,9 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
 
         await AuthRepository.login(
-            email: event.email, password: event.password, accountType: 'brand');
+            email: event.email,
+            password: event.password,
+            accountType: 'brands');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(SignupFailure(errorRepo.handleError(e)));
@@ -81,7 +83,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         await AuthRepository.login(
             email: event.email,
             password: event.password,
-            accountType: 'influencer');
+            accountType: 'influencers');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(SignupFailure(errorRepo.handleError(e)));

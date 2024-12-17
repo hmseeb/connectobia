@@ -1,3 +1,5 @@
+import 'package:connectobia/modules/auth/data/respositories/device_info.dart';
+import 'package:connectobia/modules/auth/domain/models/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -36,8 +38,8 @@ class AuthRepository {
 
     try {
       final pb = await PocketBaseSingleton.instance;
-      RecordModel user = await pb.collection('brand').create(body: body);
-      await pb.collection('brand').requestVerification(email);
+      RecordModel user = await pb.collection('brands').create(body: body);
+      await pb.collection('brands').requestVerification(email);
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
@@ -67,8 +69,8 @@ class AuthRepository {
 
     try {
       final pb = await PocketBaseSingleton.instance;
-      RecordModel user = await pb.collection('influencer').create(body: body);
-      await pb.collection('influencer').requestVerification(email);
+      RecordModel user = await pb.collection('influencers').create(body: body);
+      await pb.collection('influencers').requestVerification(email);
       debugPrint('Created account for $email');
       return user;
     } catch (e) {
@@ -101,7 +103,7 @@ class AuthRepository {
       final collectionName = pb.authStore.record!.collectionName;
       CollectionNameSingleton.instance = collectionName;
       RecordModel record = await pb.collection(collectionName).getOne(id);
-      if (collectionName == 'brand') {
+      if (collectionName == 'brands') {
         final Brand user = Brand.fromRecord(record);
         return user;
       } else {
@@ -140,7 +142,7 @@ class AuthRepository {
         userId: influencerId,
         profileId: influencerProfileId,
         pb: pb,
-        collectionName: 'influencer',
+        collectionName: 'influencers',
       );
       debugPrint('Linked profile with account');
       return influencer;
@@ -204,11 +206,32 @@ class AuthRepository {
           await pb.collection(accountType).authWithPassword(email, password);
 
       debugPrint('Logged in as ${authData.record.data['email']}');
+      DeviceInfoRepository infoRepo = DeviceInfoRepository();
+      final String info = await infoRepo.fetchDeviceInfo();
+      final DeviceInfo deviceInfo = DeviceInfo.fromRawJson(info);
+
+      await createLoginHistory(
+          userId: authData.record.id, deviceInfo: deviceInfo);
+
       return authData;
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
+  }
+
+  static Future<void> createLoginHistory({
+    required String userId,
+    required DeviceInfo deviceInfo,
+  }) async {
+    final pb = await PocketBaseSingleton.instance;
+    final body = <String, dynamic>{
+      "userId": userId,
+      "deviceInfo": deviceInfo,
+      "ipAddress": deviceInfo.publicIp,
+      "location": "${deviceInfo.city}, ${deviceInfo.country}",
+    };
+    await pb.collection('loginHistory').create(body: body);
   }
 
   /// [logout] is a method that logs out the current user.

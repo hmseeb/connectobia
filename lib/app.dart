@@ -54,13 +54,19 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
+                if (state is AuthError) {
+                  ShadToaster.of(context).show(
+                    ShadToast.destructive(
+                      title: Text(state.message),
+                    ),
+                  );
+                }
                 authState = state;
                 if (state is AuthLoading || state is AuthInitial) {
                   return;
-                } else if (state is Unauthenticated) {
-                  return;
+                } else {
+                  handleNavigation(state: state, context: context);
                 }
-                handleNavigation(state: state, context: context);
               },
               child: BlocListener<AnimationCubit, AnimationState>(
                 listener: (context, state) {
@@ -102,7 +108,7 @@ class ConnectobiaState extends State<Connectobia> {
           context,
           '/influencerDashboard',
           (route) => false,
-          arguments: {'influencer': state.user},
+          arguments: {'influencers': state.user},
         );
       } else {
         Navigator.pushNamedAndRemoveUntil(

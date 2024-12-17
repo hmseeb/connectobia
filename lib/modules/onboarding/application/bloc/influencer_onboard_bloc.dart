@@ -13,9 +13,9 @@ class InfluencerOnboardBloc
     on<ConnectInstagram>((event, emit) async {
       try {
         emit(ConnectingInstagram());
-        await AuthRepository.instagramAuth(collectionName: 'influencer');
+        await AuthRepository.instagramAuth(collectionName: 'influencers');
         emit(Onboarded());
-        await AuthRepository.updateOnboardValue(collectionName: 'influencer');
+        await AuthRepository.updateOnboardValue(collectionName: 'influencers');
       } catch (e) {
         emit(ConnectingInstagramFailure(e.toString()));
         ErrorRepository errorRepo = ErrorRepository();
@@ -24,7 +24,7 @@ class InfluencerOnboardBloc
     });
     on<UpdateOnboardBool>((event, emit) async {
       emit(Onboarded());
-      await AuthRepository.updateOnboardValue(collectionName: 'influencer');
+      await AuthRepository.updateOnboardValue(collectionName: 'influencers');
     });
   }
 }

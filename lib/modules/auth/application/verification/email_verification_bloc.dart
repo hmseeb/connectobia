@@ -49,10 +49,10 @@ class EmailVerificationBloc
         await pb.collection(accountType).unsubscribe();
         debugPrint('Unsubscribed to email verification updates');
 
-        if (accountType == 'brand') {
+        if (accountType == 'brands') {
           final Brand user = Brand.fromRecord(pb.authStore.record!);
           emit(BrandEmailVerified(user));
-        } else if (accountType == 'influencer') {
+        } else if (accountType == 'influencers') {
           final Influencer user = Influencer.fromRecord(pb.authStore.record!);
           emit(InfluencerEmailVerified(user));
         }

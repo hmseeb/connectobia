@@ -31,7 +31,7 @@ class _UserProfileState extends State<UserProfile> {
   Influencer? influencer;
   @override
   Widget build(BuildContext context) {
-    if (widget.profileType == 'influencer') {
+    if (widget.profileType == 'influencers') {
       return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
         listener: (context, state) {
           if (state is InfluencerProfileError) {

@@ -60,7 +60,7 @@ class _BrandScreenState extends State<BrandScreen> {
   final FocusNode industryFocusNode = FocusNode();
   final ScrollController scrollController = ScrollController();
 
-  String accountType = 'brand';
+  String accountType = 'brands';
   String industry = '';
   bool enabled = true;
 
