@@ -11,7 +11,6 @@ import '../../../common/views/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
 import '../../../influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
 import '../../../influencer/presentation/views/influencer_featured_listings.dart';
-import '../views/edit_influencer_profile.dart';
 import '../widgets/bottom_navigation.dart';
 
 class InfluencerDashboard extends StatefulWidget {
@@ -113,39 +112,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
     super.initState();
     _industries = getSortedIndustries();
     scrollController.addListener(_scrollListener); // Pass the function directly
-  }
-
-  Future<void> _displayEditInfluencerProfile(BuildContext context) async {
-    // Navigator.push returns a Future that completes after calling
-    // Navigator.pop on the Selection Screen.
-    final influencerParam = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const EditInfluencerProfile(),
-      ),
-    );
-    if (influencerParam == null) return;
-    setState(() {
-      user = influencerParam;
-    });
-  }
-
-  Future<void> _displayEditUserSettings(BuildContext context) async {
-    assert(false, 'Not implemented');
-    // Navigator.push returns a Future that completes after calling
-    // Navigator.pop on the Selection Screen.
-    // final userParam = await Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => InfluencerSettingSheet(
-    //       user: user,
-    //     ),
-    //   ),
-    // );
-    // if (userParam == null) return;
-    // setState(() {
-    //   user = userParam;
-    // });
   }
 
   _scrollListener() {
