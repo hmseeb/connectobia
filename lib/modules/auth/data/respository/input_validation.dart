@@ -36,7 +36,7 @@ class InputValidation {
       return 'Name is required';
     }
 
-    if (brandName.length <= 40) {
+    if (brandName.length >= 40) {
       return 'Name cannot exceed 40 characters';
     }
     return null;
