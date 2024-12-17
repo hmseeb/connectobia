@@ -126,7 +126,7 @@ class DeviceInfoRepository {
     }
   }
 
-  Future<String> fetchDeviceInfo() async {
+  Future<Map<String, dynamic>> fetchDeviceInfo() async {
     // Get device details
     Map<String, dynamic> deviceDetails = await getDeviceDetails();
 
@@ -148,6 +148,7 @@ class DeviceInfoRepository {
       MapEntry('City', city),
     ]);
 
-    return jsonEncode(deviceDetails);
+    debugPrint(deviceDetails.toString());
+    return deviceDetails;
   }
 }

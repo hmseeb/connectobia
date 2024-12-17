@@ -1,5 +1,6 @@
+import 'dart:convert';
+
 import 'package:connectobia/modules/auth/data/respositories/device_info.dart';
-import 'package:connectobia/modules/auth/domain/models/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -207,11 +208,9 @@ class AuthRepository {
 
       debugPrint('Logged in as ${authData.record.data['email']}');
       DeviceInfoRepository infoRepo = DeviceInfoRepository();
-      final String info = await infoRepo.fetchDeviceInfo();
-      final DeviceInfo deviceInfo = DeviceInfo.fromRawJson(info);
+      final Map<String, dynamic> info = await infoRepo.fetchDeviceInfo();
 
-      await createLoginHistory(
-          userId: authData.record.id, deviceInfo: deviceInfo);
+      await createLoginHistory(userId: authData.record.id, deviceInfo: info);
 
       return authData;
     } catch (e) {
@@ -222,15 +221,16 @@ class AuthRepository {
 
   static Future<void> createLoginHistory({
     required String userId,
-    required DeviceInfo deviceInfo,
+    required Map<String, dynamic> deviceInfo,
   }) async {
     final pb = await PocketBaseSingleton.instance;
     final body = <String, dynamic>{
       "userId": userId,
-      "deviceInfo": deviceInfo,
-      "ipAddress": deviceInfo.publicIp,
-      "location": "${deviceInfo.city}, ${deviceInfo.country}",
+      "deviceInfo": json.encode(deviceInfo),
+      "ipAddress": deviceInfo['Public IP'],
+      "location": "${deviceInfo['City']}, ${deviceInfo['Country']}",
     };
+
     await pb.collection('loginHistory').create(body: body);
   }
 
