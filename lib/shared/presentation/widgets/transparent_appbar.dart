@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 
 /// A function that returns a transparent app bar
@@ -9,8 +10,11 @@ import 'package:flutter/material.dart';
 /// {@category Widgets}
 AppBar transparentAppBar(String? title,
     {List<Widget>? actions, required BuildContext context}) {
+  final Brightness brightness = MediaQuery.of(context).platformBrightness;
   return AppBar(
     elevation: 0,
+    backgroundColor:
+        brightness == Brightness.light ? ShadColors.light : ShadColors.dark,
     title: Text(title ?? ''),
     actions: actions,
   );

@@ -29,8 +29,6 @@ class ErrorRepository {
         } else if (e.statusCode == 404) {
           return 'The requested resource was not found.';
         }
-        return e.response['message'] ??
-            'Something went wrong. Please try again.';
       }
     } catch (error) {
       // In case the structure is different or something goes wrong, fallback to default message
