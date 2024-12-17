@@ -41,7 +41,7 @@ class _SigninScreenState extends State<SigninScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: transparentAppBar(
-            accountType == 'brands' ? 'Brand or Agency' : 'influencers',
+            accountType == 'brands' ? 'Brand or Agency' : 'Influencer',
             context: context),
         body: PopScope(
           child: SingleChildScrollView(
