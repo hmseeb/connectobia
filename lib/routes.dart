@@ -14,7 +14,6 @@
 library;
 
 import 'package:connectobia/app.dart';
-import 'package:connectobia/common/constants/screens.dart';
 import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/creator__signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
@@ -23,8 +22,8 @@ import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dar
 import 'package:connectobia/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/screens/influencer_dashboard.dart';
 import 'package:connectobia/modules/dashboard/common/screens/user_profile.dart';
-import 'package:connectobia/modules/onboarding/presentation/screens/brand_onboard_screen.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
+import 'package:connectobia/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.
@@ -63,11 +62,6 @@ class GenerateRoutes {
       case influencerOnboarding:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildPageRoute(InfluencerOnboarding(
-          user: args['user'],
-        ));
-      case brandOnboarding:
-        final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(BrandOnboarding(
           user: args['user'],
         ));
       case profile:

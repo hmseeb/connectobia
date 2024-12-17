@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'common/animation/animation_cubit.dart';
-import 'common/constants/path.dart';
 import 'modules/auth/application/auth/auth_bloc.dart';
 import 'routes.dart';
-import 'theme/bloc/theme_bloc.dart';
+import 'shared/application/animation/animation_cubit.dart';
+import 'shared/application/theme/theme_bloc.dart';
+import 'shared/data/constants/path.dart';
 import 'theme/colors.dart';
 import 'theme/shad_themedata.dart';
 

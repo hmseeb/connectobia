@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
-import '../../../../common/constants/path.dart';
-import '../../../../common/constants/screen_size.dart';
+import '../../../../shared/data/constants/path.dart';
+import '../../../../shared/data/constants/screen_size.dart';
+import '../../../../shared/domain/models/influencer.dart';
 import '../../../../theme/colors.dart';
-import '../../../auth/domain/model/influencer.dart';
 import '../../application/bloc/influencer_onboard_bloc.dart';
 
 class InfluencerOnboarding extends StatefulWidget {

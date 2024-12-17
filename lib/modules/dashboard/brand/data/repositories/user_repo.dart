@@ -1,9 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../common/constants/industries.dart';
-import '../../../../common/domain/repositories/error_repository.dart';
-import '../../../../db/db.dart';
+import '../../../../../services/db/db.dart';
+import '../../../../../shared/data/constants/industries.dart';
+import '../../../../../shared/data/repositories/error_repo.dart';
 
 class UserRepo {
   static Future<void> updateUserImage({
