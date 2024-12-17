@@ -36,8 +36,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(AuthError(errorRepo.handleError(e)));
-        AuthRepository.logout();
-        return emit(Unauthenticated());
       }
     });
   }

@@ -54,13 +54,6 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                if (state is AuthError) {
-                  ShadToaster.of(context).show(
-                    ShadToast.destructive(
-                      title: Text(state.message),
-                    ),
-                  );
-                }
                 authState = state;
                 if (state is AuthLoading || state is AuthInitial) {
                   return;
@@ -149,8 +142,16 @@ class ConnectobiaState extends State<Connectobia> {
           'email': state.email,
         },
       );
-    } else {
-      debugPrint(state.toString());
+    } else if (state is AuthError) {
+      ShadToaster.of(context).show(
+        ShadToast.destructive(
+          title: Text(state.message),
+        ),
+      );
+      Navigator.pushReplacementNamed(
+        context,
+        '/welcomeScreen',
+      );
     }
   }
 
