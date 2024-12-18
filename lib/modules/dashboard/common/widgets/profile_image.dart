@@ -29,33 +29,34 @@ class ProfileImage extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Banner image
           SizedBox(
-            height: 150,
-            width: double.infinity,
-            child: CachedNetworkImage(
-              imageUrl: Avatar.getUserImage(
-                userId: userId,
-                image: banner,
-                collectionId: collectionId,
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
+              height: 150,
+              width: double.infinity,
+              child: CachedNetworkImage(
+                imageUrl: banner.isNotEmpty
+                    ? Avatar.getUserImage(
+                        userId: userId,
+                        image: banner,
+                        collectionId: collectionId,
+                      )
+                    : Avatar.getBannerPlaceholder(),
+                fit: BoxFit.cover,
+              )),
           Positioned(
             bottom: 0,
             left: 10,
             child: Center(
               child: CircleAvatar(
-                radius: 50,
-                backgroundImage: CachedNetworkImageProvider(
-                  Avatar.getUserImage(
-                    userId: userId,
-                    image: avatar,
-                    collectionId: collectionId,
-                  ),
-                ),
-              ),
+                  radius: 50,
+                  backgroundImage: CachedNetworkImageProvider(
+                    avatar.isNotEmpty
+                        ? Avatar.getUserImage(
+                            userId: userId,
+                            image: avatar,
+                            collectionId: collectionId,
+                          )
+                        : Avatar.getAvatarPlaceholder('HA'),
+                  )),
             ),
           ),
           BlocBuilder<ThemeBloc, ThemeState>(

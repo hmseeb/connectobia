@@ -50,7 +50,7 @@ class ProfileBody extends StatelessWidget {
               const SizedBox(height: 16),
             ],
             // Analytics section
-            if (followers != null && mediaCount != null) ...[
+            if (followers != 0 && mediaCount != 0) ...[
               Text(
                 'Analytics',
                 style: const TextStyle(

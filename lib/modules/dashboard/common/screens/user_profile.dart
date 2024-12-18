@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../shared/domain/models/brand.dart';
-import '../../../../shared/domain/models/influencer.dart';
 import '../application/brand_profile/brand_profile_bloc.dart';
 import '../application/influencer_profile/influencer_profile_bloc.dart';
 import '../widgets/profile_body.dart';
@@ -27,141 +25,167 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  Brand? brand;
-  Influencer? influencer;
   @override
   Widget build(BuildContext context) {
-    if (widget.profileType == 'influencers') {
-      return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
-        listener: (context, state) {
-          if (state is InfluencerProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error: ${state.message}'),
+    return widget.profileType == 'influencers'
+        ? _buildInfluencerProfile(context)
+        : _buildBrandProfile(context);
+  }
+
+  Widget _buildInfluencerProfile(BuildContext context) {
+    return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
+      listener: (context, state) {
+        if (state is InfluencerProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${state.message}')),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is InfluencerProfileLoaded) {
+          return _buildProfileScaffold(
+            isLoading: false,
+            context: context,
+            userId: state.influencer.id,
+            avatar: state.influencer.avatar,
+            banner: state.influencer.banner,
+            collectionId: state.influencer.collectionId,
+            name: state.influencer.fullName,
+            industry: state.influencer.industry,
+            username: state.influencer.username,
+            isVerified: state.influencer.verified,
+            connectedSocial: state.influencer.connectedSocial,
+            description: state.influencerProfile.description,
+            followers: state.influencerProfile.followers,
+            mediaCount: state.influencerProfile.mediaCount,
+          );
+        } else {
+          return _buildProfileScaffold(
+            isLoading: true,
+            context: context,
+            userId: 'id',
+            avatar: '',
+            banner: '',
+            collectionId: 'collectionId',
+            name: 'name',
+            industry: 'industry',
+            username: 'username',
+            isVerified: true,
+            connectedSocial: true,
+            description:
+                'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
+            followers: 0,
+            mediaCount: 0,
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildBrandProfile(BuildContext context) {
+    return BlocConsumer<BrandProfileBloc, BrandProfileState>(
+      listener: (context, state) {
+        if (state is BrandProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is BrandProfileLoaded) {
+          return _buildProfileScaffold(
+            isLoading: false,
+            context: context,
+            userId: state.brand.id,
+            avatar: state.brand.avatar,
+            banner: state.brand.banner,
+            collectionId: state.brand.collectionId,
+            name: state.brand.brandName,
+            industry: state.brand.industry,
+            username: '',
+            isVerified: state.brand.verified,
+            connectedSocial: false,
+            description: state.brandProfile.description,
+            followers: 0,
+            mediaCount: 0,
+          );
+        } else {
+          return _buildProfileScaffold(
+            isLoading: true,
+            context: context,
+            userId: 'id',
+            avatar: '',
+            banner: '',
+            collectionId: 'collectionId',
+            name: 'name',
+            industry: 'industry',
+            username: 'username',
+            isVerified: true,
+            connectedSocial: false,
+            description:
+                'Incididunt reprehenderit eu do consectetur irure reprehenderit id eiusmod irure sint enim culpa est. Incididunt eiusmod est do fugiat anim cupidatat velit et occaecat incididunt culpa. Est amet laboris ea sint laborum nisi. Ea magna et qui non enim commodo qui nostrud enim laboris reprehenderit. Tempor nulla id sint eu.',
+            followers: 0,
+            mediaCount: 0,
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildProfileScaffold({
+    required bool isLoading,
+    required BuildContext context,
+    required bool connectedSocial,
+    required String description,
+    required int followers,
+    required int mediaCount,
+    required String userId,
+    required String avatar,
+    required String banner,
+    required String collectionId,
+    required String name,
+    required String industry,
+    required String username,
+    required bool isVerified,
+  }) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.message),
+      ),
+      body: Skeletonizer(
+        enabled: isLoading,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ProfileImage(
+                userId: userId,
+                avatar: avatar,
+                banner: banner,
+                collectionId: collectionId,
+                onBackButtonPressed:
+                    !isLoading ? () => Navigator.pop(context) : () {},
               ),
-            );
-          } else if (state is InfluencerProfileLoaded) {
-            influencer = state.influencer;
-          } else if (state is InfluencerProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          influencer =
-              state is InfluencerProfileLoaded ? state.influencer : null;
-          return Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-              child: const Icon(Icons.message),
-            ),
-            body: Skeletonizer(
-              enabled: state is InfluencerProfileLoading,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    state is InfluencerProfileLoaded
-                        ? ProfileImage(
-                            userId: influencer!.id,
-                            avatar: influencer!.avatar,
-                            banner: influencer!.banner,
-                            collectionId: influencer!.collectionId,
-                            onBackButtonPressed: () => Navigator.pop(context),
-                          )
-                        : SizedBox(),
-                    if (state is InfluencerProfileLoaded)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ProfileHeader(
-                          name: influencer!.fullName,
-                          industry: influencer!.industry,
-                          username: influencer!.username,
-                          isVerified: influencer!.connectedSocial,
-                          connectedSocial: influencer!.connectedSocial,
-                        ),
-                      )
-                    else
-                      const SizedBox(),
-                    if (state is InfluencerProfileLoaded)
-                      ProfileBody(
-                        description: state.influencerProfile.description,
-                        followers: state.influencerProfile.followers,
-                        mediaCount: state.influencerProfile.mediaCount,
-                      )
-                    else
-                      const SizedBox(),
-                  ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ProfileHeader(
+                  name: name,
+                  industry: industry,
+                  username: username,
+                  isVerified: isVerified,
+                  connectedSocial: connectedSocial,
                 ),
               ),
-            ),
-          );
-        },
-      );
-    } else {
-      return BlocConsumer<BrandProfileBloc, BrandProfileState>(
-        listener: (context, state) {
-          if (state is BrandProfileLoaded) {
-            brand = state.brand;
-          } else if (state is BrandProfileError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
+              ProfileBody(
+                description: description,
+                followers: followers,
+                mediaCount: mediaCount,
               ),
-            );
-          }
-        },
-        builder: (context, state) {
-          brand = state is BrandProfileLoaded ? state.brand : null;
-          return Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {},
-              child: const Icon(Icons.message),
-            ),
-            body: Skeletonizer(
-              enabled: state is BrandProfileLoading,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (state is BrandProfileLoaded)
-                      ProfileImage(
-                        userId: brand!.id,
-                        avatar: brand!.avatar,
-                        banner: brand!.banner,
-                        collectionId: brand!.collectionId,
-                        onBackButtonPressed: () => Navigator.pop(context),
-                      )
-                    else
-                      SizedBox(),
-                    if (state is BrandProfileLoaded)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ProfileHeader(
-                          name: brand!.brandName,
-                          industry: brand!.industry,
-                          username: '',
-                          isVerified: brand!.verified,
-                          connectedSocial: false,
-                        ),
-                      )
-                    else
-                      const SizedBox(),
-                    state is BrandProfileLoaded
-                        ? ProfileBody(
-                            description: state.brandProfile.description,
-                          )
-                        : const SizedBox(),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    }
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

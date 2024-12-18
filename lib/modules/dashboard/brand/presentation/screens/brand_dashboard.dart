@@ -10,7 +10,6 @@ import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/drawer.dart';
 import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
-import '../../application/brand_dashboard/brand_dashboard_bloc.dart';
 import '../widgets/bottom_navigation.dart';
 
 class BrandDashboard extends StatefulWidget {
@@ -58,18 +57,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     PopularCategories(industries: _industries),
                     const SectionTitle('Featured Influencers'),
                     const SizedBox(height: 16),
-                    BlocBuilder<BrandDashboardBloc, BrandDashboardState>(
-                      builder: (context, state) {
-                        if (state is BrandDashboardLoadedInfluencers) {
-                          return BrandFeaturedListings(
-                            itemsCount: state.influencers.items.length,
-                            influencers: state.influencers,
-                          );
-                        } else {
-                          return SizedBox();
-                        }
-                      },
-                    ),
+                    BrandFeaturedListings(),
                   ],
                 ),
               ),
