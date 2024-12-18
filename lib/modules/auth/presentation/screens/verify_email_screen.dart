@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:android_intent_plus/android_intent.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/path.dart';
@@ -124,7 +122,7 @@ class VerifyEmailState extends State<VerifyEmail> {
                   width: double.infinity,
                   child: ShadButton(
                     onPressed: () async {
-                      await openEmailApp();
+                      await openEmailApp(context);
                     },
                     child: const Text('Open Email App'),
                   ),
@@ -153,21 +151,38 @@ class VerifyEmailState extends State<VerifyEmail> {
   /// Open the email app
   ///
   /// This function uses the [OpenMailApp] package to open the email app.
-  Future<void> openEmailApp() async {
+  Future<void> openEmailApp(BuildContext context) async {
     try {
-      if (Platform.isAndroid) {
-        AndroidIntent intent = AndroidIntent(
-          action: 'android.intent.action.MAIN',
-          category: 'android.intent.category.APP_EMAIL',
+      // Android: Will open mail app or show native picker.
+      // iOS: Will open mail app if single mail app found.
+      bool isInstalled = await LaunchApp.isAppInstalled(
+        iosUrlScheme: 'message://',
+        androidPackageName: 'com.google.android.gm',
+      );
+
+      if (isInstalled) {
+        await LaunchApp.openApp(
+          iosUrlScheme: 'message://',
+          androidPackageName: 'com.google.android.gm',
         );
-        intent.launch().catchError((e) {});
-      } else if (Platform.isIOS) {
-        launchUrl(Uri.parse('message://'));
       } else {
-        launchUrl(Uri.parse('mailto:'));
+        if (context.mounted) {
+          showShadDialog(
+            context: context,
+            builder: (context) => ShadDialog.alert(
+              title: const Text('There is no mail app installed'),
+              actions: [
+                ShadButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            ),
+          );
+        }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         // Show error toast
         ShadToaster.of(context).show(
           ShadToast.destructive(
