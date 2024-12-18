@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:connectobia/modules/auth/data/respositories/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -207,10 +206,6 @@ class AuthRepository {
           await pb.collection(accountType).authWithPassword(email, password);
 
       debugPrint('Logged in as ${authData.record.data['email']}');
-      DeviceInfoRepository infoRepo = DeviceInfoRepository();
-      final Map<String, dynamic> info = await infoRepo.fetchDeviceInfo();
-
-      await createLoginHistory(userId: authData.record.id, deviceInfo: info);
 
       return authData;
     } catch (e) {

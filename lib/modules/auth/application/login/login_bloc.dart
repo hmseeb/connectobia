@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/modules/auth/data/respositories/device_info.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
@@ -56,6 +57,12 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
             emit(LoginUnverified());
           }
         }
+
+        DeviceInfoRepository infoRepo = DeviceInfoRepository();
+        final Map<String, dynamic> info = await infoRepo.fetchDeviceInfo();
+
+        await AuthRepository.createLoginHistory(
+            userId: authData.record.id, deviceInfo: info);
       } catch (e) {
         emit(LoginFailure(e.toString()));
       }
