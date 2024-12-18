@@ -10,7 +10,7 @@ class ErrorRepository {
       try {
         String errorRawJson = jsonEncode(originalError.response['data']);
         ErrorModel errorModel = ErrorModel.fromRawJson(errorRawJson);
-        return errorModel.title.message.replaceFirst('Value', 'Email');
+        return errorModel.title.code;
       } catch (e) {
         return _mapClientError(originalError);
       }
