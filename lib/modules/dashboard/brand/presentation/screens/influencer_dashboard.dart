@@ -9,7 +9,6 @@ import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/drawer.dart';
 import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
-import '../../../influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
 import '../../../influencer/presentation/widgets/influencer_featured_listings.dart';
 import '../widgets/bottom_navigation.dart';
 
@@ -58,19 +57,7 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                     PopularCategories(industries: _industries),
                     const SectionTitle('Featured Brands'),
                     const SizedBox(height: 16),
-                    BlocBuilder<InfluencerDashboardBloc,
-                        InfluencerDashboardState>(
-                      builder: (context, state) {
-                        if (state is InfluencerDashboardLoadedBrands) {
-                          return InfluencerFeaturedListings(
-                            itemsCount: state.brands.items.length,
-                            brands: state.brands,
-                          );
-                        } else {
-                          return SizedBox();
-                        }
-                      },
-                    ),
+                    InfluencerFeaturedListings(),
                   ],
                 ),
               ),

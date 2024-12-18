@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../shared/data/constants/avatar.dart';
@@ -53,7 +54,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(
+                  backgroundImage: CachedNetworkImageProvider(
                     hasAvatar
                         ? Avatar.getUserImage(
                             userId: widget.userId,
