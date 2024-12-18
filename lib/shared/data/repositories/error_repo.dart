@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:connectobia/shared/domain/models/error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
+
+import '../../domain/models/error.dart';
 
 class ErrorRepository {
   // A function to map raw errors to user-friendly messages

@@ -1,9 +1,9 @@
-import 'package:connectobia/shared/data/constants/industries.dart';
-import 'package:connectobia/shared/data/repositories/error_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../services/storage/pb.dart';
+import '../../../../../shared/data/constants/industries.dart';
+import '../../../../../shared/data/repositories/error_repo.dart';
 
 class EditProfileRepository {
   static Future<void> updateInfluencerProfile({

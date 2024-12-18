@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/modules/dashboard/brand/data/repositories/edit_profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +13,7 @@ import '../../../../../theme/colors.dart';
 import '../../../../auth/data/helpers/validation/input_validation.dart';
 import '../../../../auth/presentation/widgets/custom_shad_select.dart';
 import '../../application/profile_settings/profile_settings.dart';
+import '../../data/repositories/edit_profile.dart';
 
 class InfluencerSettingSheet extends StatefulWidget {
   final Influencer user;

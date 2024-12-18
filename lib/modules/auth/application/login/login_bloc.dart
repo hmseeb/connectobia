@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/auth/data/respositories/device_info.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
@@ -7,6 +6,7 @@ import '../../../../shared/domain/models/brand.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../data/helpers/validation/input_validation.dart';
 import '../../data/respositories/auth_repo.dart';
+import '../../data/respositories/device_info.dart';
 
 part 'login_bloc_event.dart';
 part 'login_bloc_state.dart';

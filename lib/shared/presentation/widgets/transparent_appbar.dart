@@ -1,6 +1,7 @@
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../theme/colors.dart';
 
 /// A function that returns a transparent app bar
 ///

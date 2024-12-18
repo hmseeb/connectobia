@@ -1,4 +1,3 @@
-import 'package:connectobia/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../shared/application/theme/theme_bloc.dart';
 import '../../../../shared/data/constants/screen_size.dart';
+import '../../../../shared/data/singletons/account_type.dart';
 import '../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../widgets/signup_card.dart';
 import '../widgets/tagline.dart';

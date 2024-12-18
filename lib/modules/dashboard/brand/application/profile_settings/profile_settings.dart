@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/modules/dashboard/brand/data/repositories/edit_profile.dart';
 import 'package:meta/meta.dart';
 
 import '../../../../../shared/data/repositories/error_repo.dart';
+import '../../data/repositories/edit_profile.dart';
 
 part 'profile_settings_event.dart';
 part 'profile_settings_state.dart';
