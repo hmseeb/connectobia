@@ -33,7 +33,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
 
       try {
         final authData = await AuthRepository.login(
-            email: event.email,
+            email: event.email.toLowerCase(),
             password: event.password,
             accountType: event.accountType);
 
@@ -43,7 +43,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
           if (isVerified) {
             emit(InfluencerLoginSuccess(user));
           } else {
-            await AuthRepository.verifyEmail(email: event.email);
+            await AuthRepository.verifyEmail(email: event.email.toLowerCase());
             emit(LoginUnverified());
           }
         } else {
@@ -52,7 +52,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
           if (isVerified) {
             emit(BrandLoginSuccess(user));
           } else {
-            await AuthRepository.verifyEmail(email: event.email);
+            await AuthRepository.verifyEmail(email: event.email.toLowerCase());
             emit(LoginUnverified());
           }
         }

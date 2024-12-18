@@ -21,8 +21,8 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       emit(SignupLoading());
 
       String? error = InputValidation.validateBrandForm(
-        email: event.email,
-        brandName: event.brandName,
+        email: event.email.toLowerCase(),
+        brandName: event.brandName.toLowerCase(),
         password: event.password,
         industry: event.industry,
       );
@@ -35,8 +35,8 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       try {
         await AuthRepository.createBrandAccount(
           brandName: event.brandName,
-          username: event.username,
-          email: event.email,
+          username: event.username.toLowerCase(),
+          email: event.email.toLowerCase(),
           password: event.password,
           industry: event.industry,
         );
