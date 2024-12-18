@@ -1,16 +1,24 @@
+import 'dart:convert';
+
+import 'package:connectobia/shared/domain/models/error.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class ErrorRepository {
   // A function to map raw errors to user-friendly messages
-  String handleError(Object e) {
-    if (e is ClientException) {
-      return _mapClientError(e);
+  String handleError(Object originalError) {
+    if (originalError is ClientException) {
+      try {
+        String errorRawJson = jsonEncode(originalError.response['data']);
+        ErrorModel errorModel = ErrorModel.fromRawJson(errorRawJson);
+        return errorModel.title.message.replaceFirst('Value', 'Email');
+      } catch (e) {
+        return _mapClientError(originalError);
+      }
+    } else {
+      return originalError.toString();
     }
-
-    return 'Something went wrong. Please try again.';
   }
 
-  // Function to map ClientException to user-friendly message
   String _mapClientError(ClientException e) {
     // Extract the message from the response (assuming the response contains the message field)
     try {
@@ -33,6 +41,6 @@ class ErrorRepository {
     } catch (error) {
       // In case the structure is different or something goes wrong, fallback to default message
     }
-    return 'Human Error is inevitable, but this is unacceptable. We\'ll look into the matter now.';
+    return 'Something went wrong. Please try again.';
   }
 }
