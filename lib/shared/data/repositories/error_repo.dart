@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:connectobia/shared/domain/models/error.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class ErrorRepository {
@@ -10,7 +11,7 @@ class ErrorRepository {
       try {
         String errorRawJson = jsonEncode(originalError.response['data']);
         ErrorModel errorModel = ErrorModel.fromRawJson(errorRawJson);
-        return errorModel.title.code;
+        return errorModel.title.message;
       } catch (e) {
         return _mapClientError(originalError);
       }
@@ -39,7 +40,7 @@ class ErrorRepository {
         }
       }
     } catch (error) {
-      // In case the structure is different or something goes wrong, fallback to default message
+      debugPrint('$error');
     }
     return 'Something went wrong. Please try again.';
   }
