@@ -1,4 +1,5 @@
 // Reusable widget for profile details header
+import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -44,12 +45,16 @@ class ProfileHeader extends StatelessWidget {
           ],
         ),
         // Verified badge
-        const SizedBox(width: 8),
         if (connectedSocial)
           const Icon(
             Icons.verified,
             color: Colors.blue,
-          ),
+          )
+        else
+          Text('(Unverified)',
+              style: TextStyle(
+                color: ShadColors.disabled,
+              )),
         const Spacer(),
         // Location icon or social link
         if (connectedSocial)
