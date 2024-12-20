@@ -9,3 +9,4 @@ const String brandSignupScreen = "/brandSignupScreen";
 const String brandDashboard = "/brandDashboard";
 const String influencerDashboard = "/influencerDashboard";
 const String influencerSignupScreen = "/InfluencerSignupScreen";
+const String singleChatScreen = "/singleChatScreen";
