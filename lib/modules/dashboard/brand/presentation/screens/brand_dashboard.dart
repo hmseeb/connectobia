@@ -8,7 +8,6 @@ import '../../../../../shared/domain/models/brand.dart';
 import '../../../../auth/presentation/widgets/brand_featured_listing.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/drawer.dart';
-import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
 import '../widgets/bottom_navigation.dart';
 
@@ -22,7 +21,7 @@ class BrandDashboard extends StatefulWidget {
 
 class _BrandDashboardState extends State<BrandDashboard> {
   late Brand user = widget.user;
-  late final List<String> _industries;
+  // late final List<String> _industries;
   late final brightness = ShadTheme.of(context).brightness;
   final ScrollController scrollController = ScrollController();
 
@@ -52,9 +51,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionTitle('Popular Categories'),
-                    const SizedBox(height: 16),
-                    PopularCategories(industries: _industries),
                     const SectionTitle('Featured Influencers'),
                     const SizedBox(height: 16),
                     BrandFeaturedListings(),
@@ -97,7 +93,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
   @override
   void initState() {
     super.initState();
-    _industries = getSortedIndustries();
     scrollController.addListener(_scrollListener); // Pass the function directly
   }
 

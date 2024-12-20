@@ -7,7 +7,6 @@ import '../../../../../shared/data/constants/industries.dart';
 import '../../../../../shared/domain/models/influencer.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/drawer.dart';
-import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
 import '../../../influencer/presentation/widgets/influencer_featured_listings.dart';
 import '../widgets/bottom_navigation.dart';
@@ -22,7 +21,6 @@ class InfluencerDashboard extends StatefulWidget {
 
 class _InfluencerDashboardState extends State<InfluencerDashboard> {
   late Influencer user = widget.user;
-  late final List<String> _industries;
   late final brightness = ShadTheme.of(context).brightness;
   final ScrollController scrollController = ScrollController();
 
@@ -52,9 +50,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionTitle('Popular Categories'),
-                    const SizedBox(height: 16),
-                    PopularCategories(industries: _industries),
                     const SectionTitle('Featured Brands'),
                     const SizedBox(height: 16),
                     InfluencerFeaturedListings(),
@@ -97,7 +92,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   @override
   void initState() {
     super.initState();
-    _industries = getSortedIndustries();
     scrollController.addListener(_scrollListener); // Pass the function directly
   }
 
