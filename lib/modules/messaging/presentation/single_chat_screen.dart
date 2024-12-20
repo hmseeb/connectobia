@@ -11,6 +11,7 @@ class SingleChatScreen extends StatefulWidget {
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   late final ScrollController _scrollController;
+  bool _isTyping = false;
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     // Dummy messages data
     final List<Map<String, dynamic>> messages = [
       {'text': 'Looking forward to our meeting.', 'senderId': '2'},
+      {'text': '', 'senderId': '2'},
       {'text': 'I am great, thanks for asking!', 'senderId': '1'},
       {'text': 'Hi! I am good. How about you?', 'senderId': '2'},
       {'text': 'Hey! How are you?', 'senderId': '1'},
@@ -100,36 +102,62 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ShadInputFormField(
-                    placeholder: Text('Type here'),
-                    onChanged: (value) {
-                      // Placeholder function for typing message
-                    },
-                    decoration: ShadDecoration(
-                      // no border
-                      border: ShadBorder.all(
-                        color: Colors.transparent,
-                      ),
-                      color: brightness == Brightness.dark
-                          ? ShadColors.darkForeground
-                          : ShadColors.lightForeground,
+          Row(
+            children: [
+              Expanded(
+                child: ShadInputFormField(
+                  placeholder: Text('Enter your message'),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      setState(() {
+                        _isTyping = true;
+                      });
+                    } else {
+                      setState(() {
+                        _isTyping = false;
+                      });
+                    }
+                  },
+                  decoration: ShadDecoration(
+                    secondaryFocusedBorder: ShadBorder.none,
+                    // no border
+                    border: ShadBorder.all(
+                      color: Colors.transparent,
+                      radius: BorderRadius.circular(24),
                     ),
+                    color: brightness == Brightness.dark
+                        ? ShadColors.darkForeground
+                        : ShadColors.lightForeground,
                   ),
                 ),
-                const SizedBox(width: 8),
+              ),
+              const SizedBox(width: 8),
+              if (_isTyping)
                 IconButton(
-                  icon: const Icon(LucideIcons.send),
+                  icon: const Icon(
+                    LucideIcons.send,
+                    color: ShadColors.primary,
+                  ),
+                  onPressed: () {
+                    // Placeholder function for send message button
+                  },
+                )
+              else ...[
+                IconButton(
+                  icon: const Icon(Icons.mic),
                   onPressed: () {
                     // Placeholder function for send message button
                   },
                 ),
-              ],
-            ),
+                // gallary button
+                IconButton(
+                  icon: const Icon(LucideIcons.image),
+                  onPressed: () {
+                    // Placeholder function for send message button
+                  },
+                ),
+              ]
+            ],
           ),
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
