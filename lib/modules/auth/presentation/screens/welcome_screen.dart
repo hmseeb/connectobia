@@ -63,7 +63,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             SizedBox(height: height * 15),
             const AppTitleLogo(),
-            const SizedBox(height: 10),
             const Tagline('where brands and influencers meet'),
             const SizedBox(height: 30),
             SignupCard(
