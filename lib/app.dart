@@ -54,19 +54,15 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
+                if (state is AuthSuccess) {
+                  handleNavigation(state: state, context: context);
+                }
                 debugPrint(state.runtimeType.toString());
                 authState = state;
-                // if (state is AuthLoading || state is AuthInitial) {
-                //   return;
-                // } else {
-                //   handleNavigation(state: state, context: context);
-                // }
               },
               child: BlocListener<AnimationCubit, AnimationState>(
                 listener: (context, state) {
-                  if (state is AnimationStopped) {
-                    handleNavigation(state: authState, context: context);
-                  }
+                  if (state is AnimationStopped) {}
                 },
                 child: Scaffold(
                   backgroundColor: ShadColors.primary,
@@ -119,17 +115,6 @@ class ConnectobiaState extends State<Connectobia> {
         (route) => false,
         arguments: {'user': state.user},
       );
-
-      // Add onboarding check after brand onboarding screens are implemented
-      // if (state.user.onboarded) {
-      // } else {
-      //   Navigator.pushNamedAndRemoveUntil(
-      //     context,
-      //     '/brandOnboarding',
-      //     (route) => false,
-      //     arguments: {'user': state.user},
-      //   );
-      // }
     } else if (state is Unauthenticated) {
       Navigator.pushReplacementNamed(
         context,

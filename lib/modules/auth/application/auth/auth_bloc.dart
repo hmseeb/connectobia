@@ -20,6 +20,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           return emit(Unauthenticated());
         }
 
+        emit(AuthSuccess());
+
         String accountType = CollectionNameSingleton.instance;
         if (user.verified) {
           if (accountType == 'brands') {
