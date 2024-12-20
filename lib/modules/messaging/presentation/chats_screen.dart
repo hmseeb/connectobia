@@ -2,8 +2,20 @@ import 'package:connectobia/shared/presentation/widgets/transparent_appbar.dart'
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class Chats extends StatelessWidget {
+class Chats extends StatefulWidget {
   const Chats({super.key});
+
+  @override
+  State<Chats> createState() => _ChatsState();
+}
+
+class _ChatsState extends State<Chats> {
+  late final ScrollController _scrollController;
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +33,7 @@ class Chats extends StatelessWidget {
         ],
       ),
       body: ListView.separated(
+        controller: _scrollController,
         itemBuilder: (context, index) {
           return ListTile(
             title: const Text('User Name'),
@@ -42,5 +55,11 @@ class Chats extends StatelessWidget {
         itemCount: 10,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

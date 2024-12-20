@@ -2,8 +2,21 @@ import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class SingleChatScreen extends StatelessWidget {
+class SingleChatScreen extends StatefulWidget {
   const SingleChatScreen({super.key});
+
+  @override
+  State<SingleChatScreen> createState() => _SingleChatScreenState();
+}
+
+class _SingleChatScreenState extends State<SingleChatScreen> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +64,7 @@ class SingleChatScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               reverse: true,
               itemCount: messages.length,
               itemBuilder: (context, index) {
@@ -121,5 +135,11 @@ class SingleChatScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
