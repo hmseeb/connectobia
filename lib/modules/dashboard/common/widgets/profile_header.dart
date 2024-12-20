@@ -64,23 +64,10 @@ class ProfileHeader extends StatelessWidget {
                 color: Color(0xffd62976),
                 borderRadius: BorderRadius.circular(50),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: const [
-                  Icon(
-                    LucideIcons.instagram,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Instagram',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              child: Icon(
+                LucideIcons.instagram,
+                color: Colors.white,
+                size: 16,
               ),
             ),
           ),
