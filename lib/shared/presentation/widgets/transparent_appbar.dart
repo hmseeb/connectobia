@@ -10,14 +10,21 @@ import '../../../theme/colors.dart';
 /// throughout the application.
 ///
 /// {@category Widgets}
-AppBar transparentAppBar(String? title,
-    {List<Widget>? actions, required BuildContext context}) {
+AppBar transparentAppBar(
+  String? title, {
+  List<Widget>? actions,
+  Widget? leading,
+  centerTitle = true,
+  required BuildContext context,
+}) {
   final Brightness brightness = ShadTheme.of(context).brightness;
   return AppBar(
     elevation: 0,
+    centerTitle: centerTitle,
     backgroundColor:
         brightness == Brightness.light ? ShadColors.light : ShadColors.dark,
     title: Text(title ?? ''),
     actions: actions,
+    leading: leading,
   );
 }
