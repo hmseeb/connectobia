@@ -10,8 +10,6 @@ final class AuthInitial extends AuthState {}
 
 final class AuthLoading extends AuthState {}
 
-final class CheckedAuth extends AuthState {}
-
 final class AuthError extends AuthState {
   final String message;
 

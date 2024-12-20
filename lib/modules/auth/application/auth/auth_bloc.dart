@@ -23,23 +23,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         String accountType = CollectionNameSingleton.instance;
         if (user.verified) {
           if (accountType == 'brands') {
-            emit(CheckedAuth());
             emit(BrandAuthenticated(user));
           } else if (accountType == 'influencers') {
-            emit(CheckedAuth());
             emit(InfluencerAuthenticated(user));
-            emit(CheckedAuth());
           } else {
-            emit(CheckedAuth());
             emit(Unauthenticated());
           }
         } else {
-          emit(CheckedAuth());
           emit(Unverified(user.email));
         }
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        emit(CheckedAuth());
         emit(AuthError(errorRepo.handleError(e)));
       }
     });
