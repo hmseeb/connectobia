@@ -45,7 +45,7 @@ class ProfileHeader extends StatelessWidget {
           ],
         ),
         // Verified badge
-        if (!connectedSocial)
+        if (connectedSocial)
           const Icon(
             Icons.verified,
             color: Colors.blue,
