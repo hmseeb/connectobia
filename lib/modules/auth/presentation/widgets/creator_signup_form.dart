@@ -4,17 +4,17 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../data/helpers/validation/input_validation.dart';
 
-/// A form that allows a creator to sign up.
-/// [CreatorSignupForm] contains fields for first name, last name, email, and password.
+/// A form that allows a Influencer to sign up.
+/// [InfluencerSignupForm] contains fields for first name, last name, email, and password.
 ///
 /// {@category Forms}
-class CreatorSignupForm extends StatefulWidget {
+class InfluencerSignupForm extends StatefulWidget {
   final TextEditingController brandNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController usernameController;
 
-  const CreatorSignupForm(
+  const InfluencerSignupForm(
       {super.key,
       required this.brandNameController,
       required this.emailController,
@@ -22,10 +22,10 @@ class CreatorSignupForm extends StatefulWidget {
       required this.usernameController});
 
   @override
-  State<CreatorSignupForm> createState() => _CreatorSignupFormState();
+  State<InfluencerSignupForm> createState() => _InfluencerSignupFormState();
 }
 
-class _CreatorSignupFormState extends State<CreatorSignupForm> {
+class _InfluencerSignupFormState extends State<InfluencerSignupForm> {
   bool obscureText = true;
 
   @override

@@ -5,9 +5,9 @@
 /// The routes are defined as follows:
 /// - `/`: Displays the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart).
 /// - `/welcomeScreen`: Displays the [WelcomeScreen](package:connectobia/modules/auth/presentation/screens/welcomeScreen_screen.dart) with arguments.
-/// - `/signinScreen`: Displays the [SigninScreen](package:connectobia/modules/auth/presentation/screens/login_screen.dart).
+/// - `/LoginScreen`: Displays the [LoginScreen](package:connectobia/modules/auth/presentation/screens/login_screen.dart).
 /// - `/brandSignupScreen`: Displays the [BrandAgencyScreen](package:connectobia/modules/auth/presentation/screens/brand_agency_screen.dart).
-/// - `/creatorSignupScreen`: Displays the [CreatorScreen](package:connectobia/modules/auth/presentation/screens/creator_screen.dart).
+/// - `/InfluencerSignupScreen`: Displays the [InfluencerScreen](package:connectobia/modules/auth/presentation/screens/Influencer_screen.dart).
 /// - `/homeScreen`: Displays the [HomeScreen](package:connectobia/modules/homeScreen/presentation/screens/homeScreen_screen.dart).
 ///
 /// If an unknown route is provided, the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart) is displayed by default.
@@ -15,7 +15,7 @@ library;
 
 import 'package:connectobia/app.dart';
 import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/creator__signup_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/creator_signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
@@ -54,9 +54,9 @@ class GenerateRoutes {
           pageBuilder: (_, animation, secondaryAnimation) =>
               const WelcomeScreen(),
         );
-      case signinScreen:
+      case loginScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(SigninScreen(
+        return _buildPageRoute(LoginScreen(
           accountType: args['accountType'],
         ));
       case influencerOnboarding:
@@ -88,8 +88,8 @@ class GenerateRoutes {
         return _buildPageRoute(InfluencerDashboard(
           user: args['influencers'],
         ));
-      case creatorSignupScreen:
-        return _buildPageRoute(const CreatorScreen());
+      case influencerSignupScreen:
+        return _buildPageRoute(const InfluencerScreen());
 
       default:
         return MaterialPageRoute(builder: (_) => WelcomeScreen());

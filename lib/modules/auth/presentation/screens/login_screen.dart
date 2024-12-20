@@ -16,20 +16,20 @@ import '../widgets/forget_password_sheet.dart';
 import '../widgets/login_form.dart';
 import 'brand_signup_screen.dart';
 
-/// A screen that allows a user to sign in.
+/// A screen that allows a user to Log in.
 ///
-/// [SigninScreen] contains a form for a user to sign in.
+/// [LoginScreen] contains a form for a user to Log in.
 ///
 /// {@category Screens}
-class SigninScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   final String accountType;
-  const SigninScreen({super.key, required this.accountType});
+  const LoginScreen({super.key, required this.accountType});
 
   @override
-  State<SigninScreen> createState() => _SigninScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SigninScreenState extends State<SigninScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
   late final loginBloc = BlocProvider.of<LoginBloc>(context);
@@ -41,7 +41,9 @@ class _SigninScreenState extends State<SigninScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: transparentAppBar(
-            accountType == 'brands' ? 'Brand or Agency' : 'Influencer',
+            accountType == 'brands'
+                ? 'Connect with Influencers'
+                : 'Connect with Brands',
             context: context),
         body: PopScope(
           child: SingleChildScrollView(
@@ -130,7 +132,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         ),
                       ),
                       PrimaryButton(
-                          text: 'Sign in',
+                          text: 'Log in',
                           onPressed: () {
                             HapticFeedback.mediumImpact();
                             loginBloc.add(LoginSubmitted(
@@ -154,8 +156,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                   .add(InstagramAuth(accountType: accountType));
                             },
                             text: state is InstagramLoading
-                                ? 'Signing in with Instagram...'
-                                : 'Sign in with Instagram',
+                                ? 'Loging in with Instagram...'
+                                : 'Log in with Instagram',
                             borderSide: const BorderSide(),
                             backgroundColor: ShadColors.lightForeground,
                           ),
@@ -174,7 +176,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           } else {
                             Navigator.pushNamed(
                               context,
-                              '/creatorSignupScreen',
+                              '/InfluencerSignupScreen',
                             );
                           }
                           HapticFeedback.mediumImpact();
