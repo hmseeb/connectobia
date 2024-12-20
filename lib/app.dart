@@ -54,7 +54,7 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                if (state is AuthSuccess) {
+                if (state is CheckedAuth) {
                   handleNavigation(state: state, context: context);
                 }
                 debugPrint(state.runtimeType.toString());
