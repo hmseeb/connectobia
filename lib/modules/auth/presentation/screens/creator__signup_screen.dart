@@ -52,7 +52,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: transparentAppBar('Create your account', context: context),
+      appBar: transparentAppBar('Create influencer account', context: context),
       body: SingleChildScrollView(
         child: BlocConsumer<SignupBloc, SignupState>(
           listener: (context, state) {

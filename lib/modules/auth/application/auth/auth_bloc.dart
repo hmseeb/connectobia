@@ -12,7 +12,6 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
-    debugPrint(state.runtimeType.toString());
     on<CheckAuth>((event, emit) async {
       emit(AuthLoading());
       try {

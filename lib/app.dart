@@ -54,12 +54,13 @@ class ConnectobiaState extends State<Connectobia> {
             theme: shadThemeData(state),
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
+                debugPrint(state.runtimeType.toString());
                 authState = state;
-                if (state is AuthLoading || state is AuthInitial) {
-                  return;
-                } else {
-                  handleNavigation(state: state, context: context);
-                }
+                // if (state is AuthLoading || state is AuthInitial) {
+                //   return;
+                // } else {
+                //   handleNavigation(state: state, context: context);
+                // }
               },
               child: BlocListener<AnimationCubit, AnimationState>(
                 listener: (context, state) {

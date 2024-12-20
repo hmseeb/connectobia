@@ -83,7 +83,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
             const SizedBox(height: 10),
             SignupCard(
-              title: 'influencers',
+              title: 'Influencers',
               description: 'I want to monetize my content',
               onPressed: () {
                 Navigator.pushNamed(
