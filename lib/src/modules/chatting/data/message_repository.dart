@@ -26,7 +26,7 @@ class MessageRepository {
       final record = await pb.collection('chats').create(body: body);
       String chatId = record.id;
 
-      await addNewMessage(
+      await sendMessage(
         chatId: chatId,
         senderId: senderId,
         recipientId: recipientId,
@@ -39,7 +39,7 @@ class MessageRepository {
     }
   }
 
-  Future<RecordModel> addNewMessage(
+  Future<RecordModel> sendMessage(
       {required String chatId,
       required String senderId,
       required String recipientId,
