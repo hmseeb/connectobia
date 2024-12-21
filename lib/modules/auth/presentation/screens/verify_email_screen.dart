@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectobia/shared/data/constants/screens.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,8 +8,6 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../services/storage/pb.dart';
-import '../../../../shared/data/constants/path.dart';
-import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../theme/colors.dart';
 import '../../application/verification/email_verification_bloc.dart';
 import '../../data/respositories/auth_repo.dart';
@@ -40,7 +39,6 @@ class VerifyEmailState extends State<VerifyEmail> {
 
   @override
   Widget build(BuildContext context) {
-    final height = ScreenSize.height(context);
     return BlocListener<EmailVerificationBloc, EmailVerificationState>(
       listener: (context, state) {
         if (state is BrandEmailVerified) {
@@ -71,10 +69,16 @@ class VerifyEmailState extends State<VerifyEmail> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 const SizedBox(height: 20),
-                SvgPicture.asset(
-                  AssetsPath.emailIcon,
-                  height: height * 30,
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: ShadColors.primary.withAlpha(200),
+                  child: const Icon(
+                    LucideIcons.mail,
+                    size: 50,
+                    color: Colors.white,
+                  ),
                 ),
+                const SizedBox(height: 20),
                 const HeadingText('Verify your email'),
                 const SizedBox(height: 20),
                 const SubHeading('A verification email has been sent to'),
@@ -84,38 +88,7 @@ class VerifyEmailState extends State<VerifyEmail> {
                 const SizedBox(height: 20),
                 const SubHeading(
                     'Please check your inbox and follow the link to activate your account.'),
-                const SizedBox(height: 20),
-                // Didn't get the email?
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Didn\'t get the email? ',
-                    ),
-                    GestureDetector(
-                      onTap: _canResendEmail
-                          ? () {
-                              _resendEmail(context);
-                            }
-                          : null,
-                      child: Text(
-                        isLoading
-                            ? 'Resending email...'
-                            : _canResendEmail
-                                ? 'Resend email'
-                                : 'Resend in $_secondsRemaining seconds',
-                        style: TextStyle(
-                          color: _canResendEmail
-                              ? ShadColors.primary
-                              : ShadColors.disabled,
-                          fontWeight: _canResendEmail
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+
                 const SizedBox(height: 20),
                 // open email button using url launcher
                 SizedBox(
@@ -127,6 +100,45 @@ class VerifyEmailState extends State<VerifyEmail> {
                     child: const Text('Open Email App'),
                   ),
                 ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GestureDetector(
+                      onTap: _canResendEmail
+                          ? () {
+                              _resendEmail(context);
+                            }
+                          : null,
+                      child: Text(
+                        isLoading
+                            ? 'Resending code...'
+                            : _canResendEmail
+                                ? 'Resend code'
+                                : 'Resend in $_secondsRemaining seconds',
+                        style: TextStyle(
+                          color: _canResendEmail
+                              ? ShadColors.primary
+                              : ShadColors.disabled,
+                          fontWeight: _canResendEmail
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        _changeEmail();
+                      },
+                      child: Text(
+                        'Change email',
+                        style: TextStyle(
+                            color: ShadColors.primary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
@@ -250,6 +262,11 @@ class VerifyEmailState extends State<VerifyEmail> {
 
     _resendEmailCount++;
     _startResendTimer();
+  }
+
+  void _changeEmail() async {
+    Navigator.pushNamedAndRemoveUntil(context, welcomeScreen, (route) => false);
+    await AuthRepository.logout();
   }
 
   /// Start the resend email timer
