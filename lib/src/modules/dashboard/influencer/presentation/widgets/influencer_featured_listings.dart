@@ -88,12 +88,3 @@ class _InfluencerFeaturedListingsState
     );
   }
 }
-
-  // int getTotalBrands() {
-  //   int length = brands!.totalItems;
-  //   // for (var element in brands) {
-  //   //   length += element.items.length;
-  //   // }
-  //   return length;
-  // }
-

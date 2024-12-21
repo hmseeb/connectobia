@@ -1,8 +1,8 @@
 // Reusable widget for profile image
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/shared/application/theme/theme_bloc.dart';
-import 'package:connectobia/shared/data/constants/avatar.dart';
-import 'package:connectobia/theme/colors.dart';
+import 'package:connectobia/src/shared/application/theme/theme_bloc.dart';
+import 'package:connectobia/src/shared/data/constants/avatar.dart';
+import 'package:connectobia/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,4 +1,4 @@
-import 'package:connectobia/theme/shad_themedata.dart';
+import 'package:connectobia/src/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';

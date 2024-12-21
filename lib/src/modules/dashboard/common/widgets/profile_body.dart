@@ -1,6 +1,6 @@
 // Profile body (about section, description, and analytics)
-import 'package:connectobia/modules/dashboard/common/widgets/profile_analytics.dart';
-import 'package:connectobia/shared/data/extensions/string_extention.dart';
+import 'package:connectobia/src/modules/dashboard/common/widgets/profile_analytics.dart';
+import 'package:connectobia/src/shared/data/extensions/string_extention.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
 
