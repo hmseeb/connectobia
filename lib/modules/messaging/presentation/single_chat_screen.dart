@@ -11,12 +11,14 @@ class SingleChatScreen extends StatefulWidget {
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   late final ScrollController _scrollController;
+  late final TextEditingController _messageController;
   bool _isTyping = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _messageController = TextEditingController();
   }
 
   @override
@@ -25,7 +27,6 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     // Dummy messages data
     final List<Map<String, dynamic>> messages = [
       {'text': 'Looking forward to our meeting.', 'senderId': '2'},
-      {'text': '', 'senderId': '2'},
       {'text': 'I am great, thanks for asking!', 'senderId': '1'},
       {'text': 'Hi! I am good. How about you?', 'senderId': '2'},
       {'text': 'Hey! How are you?', 'senderId': '1'},
@@ -33,7 +34,6 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
 
     // Dummy current user ID
     final String currentUserID = '1';
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -66,6 +66,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               controller: _scrollController,
               reverse: true,
               itemCount: messages.length,
@@ -102,62 +103,71 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
               },
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: ShadInputFormField(
-                  placeholder: Text('Enter your message'),
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      setState(() {
-                        _isTyping = true;
-                      });
-                    } else {
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ShadInputFormField(
+                    controller: _messageController,
+                    placeholder: Text('Enter your message'),
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          _isTyping = true;
+                        });
+                      } else {
+                        setState(() {
+                          _isTyping = false;
+                        });
+                      }
+                    },
+                    onSubmitted: (value) {
                       setState(() {
                         _isTyping = false;
+                        _messageController.clear();
                       });
-                    }
-                  },
-                  decoration: ShadDecoration(
-                    secondaryFocusedBorder: ShadBorder.none,
-                    // no border
-                    border: ShadBorder.all(
-                      color: Colors.transparent,
-                      radius: BorderRadius.circular(24),
+                    },
+                    decoration: ShadDecoration(
+                      secondaryFocusedBorder: ShadBorder.all(
+                        width: 2,
+                        color: brightness == Brightness.light
+                            ? ShadColors.dark
+                            : ShadColors.light,
+                        radius: BorderRadius.circular(24),
+                      ),
+                      border: ShadBorder.all(
+                        color: Colors.transparent,
+                        radius: BorderRadius.circular(24),
+                      ),
+                      color: brightness == Brightness.dark
+                          ? ShadColors.darkForeground
+                          : ShadColors.lightForeground,
                     ),
-                    color: brightness == Brightness.dark
-                        ? ShadColors.darkForeground
-                        : ShadColors.lightForeground,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              if (_isTyping)
-                IconButton(
-                  icon: const Icon(
-                    LucideIcons.send,
-                    color: ShadColors.primary,
-                  ),
-                  onPressed: () {
-                    // Placeholder function for send message button
-                  },
-                )
-              else ...[
-                IconButton(
-                  icon: const Icon(Icons.mic),
-                  onPressed: () {
-                    // Placeholder function for send message button
-                  },
-                ),
-                // gallary button
-                IconButton(
-                  icon: const Icon(LucideIcons.image),
-                  onPressed: () {
-                    // Placeholder function for send message button
-                  },
-                ),
-              ]
-            ],
+                const SizedBox(width: 16),
+                if (_isTyping)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isTyping = false;
+                        _messageController.clear();
+                      });
+                    },
+                    child: Icon(
+                      LucideIcons.send,
+                      color: ShadColors.primary,
+                    ),
+                  )
+                else ...[
+                  Icon(Icons.mic),
+                  const SizedBox(width: 16),
+                  Icon(LucideIcons.image),
+                ],
+                const SizedBox(width: 16),
+              ],
+            ),
           ),
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
@@ -168,6 +178,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 }
