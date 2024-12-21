@@ -1,4 +1,3 @@
-import 'package:connectobia/modules/messaging/presentation/chats_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -6,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../../shared/application/theme/theme_bloc.dart';
 import '../../../../../shared/domain/models/brand.dart';
 import '../../../../auth/presentation/widgets/brand_featured_listing.dart';
+import '../../../../chatting/presentation/screens/chats_screen.dart';
 import '../../../common/widgets/appbar.dart';
 import '../../../common/widgets/bottom_navigation.dart';
 import '../../../common/widgets/drawer.dart';

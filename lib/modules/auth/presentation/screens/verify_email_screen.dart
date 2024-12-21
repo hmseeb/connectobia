@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:connectobia/shared/data/constants/screens.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../services/storage/pb.dart';
+import '../../../../shared/data/constants/screens.dart';
 import '../../../../theme/colors.dart';
 import '../../application/verification/email_verification_bloc.dart';
 import '../../data/respositories/auth_repo.dart';

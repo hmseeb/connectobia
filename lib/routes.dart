@@ -19,10 +19,10 @@ import 'package:connectobia/modules/auth/presentation/screens/creator_signup_scr
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
+import 'package:connectobia/modules/chatting/presentation/screens/single_chat_screen.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/modules/dashboard/common/screens/user_profile.dart';
 import 'package:connectobia/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
-import 'package:connectobia/modules/messaging/presentation/single_chat_screen.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:connectobia/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';

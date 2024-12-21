@@ -1,7 +1,8 @@
-import 'package:connectobia/modules/chatting/presentation/widgets/chats_list.dart';
-import 'package:connectobia/shared/presentation/widgets/transparent_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../widgets/chats_list.dart';
 
 class Chats extends StatefulWidget {
   const Chats({super.key});
