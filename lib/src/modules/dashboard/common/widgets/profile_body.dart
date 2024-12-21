@@ -50,29 +50,27 @@ class ProfileBody extends StatelessWidget {
               const SizedBox(height: 16),
             ],
             // Analytics section
-            if (followers != 0 && mediaCount != 0) ...[
-              Text(
-                'Analytics',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
+            Text(
+              'Analytics',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ProfileAnalyticsCard(
+                  title: 'FOLLOWERS',
+                  value: followers.toString(),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  ProfileAnalyticsCard(
-                    title: 'FOLLOWERS',
-                    value: followers.toString(),
-                  ),
-                  const SizedBox(width: 16),
-                  ProfileAnalyticsCard(
-                    title: 'MEDIA COUNT',
-                    value: mediaCount.toString(),
-                  ),
-                ],
-              ),
-            ],
+                const SizedBox(width: 16),
+                ProfileAnalyticsCard(
+                  title: 'MEDIA COUNT',
+                  value: mediaCount.toString(),
+                ),
+              ],
+            ),
           ],
         ),
       ),
