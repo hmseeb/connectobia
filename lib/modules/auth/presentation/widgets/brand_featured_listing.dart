@@ -1,13 +1,13 @@
-import 'package:connectobia/modules/auth/presentation/widgets/listings_placeholder.dart';
-import 'package:connectobia/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import '../../../dashboard/brand/presentation/widgets/featured_image.dart';
 import '../../../dashboard/brand/presentation/widgets/image_info.dart';
 import '../../../dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
+import 'listings_placeholder.dart';
 
 class BrandFeaturedListings extends StatefulWidget {
   const BrandFeaturedListings({super.key});

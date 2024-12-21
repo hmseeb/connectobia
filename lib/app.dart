@@ -1,3 +1,4 @@
+import 'package:connectobia/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive/rive.dart';
@@ -9,7 +10,6 @@ import 'shared/application/animation/animation_cubit.dart';
 import 'shared/application/theme/theme_bloc.dart';
 import 'shared/data/constants/path.dart';
 import 'theme/colors.dart';
-import 'theme/shad_themedata.dart';
 
 /// The main widget for the Connectobia application.
 ///

@@ -1,4 +1,3 @@
-import 'package:connectobia/modules/auth/presentation/widgets/creator_signup_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,7 @@ import '../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../application/signup/signup_bloc.dart';
+import '../widgets/creator_signup_form.dart';
 import '../widgets/custom_shad_select.dart';
 import '../widgets/privacy_policy.dart';
 import 'brand_signup_screen.dart';

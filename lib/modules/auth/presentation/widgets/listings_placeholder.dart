@@ -1,6 +1,7 @@
-import 'package:connectobia/modules/dashboard/brand/presentation/widgets/featured_image.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/widgets/image_info.dart';
 import 'package:flutter/material.dart';
+
+import '../../../dashboard/brand/presentation/widgets/featured_image.dart';
+import '../../../dashboard/brand/presentation/widgets/image_info.dart';
 
 class ListingsPlaceHolder extends StatelessWidget {
   const ListingsPlaceHolder({

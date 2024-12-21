@@ -1,8 +1,9 @@
-import 'package:connectobia/modules/messaging/presentation/widgets/message_input.dart';
-import 'package:connectobia/modules/messaging/presentation/widgets/messages_list.dart';
-import 'package:connectobia/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../../theme/colors.dart';
+import '../widgets/message_input.dart';
+import '../widgets/messages_list.dart';
 
 class SingleChatScreen extends StatefulWidget {
   const SingleChatScreen({super.key});
@@ -70,7 +71,6 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
             scrollController: _scrollController,
             messages: messages,
             currentUserID: currentUserID,
-            brightness: brightness,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),

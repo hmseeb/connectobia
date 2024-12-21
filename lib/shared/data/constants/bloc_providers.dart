@@ -1,7 +1,7 @@
+import 'package:connectobia/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../app.dart';
 import '../../../modules/auth/application/auth/auth_bloc.dart';
 import '../../../modules/auth/application/login/login_bloc.dart';
 import '../../../modules/auth/application/signup/signup_bloc.dart';
