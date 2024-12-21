@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FirstMessage extends StatelessWidget {
-  const FirstMessage({super.key});
+  final String name;
+  const FirstMessage({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +14,22 @@ class FirstMessage extends StatelessWidget {
         children: [
           SvgPicture.asset(
             AssetsPath.message,
-            height: 200,
-            width: 200,
+            height: 150,
+            width: 150,
           ),
           SizedBox(height: 16),
           Text(
-            'Send message request',
+            'Invite ${name.split(' ')[0].toLowerCase()} chat with one message',
             style: TextStyle(
               fontSize: 20,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 8),
+          Text(
+            'You\'ll be able to send additional messages once your request has been accepted.',
+            style: TextStyle(
+              color: Colors.grey,
             ),
             textAlign: TextAlign.center,
           ),

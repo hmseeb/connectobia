@@ -154,7 +154,17 @@ class _UserProfileState extends State<UserProfile> {
         onPressed: isLoading
             ? null
             : () {
-                Navigator.pushNamed(context, singleChatScreen);
+                Navigator.pushNamed(
+                  context,
+                  singleChatScreen,
+                  arguments: {
+                    'userId': userId,
+                    'name': name,
+                    'avatar': avatar,
+                    'collectionId': collectionId,
+                    'hasConnectedInstagram': connectedSocial,
+                  },
+                );
               },
         child: const Icon(Icons.message),
       ),
