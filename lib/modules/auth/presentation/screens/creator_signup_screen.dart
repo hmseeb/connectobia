@@ -1,3 +1,4 @@
+import 'package:connectobia/modules/auth/presentation/widgets/creator_signup_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,23 +12,22 @@ import '../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../application/signup/signup_bloc.dart';
-import '../widgets/creator_signup_form.dart';
 import '../widgets/custom_shad_select.dart';
 import '../widgets/privacy_policy.dart';
 import 'brand_signup_screen.dart';
 
-/// A screen that allows a creator to sign up.
-/// [CreatorScreen] contains a form for a creator to sign up.
+/// A screen that allows a Influencer to sign up.
+/// [InfluencerScreen] contains a form for a Influencer to sign up.
 ///
 /// {@category Screens}
-class CreatorScreen extends StatefulWidget {
-  const CreatorScreen({super.key});
+class InfluencerScreen extends StatefulWidget {
+  const InfluencerScreen({super.key});
 
   @override
-  State<CreatorScreen> createState() => _CreatorScreenState();
+  State<InfluencerScreen> createState() => _InfluencerScreenState();
 }
 
-class _CreatorScreenState extends State<CreatorScreen> {
+class _InfluencerScreenState extends State<InfluencerScreen> {
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;
   late final TextEditingController emailController;
@@ -52,7 +52,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: transparentAppBar('Create your account', context: context),
+      appBar: transparentAppBar('Create influencer account', context: context),
       body: SingleChildScrollView(
         child: BlocConsumer<SignupBloc, SignupState>(
           listener: (context, state) {
@@ -90,7 +90,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                       width: 150,
                     ),
                     const SizedBox(height: 20),
-                    CreatorSignupForm(
+                    InfluencerSignupForm(
                         brandNameController: firstNameController,
                         emailController: emailController,
                         usernameController: usernameController,
@@ -133,7 +133,7 @@ class _CreatorScreenState extends State<CreatorScreen> {
                               .add(InstagramSignup(accountType: accountType));
                         },
                         text: state is InstagramLoading
-                            ? 'Signing up...'
+                            ? 'Loging up...'
                             : 'Sign up with Instagram',
                         borderSide: const BorderSide(),
                         backgroundColor: ShadColors.lightForeground,

@@ -6,11 +6,10 @@ import '../../../../../shared/application/theme/theme_bloc.dart';
 import '../../../../../shared/data/constants/industries.dart';
 import '../../../../../shared/domain/models/influencer.dart';
 import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/bottom_navigation.dart';
 import '../../../common/widgets/drawer.dart';
-import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
-import '../../../influencer/presentation/widgets/influencer_featured_listings.dart';
-import '../widgets/bottom_navigation.dart';
+import '../widgets/influencer_featured_listings.dart';
 
 class InfluencerDashboard extends StatefulWidget {
   final Influencer user;
@@ -22,7 +21,6 @@ class InfluencerDashboard extends StatefulWidget {
 
 class _InfluencerDashboardState extends State<InfluencerDashboard> {
   late Influencer user = widget.user;
-  late final List<String> _industries;
   late final brightness = ShadTheme.of(context).brightness;
   final ScrollController scrollController = ScrollController();
 
@@ -39,29 +37,31 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
             avatar: '',
             userId: user.id,
           ),
-          body: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              CommonAppBar(
-                  userName: user.fullName,
-                  searchPlaceholder: 'Search for Brands'),
-            ],
-            body: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionTitle('Popular Categories'),
-                    const SizedBox(height: 16),
-                    PopularCategories(industries: _industries),
-                    const SectionTitle('Featured Brands'),
-                    const SizedBox(height: 16),
-                    InfluencerFeaturedListings(),
-                  ],
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: [
+              NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  CommonAppBar(
+                      userName: user.fullName,
+                      searchPlaceholder: 'Search for Brands'),
+                ],
+                body: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionTitle('Featured Brands'),
+                        const SizedBox(height: 16),
+                        InfluencerFeaturedListings(),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
           bottomNavigationBar: buildBottomNavigationBar(
             selectedIndex: _selectedIndex,
@@ -97,7 +97,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   @override
   void initState() {
     super.initState();
-    _industries = getSortedIndustries();
     scrollController.addListener(_scrollListener); // Pass the function directly
   }
 

@@ -1,16 +1,15 @@
+import 'package:connectobia/modules/messaging/presentation/chats_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../../shared/application/theme/theme_bloc.dart';
-import '../../../../../shared/data/constants/industries.dart';
 import '../../../../../shared/domain/models/brand.dart';
 import '../../../../auth/presentation/widgets/brand_featured_listing.dart';
 import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/bottom_navigation.dart';
 import '../../../common/widgets/drawer.dart';
-import '../../../common/widgets/popular_categories.dart';
 import '../../../common/widgets/section_title.dart';
-import '../widgets/bottom_navigation.dart';
 
 class BrandDashboard extends StatefulWidget {
   final Brand user;
@@ -22,7 +21,7 @@ class BrandDashboard extends StatefulWidget {
 
 class _BrandDashboardState extends State<BrandDashboard> {
   late Brand user = widget.user;
-  late final List<String> _industries;
+  // late final List<String> _industries;
   late final brightness = ShadTheme.of(context).brightness;
   final ScrollController scrollController = ScrollController();
 
@@ -39,29 +38,34 @@ class _BrandDashboardState extends State<BrandDashboard> {
             avatar: '',
             userId: user.id,
           ),
-          body: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              CommonAppBar(
-                  userName: user.brandName,
-                  searchPlaceholder: 'Search for influencers'),
-            ],
-            body: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionTitle('Popular Categories'),
-                    const SizedBox(height: 16),
-                    PopularCategories(industries: _industries),
-                    const SectionTitle('Featured Influencers'),
-                    const SizedBox(height: 16),
-                    BrandFeaturedListings(),
-                  ],
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: [
+              NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                  CommonAppBar(
+                      userName: user.brandName,
+                      searchPlaceholder: 'Search for influencers'),
+                ],
+                body: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionTitle('Featured Influencers'),
+                        const SizedBox(height: 16),
+                        BrandFeaturedListings(),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Placeholder(),
+              Chats(),
+              Placeholder(),
+            ],
           ),
           bottomNavigationBar: buildBottomNavigationBar(
             selectedIndex: _selectedIndex,
@@ -85,19 +89,9 @@ class _BrandDashboardState extends State<BrandDashboard> {
     super.dispose();
   }
 
-  List<String> getSortedIndustries() {
-    final industriesList =
-        IndustryList.industries.entries.map((e) => e.value).toList();
-    // return sorted the industries alphabetically
-    industriesList.sort();
-    industriesList.add('Others');
-    return industriesList;
-  }
-
   @override
   void initState() {
     super.initState();
-    _industries = getSortedIndustries();
     scrollController.addListener(_scrollListener); // Pass the function directly
   }
 

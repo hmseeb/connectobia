@@ -20,8 +20,7 @@ void main() async {
       SchedulerBinding.instance.platformDispatcher.platformBrightness;
 
   /// Check if the user has set the dark mode preference
-  bool isDarkMode =
-      prefs.getBool('darkMode') ?? (brightness == Brightness.light);
+  bool isDarkMode = prefs.getBool('darkMode') ?? brightness == Brightness.light;
 
   /// Initialize Rive
   await RiveFile.initialize();

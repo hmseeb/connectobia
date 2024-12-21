@@ -5,9 +5,9 @@
 /// The routes are defined as follows:
 /// - `/`: Displays the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart).
 /// - `/welcomeScreen`: Displays the [WelcomeScreen](package:connectobia/modules/auth/presentation/screens/welcomeScreen_screen.dart) with arguments.
-/// - `/signinScreen`: Displays the [SigninScreen](package:connectobia/modules/auth/presentation/screens/login_screen.dart).
+/// - `/LoginScreen`: Displays the [LoginScreen](package:connectobia/modules/auth/presentation/screens/login_screen.dart).
 /// - `/brandSignupScreen`: Displays the [BrandAgencyScreen](package:connectobia/modules/auth/presentation/screens/brand_agency_screen.dart).
-/// - `/creatorSignupScreen`: Displays the [CreatorScreen](package:connectobia/modules/auth/presentation/screens/creator_screen.dart).
+/// - `/InfluencerSignupScreen`: Displays the [InfluencerScreen](package:connectobia/modules/auth/presentation/screens/Influencer_screen.dart).
 /// - `/homeScreen`: Displays the [HomeScreen](package:connectobia/modules/homeScreen/presentation/screens/homeScreen_screen.dart).
 ///
 /// If an unknown route is provided, the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart) is displayed by default.
@@ -15,13 +15,14 @@ library;
 
 import 'package:connectobia/app.dart';
 import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/creator__signup_screen.dart';
+import 'package:connectobia/modules/auth/presentation/screens/creator_signup_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/screens/influencer_dashboard.dart';
 import 'package:connectobia/modules/dashboard/common/screens/user_profile.dart';
+import 'package:connectobia/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
+import 'package:connectobia/modules/messaging/presentation/single_chat_screen.dart';
 import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:connectobia/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
@@ -44,55 +45,52 @@ class GenerateRoutes {
     switch (settings.name) {
       case splashScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return PageRouteBuilder(
-            pageBuilder: (_, animation, secondaryAnimation) => Connectobia(
-                  isDarkMode: args['isDarkMode'],
-                ));
+        return _buildRoute(Connectobia(
+          isDarkMode: args['isDarkMode'],
+        ));
       case welcomeScreen:
-        return PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (_, animation, secondaryAnimation) =>
-              const WelcomeScreen(),
-        );
-      case signinScreen:
+        return _buildAnimatedRoute(const WelcomeScreen());
+      case loginScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(SigninScreen(
+        return _buildRoute(LoginScreen(
           accountType: args['accountType'],
         ));
       case influencerOnboarding:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(InfluencerOnboarding(
+        return _buildRoute(InfluencerOnboarding(
           user: args['user'],
         ));
       case profile:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(UserProfile(
+        return _buildRoute(UserProfile(
           userId: args['profileId'],
           self: args['self'],
           profileType: args['profileType'],
         ));
       case verifyEmailScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(VerifyEmail(
+        return _buildAnimatedRoute(VerifyEmail(
           email: args['email'],
         ));
       case brandSignupScreen:
-        return _buildPageRoute(const BrandScreen());
+        return _buildRoute(const BrandScreen());
       case brandDashboard:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(BrandDashboard(
+        return _buildAnimatedRoute(BrandDashboard(
           user: args['user'],
         ));
       case influencerDashboard:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(InfluencerDashboard(
+        return _buildAnimatedRoute(InfluencerDashboard(
           user: args['influencers'],
         ));
-      case creatorSignupScreen:
-        return _buildPageRoute(const CreatorScreen());
+      case singleChatScreen:
+        return _buildRoute(SingleChatScreen());
+      case influencerSignupScreen:
+        return _buildRoute(const InfluencerScreen());
 
       default:
-        return MaterialPageRoute(builder: (_) => WelcomeScreen());
+        return _buildRoute(WelcomeScreen());
     }
   }
 
@@ -100,7 +98,7 @@ class GenerateRoutes {
   ///
   /// This method creates a [PageRouteBuilder] with a fade transition and a slight
   /// upward slide for a smooth feel.
-  static PageRouteBuilder _buildPageRoute(Widget page) {
+  static PageRouteBuilder _buildAnimatedRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionDuration: const Duration(
@@ -125,5 +123,9 @@ class GenerateRoutes {
         );
       },
     );
+  }
+
+  static MaterialPageRoute _buildRoute(Widget page) {
+    return MaterialPageRoute(builder: (_) => page);
   }
 }

@@ -71,7 +71,7 @@ class _UserProfileState extends State<UserProfile> {
             industry: 'industry',
             username: 'username',
             isVerified: true,
-            connectedSocial: true,
+            connectedSocial: false,
             description:
                 'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
             followers: 0,

@@ -11,7 +11,7 @@ import '../widgets/signup_card.dart';
 import '../widgets/tagline.dart';
 import '../widgets/title_logo.dart';
 
-/// A screen that allows a user to sign up or sign in.
+/// A screen that allows a user to sign up or Log in.
 ///
 /// [WelcomeScreen] contains a welcome message and two buttons for a user to sign up as a brand or influencer.
 ///
@@ -63,7 +63,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             SizedBox(height: height * 15),
             const AppTitleLogo(),
-            const SizedBox(height: 10),
             const Tagline('where brands and influencers meet'),
             const SizedBox(height: 30),
             SignupCard(
@@ -72,7 +71,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/signinScreen',
+                  '/LoginScreen',
                   arguments: {
                     'accountType': 'brands',
                   },
@@ -83,12 +82,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
             const SizedBox(height: 10),
             SignupCard(
-              title: 'influencers',
+              title: 'Influencers',
               description: 'I want to monetize my content',
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/signinScreen',
+                  '/LoginScreen',
                   arguments: {'accountType': 'influencers'},
                 );
                 HapticFeedback.mediumImpact();
@@ -98,9 +97,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             // const SizedBox(height: 30),
             // AuthFlow(
             //   title: 'Already have an account? ',
-            //   buttonText: 'Sign in',
+            //   buttonText: 'Log in',
             //   onPressed: () {
-            //     Navigator.pushNamed(context, '/signinScreen');
+            //     Navigator.pushNamed(context, '/LoginScreen');
             //     HapticFeedback.mediumImpact();
             //   },
             // ),

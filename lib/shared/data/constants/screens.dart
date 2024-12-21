@@ -1,6 +1,6 @@
 const String splashScreen = "/";
 const String welcomeScreen = "/welcomeScreen";
-const String signinScreen = "/signinScreen";
+const String loginScreen = "/LoginScreen";
 const String influencerOnboarding = "/influencerOnboarding";
 const String brandOnboarding = "/brandOnboarding";
 const String profile = "/profile";
@@ -8,4 +8,5 @@ const String verifyEmailScreen = "/verifyEmailScreen";
 const String brandSignupScreen = "/brandSignupScreen";
 const String brandDashboard = "/brandDashboard";
 const String influencerDashboard = "/influencerDashboard";
-const String creatorSignupScreen = "/creatorSignupScreen";
+const String influencerSignupScreen = "/InfluencerSignupScreen";
+const String singleChatScreen = "/singleChatScreen";

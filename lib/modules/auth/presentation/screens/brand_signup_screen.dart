@@ -70,7 +70,7 @@ class _BrandScreenState extends State<BrandScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: transparentAppBar('Create your account', context: context),
+      appBar: transparentAppBar('Create brand account', context: context),
       body: SingleChildScrollView(
         controller: scrollController,
         child: BlocConsumer<SignupBloc, SignupState>(

@@ -10,11 +10,11 @@ class AppTitleLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Logo(size: 50),
-        AppTitle('nnectobia'),
+        AppTitle('Connectobia'),
       ],
     );
   }

@@ -8,7 +8,7 @@ class AssetsPath {
   static const String emailIcon = 'assets/illustrations/email.svg';
   static const String brand = 'assets/illustrations/brand.svg';
   static const String login = 'assets/illustrations/login.svg';
-  static const String creator = 'assets/illustrations/creator.svg';
+  static const String influencer = 'assets/illustrations/influencer.svg';
   static const String onboardInfluencer =
       'assets/illustrations/onboard_influencer.svg';
   static const String splash = 'assets/animations/splash.riv';

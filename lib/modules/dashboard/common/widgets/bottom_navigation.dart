@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../../shared/application/theme/theme_bloc.dart';
-import '../../../../../theme/colors.dart';
+import '../../../../shared/application/theme/theme_bloc.dart';
+import '../../../../theme/colors.dart';
 
 BottomNavigationBar buildBottomNavigationBar({
   required int selectedIndex,
@@ -13,6 +13,8 @@ BottomNavigationBar buildBottomNavigationBar({
     currentIndex: selectedIndex,
     onTap: onItemTapped,
     showUnselectedLabels: true,
+    selectedFontSize: 12,
+    unselectedFontSize: 12,
     type: BottomNavigationBarType.fixed,
     unselectedItemColor:
         state is DarkTheme ? ShadColors.light : ShadColors.dark,
@@ -33,7 +35,7 @@ BottomNavigationBar buildBottomNavigationBar({
         icon: Icon(
           LucideIcons.messageCircle,
         ),
-        label: 'Chat',
+        label: 'Chats',
       ),
       BottomNavigationBarItem(
         icon: Icon(
