@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -150,7 +151,11 @@ class _UserProfileState extends State<UserProfile> {
   }) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: isLoading
+            ? null
+            : () {
+                Navigator.pushNamed(context, singleChatScreen);
+              },
         child: const Icon(Icons.message),
       ),
       body: Skeletonizer(

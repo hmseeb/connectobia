@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +30,7 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
       listener: (context, state) {
         if (state is Onboarded) {
           Navigator.pushNamedAndRemoveUntil(
-              context, '/influencerDashboard', (route) => false,
+              context, influencerDashboard, (route) => false,
               arguments: {'influencers': widget.user});
         } else if (state is ConnectingInstagram) {
           setState(() {
@@ -94,7 +95,7 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                           .add(UpdateOnboardBool());
                       HapticFeedback.mediumImpact();
                       Navigator.pushNamedAndRemoveUntil(
-                          context, '/influencerDashboard', (route) => false,
+                          context, influencerDashboard, (route) => false,
                           arguments: {'influencers': widget.user});
                     },
                     child: Text(

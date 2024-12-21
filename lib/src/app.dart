@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -100,14 +101,14 @@ class ConnectobiaState extends State<Connectobia> {
       if (state.user.onboarded) {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/influencerDashboard',
+          influencerDashboard,
           (route) => false,
           arguments: {'influencers': state.user},
         );
       } else {
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/influencerOnboarding',
+          influencerOnboarding,
           (route) => false,
           arguments: {'user': state.user},
         );
@@ -115,19 +116,19 @@ class ConnectobiaState extends State<Connectobia> {
     } else if (state is BrandAuthenticated) {
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/brandDashboard',
+        brandDashboard,
         (route) => false,
         arguments: {'user': state.user},
       );
     } else if (state is Unauthenticated) {
       Navigator.pushReplacementNamed(
         context,
-        '/welcomeScreen',
+        welcomeScreen,
       );
     } else if (state is Unverified) {
       Navigator.pushReplacementNamed(
         context,
-        '/verifyEmailScreen',
+        verifyEmailScreen,
         arguments: {
           'email': state.email,
         },
@@ -140,7 +141,7 @@ class ConnectobiaState extends State<Connectobia> {
       );
       Navigator.pushReplacementNamed(
         context,
-        '/welcomeScreen',
+        welcomeScreen,
       );
     }
   }

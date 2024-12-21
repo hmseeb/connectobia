@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -35,7 +36,7 @@ class _BrandFeaturedListingsState extends State<BrandFeaturedListings> {
                         InfluencerProfileLoad(
                             profileId: id,
                             influencer: state.influencers.items[index]));
-                    Navigator.pushNamed(context, '/profile', arguments: {
+                    Navigator.pushNamed(context, profile, arguments: {
                       'profileId': id,
                       'self': false,
                       'profileType': 'influencers'

@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,31 +62,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   } else if (state is BrandLoginSuccess) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/brandDashboard',
+                      brandDashboard,
                       (route) => false,
                       arguments: {'user': state.user},
                     );
-                    // else {
-                    //   Navigator.pushNamedAndRemoveUntil(
-                    //     context,
-                    //     state.user.accountTypes == 'influencers'
-                    //         ? '/influencerOnboarding'
-                    //         : '/brandOnboarding',
-                    //     (route) => false,
-                    //     arguments: {'user': state.user},
-                    //   );
-                    // }
                   } else if (state is InfluencerLoginSuccess) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/influencerDashboard',
+                      influencerDashboard,
                       (route) => false,
                       arguments: {'influencers': state.user},
                     );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
                       context,
-                      '/verifyEmailScreen',
+                      verifyEmailScreen,
                       arguments: {'email': emailController.text},
                     );
                   } else if (state is ConnectingInstagramFailure) {
@@ -171,12 +162,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (accountType == 'brands') {
                             Navigator.pushNamed(
                               context,
-                              '/brandSignupScreen',
+                              brandDashboard,
                             );
                           } else {
                             Navigator.pushNamed(
                               context,
-                              '/InfluencerSignupScreen',
+                              influencerSignupScreen,
                             );
                           }
                           HapticFeedback.mediumImpact();

@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,7 +72,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/LoginScreen',
+                  loginScreen,
                   arguments: {
                     'accountType': 'brands',
                   },
@@ -87,22 +88,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               onPressed: () {
                 Navigator.pushNamed(
                   context,
-                  '/LoginScreen',
+                  loginScreen,
                   arguments: {'accountType': 'influencers'},
                 );
                 HapticFeedback.mediumImpact();
                 CollectionNameSingleton.instance = 'influencers';
               },
             ),
-            // const SizedBox(height: 30),
-            // AuthFlow(
-            //   title: 'Already have an account? ',
-            //   buttonText: 'Log in',
-            //   onPressed: () {
-            //     Navigator.pushNamed(context, '/LoginScreen');
-            //     HapticFeedback.mediumImpact();
-            //   },
-            // ),
           ],
         ),
       ),
