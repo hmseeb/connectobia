@@ -45,55 +45,52 @@ class GenerateRoutes {
     switch (settings.name) {
       case splashScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-            builder: (_) => Connectobia(
-                  isDarkMode: args['isDarkMode'],
-                ));
+        return _buildRoute(Connectobia(
+          isDarkMode: args['isDarkMode'],
+        ));
       case welcomeScreen:
-        return MaterialPageRoute(
-          builder: (_) => const WelcomeScreen(),
-        );
+        return _buildAnimatedRoute(const WelcomeScreen());
       case loginScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(LoginScreen(
+        return _buildRoute(LoginScreen(
           accountType: args['accountType'],
         ));
       case influencerOnboarding:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(InfluencerOnboarding(
+        return _buildRoute(InfluencerOnboarding(
           user: args['user'],
         ));
       case profile:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(UserProfile(
+        return _buildRoute(UserProfile(
           userId: args['profileId'],
           self: args['self'],
           profileType: args['profileType'],
         ));
       case verifyEmailScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(VerifyEmail(
+        return _buildAnimatedRoute(VerifyEmail(
           email: args['email'],
         ));
       case brandSignupScreen:
-        return _buildPageRoute(const BrandScreen());
+        return _buildRoute(const BrandScreen());
       case brandDashboard:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(BrandDashboard(
+        return _buildAnimatedRoute(BrandDashboard(
           user: args['user'],
         ));
       case influencerDashboard:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildPageRoute(InfluencerDashboard(
+        return _buildAnimatedRoute(InfluencerDashboard(
           user: args['influencers'],
         ));
       case singleChatScreen:
-        return MaterialPageRoute(builder: (_) => SingleChatScreen());
+        return _buildRoute(SingleChatScreen());
       case influencerSignupScreen:
-        return _buildPageRoute(const InfluencerScreen());
+        return _buildRoute(const InfluencerScreen());
 
       default:
-        return MaterialPageRoute(builder: (_) => WelcomeScreen());
+        return _buildRoute(WelcomeScreen());
     }
   }
 
@@ -101,7 +98,7 @@ class GenerateRoutes {
   ///
   /// This method creates a [PageRouteBuilder] with a fade transition and a slight
   /// upward slide for a smooth feel.
-  static PageRouteBuilder _buildPageRoute(Widget page) {
+  static PageRouteBuilder _buildAnimatedRoute(Widget page) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionDuration: const Duration(
@@ -126,5 +123,9 @@ class GenerateRoutes {
         );
       },
     );
+  }
+
+  static MaterialPageRoute _buildRoute(Widget page) {
+    return MaterialPageRoute(builder: (_) => page);
   }
 }
