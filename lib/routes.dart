@@ -45,15 +45,13 @@ class GenerateRoutes {
     switch (settings.name) {
       case splashScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return PageRouteBuilder(
-            pageBuilder: (_, animation, secondaryAnimation) => Connectobia(
+        return MaterialPageRoute(
+            builder: (_) => Connectobia(
                   isDarkMode: args['isDarkMode'],
                 ));
       case welcomeScreen:
-        return PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (_, animation, secondaryAnimation) =>
-              const WelcomeScreen(),
+        return MaterialPageRoute(
+          builder: (_) => const WelcomeScreen(),
         );
       case loginScreen:
         final args = settings.arguments as Map<String, dynamic>;
@@ -90,7 +88,7 @@ class GenerateRoutes {
           user: args['influencers'],
         ));
       case singleChatScreen:
-        return _buildPageRoute(SingleChatScreen());
+        return MaterialPageRoute(builder: (_) => SingleChatScreen());
       case influencerSignupScreen:
         return _buildPageRoute(const InfluencerScreen());
 
