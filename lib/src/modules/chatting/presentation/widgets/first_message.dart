@@ -19,7 +19,7 @@ class FirstMessage extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            'Invite ${name.split(' ')[0].toLowerCase()} chat with one message',
+            'Invite ${name.split(' ')[0].toLowerCase()} to chat with one message',
             style: TextStyle(
               fontSize: 20,
             ),
