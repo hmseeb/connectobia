@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,7 +65,7 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
               );
               Navigator.pushNamed(
                 context,
-                '/verifyEmailScreen',
+                verifyEmailScreen,
                 arguments: {'email': state.email},
               );
             } else if (state is SignupFailure) {

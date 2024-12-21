@@ -43,13 +43,13 @@ class VerifyEmailState extends State<VerifyEmail> {
       listener: (context, state) {
         if (state is BrandEmailVerified) {
           Navigator.of(context).pushNamedAndRemoveUntil(
-              '/brandDashboard', (route) => false,
+              brandDashboard, (route) => false,
               arguments: {
                 'user': state.brand,
               });
         } else if (state is InfluencerEmailVerified) {
           Navigator.of(context).pushNamedAndRemoveUntil(
-              '/influencerOnboarding', (route) => false,
+              influencerDashboard, (route) => false,
               arguments: {
                 'user': state.influencer,
               });

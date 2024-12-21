@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -148,7 +149,7 @@ class CommonDrawer extends StatelessWidget {
                             if (context.mounted) {
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
-                                '/welcomeScreen',
+                                welcomeScreen,
                                 (route) => false,
                               );
                             }

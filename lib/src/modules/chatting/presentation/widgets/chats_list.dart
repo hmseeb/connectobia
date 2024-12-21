@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 
 class ChatsList extends StatelessWidget {
@@ -21,7 +22,7 @@ class ChatsList extends StatelessWidget {
           ),
           onTap: () {
             Navigator.of(context, rootNavigator: true)
-                .pushNamed('/singleChatScreen');
+                .pushNamed(singleChatScreen);
           },
           // add trailing icon to show unread messages
           trailing: const Text('8 min ago'),
