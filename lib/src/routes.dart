@@ -13,18 +13,18 @@
 /// If an unknown route is provided, the [SplashScreen](package:connectobia/globals/screens/splash_screen.dart) is displayed by default.
 library;
 
-import 'package:connectobia/app.dart';
-import 'package:connectobia/modules/auth/presentation/screens/brand_signup_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/creator_signup_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/login_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/verify_email_screen.dart';
-import 'package:connectobia/modules/auth/presentation/screens/welcome_screen.dart';
-import 'package:connectobia/modules/chatting/presentation/screens/single_chat_screen.dart';
-import 'package:connectobia/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
-import 'package:connectobia/modules/dashboard/common/screens/user_profile.dart';
-import 'package:connectobia/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
-import 'package:connectobia/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
-import 'package:connectobia/shared/data/constants/screens.dart';
+import 'package:connectobia/src/app.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/brand_signup_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/creator_signup_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
+import 'package:connectobia/src/modules/chatting/presentation/screens/single_chat_screen.dart';
+import 'package:connectobia/src/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
+import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.dart';
+import 'package:connectobia/src/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
+import 'package:connectobia/src/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.

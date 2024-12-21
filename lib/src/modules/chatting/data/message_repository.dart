@@ -1,6 +1,6 @@
-import 'package:connectobia/modules/chatting/domain/models/chats.dart';
-import 'package:connectobia/modules/chatting/domain/models/messages.dart';
-import 'package:connectobia/services/storage/pb.dart';
+import 'package:connectobia/src/modules/chatting/domain/models/chats.dart';
+import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
+import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class MessageRepository {

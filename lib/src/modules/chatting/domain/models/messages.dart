@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:connectobia/modules/chatting/domain/models/message.dart';
+import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class Messages {
