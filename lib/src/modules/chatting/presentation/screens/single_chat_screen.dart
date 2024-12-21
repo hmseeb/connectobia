@@ -1,12 +1,26 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
+import 'package:connectobia/src/modules/chatting/presentation/widgets/message_input.dart';
+import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../theme/colors.dart';
-import '../widgets/message_input.dart';
 import '../widgets/messages_list.dart';
 
 class SingleChatScreen extends StatefulWidget {
-  const SingleChatScreen({super.key});
+  final String name;
+  final String avatar;
+  final bool hasConnectedInstagram;
+  final String collectionId;
+  final String userId;
+  const SingleChatScreen(
+      {super.key,
+      required this.name,
+      required this.avatar,
+      required this.userId,
+      required this.collectionId,
+      required this.hasConnectedInstagram});
 
   @override
   State<SingleChatScreen> createState() => _SingleChatScreenState();
@@ -14,14 +28,14 @@ class SingleChatScreen extends StatefulWidget {
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   late final ScrollController _scrollController;
-  late final TextEditingController _messageController;
+  late final TextEditingController messageController;
   bool isTyping = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _messageController = TextEditingController();
+    messageController = TextEditingController();
   }
 
   @override
@@ -34,6 +48,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
       {'text': 'Hi! I am good. How about you?', 'senderId': '2'},
       {'text': 'Hey! How are you?', 'senderId': '1'},
     ];
+
+    messages.clear();
 
     // Dummy current user ID
     final String currentUserID = '1';
@@ -50,12 +66,24 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
         ),
         title: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               backgroundColor: Colors.blueGrey,
-              child: Text('U'),
+              backgroundImage: CachedNetworkImageProvider(Avatar.getUserImage(
+                collectionId: widget.collectionId,
+                image: widget.avatar,
+                userId: widget.userId,
+              )),
             ),
             const SizedBox(width: 24),
-            const Text('Haseeb Azhar'),
+            Text(
+              widget.name,
+            ),
+            // Blue tick
+            if (widget.hasConnectedInstagram)
+              const Icon(
+                Icons.verified,
+                color: Colors.blue,
+              ),
           ],
         ),
         actions: [
@@ -67,24 +95,43 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
       ),
       body: Column(
         children: [
-          MessagesList(
-            scrollController: _scrollController,
-            messages: messages,
-            currentUserID: currentUserID,
-          ),
+          if (messages.isNotEmpty)
+            MessagesList(
+              scrollController: _scrollController,
+              messages: messages,
+              currentUserID: currentUserID,
+            )
+          else ...[
+            Spacer(),
+            FirstMessage(name: widget.name),
+            Spacer(),
+          ],
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 MessageInput(
-                  messageController: _messageController,
+                  messageController: messageController,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      setState(() {
+                        isTyping = true;
+                      });
+                    } else {
+                      setState(() {
+                        isTyping = false;
+                      });
+                    }
+                  },
                 ),
                 const SizedBox(width: 16),
                 if (isTyping)
                   GestureDetector(
                     onTap: () {
-                      isTyping = false;
-                      _messageController.clear();
+                      setState(() {
+                        isTyping = false;
+                      });
+                      messageController.clear();
                     },
                     child: Icon(
                       LucideIcons.send,
@@ -109,7 +156,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _messageController.dispose();
+    messageController.dispose();
     super.dispose();
   }
 }

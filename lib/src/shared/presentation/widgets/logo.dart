@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../data/constants/path.dart';
+import '../../data/constants/assets.dart';
 
 /// A class that holds the logo widget
 ///

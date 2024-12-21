@@ -1,20 +1,42 @@
 import 'package:connectobia/src/modules/chatting/domain/models/chats.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class MessageRepository {
   Future<RecordModel> createChat(
-      {required String influencerId, required String brandId}) async {
-    final pb = await PocketBaseSingleton.instance;
+      {required String senderId,
+      required String recipientId,
+      required String messageText}) async {
+    try {
+      String accountType = CollectionNameSingleton.instance;
 
-    final body = <String, dynamic>{
-      "influencer": influencerId,
-      "brand": brandId,
-    };
+      String influencerId =
+          accountType == 'influencers' ? senderId : recipientId;
+      String brandId = accountType == 'brands' ? senderId : recipientId;
 
-    final record = await pb.collection('chats').create(body: body);
-    return record;
+      final pb = await PocketBaseSingleton.instance;
+
+      final body = <String, dynamic>{
+        "influencer": influencerId,
+        "brand": brandId,
+      };
+
+      final record = await pb.collection('chats').create(body: body);
+      String chatId = record.id;
+
+      await addNewMessage(
+        chatId: chatId,
+        senderId: senderId,
+        recipientId: recipientId,
+        messageType: 'text',
+        messageText: messageText,
+      );
+      return record;
+    } catch (e) {
+      throw ClientException;
+    }
   }
 
   Future<RecordModel> addNewMessage(
@@ -23,25 +45,28 @@ class MessageRepository {
       required String recipientId,
       required String messageType,
       required String messageText}) async {
-    final pb = await PocketBaseSingleton.instance;
+    try {
+      final pb = await PocketBaseSingleton.instance;
 
-    final body = <String, dynamic>{
-      "senderId": senderId,
-      "recipientId": recipientId,
-      "messageText": messageText,
-      "messageType": 'text',
-      "chat": chatId,
-      "isRead": false
-    };
+      final body = <String, dynamic>{
+        "senderId": senderId,
+        "recipientId": recipientId,
+        "messageText": messageText,
+        "messageType": 'text',
+        "chat": chatId,
+        "isRead": false
+      };
 
-    final record = await pb.collection('messages').create(body: body);
-    return record;
+      final record = await pb.collection('messages').create(body: body);
+      return record;
+    } catch (e) {
+      throw ClientException;
+    }
   }
 
   Future<Messages> getMessages({required String chatId}) async {
-    final pb = await PocketBaseSingleton.instance;
-
     try {
+      final pb = await PocketBaseSingleton.instance;
       final resultList = await pb.collection('messages').getList(
             page: 1,
             perPage: 20,
@@ -57,13 +82,17 @@ class MessageRepository {
   }
 
   Future<Chats> getChats({required String userId}) async {
-    final pb = await PocketBaseSingleton.instance;
-
     try {
+      String accountType = CollectionNameSingleton.instance;
+
+      // Remove the 's' from the account type
+      accountType = accountType.replaceAll('s', '');
+
+      final pb = await PocketBaseSingleton.instance;
       final resultList = await pb.collection('chats').getList(
             page: 1,
             perPage: 20,
-            filter: 'influencer == $userId OR brand == $userId',
+            filter: '$accountType == $userId',
             expand: 'influencer,brand,message',
             sort: 'created',
           );

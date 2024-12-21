@@ -85,7 +85,14 @@ class GenerateRoutes {
           user: args['influencers'],
         ));
       case singleChatScreen:
-        return _buildRoute(SingleChatScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildRoute(SingleChatScreen(
+          collectionId: args['collectionId'],
+          userId: args['userId'],
+          name: args['name'],
+          avatar: args['avatar'],
+          hasConnectedInstagram: args['hasConnectedInstagram'],
+        ));
       case influencerSignupScreen:
         return _buildRoute(const InfluencerScreen());
 

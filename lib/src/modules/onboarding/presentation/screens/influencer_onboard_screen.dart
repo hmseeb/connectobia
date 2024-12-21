@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
-import '../../../../shared/data/constants/path.dart';
+import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../../../theme/colors.dart';
