@@ -6,17 +6,16 @@ import 'package:pocketbase/pocketbase.dart';
 
 class MessageRepository {
   Future<RecordModel> createChat(
-      {required String senderId,
-      required String recipientId,
-      required String messageText}) async {
+      {required String recipientId, required String messageText}) async {
     try {
+      final pb = await PocketBaseSingleton.instance;
+      String senderId = pb.authStore.record!.id;
+
       String accountType = CollectionNameSingleton.instance;
 
       String influencerId =
           accountType == 'influencers' ? senderId : recipientId;
       String brandId = accountType == 'brands' ? senderId : recipientId;
-
-      final pb = await PocketBaseSingleton.instance;
 
       final body = <String, dynamic>{
         "influencer": influencerId,
@@ -28,7 +27,6 @@ class MessageRepository {
 
       await sendMessage(
         chatId: chatId,
-        senderId: senderId,
         recipientId: recipientId,
         messageType: 'text',
         messageText: messageText,
@@ -41,12 +39,12 @@ class MessageRepository {
 
   Future<RecordModel> sendMessage(
       {required String chatId,
-      required String senderId,
       required String recipientId,
       required String messageType,
       required String messageText}) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+      String senderId = pb.authStore.record!.id;
 
       final body = <String, dynamic>{
         "senderId": senderId,
@@ -81,14 +79,17 @@ class MessageRepository {
     }
   }
 
-  Future<Chats> getChats({required String userId}) async {
+  Future<Chats> getChats() async {
     try {
+      final pb = await PocketBaseSingleton.instance;
+
       String accountType = CollectionNameSingleton.instance;
 
       // Remove the 's' from the account type
       accountType = accountType.replaceAll('s', '');
 
-      final pb = await PocketBaseSingleton.instance;
+      final String userId = pb.authStore.record!.id;
+
       final resultList = await pb.collection('chats').getList(
             page: 1,
             perPage: 20,
