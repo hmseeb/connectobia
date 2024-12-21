@@ -5,7 +5,8 @@
 /// {@category Constants}
 class AssetsPath {
   static const String logo = 'assets/icons/logo.png';
-  static const String emailIcon = 'assets/illustrations/email.svg';
+  static const String message = 'assets/illustrations/message.svg';
+  static const String email = 'assets/illustrations/email.svg';
   static const String brand = 'assets/illustrations/brand.svg';
   static const String login = 'assets/illustrations/login.svg';
   static const String influencer = 'assets/illustrations/influencer.svg';

@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -14,14 +15,14 @@ class SingleChatScreen extends StatefulWidget {
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   late final ScrollController _scrollController;
-  late final TextEditingController _messageController;
+  late final TextEditingController messageController;
   bool isTyping = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _messageController = TextEditingController();
+    messageController = TextEditingController();
   }
 
   @override
@@ -34,6 +35,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
       {'text': 'Hi! I am good. How about you?', 'senderId': '2'},
       {'text': 'Hey! How are you?', 'senderId': '1'},
     ];
+
+    messages.clear();
 
     // Dummy current user ID
     final String currentUserID = '1';
@@ -65,51 +68,66 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          MessagesList(
-            scrollController: _scrollController,
-            messages: messages,
-            currentUserID: currentUserID,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
+      body: messages.isNotEmpty
+          ? Column(
               children: [
-                MessageInput(
-                  messageController: _messageController,
+                MessagesList(
+                  scrollController: _scrollController,
+                  messages: messages,
+                  currentUserID: currentUserID,
                 ),
-                const SizedBox(width: 16),
-                if (isTyping)
-                  GestureDetector(
-                    onTap: () {
-                      isTyping = false;
-                      _messageController.clear();
-                    },
-                    child: Icon(
-                      LucideIcons.send,
-                      color: ShadColors.primary,
-                    ),
-                  )
-                else ...[
-                  Icon(Icons.mic),
-                  const SizedBox(width: 16),
-                  Icon(LucideIcons.image),
-                ],
-                const SizedBox(width: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      MessageInput(
+                        messageController: messageController,
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              isTyping = true;
+                            });
+                          } else {
+                            setState(() {
+                              isTyping = false;
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(width: 16),
+                      if (isTyping)
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isTyping = false;
+                            });
+                            messageController.clear();
+                          },
+                          child: Icon(
+                            LucideIcons.send,
+                            color: ShadColors.primary,
+                          ),
+                        )
+                      else ...[
+                        Icon(Icons.mic),
+                        const SizedBox(width: 16),
+                        Icon(LucideIcons.image),
+                      ],
+                      const SizedBox(width: 16),
+                    ],
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).padding.bottom),
               ],
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom),
-        ],
-      ),
+            )
+          : FirstMessage(),
     );
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _messageController.dispose();
+    messageController.dispose();
     super.dispose();
   }
 }

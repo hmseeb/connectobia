@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/industries.dart';
-import '../../../../shared/data/constants/path.dart';
 import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../shared/presentation/widgets/transparent_appbar.dart';
 import '../../../../theme/buttons.dart';

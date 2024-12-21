@@ -4,19 +4,20 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../theme/colors.dart';
 
 class MessageInput extends StatelessWidget {
+  final TextEditingController messageController;
+  final Function(String)? onChanged;
   const MessageInput({
     super.key,
-    required TextEditingController messageController,
-  }) : _messageController = messageController;
-
-  final TextEditingController _messageController;
+    required this.onChanged,
+    required this.messageController,
+  });
 
   @override
   Widget build(BuildContext context) {
     final Brightness brightness = ShadTheme.of(context).brightness;
     return Expanded(
       child: ShadInputFormField(
-        controller: _messageController,
+        controller: messageController,
         placeholder: Text('Enter your message'),
         decoration: ShadDecoration(
           secondaryFocusedBorder: ShadBorder.all(
@@ -34,6 +35,7 @@ class MessageInput extends StatelessWidget {
               ? ShadColors.darkForeground
               : ShadColors.lightForeground,
         ),
+        onChanged: onChanged,
       ),
     );
   }

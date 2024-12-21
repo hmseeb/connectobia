@@ -9,7 +9,7 @@ import 'modules/auth/application/auth/auth_bloc.dart';
 import 'routes.dart';
 import 'shared/application/animation/animation_cubit.dart';
 import 'shared/application/theme/theme_bloc.dart';
-import 'shared/data/constants/path.dart';
+import 'shared/data/constants/assets.dart';
 import 'theme/colors.dart';
 
 /// The main widget for the Connectobia application.
