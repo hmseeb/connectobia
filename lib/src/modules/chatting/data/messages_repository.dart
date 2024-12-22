@@ -1,9 +1,11 @@
+import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class MessagesRepository {
-  Future<RecordModel> sendMessage(
+  Future<Message> sendMessage(
       {required String chatId,
       required String recipientId,
       required String messageType,
@@ -18,17 +20,28 @@ class MessagesRepository {
         "messageText": messageText,
         "messageType": 'text',
         "chat": chatId,
-        "isRead": false
+        "isRead": false,
       };
 
       final record = await pb.collection('messages').create(body: body);
-      return record;
+      return Message.fromRecord(record);
     } catch (e) {
-      throw ClientException;
+      debugPrint('$e');
+      throw ClientException();
     }
   }
 
-  Future<Messages> getMessages({required String chatId}) async {
+  Future<void> updateChatById(
+      {required String chatId, required String messageId}) async {
+    final pb = await PocketBaseSingleton.instance;
+    final body = <String, dynamic>{
+      "message": messageId,
+    };
+
+    await pb.collection('chats').update(chatId, body: body);
+  }
+
+  Future<Messages> getMessagesByChatId({required String chatId}) async {
     try {
       final pb = await PocketBaseSingleton.instance;
       final resultList = await pb.collection('messages').getList(
@@ -41,7 +54,29 @@ class MessagesRepository {
       Messages messages = Messages.fromRecord(resultList);
       return messages;
     } catch (e) {
-      throw ClientException;
+      debugPrint('$e');
+      throw ClientException();
+    }
+  }
+
+  Future<Messages> getMessagesByUserId({required String userId}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final selfId = pb.authStore.record!.id;
+      String filter =
+          'senderId = "$selfId" || recipientId = "$selfId" && senderId = "$userId" || recipientId = "$userId"';
+      final resultList = await pb.collection('messages').getList(
+            page: 1,
+            perPage: 20,
+            sort: 'created',
+            filter: filter,
+          );
+
+      Messages messages = Messages.fromRecord(resultList);
+      return messages;
+    } catch (e) {
+      debugPrint('$e');
+      throw ClientException();
     }
   }
 }
