@@ -1,4 +1,5 @@
 import 'package:connectobia/src/app.dart';
+import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,7 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => AnimationCubit()),
         BlocProvider(create: (context) => MessagesBloc()),
         BlocProvider(create: (context) => ChatsBloc()),
+        BlocProvider(create: (context) => CampaignBloc()),
       ],
       child: Connectobia(
         isDarkMode: isDarkMode,

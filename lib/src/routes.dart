@@ -19,6 +19,7 @@ import 'package:connectobia/src/modules/auth/presentation/screens/creator_signup
 import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
+import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/single_chat_screen.dart';
 import 'package:connectobia/src/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.dart';
@@ -36,6 +37,9 @@ import 'package:flutter/material.dart';
 /// based on the route name provided in [settings.name].
 ///
 /// {@category Routing}
+// lib/routes.dart
+
+
 class GenerateRoutes {
   /// Generates a route based on the given [RouteSettings].
   ///
@@ -95,7 +99,11 @@ class GenerateRoutes {
         ));
       case influencerSignupScreen:
         return _buildRoute(const InfluencerScreen());
-
+      
+     
+      case campaignsScreen:
+        return _buildRoute(const CampaignScreen());
+        
       default:
         return _buildRoute(WelcomeScreen());
     }
