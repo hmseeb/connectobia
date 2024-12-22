@@ -3,36 +3,38 @@ import 'dart:convert';
 import 'package:pocketbase/pocketbase.dart';
 
 class Message {
-  final String audio;
+  final String? audio;
   final String chat;
-  final String collectionId;
-  final String collectionName;
+  final String? collectionId;
+  final String? collectionName;
   final DateTime created;
-  final String file;
-  final String id;
-  final String image;
-  final bool isRead;
+  final String? file;
+  final String? id;
+  final bool? sent;
+  final String? image;
+  final bool? isRead;
   final String messageText;
-  final String messageType;
+  final String? messageType;
   final String recipientId;
   final String senderId;
-  final DateTime updated;
+  final DateTime? updated;
 
   Message({
-    required this.audio,
+    this.audio,
     required this.chat,
-    required this.collectionId,
-    required this.collectionName,
+    this.collectionId,
+    this.collectionName,
     required this.created,
-    required this.file,
-    required this.id,
-    required this.image,
-    required this.isRead,
+    this.file,
+    this.sent,
+    this.id,
+    this.image,
+    this.isRead,
     required this.messageText,
-    required this.messageType,
+    this.messageType,
     required this.recipientId,
     required this.senderId,
-    required this.updated,
+    this.updated,
   });
   factory Message.fromRecord(RecordModel record) =>
       Message.fromJson(record.toJson());
@@ -71,6 +73,6 @@ class Message {
         "messageType": messageType,
         "recipientId": recipientId,
         "senderId": senderId,
-        "updated": updated.toIso8601String(),
+        "updated": updated!.toIso8601String(),
       };
 }
