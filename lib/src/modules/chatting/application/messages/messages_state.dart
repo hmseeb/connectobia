@@ -9,30 +9,31 @@ final class MessagesLoading extends MessagesState {}
 
 final class MessagesLoaded extends MessagesState {
   final Messages messages;
+  final String selfId;
 
-  MessagesLoaded(this.messages);
+  MessagesLoaded(this.messages, this.selfId);
 }
 
-final class MessagesError extends MessagesState {
+final class MessagesLoadingError extends MessagesState {
   final String message;
 
-  MessagesError(this.message);
+  MessagesLoadingError(this.message);
 }
 
-final class ChatsLoaded extends MessagesState {
-  final Chats chats;
+final class MessageSending extends MessagesState {
+  final String message;
 
-  ChatsLoaded(this.chats);
-}
-
-final class ChatCreated extends MessagesState {
-  final Chat chat;
-
-  ChatCreated(this.chat);
+  MessageSending(this.message);
 }
 
 final class MessageSent extends MessagesState {
-  final String messages;
+  final Message message;
 
-  MessageSent(this.messages);
+  MessageSent(this.message);
+}
+
+final class MessageNotSent extends MessagesState {
+  final String message;
+
+  MessageNotSent(this.message);
 }
