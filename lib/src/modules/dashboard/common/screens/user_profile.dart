@@ -109,8 +109,8 @@ class _UserProfileState extends State<UserProfile> {
             isVerified: state.brand.verified,
             connectedSocial: false,
             description: state.brandProfile.description,
-            followers: 0,
-            mediaCount: 0,
+            followers: null,
+            mediaCount: null,
           );
         } else {
           return _buildProfileScaffold(
@@ -140,8 +140,8 @@ class _UserProfileState extends State<UserProfile> {
     required BuildContext context,
     required bool connectedSocial,
     required String description,
-    required int followers,
-    required int mediaCount,
+    required int? followers,
+    required int? mediaCount,
     required String userId,
     required String avatar,
     required String banner,
