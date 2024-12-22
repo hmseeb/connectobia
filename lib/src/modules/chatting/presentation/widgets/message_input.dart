@@ -6,9 +6,11 @@ import '../../../../theme/colors.dart';
 class MessageInput extends StatelessWidget {
   final TextEditingController messageController;
   final Function(String)? onChanged;
+  final Function(String)? onSubmitted;
   const MessageInput({
     super.key,
     required this.onChanged,
+    required this.onSubmitted,
     required this.messageController,
   });
 
@@ -36,6 +38,7 @@ class MessageInput extends StatelessWidget {
               : ShadColors.lightForeground,
         ),
         onChanged: onChanged,
+        onSubmitted: (value) => onSubmitted!(value),
       ),
     );
   }
