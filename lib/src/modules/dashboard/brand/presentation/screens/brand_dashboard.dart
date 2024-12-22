@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,7 +61,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
               ),
             ),
           ),
-          Placeholder(),
+          CampaignScreen(),
           Chats(),
           Placeholder(),
         ],
