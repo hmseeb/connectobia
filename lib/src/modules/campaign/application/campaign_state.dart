@@ -1,6 +1,4 @@
-
-
-import 'package:connectobia/src/shared/domain/models/campaign.dart';
+import 'package:connectobia/src/shared/domain/campaign.dart';
 
 abstract class CampaignState {}
 

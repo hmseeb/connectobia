@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:pocketbase/pocketbase.dart';
 
 class Campaign {
@@ -39,7 +40,8 @@ class Campaign {
         updated: DateTime.parse(json["updated"]),
       );
 
-  factory Campaign.fromRawJson(String str) => Campaign.fromJson(json.decode(str));
+  factory Campaign.fromRawJson(String str) =>
+      Campaign.fromJson(json.decode(str));
 
   factory Campaign.fromRecord(RecordModel record) =>
       Campaign.fromJson(record.toJson());

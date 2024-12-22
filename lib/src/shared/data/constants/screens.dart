@@ -10,3 +10,4 @@ const String brandDashboard = "/brandDashboard";
 const String influencerDashboard = "/influencerDashboard";
 const String influencerSignupScreen = "/InfluencerSignupScreen";
 const String singleChatScreen = "/singleChatScreen";
+const String campaignsScreen = "/CampaignsScreen";
