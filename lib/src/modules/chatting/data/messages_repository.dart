@@ -4,7 +4,15 @@ import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+/// [MessagesRepository] is a class that handles all the message related operations.
+/// It is responsible for sending a message, getting all the messages by chat ID, and getting all the messages by user ID.
+///
+/// The class uses the [PocketBaseSingleton] to get the instance of the PocketBase SDK.
 class MessagesRepository {
+  /// [sendMessage] is a method that sends a message to a user.
+  /// It takes the chat ID, recipient ID, message type, and message text as parameters.
+  /// It returns a [Message] object.
+  /// The [Message] object contains the message details.
   Future<Message> sendMessage(
       {required String chatId,
       required String recipientId,

@@ -5,8 +5,14 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../../domain/models/error.dart';
 
+/// A repository to handle errors
+///
+/// This repository is used to handle errors that occur in the application.
+/// It provides a function to map raw errors to user-friendly messages.
+///
+/// {@category Repositories}
 class ErrorRepository {
-  // A function to map raw errors to user-friendly messages
+  /// [handleError] function takes an error and pases it to the appropriate function to handle it
   String handleError(Object originalError) {
     if (originalError is ClientException) {
       try {
@@ -21,6 +27,10 @@ class ErrorRepository {
     }
   }
 
+  /// A function to map client exceptions to user-friendly messages
+  ///
+  /// This function maps client exceptions to user-friendly messages based on the status code
+  /// and the response message.
   String _mapClientError(ClientException e) {
     // Extract the message from the response (assuming the response contains the message field)
     try {

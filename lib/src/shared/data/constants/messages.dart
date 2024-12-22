@@ -1,3 +1,4 @@
+/// This file contains the skeleton messages data for the chat screen.
 final List<Map<String, dynamic>> messages = [
   {"text": "Looking forward to our meeting.", "senderId": "2"},
   {"text": "I am great, thanks for asking!", "senderId": "1"},

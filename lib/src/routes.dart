@@ -39,7 +39,6 @@ import 'package:flutter/material.dart';
 /// {@category Routing}
 // lib/routes.dart
 
-
 class GenerateRoutes {
   /// Generates a route based on the given [RouteSettings].
   ///
@@ -99,11 +98,10 @@ class GenerateRoutes {
         ));
       case influencerSignupScreen:
         return _buildRoute(const InfluencerScreen());
-      
-     
+
       case campaignsScreen:
         return _buildRoute(const CampaignScreen());
-        
+
       default:
         return _buildRoute(WelcomeScreen());
     }
@@ -140,6 +138,8 @@ class GenerateRoutes {
     );
   }
 
+  /// A helper method to build page routes with a consistent transition.
+  /// This method creates a [MaterialPageRoute] with a fade transition for a smooth feel.
   static MaterialPageRoute _buildRoute(Widget page) {
     return MaterialPageRoute(builder: (_) => page);
   }

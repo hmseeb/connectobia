@@ -5,6 +5,8 @@ import '../../../../../services/storage/pb.dart';
 import '../../../../../shared/data/constants/industries.dart';
 import '../../../../../shared/data/repositories/error_repo.dart';
 
+/// [EditProfileRepository] is a class that handles all the edit profile related operations.
+/// It is responsible for updating the influencer profile, updating the user image, and updating the user profile.
 class EditProfileRepository {
   static Future<void> updateInfluencerProfile({
     required String title,
