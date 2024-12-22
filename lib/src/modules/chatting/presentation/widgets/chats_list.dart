@@ -98,7 +98,11 @@ class ChatsList extends StatelessWidget {
                 title: Text(isBrand
                     ? chat.expand.influencer.fullName
                     : chat.expand.brand.brandName),
-                subtitle: Text(chat.expand.message.messageText),
+                subtitle: Text(
+                  chat.expand.message.messageText.length > 30
+                      ? '${chat.expand.message.messageText.substring(0, 30)}...'
+                      : chat.expand.message.messageText,
+                ),
                 trailing:
                     Text(DateAndTime.timeAgo(chat.expand.message.created)),
               );

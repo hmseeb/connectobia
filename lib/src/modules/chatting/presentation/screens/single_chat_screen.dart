@@ -197,7 +197,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     String recipientId = widget.userId;
     BlocProvider.of<MessagesBloc>(context).add(
       SendMessage(
-        message: message,
+        message: message.trim(),
         recipientId: recipientId,
         chatId: chatId,
         messages: prevMessages,
