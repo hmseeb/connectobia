@@ -42,4 +42,27 @@ class Messages {
         "totalItems": totalItems,
         "items": List<dynamic>.from(items.map((x) => x.toJson())),
       };
+
+  // Method to add a message to the items list
+  Messages addMessage(Message newMessage) {
+    items.add(newMessage);
+    return Messages(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: totalItems + 1,
+      items: items,
+    );
+  }
+
+  Messages removeMessage(int index) {
+    items.remove(items[index]);
+    return Messages(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: totalItems - 1,
+      items: items,
+    );
+  }
 }

@@ -1,4 +1,6 @@
 import 'package:connectobia/src/app.dart';
+import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
+import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -46,6 +48,8 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => InfluencerProfileBloc()),
         BlocProvider(create: (context) => InfluencerOnboardBloc()),
         BlocProvider(create: (context) => AnimationCubit()),
+        BlocProvider(create: (context) => MessagesBloc()),
+        BlocProvider(create: (context) => ChatsBloc()),
       ],
       child: Connectobia(
         isDarkMode: isDarkMode,

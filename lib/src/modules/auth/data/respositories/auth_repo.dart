@@ -116,6 +116,18 @@ class AuthRepository {
     }
   }
 
+  /// [getUserId] is a method that returns the current user's id.
+  static Future<dynamic> getUserId() async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final id = pb.authStore.record!.id;
+      return id;
+    } catch (e) {
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
   ///  [instagramAuth] is a method that authenticates a user with their Instagram brand account.
   static Future<Influencer> instagramAuth(
       {required String collectionName}) async {

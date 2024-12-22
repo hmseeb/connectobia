@@ -2,9 +2,10 @@ import 'package:connectobia/src/shared/data/constants/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class FirstMessage extends StatelessWidget {
-  final String name;
-  const FirstMessage({super.key, required this.name});
+class NoMatchWidget extends StatelessWidget {
+  final String title;
+  final String subTitle;
+  const NoMatchWidget({super.key, required this.title, required this.subTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class FirstMessage extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Text(
-              'Invite ${name.split(' ')[0].toLowerCase()} to chat with one message',
+              title,
               style: TextStyle(
                 fontSize: 20,
               ),
@@ -29,7 +30,7 @@ class FirstMessage extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              'You\'ll be able to send additional messages once your request has been accepted.',
+              subTitle,
               style: TextStyle(
                 color: Colors.grey,
               ),

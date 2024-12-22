@@ -1,3 +1,5 @@
+import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
+import 'package:connectobia/src/modules/chatting/data/chats_repository.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -150,23 +152,31 @@ class _UserProfileState extends State<UserProfile> {
     required bool isVerified,
   }) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: isLoading
-            ? null
-            : () {
-                Navigator.pushNamed(
-                  context,
-                  singleChatScreen,
-                  arguments: {
-                    'userId': userId,
-                    'name': name,
-                    'avatar': avatar,
-                    'collectionId': collectionId,
-                    'hasConnectedInstagram': connectedSocial,
-                  },
-                );
-              },
-        child: const Icon(Icons.message),
+      floatingActionButton: BlocBuilder<MessagesBloc, MessagesState>(
+        builder: (context, state) {
+          return isVerified
+              ? FloatingActionButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          BlocProvider.of<MessagesBloc>(context)
+                              .add(GetMessagesByUserId(userId));
+                          Navigator.pushNamed(
+                            context,
+                            singleChatScreen,
+                            arguments: {
+                              'userId': userId,
+                              'name': name,
+                              'avatar': avatar,
+                              'collectionId': collectionId,
+                              'hasConnectedInstagram': connectedSocial,
+                            },
+                          );
+                        },
+                  child: const Icon(Icons.message),
+                )
+              : const SizedBox();
+        },
       ),
       body: Skeletonizer(
         enabled: isLoading,
@@ -202,5 +212,11 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
     );
+  }
+
+  Future<String> getChatId(String userId) async {
+    ChatsRepository chatsRepository = ChatsRepository();
+    final String chatId = await chatsRepository.getChatIdByUserId(userId);
+    return chatId;
   }
 }
