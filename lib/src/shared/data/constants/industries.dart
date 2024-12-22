@@ -6,6 +6,7 @@
 library;
 
 class IndustryFormatter {
+  /// Converts the industry key to a human-readable value.
   static String keyToValue(String industry) {
     return industry.split('_').map((word) {
       if (word.toLowerCase() == 'and') {
@@ -17,6 +18,7 @@ class IndustryFormatter {
 }
 
 class IndustryList {
+  /// List of industries available for selection.
   static const industries = {
     'fashion': 'Fashion',
     'beauty_and_cosmetics': 'Beauty and Cosmetics',

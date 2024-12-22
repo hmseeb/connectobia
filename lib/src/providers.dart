@@ -19,6 +19,8 @@ import 'modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'shared/application/animation/animation_cubit.dart';
 import 'shared/application/theme/theme_bloc.dart';
 
+/// [BlocProviders] is a widget that provides all the necessary blocs to the application.
+/// It is a wrapper around the [Connectobia] widget.
 class BlocProviders extends StatelessWidget {
   final bool isDarkMode;
 

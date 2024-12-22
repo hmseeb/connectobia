@@ -1,3 +1,4 @@
+/// Constants for greetings
 class Greetings {
   static const String morning = 'Good Morning';
   static const String afternoon = 'Good Afternoon';

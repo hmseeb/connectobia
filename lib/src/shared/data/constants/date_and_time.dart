@@ -1,4 +1,6 @@
+/// Utility class for date and time operations.
 class DateAndTime {
+  /// Formats the given [dateTime] to a date string in the format 'dd MMM yyyy'.
   static String formatDateTimeTo12Hour(DateTime dateTime) {
     dateTime = dateTime.toLocal();
     int hour = dateTime.hour;
@@ -12,6 +14,10 @@ class DateAndTime {
     return '$hour:$minute $period';
   }
 
+  /// Formats the given [dateTime] to a date string in the format 'dd MMM yyyy'.
+  /// Example: '01 Jan 2022'.
+  ///
+  /// If [dateTime] is null, returns an empty string.
   static String timeAgo(DateTime dateTime) {
     dateTime = dateTime.toLocal();
     Duration difference = DateTime.now().difference(dateTime);

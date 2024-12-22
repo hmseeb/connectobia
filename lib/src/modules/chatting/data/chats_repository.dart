@@ -6,7 +6,13 @@ import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+/// [ChatsRepository] is a class that handles all the chat related operations.
+/// It is responsible for creating a chat, getting all the chats, and getting the chat ID.
+///
+/// The class uses the [PocketBaseSingleton] to get the instance of the PocketBase SDK.
 class ChatsRepository {
+  /// [createChat] is a method that creates a chat between two users.
+  /// It takes the recipient ID and the message text as parameters.
   Future<Message> createChat(
       {required String recipientId, required String messageText}) async {
     try {
@@ -43,6 +49,10 @@ class ChatsRepository {
     }
   }
 
+  /// [getChats] is a method that gets all the chats of the current user.
+  /// It returns a [Chats] object.
+  /// The [Chats] object contains a list of [Chat] objects.
+  /// Each [Chat] object contains the chat details.
   Future<Chats> getChats() async {
     try {
       final pb = await PocketBaseSingleton.instance;
