@@ -21,6 +21,7 @@ class CampaignScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               onChanged: (query) {
+                // Trigger the search event in the Bloc
                 context.read<CampaignBloc>().add(SearchCampaigns(query));
               },
               decoration: const InputDecoration(
@@ -32,6 +33,7 @@ class CampaignScreen extends StatelessWidget {
           Expanded(
             child: BlocBuilder<CampaignBloc, CampaignState>(
               builder: (context, state) {
+                // Handle different states
                 if (state is CampaignsLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is CampaignsLoaded) {
@@ -65,7 +67,7 @@ class CampaignScreen extends StatelessWidget {
                     },
                   );
                 } else if (state is CampaignsLoadingError) {
-                  return Center(child: Text(state.error));
+                  return Center(child: Text(state.errorMessage));
                 } else {
                   return const Center(child: Text('No campaigns available.'));
                 }
