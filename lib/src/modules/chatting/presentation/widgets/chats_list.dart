@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
-import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
+import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/date_and_time.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
@@ -68,7 +68,7 @@ class ChatsList extends StatelessWidget {
                   bool connectedSocial =
                       isBrand ? chat.expand.influencer!.connectedSocial : false;
 
-                  BlocProvider.of<MessagesBloc>(context)
+                  BlocProvider.of<RealtimeMessagingBloc>(context)
                       .add(GetMessagesByUserId(userId));
                   Navigator.pushNamed(
                     context,
