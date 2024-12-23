@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_s
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
@@ -37,7 +38,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
   Widget build(BuildContext context) {
     return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
       listener: (context, state) {
-        if (state is RealtimeMessageReceived && _selectedIndex != 2) {
+        if (state is RealtimeMessageReceived) {
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,
@@ -49,6 +50,21 @@ class _BrandDashboardState extends State<BrandDashboard> {
                               image: state.avatar,
                               collectionId: state.collectionId)),
                     ),
+                    onTap: () {
+                      BlocProvider.of<RealtimeMessagingBloc>(context)
+                          .add(GetMessagesByUserId(state.userId));
+                      Navigator.pushNamed(
+                        context,
+                        singleChatScreen,
+                        arguments: {
+                          'userId': state.userId,
+                          'name': state.name,
+                          'avatar': state.avatar,
+                          'collectionId': state.collectionId,
+                          'hasConnectedInstagram': state.hasConnectedInstagram,
+                        },
+                      );
+                    },
                     title: Text(
                       state.name,
                       style: TextStyle(
