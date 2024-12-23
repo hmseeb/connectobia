@@ -1,6 +1,8 @@
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
+import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../../shared/data/constants/industries.dart';
@@ -70,6 +72,9 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
           setState(() {
             _selectedIndex = index;
           });
+          if (index == 2) {
+            BlocProvider.of<ChatsBloc>(context).add(GetChats());
+          }
         },
       ),
     );
