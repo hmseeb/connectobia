@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
@@ -69,12 +70,18 @@ class ConnectobiaState extends State<Connectobia> {
                 listener: (context, state) {
                   if (state is AnimationStopped) {}
                 },
-                child: Scaffold(
-                  backgroundColor: ShadColors.primary,
-                  body: RiveAnimation.asset(
-                    AssetsPath.splash,
-                    controllers: [_riveAnimationcontroller],
-                    alignment: Alignment.center,
+                child:
+                    BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
+                  listener: (context, state) {
+                    if (state is RealtimeMessageReceived) {}
+                  },
+                  child: Scaffold(
+                    backgroundColor: ShadColors.primary,
+                    body: RiveAnimation.asset(
+                      AssetsPath.splash,
+                      controllers: [_riveAnimationcontroller],
+                      alignment: Alignment.center,
+                    ),
                   ),
                 ),
               ),
@@ -83,6 +90,20 @@ class ConnectobiaState extends State<Connectobia> {
         },
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    isDarkMode = widget.isDarkMode; // Initialize isDarkMode with widget's value
+    _riveAnimationcontroller = SimpleAnimation(
+      'Timeline 1',
+    );
+    _riveAnimationcontroller.isActiveChanged.addListener(() {
+      if (!_riveAnimationcontroller.isActive) {
+        context.read<AnimationCubit>().animationStopped();
+      }
+    });
   }
 
   @override
@@ -144,19 +165,5 @@ class ConnectobiaState extends State<Connectobia> {
         welcomeScreen,
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    isDarkMode = widget.isDarkMode; // Initialize isDarkMode with widget's value
-    _riveAnimationcontroller = SimpleAnimation(
-      'Timeline 1',
-    );
-    _riveAnimationcontroller.isActiveChanged.addListener(() {
-      if (!_riveAnimationcontroller.isActive) {
-        context.read<AnimationCubit>().animationStopped();
-      }
-    });
   }
 }
