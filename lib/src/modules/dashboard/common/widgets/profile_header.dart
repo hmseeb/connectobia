@@ -9,7 +9,7 @@ class ProfileHeader extends StatelessWidget {
   final String industry;
   final String username;
   final bool isVerified;
-  final bool connectedSocial;
+  final bool hasConnectedInstagram;
 
   const ProfileHeader({
     super.key,
@@ -17,7 +17,7 @@ class ProfileHeader extends StatelessWidget {
     required this.industry,
     required this.username,
     required this.isVerified,
-    required this.connectedSocial,
+    required this.hasConnectedInstagram,
   });
 
   @override
@@ -45,7 +45,7 @@ class ProfileHeader extends StatelessWidget {
           ],
         ),
         // Verified badge
-        if (connectedSocial)
+        if (hasConnectedInstagram)
           const Icon(
             Icons.verified,
             color: Colors.blue,
@@ -57,7 +57,7 @@ class ProfileHeader extends StatelessWidget {
               )),
         const Spacer(),
         // Location icon or social link
-        if (connectedSocial)
+        if (hasConnectedInstagram)
           GestureDetector(
             onTap: () {
               final url = 'https://instagram.com/$username';
