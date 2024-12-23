@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
-import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/message_input.dart';
+import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,17 +36,11 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
   bool isTyping = false;
 
   @override
-  void initState() {
-    super.initState();
-    messageController = TextEditingController();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final Brightness brightness = ShadTheme.of(context).brightness;
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
-        return BlocListener<MessagesBloc, MessagesState>(
+        return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
           listener: (context, state) {
             if (state is MessageNotSent) {
               ShadToaster.of(context).show(
@@ -108,7 +102,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
                     children: [
-                      BlocBuilder<MessagesBloc, MessagesState>(
+                      BlocBuilder<RealtimeMessagingBloc,
+                          RealtimeMessagingState>(
                         builder: (context, state) {
                           return MessageInput(
                             messageController: messageController,
@@ -141,7 +136,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                       ),
                       const SizedBox(width: 16),
                       if (isTyping)
-                        BlocBuilder<MessagesBloc, MessagesState>(
+                        BlocBuilder<RealtimeMessagingBloc,
+                            RealtimeMessagingState>(
                           builder: (context, state) {
                             return GestureDetector(
                               onTap: () {
@@ -187,6 +183,18 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    messageController = TextEditingController();
+  }
+
   void sendMessage(
     BuildContext context, {
     required String message,
@@ -195,7 +203,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
   }) {
     HapticFeedback.lightImpact();
     String recipientId = widget.userId;
-    BlocProvider.of<MessagesBloc>(context).add(
+    BlocProvider.of<RealtimeMessagingBloc>(context).add(
       SendMessage(
         message: message.trim(),
         recipientId: recipientId,
@@ -204,11 +212,5 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
       ),
     );
     messageController.clear();
-  }
-
-  @override
-  void dispose() {
-    messageController.dispose();
-    super.dispose();
   }
 }

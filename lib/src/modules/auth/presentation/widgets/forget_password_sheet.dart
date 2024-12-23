@@ -3,7 +3,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
 import '../../data/helpers/validation/input_validation.dart';
-import '../../data/respositories/auth_repo.dart';
+import '../../data/repositories/auth_repo.dart';
 
 /// A sheet that allows the user to reset their password.
 ///
@@ -78,7 +78,7 @@ class _ForgotPasswordSheetState extends State<ForgotPasswordSheet> {
               if (context.mounted) {
                 ShadToaster.of(context).show(
                   ShadToast.destructive(
-                    title: const Text('An error occured while sending email'),
+                    title: const Text('An error occurred while sending email'),
                     description: Text(e.toString()),
                   ),
                 );

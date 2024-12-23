@@ -12,7 +12,7 @@ import '../../domain/models/error.dart';
 ///
 /// {@category Repositories}
 class ErrorRepository {
-  /// [handleError] function takes an error and pases it to the appropriate function to handle it
+  /// [handleError] function takes an error and passes it to the appropriate function to handle it
   String handleError(Object originalError) {
     if (originalError is ClientException) {
       try {

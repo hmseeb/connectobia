@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
 import '../../data/helpers/validation/input_validation.dart';
-import '../../data/respositories/auth_repo.dart';
+import '../../data/repositories/auth_repo.dart';
 
 part 'signup_event.dart';
 part 'signup_state.dart';

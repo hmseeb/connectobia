@@ -7,7 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../shared/application/theme/theme_bloc.dart';
 import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../shared/data/singletons/account_type.dart';
-import '../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../widgets/signup_card.dart';
 import '../widgets/tagline.dart';
 import '../widgets/title_logo.dart';
@@ -27,7 +27,7 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  late final ThemeBloc themebloc;
+  late final ThemeBloc themeBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             onPressed: () {
               HapticFeedback.mediumImpact();
               isDarkMode = !isDarkMode;
-              themebloc.add(ThemeChanged(isDarkMode));
+              themeBloc.add(ThemeChanged(isDarkMode));
               ShadToaster.of(context).show(
                 ShadToast(
                   description:
@@ -83,7 +83,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
             const SizedBox(height: 10),
             SignupCard(
-              title: 'Influencers',
+              title: 'Influencer',
               description: 'I want to monetize my content',
               onPressed: () {
                 Navigator.pushNamed(
@@ -104,6 +104,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    themebloc = BlocProvider.of<ThemeBloc>(context);
+    themeBloc = BlocProvider.of<ThemeBloc>(context);
   }
 }

@@ -79,6 +79,40 @@ class AuthRepository {
     }
   }
 
+  static Future<String> createInfluencerProfile(
+      {required PocketBase pocketBase,
+      required Meta meta,
+      required RawUser rawUser}) async {
+    final body = <String, dynamic>{
+      "title": null,
+      "description": null,
+      "followers": rawUser.followersCount,
+      "engRate": null,
+      "location": null,
+      "mediaCount": rawUser.mediaCount,
+    };
+
+    final record =
+        await pocketBase.collection('influencerProfile').create(body: body);
+    final String influencerProfileId = record.id;
+    return influencerProfileId;
+  }
+
+  static Future<void> createLoginHistory({
+    required String userId,
+    required Map<String, dynamic> deviceInfo,
+  }) async {
+    final pb = await PocketBaseSingleton.instance;
+    final body = <String, dynamic>{
+      "userId": userId,
+      "deviceInfo": json.encode(deviceInfo),
+      "ipAddress": deviceInfo['Public IP'],
+      "location": "${deviceInfo['City']}, ${deviceInfo['Country']}",
+    };
+
+    await pb.collection('loginHistory').create(body: body);
+  }
+
   /// [forgotPassword] is a method that sends a password reset email to the
   /// user's email address.
   static Future<void> forgotPassword(
@@ -178,35 +212,6 @@ class AuthRepository {
     await pb.collection(collectionName).update(userId, body: body);
   }
 
-  static Future<void> updateOnboardValue(
-      {required String collectionName}) async {
-    final pb = await PocketBaseSingleton.instance;
-    final id = pb.authStore.record!.id;
-    final body = <String, dynamic>{
-      "onboarded": true,
-    };
-    await pb.collection(collectionName).update(id, body: body);
-  }
-
-  static Future<String> createInfluencerProfile(
-      {required PocketBase pocketBase,
-      required Meta meta,
-      required RawUser rawUser}) async {
-    final body = <String, dynamic>{
-      "title": null,
-      "description": null,
-      "followers": rawUser.followersCount,
-      "engRate": null,
-      "location": null,
-      "mediaCount": rawUser.mediaCount,
-    };
-
-    final record =
-        await pocketBase.collection('influencerProfile').create(body: body);
-    final String influencerProfileId = record.id;
-    return influencerProfileId;
-  }
-
   /// [login] is a method that logs in a user with their email and password.
   static Future<RecordAuth> login(
       {required String email,
@@ -226,21 +231,6 @@ class AuthRepository {
     }
   }
 
-  static Future<void> createLoginHistory({
-    required String userId,
-    required Map<String, dynamic> deviceInfo,
-  }) async {
-    final pb = await PocketBaseSingleton.instance;
-    final body = <String, dynamic>{
-      "userId": userId,
-      "deviceInfo": json.encode(deviceInfo),
-      "ipAddress": deviceInfo['Public IP'],
-      "location": "${deviceInfo['City']}, ${deviceInfo['Country']}",
-    };
-
-    await pb.collection('loginHistory').create(body: body);
-  }
-
   /// [logout] is a method that logs out the current user.
   static Future<void> logout() async {
     try {
@@ -251,6 +241,16 @@ class AuthRepository {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
+  }
+
+  static Future<void> updateOnboardValue(
+      {required String collectionName}) async {
+    final pb = await PocketBaseSingleton.instance;
+    final id = pb.authStore.record!.id;
+    final body = <String, dynamic>{
+      "onboarded": true,
+    };
+    await pb.collection(collectionName).update(id, body: body);
   }
 
   /// [verifyEmail] is a method that sends a verification email to the user's

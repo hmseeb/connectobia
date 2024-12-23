@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../widgets/chats_list.dart';
 
 class Chats extends StatefulWidget {
@@ -13,12 +13,6 @@ class Chats extends StatefulWidget {
 
 class _ChatsState extends State<Chats> {
   late final ScrollController _scrollController;
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,5 +36,11 @@ class _ChatsState extends State<Chats> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
   }
 }

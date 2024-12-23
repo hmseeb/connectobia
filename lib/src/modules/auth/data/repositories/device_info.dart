@@ -7,6 +7,70 @@ import 'package:get_ip_address/get_ip_address.dart';
 import 'package:http/http.dart' as http;
 
 class DeviceInfoRepository {
+  Future<Map<String, dynamic>> fetchDeviceInfo() async {
+    // Get device details
+    Map<String, dynamic> deviceDetails = await getDeviceDetails();
+
+    // Get public IP using get_ip_address package
+    String ip = await getPublicIp();
+
+    // Get country from IP
+    String country = 'Unavailable';
+    String city = 'Unavailable';
+
+    if (ip != 'Unavailable') {
+      country = await getCountryFromIp(ip);
+      city = await getCityFromIp(ip);
+    }
+
+    deviceDetails.addEntries([
+      MapEntry('Public IP', ip),
+      MapEntry('Country', country),
+      MapEntry('City', city),
+    ]);
+
+    debugPrint(deviceDetails.toString());
+    return deviceDetails;
+  }
+
+  Future<String> getCityFromIp(String ip) async {
+    try {
+      final response = await http.get(Uri.parse('http://ip-api.com/json/$ip'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'success') {
+          return data['city'] ?? 'Unknown';
+        } else {
+          return 'Unknown';
+        }
+      } else {
+        throw Exception('Failed to load city');
+      }
+    } catch (e) {
+      debugPrint('Error fetching city: $e');
+      return 'Unavailable';
+    }
+  }
+
+  Future<String> getCountryFromIp(String ip) async {
+    try {
+      final response = await http.get(Uri.parse('http://ip-api.com/json/$ip'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'success') {
+          return data['country'] ?? 'Unknown';
+        } else {
+          return 'Unknown';
+        }
+      } else {
+        throw Exception('Failed to load country');
+      }
+    } catch (e) {
+      debugPrint('Error fetching country: $e');
+      return 'Unavailable';
+    }
+  }
+
   Future<Map<String, dynamic>> getDeviceDetails() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     Map<String, dynamic> deviceData = {};
@@ -86,69 +150,5 @@ class DeviceInfoRepository {
       debugPrint('Unexpected error: $e');
       return 'Unavailable';
     }
-  }
-
-  Future<String> getCountryFromIp(String ip) async {
-    try {
-      final response = await http.get(Uri.parse('http://ip-api.com/json/$ip'));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['status'] == 'success') {
-          return data['country'] ?? 'Unknown';
-        } else {
-          return 'Unknown';
-        }
-      } else {
-        throw Exception('Failed to load country');
-      }
-    } catch (e) {
-      debugPrint('Error fetching country: $e');
-      return 'Unavailable';
-    }
-  }
-
-  Future<String> getCityFromIp(String ip) async {
-    try {
-      final response = await http.get(Uri.parse('http://ip-api.com/json/$ip'));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['status'] == 'success') {
-          return data['city'] ?? 'Unknown';
-        } else {
-          return 'Unknown';
-        }
-      } else {
-        throw Exception('Failed to load city');
-      }
-    } catch (e) {
-      debugPrint('Error fetching city: $e');
-      return 'Unavailable';
-    }
-  }
-
-  Future<Map<String, dynamic>> fetchDeviceInfo() async {
-    // Get device details
-    Map<String, dynamic> deviceDetails = await getDeviceDetails();
-
-    // Get public IP using get_ip_address package
-    String ip = await getPublicIp();
-
-    // Get country from IP
-    String country = 'Unavailable';
-    String city = 'Unavailable';
-
-    if (ip != 'Unavailable') {
-      country = await getCountryFromIp(ip);
-      city = await getCityFromIp(ip);
-    }
-
-    deviceDetails.addEntries([
-      MapEntry('Public IP', ip),
-      MapEntry('Country', country),
-      MapEntry('City', city),
-    ]);
-
-    debugPrint(deviceDetails.toString());
-    return deviceDetails;
   }
 }

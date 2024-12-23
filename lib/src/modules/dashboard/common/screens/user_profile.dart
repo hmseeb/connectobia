@@ -1,4 +1,4 @@
-import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
+import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,56 +32,6 @@ class _UserProfileState extends State<UserProfile> {
     return widget.profileType == 'influencers'
         ? _buildInfluencerProfile(context)
         : _buildBrandProfile(context);
-  }
-
-  Widget _buildInfluencerProfile(BuildContext context) {
-    return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
-      listener: (context, state) {
-        if (state is InfluencerProfileError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.message}')),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state is InfluencerProfileLoaded) {
-          return _buildProfileScaffold(
-            isLoading: false,
-            context: context,
-            userId: state.influencer.id,
-            avatar: state.influencer.avatar,
-            banner: state.influencer.banner,
-            collectionId: state.influencer.collectionId,
-            name: state.influencer.fullName,
-            industry: state.influencer.industry,
-            username: state.influencer.username,
-            isVerified: state.influencer.verified,
-            connectedSocial: state.influencer.connectedSocial,
-            description: state.influencerProfile.description,
-            followers: state.influencerProfile.followers,
-            mediaCount: state.influencerProfile.mediaCount,
-          );
-        } else {
-          return _buildProfileScaffold(
-            isLoading: true,
-            context: context,
-            userId: 'id',
-            avatar: '',
-            banner: '',
-            collectionId: 'collectionId',
-            name: 'name',
-            industry: 'industry',
-            username: 'username',
-            isVerified: true,
-            connectedSocial: false,
-            description:
-                'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
-            followers: 0,
-            mediaCount: 0,
-          );
-        }
-      },
-    );
   }
 
   Widget _buildBrandProfile(BuildContext context) {
@@ -134,6 +84,56 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
+  Widget _buildInfluencerProfile(BuildContext context) {
+    return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
+      listener: (context, state) {
+        if (state is InfluencerProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${state.message}')),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is InfluencerProfileLoaded) {
+          return _buildProfileScaffold(
+            isLoading: false,
+            context: context,
+            userId: state.influencer.id,
+            avatar: state.influencer.avatar,
+            banner: state.influencer.banner,
+            collectionId: state.influencer.collectionId,
+            name: state.influencer.fullName,
+            industry: state.influencer.industry,
+            username: state.influencer.username,
+            isVerified: state.influencer.verified,
+            connectedSocial: state.influencer.connectedSocial,
+            description: state.influencerProfile.description,
+            followers: state.influencerProfile.followers,
+            mediaCount: state.influencerProfile.mediaCount,
+          );
+        } else {
+          return _buildProfileScaffold(
+            isLoading: true,
+            context: context,
+            userId: 'id',
+            avatar: '',
+            banner: '',
+            collectionId: 'collectionId',
+            name: 'name',
+            industry: 'industry',
+            username: 'username',
+            isVerified: true,
+            connectedSocial: false,
+            description:
+                'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
+            followers: 0,
+            mediaCount: 0,
+          );
+        }
+      },
+    );
+  }
+
   Widget _buildProfileScaffold({
     required bool isLoading,
     required BuildContext context,
@@ -151,14 +151,15 @@ class _UserProfileState extends State<UserProfile> {
     required bool isVerified,
   }) {
     return Scaffold(
-      floatingActionButton: BlocBuilder<MessagesBloc, MessagesState>(
+      floatingActionButton:
+          BlocBuilder<RealtimeMessagingBloc, RealtimeMessagingState>(
         builder: (context, state) {
           return isVerified
               ? FloatingActionButton(
                   onPressed: isLoading
                       ? null
                       : () async {
-                          BlocProvider.of<MessagesBloc>(context)
+                          BlocProvider.of<RealtimeMessagingBloc>(context)
                               .add(GetMessagesByUserId(userId));
                           Navigator.pushNamed(
                             context,

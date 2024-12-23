@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../../shared/data/constants/avatar.dart';
 import '../../../../../shared/data/constants/industries.dart';
 import '../../../../../shared/domain/models/influencer.dart';
-import '../../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../../theme/colors.dart';
 import '../../../../auth/data/helpers/validation/input_validation.dart';
 import '../../../../auth/presentation/widgets/custom_shad_select.dart';
@@ -113,7 +113,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                         right: 8,
                         child: IconButton(
                           onPressed: () async {
-                            // show cuperino action sheet
+                            // show cupertino action sheet
                             showCupertinoDialog(
                               context: context,
                               builder: (context) => CupertinoActionSheet(
@@ -177,7 +177,7 @@ class _InfluencerSettingSheetState extends State<InfluencerSettingSheet> {
                         child: GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () async {
-                            // show cuperino action sheet
+                            // show cupertino action sheet
                             showCupertinoDialog(
                               context: context,
                               builder: (context) => CupertinoActionSheet(

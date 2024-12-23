@@ -7,7 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../shared/application/theme/theme_bloc.dart';
 import '../../../../shared/data/constants/avatar.dart';
 import '../../../../theme/colors.dart';
-import '../../../auth/data/respositories/auth_repo.dart';
+import '../../../auth/data/repositories/auth_repo.dart';
 
 class CommonDrawer extends StatelessWidget {
   final String name;

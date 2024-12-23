@@ -4,6 +4,7 @@ import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.da
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
@@ -13,7 +14,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../../shared/data/constants/industries.dart';
 import '../../../../../shared/domain/models/influencer.dart';
-import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/app_bar.dart';
 import '../../../common/widgets/bottom_navigation.dart';
 import '../../../common/widgets/drawer.dart';
 import '../../../common/widgets/section_title.dart';
@@ -37,7 +38,7 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   Widget build(BuildContext context) {
     return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
       listener: (context, state) {
-        if (state is RealtimeMessageReceived && _selectedIndex != 2) {
+        if (state is RealtimeMessageReceived) {
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,
@@ -49,6 +50,21 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                               image: state.avatar,
                               collectionId: state.collectionId)),
                     ),
+                    onTap: () {
+                      BlocProvider.of<RealtimeMessagingBloc>(context)
+                          .add(GetMessagesByUserId(state.userId));
+                      Navigator.pushNamed(
+                        context,
+                        singleChatScreen,
+                        arguments: {
+                          'userId': state.userId,
+                          'name': state.name,
+                          'avatar': state.avatar,
+                          'collectionId': state.collectionId,
+                          'hasConnectedInstagram': state.hasConnectedInstagram,
+                        },
+                      );
+                    },
                     title: Text(
                       state.name,
                       style: TextStyle(
@@ -107,12 +123,18 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
         bottomNavigationBar: buildBottomNavigationBar(
           selectedIndex: _selectedIndex,
           onItemTapped: (index) {
+            // Get chats when the chats screen is selected
+            if (index == 2) {
+              BlocProvider.of<ChatsBloc>(context).add(GetChats());
+
+              // Unsubscribe from chats when the chats screen is not selected
+            } else if (index != 2 && _selectedIndex == 2) {
+              BlocProvider.of<ChatsBloc>(context).add(UnsubscribeChats());
+            }
+
             setState(() {
               _selectedIndex = index;
             });
-            if (index == 2) {
-              BlocProvider.of<ChatsBloc>(context).add(GetChats());
-            }
           },
         ),
       ),

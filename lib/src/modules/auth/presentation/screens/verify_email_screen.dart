@@ -10,7 +10,7 @@ import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/screens.dart';
 import '../../../../theme/colors.dart';
 import '../../application/verification/email_verification_bloc.dart';
-import '../../data/respositories/auth_repo.dart';
+import '../../data/repositories/auth_repo.dart';
 import '../widgets/heading_text.dart';
 import '../widgets/sub_heading.dart';
 
@@ -230,9 +230,14 @@ class VerifyEmailState extends State<VerifyEmail> {
     });
   }
 
+  void _changeEmail() async {
+    Navigator.pushNamedAndRemoveUntil(context, welcomeScreen, (route) => false);
+    await AuthRepository.logout();
+  }
+
   /// Resend the verification email
   ///
-  /// This function resends the verification email to the user's email address.
+  /// This function resend the verification email to the user's email address.
   void _resendEmail(BuildContext context) async {
     setState(() {
       isLoading = true;
@@ -262,11 +267,6 @@ class VerifyEmailState extends State<VerifyEmail> {
 
     _resendEmailCount++;
     _startResendTimer();
-  }
-
-  void _changeEmail() async {
-    Navigator.pushNamedAndRemoveUntil(context, welcomeScreen, (route) => false);
-    await AuthRepository.logout();
   }
 
   /// Start the resend email timer
