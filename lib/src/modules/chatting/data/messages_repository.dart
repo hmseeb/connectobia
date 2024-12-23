@@ -72,7 +72,7 @@ class MessagesRepository {
       final pb = await PocketBaseSingleton.instance;
       final selfId = pb.authStore.record!.id;
       String filter =
-          'senderId = "$selfId" || recipientId = "$selfId" && senderId = "$userId" || recipientId = "$userId"';
+          'senderId = "$selfId" && recipientId = "$userId" || senderId = "$userId" && recipientId = "$selfId"';
       final resultList = await pb.collection('messages').getList(
             page: 1,
             perPage: 20,

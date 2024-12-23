@@ -1,5 +1,4 @@
 import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
-import 'package:connectobia/src/modules/chatting/data/chats_repository.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -116,7 +115,7 @@ class _UserProfileState extends State<UserProfile> {
           return _buildProfileScaffold(
             isLoading: true,
             context: context,
-            userId: 'id',
+            userId: '',
             avatar: '',
             banner: '',
             collectionId: 'collectionId',
@@ -213,11 +212,5 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
     );
-  }
-
-  Future<String> getChatId(String userId) async {
-    ChatsRepository chatsRepository = ChatsRepository();
-    final String chatId = await chatsRepository.getChatIdByUserId(userId);
-    return chatId;
   }
 }
