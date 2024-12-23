@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (accountType == 'brands') {
                             Navigator.pushNamed(
                               context,
-                              brandDashboard,
+                              brandSignupScreen,
                             );
                           } else {
                             Navigator.pushNamed(
