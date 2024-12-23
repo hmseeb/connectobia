@@ -1,4 +1,4 @@
-import 'package:connectobia/src/modules/chatting/application/messages/messages_bloc.dart';
+import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,14 +151,15 @@ class _UserProfileState extends State<UserProfile> {
     required bool isVerified,
   }) {
     return Scaffold(
-      floatingActionButton: BlocBuilder<MessagesBloc, MessagesState>(
+      floatingActionButton:
+          BlocBuilder<RealtimeMessagingBloc, RealtimeMessagingState>(
         builder: (context, state) {
           return isVerified
               ? FloatingActionButton(
                   onPressed: isLoading
                       ? null
                       : () async {
-                          BlocProvider.of<MessagesBloc>(context)
+                          BlocProvider.of<RealtimeMessagingBloc>(context)
                               .add(GetMessagesByUserId(userId));
                           Navigator.pushNamed(
                             context,
