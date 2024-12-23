@@ -12,9 +12,6 @@ part 'brand_profile_state.dart';
 class BrandProfileBloc extends Bloc<BrandProfileEvent, BrandProfileState> {
   BrandProfileBloc() : super(BrandProfileInitial()) {
     on<LoadBrandProfile>((event, emit) async {
-      if (state is BrandProfileLoaded) {
-        return;
-      }
       emit(BrandProfileLoading());
       try {
         final BrandProfile brandProfile =

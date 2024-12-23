@@ -13,9 +13,6 @@ class InfluencerProfileBloc
     extends Bloc<InfluencerProfileEvent, InfluencerProfileState> {
   InfluencerProfileBloc() : super(InfluencerProfileInitial()) {
     on<InfluencerProfileLoad>((event, emit) async {
-      if (state is InfluencerProfileLoaded) {
-        return;
-      }
       emit(InfluencerProfileLoading());
       try {
         InfluencerProfile influencerProfile =
