@@ -1,7 +1,7 @@
-import 'package:connectobia/src/modules/chatting/data/messages_repository.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/chats.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/repositories/realtime_messaging_repo.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -81,10 +81,6 @@ class ChatsRepository {
       final resultList = await pb.collection('chats').getFirstListItem(
           'influencer = "$influencerId" && brand = "$brandId"');
       String chatId = resultList.id;
-
-      if (chatId.isEmpty) {
-        return '';
-      }
 
       return chatId;
     } catch (e) {
