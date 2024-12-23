@@ -34,6 +34,17 @@ class Chats {
   factory Chats.fromRecord(ResultList<RecordModel> record) =>
       Chats.fromJson(record.toJson());
 
+  Chats addChat(Chat chat) {
+    items.add(chat);
+    return Chats(
+      items: items,
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: totalItems + 1,
+    );
+  }
+
   Chats removeMessage(int index) {
     items.remove(items[index]);
     return Chats(
