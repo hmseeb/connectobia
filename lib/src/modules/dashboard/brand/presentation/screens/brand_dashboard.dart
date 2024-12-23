@@ -38,7 +38,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
   Widget build(BuildContext context) {
     return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
       listener: (context, state) {
-        if (state is RealtimeMessageReceived) {
+        if (state is RealtimeMessageReceived && _selectedIndex != 2) {
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,
