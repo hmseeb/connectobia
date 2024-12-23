@@ -8,12 +8,14 @@ class ProfileBody extends StatelessWidget {
   final String description;
   final int? followers;
   final int? mediaCount;
+  final bool hasConnectedInstagram;
 
   const ProfileBody({
     super.key,
     required this.description,
     this.followers,
     this.mediaCount,
+    required this.hasConnectedInstagram,
   });
 
   @override
@@ -49,7 +51,7 @@ class ProfileBody extends StatelessWidget {
               ),
               const SizedBox(height: 16),
             ],
-            if (followers != null && mediaCount != null) ...[
+            if (hasConnectedInstagram) ...[
               const SizedBox(height: 16),
               Text(
                 'Analytics',
