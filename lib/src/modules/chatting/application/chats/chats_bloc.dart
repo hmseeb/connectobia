@@ -39,8 +39,13 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         await pb.collection('chats').subscribe(
           "*",
           (e) {
-            final Chat chat = Chat.fromRecord(e.record!);
-            add(UpdateChat(newChat: chat, prevChats: event.prevChats));
+            if (e.action == 'update') {
+              final Chat chat = Chat.fromRecord(e.record!);
+              add(UpdatedChat(newChat: chat, prevChats: event.prevChats));
+            } else if (e.action == 'create') {
+              final Chat chat = Chat.fromRecord(e.record!);
+              add(CreatedChat(newChat: chat, prevChats: event.prevChats));
+            }
           },
           filter: filter,
           expand: 'message,brand,influencer',
@@ -50,13 +55,23 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         emit(ChatsLoadingError(e.toString()));
       }
     });
-    on<UpdateChat>((event, emit) {
+    on<UpdatedChat>((event, emit) {
       final Chats updatedChats = event.prevChats.updateChat(
         influencer: event.newChat.influencer,
         brand: event.newChat.brand,
         updatedChat: event.newChat,
       );
       emit(ChatsLoaded(updatedChats));
+    });
+
+    on<CreatedChat>((event, emit) async {
+      try {
+        final Chats updatedChats = event.prevChats.addChat(event.newChat);
+        emit(ChatsLoaded(updatedChats));
+      } catch (e) {
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(ChatsLoadingError(errorRepo.handleError(e)));
+      }
     });
     on<UnsubscribeChats>((event, emit) async {
       try {

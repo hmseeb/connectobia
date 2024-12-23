@@ -10,6 +10,13 @@ class CreateChat extends ChatsEvent {
   CreateChat(this.recipientId, this.message);
 }
 
+class CreatedChat extends ChatsEvent {
+  final Chats prevChats;
+  final Chat newChat;
+
+  CreatedChat({required this.newChat, required this.prevChats});
+}
+
 class GetChatId extends ChatsEvent {
   final String recipientId;
 
@@ -29,9 +36,9 @@ class UnsubscribeChats extends ChatsEvent {
   UnsubscribeChats();
 }
 
-class UpdateChat extends ChatsEvent {
+class UpdatedChat extends ChatsEvent {
   final Chats prevChats;
   final Chat newChat;
 
-  UpdateChat({required this.newChat, required this.prevChats});
+  UpdatedChat({required this.newChat, required this.prevChats});
 }
