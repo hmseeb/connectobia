@@ -23,7 +23,7 @@ class DateAndTime {
     Duration difference = DateTime.now().difference(dateTime);
 
     if (difference.inSeconds < 60) {
-      return '${difference.inSeconds} seconds ago';
+      return 'a few seconds ago';
     } else if (difference.inMinutes < 60) {
       return '${difference.inMinutes} minutes ago';
     } else if (difference.inHours < 24) {
