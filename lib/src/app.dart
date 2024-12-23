@@ -86,6 +86,20 @@ class ConnectobiaState extends State<Connectobia> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    isDarkMode = widget.isDarkMode; // Initialize isDarkMode with widget's value
+    _riveAnimationcontroller = SimpleAnimation(
+      'Timeline 1',
+    );
+    _riveAnimationcontroller.isActiveChanged.addListener(() {
+      if (!_riveAnimationcontroller.isActive) {
+        context.read<AnimationCubit>().animationStopped();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _riveAnimationcontroller.dispose();
     _riveAnimationcontroller.isActiveChanged.removeListener(() {});
@@ -144,19 +158,5 @@ class ConnectobiaState extends State<Connectobia> {
         welcomeScreen,
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    isDarkMode = widget.isDarkMode; // Initialize isDarkMode with widget's value
-    _riveAnimationcontroller = SimpleAnimation(
-      'Timeline 1',
-    );
-    _riveAnimationcontroller.isActiveChanged.addListener(() {
-      if (!_riveAnimationcontroller.isActive) {
-        context.read<AnimationCubit>().animationStopped();
-      }
-    });
   }
 }
