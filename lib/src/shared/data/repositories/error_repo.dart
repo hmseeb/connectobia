@@ -14,6 +14,7 @@ import '../../domain/models/error.dart';
 class ErrorRepository {
   /// [handleError] function takes an error and passes it to the appropriate function to handle it
   String handleError(Object originalError) {
+    debugPrint('$originalError');
     if (originalError is ClientException) {
       try {
         String errorRawJson = jsonEncode(originalError.response['data']);
