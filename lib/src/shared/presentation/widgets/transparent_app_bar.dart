@@ -1,4 +1,6 @@
+import 'package:connectobia/src/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// A function that returns a transparent app bar
 ///
@@ -14,8 +16,11 @@ AppBar transparentAppBar(
   centerTitle = true,
   required BuildContext context,
 }) {
+  ShadThemeData theme = ShadTheme.of(context);
   return AppBar(
     elevation: 0,
+    backgroundColor:
+        theme.brightness == Brightness.dark ? null : ShadColors.light,
     centerTitle: centerTitle,
     title: Text(title ?? ''),
     actions: actions,

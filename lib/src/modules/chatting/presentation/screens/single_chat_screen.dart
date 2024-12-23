@@ -53,9 +53,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
           child: Scaffold(
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
-              backgroundColor: brightness == Brightness.dark
-                  ? ShadColors.dark
-                  : ShadColors.light,
+              backgroundColor:
+                  brightness == Brightness.dark ? null : ShadColors.light,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
