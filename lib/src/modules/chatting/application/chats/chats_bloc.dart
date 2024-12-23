@@ -11,6 +11,9 @@ part 'chats_state.dart';
 
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ChatsBloc() : super(ChatsInitial()) {
+    if (state is ChatsLoaded) {
+      return;
+    }
     on<GetChats>((event, emit) async {
       try {
         emit(ChatsLoading());
