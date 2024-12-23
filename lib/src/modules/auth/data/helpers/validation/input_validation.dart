@@ -31,17 +31,6 @@ class InputValidation {
     return null;
   }
 
-  static String? validateName(String? brandName) {
-    if (brandName == null || brandName.isEmpty) {
-      return 'Name is required';
-    }
-
-    if (brandName.length >= 40) {
-      return 'Name cannot exceed 40 characters';
-    }
-    return null;
-  }
-
   static String? validateEmail(String? email) {
     if (email == null || email.isEmpty) {
       return 'Email is required';
@@ -98,6 +87,17 @@ class InputValidation {
     return null;
   }
 
+  static String? validateName(String? brandName) {
+    if (brandName == null || brandName.isEmpty) {
+      return 'Name is required';
+    }
+
+    if (brandName.length >= 40) {
+      return 'Name cannot exceed 40 characters';
+    }
+    return null;
+  }
+
   static List<String> validatePassword(String? password) {
     List<String> errors = [];
 
@@ -114,7 +114,7 @@ class InputValidation {
       }
 
       // Check for at least one special character
-      if (!RegExp(r'[@$!%*?&#^]').hasMatch(password)) {
+      if (!RegExp(r'[!"#$%&()*+,-./:;<=>?@[\]^_`{|}~]').hasMatch(password)) {
         errors.add('Password must contain at least one special character');
       }
     }
