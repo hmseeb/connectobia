@@ -60,6 +60,7 @@ dependencies:
   get_ip_address: ^0.0.7
   device_info_plus: ^11.2.0
   external_app_launcher: ^4.0.1
+  delightful_toast: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -14,7 +14,17 @@ final class RealtimeMessagingError extends RealtimeMessagingState {
 }
 
 final class RealtimeMessageReceived extends RealtimeMessagingState {
-  final String message;
+  final Message message;
+  final String avatar;
+  final String name;
+  final String userId;
+  final String collectionId;
 
-  RealtimeMessageReceived(this.message);
+  RealtimeMessageReceived({
+    required this.message,
+    required this.avatar,
+    required this.name,
+    required this.userId,
+    required this.collectionId,
+  });
 }

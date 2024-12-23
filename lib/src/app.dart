@@ -1,4 +1,3 @@
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
@@ -70,18 +69,12 @@ class ConnectobiaState extends State<Connectobia> {
                 listener: (context, state) {
                   if (state is AnimationStopped) {}
                 },
-                child:
-                    BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
-                  listener: (context, state) {
-                    if (state is RealtimeMessageReceived) {}
-                  },
-                  child: Scaffold(
-                    backgroundColor: ShadColors.primary,
-                    body: RiveAnimation.asset(
-                      AssetsPath.splash,
-                      controllers: [_riveAnimationcontroller],
-                      alignment: Alignment.center,
-                    ),
+                child: Scaffold(
+                  backgroundColor: ShadColors.primary,
+                  body: RiveAnimation.asset(
+                    AssetsPath.splash,
+                    controllers: [_riveAnimationcontroller],
+                    alignment: Alignment.center,
                   ),
                 ),
               ),
