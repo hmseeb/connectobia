@@ -13,7 +13,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../../shared/domain/models/brand.dart';
 import '../../../../auth/presentation/widgets/brand_featured_listing.dart';
 import '../../../../chatting/presentation/screens/chats_screen.dart';
-import '../../../common/widgets/appbar.dart';
+import '../../../common/widgets/app_bar.dart';
 import '../../../common/widgets/bottom_navigation.dart';
 import '../../../common/widgets/drawer.dart';
 import '../../../common/widgets/section_title.dart';

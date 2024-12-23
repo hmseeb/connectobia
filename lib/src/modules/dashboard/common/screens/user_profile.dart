@@ -34,56 +34,6 @@ class _UserProfileState extends State<UserProfile> {
         : _buildBrandProfile(context);
   }
 
-  Widget _buildInfluencerProfile(BuildContext context) {
-    return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
-      listener: (context, state) {
-        if (state is InfluencerProfileError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${state.message}')),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state is InfluencerProfileLoaded) {
-          return _buildProfileScaffold(
-            isLoading: false,
-            context: context,
-            userId: state.influencer.id,
-            avatar: state.influencer.avatar,
-            banner: state.influencer.banner,
-            collectionId: state.influencer.collectionId,
-            name: state.influencer.fullName,
-            industry: state.influencer.industry,
-            username: state.influencer.username,
-            isVerified: state.influencer.verified,
-            connectedSocial: state.influencer.connectedSocial,
-            description: state.influencerProfile.description,
-            followers: state.influencerProfile.followers,
-            mediaCount: state.influencerProfile.mediaCount,
-          );
-        } else {
-          return _buildProfileScaffold(
-            isLoading: true,
-            context: context,
-            userId: 'id',
-            avatar: '',
-            banner: '',
-            collectionId: 'collectionId',
-            name: 'name',
-            industry: 'industry',
-            username: 'username',
-            isVerified: true,
-            connectedSocial: false,
-            description:
-                'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
-            followers: 0,
-            mediaCount: 0,
-          );
-        }
-      },
-    );
-  }
-
   Widget _buildBrandProfile(BuildContext context) {
     return BlocConsumer<BrandProfileBloc, BrandProfileState>(
       listener: (context, state) {
@@ -126,6 +76,56 @@ class _UserProfileState extends State<UserProfile> {
             connectedSocial: false,
             description:
                 'Incididunt reprehenderit eu do consectetur irure reprehenderit id eiusmod irure sint enim culpa est. Incididunt eiusmod est do fugiat anim cupidatat velit et occaecat incididunt culpa. Est amet laboris ea sint laborum nisi. Ea magna et qui non enim commodo qui nostrud enim laboris reprehenderit. Tempor nulla id sint eu.',
+            followers: 0,
+            mediaCount: 0,
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildInfluencerProfile(BuildContext context) {
+    return BlocConsumer<InfluencerProfileBloc, InfluencerProfileState>(
+      listener: (context, state) {
+        if (state is InfluencerProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${state.message}')),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is InfluencerProfileLoaded) {
+          return _buildProfileScaffold(
+            isLoading: false,
+            context: context,
+            userId: state.influencer.id,
+            avatar: state.influencer.avatar,
+            banner: state.influencer.banner,
+            collectionId: state.influencer.collectionId,
+            name: state.influencer.fullName,
+            industry: state.influencer.industry,
+            username: state.influencer.username,
+            isVerified: state.influencer.verified,
+            connectedSocial: state.influencer.connectedSocial,
+            description: state.influencerProfile.description,
+            followers: state.influencerProfile.followers,
+            mediaCount: state.influencerProfile.mediaCount,
+          );
+        } else {
+          return _buildProfileScaffold(
+            isLoading: true,
+            context: context,
+            userId: 'id',
+            avatar: '',
+            banner: '',
+            collectionId: 'collectionId',
+            name: 'name',
+            industry: 'industry',
+            username: 'username',
+            isVerified: true,
+            connectedSocial: false,
+            description:
+                'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
             followers: 0,
             mediaCount: 0,
           );

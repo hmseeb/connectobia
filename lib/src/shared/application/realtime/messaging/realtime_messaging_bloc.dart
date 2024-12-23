@@ -48,6 +48,8 @@ class RealtimeMessagingBloc
           name: brand.brandName,
           collectionId: record.collectionId,
           userId: brand.id,
+          chatId: event.message.chat,
+          hasConnectedInstagram: false,
         ));
       } else {
         final influencer = Influencer.fromRecord(record);
@@ -57,6 +59,8 @@ class RealtimeMessagingBloc
           name: influencer.fullName,
           collectionId: record.collectionId,
           userId: influencer.id,
+          chatId: event.message.chat,
+          hasConnectedInstagram: influencer.connectedSocial,
         ));
       }
     });
