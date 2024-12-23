@@ -5,7 +5,7 @@ import '../../../../shared/data/repositories/error_repo.dart';
 import '../../../../shared/data/singletons/account_type.dart';
 import '../../../../shared/domain/models/brand.dart';
 import '../../../../shared/domain/models/influencer.dart';
-import '../../data/respositories/auth_repo.dart';
+import '../../data/repositories/auth_repo.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
