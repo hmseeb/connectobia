@@ -39,7 +39,7 @@ class OrDivider extends StatelessWidget {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text('Workspace'),
+          child: Text('OR'),
         ),
         Expanded(
           child: Divider(
