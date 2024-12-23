@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
-import '../../../auth/data/respositories/auth_repo.dart';
+import '../../../auth/data/repositories/auth_repo.dart';
 
 part 'influencer_onboard_event.dart';
 part 'influencer_onboard_state.dart';
