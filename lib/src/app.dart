@@ -28,7 +28,7 @@ class Connectobia extends StatefulWidget {
 /// The state class for the [Connectobia] widget.
 class ConnectobiaState extends State<Connectobia> {
   late bool isDarkMode;
-  late RiveAnimationController _riveAnimationcontroller;
+  late RiveAnimationController _riveAnimationController;
   AuthState authState = AuthInitial();
 
   dynamic user;
@@ -73,7 +73,7 @@ class ConnectobiaState extends State<Connectobia> {
                   backgroundColor: ShadColors.primary,
                   body: RiveAnimation.asset(
                     AssetsPath.splash,
-                    controllers: [_riveAnimationcontroller],
+                    controllers: [_riveAnimationController],
                     alignment: Alignment.center,
                   ),
                 ),
@@ -89,11 +89,11 @@ class ConnectobiaState extends State<Connectobia> {
   void initState() {
     super.initState();
     isDarkMode = widget.isDarkMode; // Initialize isDarkMode with widget's value
-    _riveAnimationcontroller = SimpleAnimation(
+    _riveAnimationController = SimpleAnimation(
       'Timeline 1',
     );
-    _riveAnimationcontroller.isActiveChanged.addListener(() {
-      if (!_riveAnimationcontroller.isActive) {
+    _riveAnimationController.isActiveChanged.addListener(() {
+      if (!_riveAnimationController.isActive) {
         context.read<AnimationCubit>().animationStopped();
       }
     });
@@ -101,8 +101,8 @@ class ConnectobiaState extends State<Connectobia> {
 
   @override
   void dispose() {
-    _riveAnimationcontroller.dispose();
-    _riveAnimationcontroller.isActiveChanged.removeListener(() {});
+    _riveAnimationController.dispose();
+    _riveAnimationController.isActiveChanged.removeListener(() {});
     super.dispose();
   }
 

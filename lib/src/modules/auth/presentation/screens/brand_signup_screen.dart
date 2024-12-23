@@ -7,7 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/industries.dart';
 import '../../../../shared/data/constants/screen_size.dart';
-import '../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../theme/buttons.dart';
 import '../../application/signup/signup_bloc.dart';
 import '../widgets/brand_signup_form.dart';
@@ -39,7 +39,7 @@ class OrDivider extends StatelessWidget {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text('OR'),
+          child: Text('Workspace'),
         ),
         Expanded(
           child: Divider(

@@ -7,7 +7,7 @@ import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
 import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/screen_size.dart';
-import '../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../../onboarding/application/bloc/influencer_onboard_bloc.dart';
@@ -147,8 +147,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .add(InstagramAuth(accountType: accountType));
                             },
                             text: state is InstagramLoading
-                                ? 'Loging in with Instagram...'
-                                : 'Log in with Instagram',
+                                ? 'Logging in with Instagram...'
+                                : 'Login with Instagram',
                             borderSide: const BorderSide(),
                             backgroundColor: ShadColors.lightForeground,
                           ),

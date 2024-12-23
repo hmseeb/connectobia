@@ -8,7 +8,7 @@ import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/industries.dart';
 import '../../../../shared/data/constants/screen_size.dart';
-import '../../../../shared/presentation/widgets/transparent_appbar.dart';
+import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../application/signup/signup_bloc.dart';
@@ -134,7 +134,7 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                               .add(InstagramSignup(accountType: accountType));
                         },
                         text: state is InstagramLoading
-                            ? 'Loging up...'
+                            ? 'Signing up...'
                             : 'Sign up with Instagram',
                         borderSide: const BorderSide(),
                         backgroundColor: ShadColors.lightForeground,
