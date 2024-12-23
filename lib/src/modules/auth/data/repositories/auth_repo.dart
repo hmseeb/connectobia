@@ -90,6 +90,7 @@ class AuthRepository {
       "engRate": null,
       "location": null,
       "mediaCount": rawUser.mediaCount,
+      "username": rawUser.username,
     };
 
     final record =
@@ -174,23 +175,24 @@ class AuthRepository {
         await launchUrl(url);
       });
 
-      // Implement brand if instagram auth is introduced for brands in future
-
       final Influencer influencer = Influencer.fromRecord(recordAuth.record);
-      final Meta meta = Meta.fromJson(recordAuth.meta);
-      final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
-      final String influencerId = influencer.id;
-      final influencerProfileId = await createInfluencerProfile(
-          pocketBase: pb, meta: meta, rawUser: rawUser);
+      // Implement brand if instagram auth is introduced for brands in future
+      if (influencer.profile.isEmpty) {
+        final Meta meta = Meta.fromJson(recordAuth.meta);
+        final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
+        final String influencerId = influencer.id;
+        final influencerProfileId = await createInfluencerProfile(
+            pocketBase: pb, meta: meta, rawUser: rawUser);
 
-      debugPrint('Created influencer profile');
-      await linkProfileWithAccount(
-        userId: influencerId,
-        profileId: influencerProfileId,
-        pb: pb,
-        collectionName: 'influencers',
-      );
-      debugPrint('Linked profile with account');
+        debugPrint('Created influencer profile');
+        await linkProfileWithAccount(
+          userId: influencerId,
+          profileId: influencerProfileId,
+          pb: pb,
+          collectionName: 'influencers',
+        );
+        debugPrint('Linked profile with account');
+      }
       return influencer;
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();

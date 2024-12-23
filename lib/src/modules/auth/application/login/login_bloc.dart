@@ -73,7 +73,8 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
       try {
         debugPrint('Logging in with Instagram');
         final influencer = await AuthRepository.instagramAuth(
-            collectionName: event.accountType);
+          collectionName: event.accountType,
+        );
 
         emit(InfluencerLoginSuccess(influencer));
         debugPrint('Logged in with Instagram');
