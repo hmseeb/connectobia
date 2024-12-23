@@ -14,12 +14,6 @@ class Chats extends StatefulWidget {
 class _ChatsState extends State<Chats> {
   late final ScrollController _scrollController;
   @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: transparentAppBar(
@@ -42,5 +36,11 @@ class _ChatsState extends State<Chats> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
   }
 }

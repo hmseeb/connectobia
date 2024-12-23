@@ -49,38 +49,6 @@ class ChatsRepository {
     }
   }
 
-  /// [getChats] is a method that gets all the chats of the current user.
-  /// It returns a [Chats] object.
-  /// The [Chats] object contains a list of [Chat] objects.
-  /// Each [Chat] object contains the chat details.
-  Future<Chats> getChats() async {
-    try {
-      final pb = await PocketBaseSingleton.instance;
-
-      String accountType = CollectionNameSingleton.instance;
-
-      // Remove the 's' from the account type
-      accountType = accountType.replaceAll('s', '');
-
-      final String userId = pb.authStore.record!.id;
-
-      final resultList = await pb.collection('chats').getList(
-            page: 1,
-            perPage: 20,
-            filter: '$accountType = "$userId"',
-            expand: 'influencer,brand,message',
-            sort: 'created',
-          );
-
-      Chats chats = Chats.fromRecord(resultList);
-
-      return chats;
-    } catch (e) {
-      debugPrint('$e');
-      throw ClientException;
-    }
-  }
-
   Future<String> getChatID(String recipientId) async {
     try {
       final pb = await PocketBaseSingleton.instance;
@@ -120,6 +88,38 @@ class ChatsRepository {
 
       return chatId;
     } catch (e) {
+      throw ClientException;
+    }
+  }
+
+  /// [getChats] is a method that gets all the chats of the current user.
+  /// It returns a [Chats] object.
+  /// The [Chats] object contains a list of [Chat] objects.
+  /// Each [Chat] object contains the chat details.
+  Future<Chats> getChats() async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      String accountType = CollectionNameSingleton.instance;
+
+      // Remove the 's' from the account type
+      accountType = accountType.replaceAll('s', '');
+
+      final String userId = pb.authStore.record!.id;
+
+      final resultList = await pb.collection('chats').getList(
+            page: 1,
+            perPage: 20,
+            filter: '$accountType = "$userId"',
+            expand: 'influencer,brand,message',
+            sort: 'created',
+          );
+
+      Chats chats = Chats.fromRecord(resultList);
+
+      return chats;
+    } catch (e) {
+      debugPrint('$e');
       throw ClientException;
     }
   }

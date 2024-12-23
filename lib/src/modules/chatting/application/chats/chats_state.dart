@@ -1,9 +1,18 @@
 part of 'chats_bloc.dart';
 
-@immutable
-sealed class ChatsState {}
+final class ChatCreated extends ChatsState {
+  final Chats chat;
+
+  ChatCreated(this.chat);
+}
 
 final class ChatsInitial extends ChatsState {}
+
+final class ChatsLoaded extends ChatsState {
+  final Chats chats;
+
+  ChatsLoaded(this.chats);
+}
 
 final class ChatsLoading extends ChatsState {}
 
@@ -13,14 +22,11 @@ final class ChatsLoadingError extends ChatsState {
   ChatsLoadingError(this.message);
 }
 
-final class ChatsLoaded extends ChatsState {
-  final Chats chats;
+@immutable
+sealed class ChatsState {}
 
-  ChatsLoaded(this.chats);
-}
+final class ChatUpdated extends ChatsState {
+  final Chat chat;
 
-final class ChatCreated extends ChatsState {
-  final Chats chat;
-
-  ChatCreated(this.chat);
+  ChatUpdated(this.chat);
 }

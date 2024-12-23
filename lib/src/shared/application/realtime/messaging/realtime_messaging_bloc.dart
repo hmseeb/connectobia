@@ -32,7 +32,6 @@ class RealtimeMessagingBloc
       }
     });
     on<AddNewMessage>((event, emit) async {
-      debugPrint('Getting user name and avatar');
       RealtimeMessagingRepo realtimeMessagingRepo = RealtimeMessagingRepo();
       final RecordModel record =
           await realtimeMessagingRepo.getUserById(event.message.senderId);

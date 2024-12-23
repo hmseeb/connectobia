@@ -127,12 +127,18 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
             bottomNavigationBar: buildBottomNavigationBar(
               selectedIndex: _selectedIndex,
               onItemTapped: (index) {
+                // Get chats when the chats screen is selected
+                if (index == 2) {
+                  BlocProvider.of<ChatsBloc>(context).add(GetChats());
+
+                  // Unsubscribe from chats when the chats screen is not selected
+                } else if (index != 2 && _selectedIndex == 2) {
+                  BlocProvider.of<ChatsBloc>(context).add(UnsubscribeChats());
+                }
+
                 setState(() {
                   _selectedIndex = index;
                 });
-                if (index == 2) {
-                  BlocProvider.of<ChatsBloc>(context).add(GetChats());
-                }
               },
             ),
           ),
