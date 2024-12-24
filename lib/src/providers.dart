@@ -1,7 +1,7 @@
 import 'package:connectobia/src/app.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
-import 'package:connectobia/src/modules/edit_profile/presentation/screens/EditProfilePage.dart';
+import 'package:connectobia/src/modules/edit_profile/application/bloc/edit_profile_bloc.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +12,6 @@ import 'modules/auth/application/login/login_bloc.dart';
 import 'modules/auth/application/signup/signup_bloc.dart';
 import 'modules/auth/application/verification/email_verification_bloc.dart';
 import 'modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
 import 'modules/dashboard/brand/application/profile_settings/profile_settings.dart';
 import 'modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
 import 'modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
@@ -34,16 +33,12 @@ class BlocProviders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [ 
-       BlocProvider<EditProfileBloc>(
-          create: (context) => EditProfileBloc()),
-
+      providers: [
         BlocProvider(
             create: (context) => ThemeBloc()..add(ThemeChanged(isDarkMode))),
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => SignupBloc()),
         BlocProvider(create: (context) => EmailVerificationBloc()),
-        
         BlocProvider(
             create: (context) =>
                 BrandDashboardBloc()..add(BrandDashboardLoadInfluencers())),
@@ -58,11 +53,11 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => AnimationCubit()),
         BlocProvider(create: (context) => ChatsBloc()),
         BlocProvider(create: (context) => CampaignBloc()),
-        
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),
         BlocProvider(create: (context) => NotificationsBloc()),
+        BlocProvider(create: (context) => EditProfileBloc()),
       ],
       child: Connectobia(
         isDarkMode: isDarkMode,

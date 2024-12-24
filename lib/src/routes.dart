@@ -24,7 +24,7 @@ import 'package:connectobia/src/modules/chatting/presentation/screens/single_cha
 import 'package:connectobia/src/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.dart';
 import 'package:connectobia/src/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
-import 'package:connectobia/src/modules/edit_profile/presentation/screens/EditProfilePage.dart';
+import 'package:connectobia/src/modules/edit_profile/presentation/screens/edit_profile_page.dart';
 import 'package:connectobia/src/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
@@ -108,8 +108,8 @@ class GenerateRoutes {
 
       case '/editProfile':
         return _buildRoute(BlocProvider<EditProfileBloc>(
-          create: (context) => EditProfileBloc(),
-          child: const EditProfileScreen()));
+            create: (context) => EditProfileBloc(),
+            child: const EditProfileScreen()));
 
       default:
         return _buildRoute(WelcomeScreen());
