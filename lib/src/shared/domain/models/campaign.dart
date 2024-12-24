@@ -26,6 +26,7 @@ class Campaign {
     required this.created,
     required this.updated,
   });
+  
 
   factory Campaign.fromJson(Map<String, dynamic> json) => Campaign(
         collectionId: json["collectionId"],

@@ -1,6 +1,7 @@
 import 'package:connectobia/src/app.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
+import 'package:connectobia/src/modules/edit_profile/presentation/screens/EditProfilePage.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:flutter/material.dart';
@@ -33,19 +34,22 @@ class BlocProviders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
+      providers: [ 
+       BlocProvider<EditProfileBloc>(
+          create: (context) => EditProfileBloc()),
+
         BlocProvider(
             create: (context) => ThemeBloc()..add(ThemeChanged(isDarkMode))),
         BlocProvider(create: (context) => LoginBloc()),
         BlocProvider(create: (context) => SignupBloc()),
         BlocProvider(create: (context) => EmailVerificationBloc()),
+        
         BlocProvider(
             create: (context) =>
                 BrandDashboardBloc()..add(BrandDashboardLoadInfluencers())),
         BlocProvider(
             create: (context) => InfluencerDashboardBloc()
               ..add(InfluencerDashboardLoadBrands())),
-        BlocProvider(create: (context) => EditProfileBloc()),
         BlocProvider(create: (context) => BrandProfileBloc()),
         BlocProvider(create: (context) => ProfileSettingsBloc()),
         BlocProvider(create: (context) => AuthBloc()..add(CheckAuth())),
@@ -54,6 +58,7 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => AnimationCubit()),
         BlocProvider(create: (context) => ChatsBloc()),
         BlocProvider(create: (context) => CampaignBloc()),
+        
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),

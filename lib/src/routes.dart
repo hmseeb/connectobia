@@ -24,9 +24,13 @@ import 'package:connectobia/src/modules/chatting/presentation/screens/single_cha
 import 'package:connectobia/src/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.dart';
 import 'package:connectobia/src/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
+import 'package:connectobia/src/modules/edit_profile/presentation/screens/EditProfilePage.dart';
 import 'package:connectobia/src/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
 
 /// A class responsible for generating routes for the application.
 ///
@@ -101,6 +105,11 @@ class GenerateRoutes {
 
       case campaignsScreen:
         return _buildRoute(const CampaignScreen());
+
+      case '/editProfile':
+        return _buildRoute(BlocProvider<EditProfileBloc>(
+          create: (context) => EditProfileBloc(),
+          child: const EditProfileScreen()));
 
       default:
         return _buildRoute(WelcomeScreen());
