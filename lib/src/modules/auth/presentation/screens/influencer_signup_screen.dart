@@ -12,8 +12,8 @@ import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
 import '../../application/signup/signup_bloc.dart';
-import '../widgets/creator_signup_form.dart';
 import '../widgets/custom_shad_select.dart';
+import '../widgets/influencer_signup_form.dart';
 import '../widgets/privacy_policy.dart';
 import 'brand_signup_screen.dart';
 
@@ -94,7 +94,6 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                     InfluencerSignupForm(
                         brandNameController: firstNameController,
                         emailController: emailController,
-                        usernameController: usernameController,
                         passwordController: passwordController),
                     CustomShadSelect(
                       items: IndustryList.industries,

@@ -49,10 +49,12 @@ class VerifyEmailState extends State<VerifyEmail> {
               });
         } else if (state is InfluencerEmailVerified) {
           Navigator.of(context).pushNamedAndRemoveUntil(
-              influencerDashboard, (route) => false,
-              arguments: {
-                'user': state.influencer,
-              });
+            influencerOnboarding,
+            (route) => false,
+            arguments: {
+              'user': state.influencer,
+            },
+          );
         } else if (state is EmailVerificationError) {
           ShadToaster.of(context).show(
             ShadToast.destructive(

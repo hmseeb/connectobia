@@ -12,14 +12,13 @@ class InfluencerSignupForm extends StatefulWidget {
   final TextEditingController brandNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  final TextEditingController usernameController;
 
-  const InfluencerSignupForm(
-      {super.key,
-      required this.brandNameController,
-      required this.emailController,
-      required this.passwordController,
-      required this.usernameController});
+  const InfluencerSignupForm({
+    super.key,
+    required this.brandNameController,
+    required this.emailController,
+    required this.passwordController,
+  });
 
   @override
   State<InfluencerSignupForm> createState() => _InfluencerSignupFormState();
@@ -45,18 +44,6 @@ class _InfluencerSignupFormState extends State<InfluencerSignupForm> {
             return null;
           },
         ),
-        ShadInputFormField(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            placeholder: const Text('Username'),
-            controller: widget.usernameController,
-            keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              final error = InputValidation.validateUsername(value);
-              if (error != null) {
-                return error;
-              }
-              return null;
-            }),
         ShadInputFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
             placeholder: const Text('Email'),
