@@ -12,7 +12,7 @@ class Message {
   final String? id;
   final bool? sent;
   final String? image;
-  final bool? isRead;
+  final bool isRead;
   final String messageText;
   final String? messageType;
   final String recipientId;
@@ -29,19 +29,13 @@ class Message {
     this.sent,
     this.id,
     this.image,
-    this.isRead,
+    required this.isRead,
     required this.messageText,
     this.messageType,
     required this.recipientId,
     required this.senderId,
     this.updated,
   });
-  factory Message.fromRecord(RecordModel record) =>
-      Message.fromJson(record.toJson());
-  factory Message.fromRawJson(String str) => Message.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         audio: json["audio"],
         chat: json["chat"],
@@ -58,6 +52,10 @@ class Message {
         senderId: json["senderId"],
         updated: DateTime.parse(json["updated"]),
       );
+  factory Message.fromRawJson(String str) => Message.fromJson(json.decode(str));
+
+  factory Message.fromRecord(RecordModel record) =>
+      Message.fromJson(record.toJson());
 
   Map<String, dynamic> toJson() => {
         "audio": audio,
@@ -75,4 +73,6 @@ class Message {
         "senderId": senderId,
         "updated": updated!.toIso8601String(),
       };
+
+  String toRawJson() => json.encode(toJson());
 }

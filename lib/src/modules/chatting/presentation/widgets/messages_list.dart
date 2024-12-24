@@ -101,19 +101,14 @@ class MessagesList extends StatelessWidget {
                                   child: Stack(
                                     clipBehavior: Clip.none,
                                     children: [
-                                      Positioned(
-                                        bottom: -3,
-                                        left: 0,
-                                        child: Icon(
-                                          Icons.check,
-                                          size: 12,
-                                          color: isMe
-                                              ? ShadColors.light
-                                              : brightness == Brightness.dark
-                                                  ? ShadColors.light
-                                                  : ShadColors.dark,
+                                      if (message.isRead)
+                                        Positioned(
+                                          bottom: -3,
+                                          left: 0,
+                                          child: Icon(Icons.check,
+                                              size: 12,
+                                              color: ShadColors.light),
                                         ),
-                                      ),
                                       Icon(
                                         Icons.check,
                                         size: 12,
