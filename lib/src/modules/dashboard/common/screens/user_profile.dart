@@ -108,7 +108,7 @@ class _UserProfileState extends State<UserProfile> {
             industry: state.influencer.industry,
             username: state.influencer.username,
             isVerified: state.influencer.verified,
-            connectedSocial: state.influencer.connectedSocial,
+            connectedSocial: state.hasConnectedSocialMedia,
             description: state.influencerProfile.description,
             followers: state.influencerProfile.followers,
             mediaCount: state.influencerProfile.mediaCount,
