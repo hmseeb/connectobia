@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
+import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../shared/data/repositories/error_repo.dart';
@@ -16,8 +18,14 @@ class BrandProfileBloc extends Bloc<BrandProfileEvent, BrandProfileState> {
       try {
         final BrandProfile brandProfile =
             await ProfileRepository.getBrandProfile(profileId: event.profileId);
-        emit(
-            BrandProfileLoaded(brand: event.brand, brandProfile: brandProfile));
+
+        Influencer influencer = await AuthRepository.getUser();
+
+        emit(BrandProfileLoaded(
+          brand: event.brand,
+          brandProfile: brandProfile,
+          isInfluencerVerified: influencer.connectedSocial,
+        ));
         debugPrint('Fetched ${event.brand.brandName} profile');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();

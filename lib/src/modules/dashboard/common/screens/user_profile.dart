@@ -1,6 +1,5 @@
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
-import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -56,6 +55,7 @@ class _UserProfileState extends State<UserProfile> {
             collectionId: state.brand.collectionId,
             name: state.brand.brandName,
             industry: state.brand.industry,
+            isInfluencerVerified: state.isInfluencerVerified,
             username: '',
             isVerified: state.brand.verified,
             connectedSocial: false,
@@ -72,6 +72,7 @@ class _UserProfileState extends State<UserProfile> {
             banner: '',
             collectionId: 'collectionId',
             name: 'name',
+            isInfluencerVerified: false,
             industry: 'industry',
             username: 'username',
             isVerified: true,
@@ -105,10 +106,11 @@ class _UserProfileState extends State<UserProfile> {
             banner: state.influencer.banner,
             collectionId: state.influencer.collectionId,
             name: state.influencer.fullName,
+            isInfluencerVerified: true,
             industry: state.influencer.industry,
             username: state.influencer.username,
             isVerified: state.influencer.verified,
-            connectedSocial: state.hasConnectedSocialMedia,
+            connectedSocial: state.influencer.connectedSocial,
             description: state.influencerProfile.description,
             followers: state.influencerProfile.followers,
             mediaCount: state.influencerProfile.mediaCount,
@@ -122,6 +124,7 @@ class _UserProfileState extends State<UserProfile> {
             banner: '',
             collectionId: 'collectionId',
             name: 'name',
+            isInfluencerVerified: false,
             industry: 'industry',
             username: 'username',
             isVerified: true,
@@ -144,6 +147,7 @@ class _UserProfileState extends State<UserProfile> {
     required int? followers,
     required int? mediaCount,
     required String userId,
+    required bool isInfluencerVerified,
     required String avatar,
     required String banner,
     required String collectionId,
@@ -161,8 +165,7 @@ class _UserProfileState extends State<UserProfile> {
                   onPressed: isLoading
                       ? null
                       : () async {
-                          String accountType = CollectionNameSingleton.instance;
-                          if (connectedSocial || accountType == 'brands') {
+                          if (isInfluencerVerified) {
                             BlocProvider.of<RealtimeMessagingBloc>(context)
                                 .add(GetMessagesByUserId(userId));
                             Navigator.pushNamed(
