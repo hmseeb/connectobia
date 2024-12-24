@@ -2,7 +2,6 @@ import 'package:connectobia/src/app.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -57,7 +56,6 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),
-        BlocProvider(create: (context) => NotificationsBloc()),
       ],
       child: Connectobia(
         isDarkMode: isDarkMode,
