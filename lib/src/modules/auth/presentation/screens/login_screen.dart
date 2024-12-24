@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       context,
                       influencerDashboard,
                       (route) => false,
-                      arguments: {'influencers': state.user},
+                      arguments: {'user': state.user},
                     );
                   } else if (state is LoginUnverified) {
                     Navigator.pushNamed(
