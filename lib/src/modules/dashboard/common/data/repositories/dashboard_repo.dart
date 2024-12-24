@@ -13,10 +13,7 @@ class DashboardRepository {
       final resultList = await pb.collection('brands').getList(
             page: 1,
             perPage: 20,
-            // TODO: Remove images check after empty images are handled
-            filter:
-                'profile != "" && banner != "" && avatar != "" && verified = True',
-            // expand: 'influencers',
+            filter: 'profile != ""',
           );
       list = Brands.fromRecord(resultList);
       debugPrint('Fetched ${list.items.length} brands');
@@ -34,9 +31,7 @@ class DashboardRepository {
       final resultList = await pb.collection('influencers').getList(
             page: 1,
             perPage: 20,
-            // TODO: Remove images check after empty images are handled
-            filter:
-                'connectedSocial = True && profile != "" && banner != "" && avatar != ""',
+            filter: 'connectedSocial = True && profile != ""',
           );
       list = Influencers.fromRecord(resultList);
       debugPrint('Fetched ${list.items.length} influencers');
