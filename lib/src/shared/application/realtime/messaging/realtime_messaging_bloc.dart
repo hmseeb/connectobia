@@ -4,7 +4,6 @@ import 'package:connectobia/src/modules/chatting/data/chats_repository.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
-import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:connectobia/src/shared/data/repositories/realtime_messaging_repo.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
@@ -20,6 +19,16 @@ part 'realtime_messaging_state.dart';
 class RealtimeMessagingBloc
     extends Bloc<RealtimeMessagingEvent, RealtimeMessagingState> {
   RealtimeMessagingBloc() : super(RealtimeMessagingInitial()) {
+    on<UnsubscribeMessages>((event, emit) async {
+      try {
+        final pb = await PocketBaseSingleton.instance;
+        pb.collection('messages').unsubscribe();
+        debugPrint('Unsubscribed from messages');
+      } catch (e) {
+        emit(RealtimeMessagingError(e.toString()));
+      }
+    });
+
     on<SubscribeMessages>((event, emit) async {
       try {
         final pb = await PocketBaseSingleton.instance;
@@ -53,61 +62,42 @@ class RealtimeMessagingBloc
       String accountType = CollectionNameSingleton.instance;
       String otherUserAccountType =
           accountType == 'brands' ? 'influencers' : 'brands';
+
+      RealtimeMessagingState prevState = state;
+
       if (otherUserAccountType == 'brands') {
         final brand = Brand.fromRecord(record);
 
-        add(SendMessageNotification(sendNotification: () {
-          // add send notification event to NotificationBloc
-          NotificationsBloc notificationsBloc = NotificationsBloc();
-          notificationsBloc.add(MessageNotificationReceived(
-            message: event.message,
-            avatar: brand.avatar,
-            name: brand.brandName,
-            userId: brand.id,
-            collectionId: record.collectionId,
-            chatId: event.message.chat,
-            hasConnectedInstagram: false,
-          ));
-        }));
-        try {
-          final Messages messages = (state as MessagesLoaded).messages;
+        emit(MessageNotificationReceived(
+          avatar: brand.avatar,
+          name: brand.brandName,
+          userId: brand.id,
+          message: event.message.messageText,
+          chatId: event.message.chat,
+          collectionId: brand.collectionId,
+        ));
+
+        if (prevState is MessagesLoaded) {
+          final Messages messages = prevState.messages;
           final updatedMessages = messages.addMessage(event.message);
-          emit(MessagesLoaded(updatedMessages, userId));
-        } catch (e) {
-          ErrorRepository errorRepo = ErrorRepository();
-          emit(MessagesLoadingError(errorRepo.handleError(e)));
+          emit(MessagesLoaded(selfId: userId, messages: updatedMessages));
         }
       } else {
         final influencer = Influencer.fromRecord(record);
-
-        add(SendMessageNotification(sendNotification: () {
-          // add send notification event to NotificationBloc
-
-          NotificationsBloc notificationsBloc = NotificationsBloc();
-          notificationsBloc.add(MessageNotificationReceived(
-            message: event.message,
-            avatar: influencer.avatar,
-            name: influencer.fullName,
-            userId: influencer.id,
-            collectionId: record.collectionId,
-            chatId: event.message.chat,
-            hasConnectedInstagram: influencer.connectedSocial,
-          ));
-        }));
-
-        try {
-          final Messages messages = (state as MessagesLoaded).messages;
+        emit(MessageNotificationReceived(
+          avatar: influencer.avatar,
+          name: influencer.fullName,
+          userId: influencer.id,
+          message: event.message.messageText,
+          chatId: event.message.chat,
+          collectionId: influencer.collectionId,
+        ));
+        if (prevState is MessagesLoaded) {
+          final Messages messages = prevState.messages;
           final updatedMessages = messages.addMessage(event.message);
-          emit(MessagesLoaded(updatedMessages, userId));
-        } catch (e) {
-          ErrorRepository errorRepo = ErrorRepository();
-          emit(MessagesLoadingError(errorRepo.handleError(e)));
+          emit(MessagesLoaded(selfId: userId, messages: updatedMessages));
         }
       }
-    });
-
-    on<SendMessageNotification>((event, emit) async {
-      event.sendNotification();
     });
 
     on<GetMessagesByUserId>((event, emit) async {
@@ -130,7 +120,7 @@ class RealtimeMessagingBloc
 
         final pb = await PocketBaseSingleton.instance;
         final selfId = pb.authStore.record!.id;
-        emit(MessagesLoaded(messages, selfId));
+        emit(MessagesLoaded(messages: messages, selfId: selfId));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(MessagesLoadingError(errorRepo.handleError(e)));
@@ -154,7 +144,7 @@ class RealtimeMessagingBloc
           created: DateTime.now().toIso8601String(),
         );
         final Messages addSendingMessage = messages.addMessage(sendingMessage);
-        emit(MessagesLoaded(addSendingMessage, senderId));
+        emit(MessagesLoaded(messages: addSendingMessage, selfId: senderId));
 
         if (chatId.isEmpty) {
           final chatsRepo = ChatsRepository();
@@ -165,7 +155,7 @@ class RealtimeMessagingBloc
 
           Messages sentMessage = messages.removeMessage(0);
           sentMessage.addMessage(message);
-          emit(MessagesLoaded(sentMessage, message.senderId));
+          emit(MessagesLoaded(messages: sentMessage, selfId: senderId));
 
           await msgsRepo.updateChatById(
               chatId: message.chat, messageId: message.id!, isRead: false);
@@ -179,7 +169,10 @@ class RealtimeMessagingBloc
 
           Messages sentMessage = messages.removeMessage(0);
           sentMessage.addMessage(message);
-          emit(MessagesLoaded(sentMessage, message.senderId));
+          emit(MessagesLoaded(
+            messages: sentMessage,
+            selfId: senderId,
+          ));
 
           await msgsRepo.updateChatById(
             chatId: message.chat,
