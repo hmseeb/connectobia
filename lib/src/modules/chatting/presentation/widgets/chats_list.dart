@@ -52,23 +52,23 @@ class ChatsList extends StatelessWidget {
               bool isBrand = CollectionNameSingleton.instance == 'brands';
               final chat = state.chats.items[index];
               bool isMe =
-                  chat.expand.message!.senderId != chat.expand.brand!.id;
+                  chat.expand!.message.senderId != chat.expand!.brand.id;
               return ListTile(
                 onTap: () {
                   String userId = isBrand
-                      ? chat.expand.influencer!.id
-                      : chat.expand.brand!.id;
+                      ? chat.expand!.influencer.id
+                      : chat.expand!.brand.id;
                   String name = isBrand
-                      ? chat.expand.influencer!.fullName
-                      : chat.expand.brand!.brandName;
+                      ? chat.expand!.influencer.fullName
+                      : chat.expand!.brand.brandName;
                   String avatar = isBrand
-                      ? chat.expand.influencer!.avatar
-                      : chat.expand.brand!.avatar;
+                      ? chat.expand!.influencer.avatar
+                      : chat.expand!.brand.avatar;
                   String collectionId = isBrand
-                      ? chat.expand.influencer!.collectionId
-                      : chat.expand.brand!.collectionId;
+                      ? chat.expand!.influencer.collectionId
+                      : chat.expand!.brand.collectionId;
                   bool connectedSocial =
-                      isBrand ? chat.expand.influencer!.connectedSocial : false;
+                      isBrand ? chat.expand!.influencer.connectedSocial : false;
 
                   BlocProvider.of<RealtimeMessagingBloc>(context)
                       .add(GetMessagesByUserId(userId));
@@ -87,28 +87,28 @@ class ChatsList extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundImage: isBrand
                       ? CachedNetworkImageProvider(Avatar.getUserImage(
-                          userId: chat.expand.influencer!.id,
-                          collectionId: chat.expand.influencer!.collectionId,
-                          image: chat.expand.influencer!.avatar,
+                          userId: chat.expand!.influencer.id,
+                          collectionId: chat.expand!.influencer.collectionId,
+                          image: chat.expand!.influencer.avatar,
                         ))
                       : CachedNetworkImageProvider(Avatar.getUserImage(
-                          userId: chat.expand.brand!.id,
-                          collectionId: chat.expand.brand!.collectionId,
-                          image: chat.expand.brand!.avatar,
+                          userId: chat.expand!.brand.id,
+                          collectionId: chat.expand!.brand.collectionId,
+                          image: chat.expand!.brand.avatar,
                         )),
                 ),
                 title: Text(isBrand
-                    ? chat.expand.influencer!.fullName
-                    : chat.expand.brand!.brandName),
+                    ? chat.expand!.influencer.fullName
+                    : chat.expand!.brand.brandName),
                 subtitle: Text(
                   isMe
-                      ? 'You: ${chat.expand.message!.messageText.length > 20 ? '${chat.expand.message!.messageText.substring(0, 20)}...' : chat.expand.message!.messageText}'
-                      : chat.expand.message!.messageText.length > 20
-                          ? '${chat.expand.message!.messageText.substring(0, 20)}...'
-                          : chat.expand.message!.messageText,
+                      ? 'You: ${chat.expand!.message.messageText.length > 20 ? '${chat.expand!.message.messageText.substring(0, 20)}...' : chat.expand!.message.messageText}'
+                      : chat.expand!.message.messageText.length > 20
+                          ? '${chat.expand!.message.messageText.substring(0, 20)}...'
+                          : chat.expand!.message.messageText,
                 ),
-                trailing:
-                    Text(DateAndTime.timeAgo(chat.expand.message!.created)),
+                trailing: Text(DateAndTime.timeAgo(
+                    DateTime.parse(chat.expand!.message.created))),
               );
             },
           );

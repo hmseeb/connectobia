@@ -46,8 +46,8 @@ class MessagesList extends StatelessWidget {
               reverse: true,
               itemCount: state.messages.items.length,
               itemBuilder: (context, index) {
-                final Message message = state.messages.items.toList()[index];
-                final isMe = message.senderId == state.selfId;
+                final isMe =
+                    state.messages.items[index].senderId == state.selfId;
                 return Align(
                   alignment:
                       isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -70,7 +70,7 @@ class MessagesList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          message.messageText,
+                          state.messages.items[index].messageText,
                           style: TextStyle(
                             color: isMe
                                 ? ShadColors.light
@@ -79,13 +79,14 @@ class MessagesList extends StatelessWidget {
                                     : ShadColors.dark,
                           ),
                         ),
-                        if (message.sent == null)
+                        if (state.messages.items[index].sent == null)
                           Wrap(
                             spacing: 4,
                             children: [
                               Text(
                                 DateAndTime.formatDateTimeTo12Hour(
-                                    message.created),
+                                    DateTime.parse(
+                                        state.messages.items[index].created)),
                                 style: TextStyle(
                                   color: isMe
                                       ? ShadColors.light
@@ -101,19 +102,15 @@ class MessagesList extends StatelessWidget {
                                   child: Stack(
                                     clipBehavior: Clip.none,
                                     children: [
-                                      Positioned(
-                                        bottom: -3,
-                                        left: 0,
-                                        child: Icon(
-                                          Icons.check,
-                                          size: 12,
-                                          color: isMe
-                                              ? ShadColors.light
-                                              : brightness == Brightness.dark
-                                                  ? ShadColors.light
-                                                  : ShadColors.dark,
+                                      if (state.messages.items[index].expand!
+                                          .chat.isRead)
+                                        Positioned(
+                                          bottom: -3,
+                                          left: 0,
+                                          child: Icon(Icons.check,
+                                              size: 12,
+                                              color: ShadColors.light),
                                         ),
-                                      ),
                                       Icon(
                                         Icons.check,
                                         size: 12,
@@ -128,12 +125,14 @@ class MessagesList extends StatelessWidget {
                                 ),
                             ],
                           )
-                        else if (message.sent != null && !message.sent!)
+                        else if (state.messages.items[index].sent != null &&
+                            !state.messages.items[index].sent!)
                           Wrap(
                             children: [
                               Text(
                                 DateAndTime.formatDateTimeTo12Hour(
-                                    message.created),
+                                    DateTime.parse(
+                                        state.messages.items[index].created)),
                                 style: TextStyle(
                                   color: isMe
                                       ? ShadColors.light
@@ -166,6 +165,16 @@ class MessagesList extends StatelessWidget {
           );
         } else if (state is MessagesLoading) {
           return MessagesSkeleton();
+        } else if (state is MessagesLoadingError) {
+          return Expanded(
+            child: Column(
+              children: [
+                Spacer(),
+                Text('data could not be loaded'),
+                Spacer(),
+              ],
+            ),
+          );
         } else {
           return Expanded(
             child: Column(

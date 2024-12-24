@@ -41,6 +41,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
           (e) {
             if (e.action == 'update') {
               final Chat chat = Chat.fromRecord(e.record!);
+              debugPrint('Updated chat: ${chat.id}');
               add(UpdatedChat(newChat: chat, prevChats: event.prevChats));
             } else if (e.action == 'create') {
               final Chat chat = Chat.fromRecord(e.record!);

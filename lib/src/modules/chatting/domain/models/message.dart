@@ -1,23 +1,38 @@
-import 'dart:convert';
-
+import 'package:connectobia/src/modules/chatting/domain/models/chat.dart';
 import 'package:pocketbase/pocketbase.dart';
+
+class Expand {
+  final Chat chat;
+
+  Expand({
+    required this.chat,
+  });
+
+  factory Expand.fromJson(Map<String, dynamic> json) => Expand(
+        chat: Chat.fromJson(json["chat"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "chat": chat.toJson(),
+      };
+}
 
 class Message {
   final String? audio;
   final String chat;
   final String? collectionId;
   final String? collectionName;
-  final DateTime created;
+  final String created;
+  final Expand? expand;
+  final bool? sent;
   final String? file;
   final String? id;
-  final bool? sent;
   final String? image;
-  final bool? isRead;
   final String messageText;
-  final String? messageType;
+  final String messageType;
   final String recipientId;
   final String senderId;
-  final DateTime? updated;
+  final String? updated;
 
   Message({
     this.audio,
@@ -25,54 +40,52 @@ class Message {
     this.collectionId,
     this.collectionName,
     required this.created,
+    this.expand,
     this.file,
     this.sent,
     this.id,
     this.image,
-    this.isRead,
     required this.messageText,
-    this.messageType,
+    required this.messageType,
     required this.recipientId,
     required this.senderId,
     this.updated,
   });
-  factory Message.fromRecord(RecordModel record) =>
-      Message.fromJson(record.toJson());
-  factory Message.fromRawJson(String str) => Message.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         audio: json["audio"],
         chat: json["chat"],
         collectionId: json["collectionId"],
         collectionName: json["collectionName"],
-        created: DateTime.parse(json["created"]),
+        created: json["created"],
+        expand: json["expand"] != null ? Expand.fromJson(json["expand"]) : null,
         file: json["file"],
         id: json["id"],
         image: json["image"],
-        isRead: json["isRead"],
         messageText: json["messageText"],
         messageType: json["messageType"],
         recipientId: json["recipientId"],
         senderId: json["senderId"],
-        updated: DateTime.parse(json["updated"]),
+        updated: json["updated"],
       );
+
+  factory Message.fromRecord(RecordModel record) =>
+      Message.fromJson(record.toJson());
 
   Map<String, dynamic> toJson() => {
         "audio": audio,
         "chat": chat,
         "collectionId": collectionId,
         "collectionName": collectionName,
-        "created": created.toIso8601String(),
+        "created": created,
+        "expand": expand?.toJson(),
         "file": file,
         "id": id,
         "image": image,
-        "isRead": isRead,
         "messageText": messageText,
         "messageType": messageType,
         "recipientId": recipientId,
         "senderId": senderId,
-        "updated": updated!.toIso8601String(),
+        "updated": updated,
       };
 }

@@ -1,57 +1,62 @@
-import 'dart:convert';
-
 import 'package:connectobia/src/modules/chatting/domain/models/chats.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class Chat {
+  final bool acceptedRequest;
+  final String brand;
   final String collectionId;
   final String collectionName;
+  final String created;
+  final bool declinedRequest;
+  final Expand? expand;
   final String id;
-  final Expand expand;
   final String influencer;
-  final String brand;
+  final bool isRead;
   final String message;
-  final DateTime created;
-  final DateTime updated;
+  final String updated;
 
   Chat({
+    required this.acceptedRequest,
+    required this.brand,
     required this.collectionId,
     required this.collectionName,
+    required this.created,
+    required this.declinedRequest,
+    required this.expand,
     required this.id,
     required this.influencer,
-    required this.brand,
-    required this.expand,
+    required this.isRead,
     required this.message,
-    required this.created,
     required this.updated,
   });
-
   factory Chat.fromJson(Map<String, dynamic> json) => Chat(
+        acceptedRequest: json["acceptedRequest"],
+        brand: json["brand"],
         collectionId: json["collectionId"],
         collectionName: json["collectionName"],
+        created: json["created"],
+        declinedRequest: json["declinedRequest"],
+        expand: json["expand"] != null ? Expand.fromJson(json["expand"]) : null,
         id: json["id"],
         influencer: json["influencer"],
-        expand: Expand.fromJson(json["expand"]),
-        brand: json["brand"],
+        isRead: json["isRead"],
         message: json["message"],
-        created: DateTime.parse(json["created"]),
-        updated: DateTime.parse(json["updated"]),
+        updated: json["updated"],
       );
-
-  factory Chat.fromRawJson(String str) => Chat.fromJson(json.decode(str));
-
   factory Chat.fromRecord(RecordModel record) => Chat.fromJson(record.toJson());
 
   Map<String, dynamic> toJson() => {
+        "acceptedRequest": acceptedRequest,
+        "brand": brand,
         "collectionId": collectionId,
         "collectionName": collectionName,
+        "created": created,
+        "declinedRequest": declinedRequest,
+        "expand": expand?.toJson(),
         "id": id,
         "influencer": influencer,
-        "brand": brand,
-        "expand": expand.toJson(),
+        "isRead": isRead,
         "message": message,
-        "created": created.toIso8601String(),
-        "updated": updated.toIso8601String(),
+        "updated": updated,
       };
-  String toRawJson() => json.encode(toJson());
 }

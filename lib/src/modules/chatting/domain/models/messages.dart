@@ -1,34 +1,39 @@
+// To parse this JSON data, do
+//
+//     final messages = messagesFromJson(jsonString);
+
 import 'dart:convert';
 
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+Messages messagesFromJson(String str) => Messages.fromJson(json.decode(str));
+
+String messagesToJson(Messages data) => json.encode(data.toJson());
+
 class Messages {
+  final List<Message> items;
   final int page;
   final int perPage;
-  final int totalPages;
   final int totalItems;
-  final List<Message> items;
+  final int totalPages;
 
   Messages({
+    required this.items,
     required this.page,
     required this.perPage,
-    required this.totalPages,
     required this.totalItems,
-    required this.items,
+    required this.totalPages,
   });
 
   factory Messages.fromJson(Map<String, dynamic> json) => Messages(
-        page: json["page"],
-        perPage: json["perPage"],
-        totalPages: json["totalPages"],
-        totalItems: json["totalItems"],
         items:
             List<Message>.from(json["items"].map((x) => Message.fromJson(x))),
+        page: json["page"],
+        perPage: json["perPage"],
+        totalItems: json["totalItems"],
+        totalPages: json["totalPages"],
       );
-
-  factory Messages.fromRawJson(String str) =>
-      Messages.fromJson(json.decode(str));
 
   factory Messages.fromRecord(ResultList<RecordModel> record) =>
       Messages.fromJson(record.toJson());
@@ -57,25 +62,10 @@ class Messages {
   }
 
   Map<String, dynamic> toJson() => {
+        "items": List<dynamic>.from(items.map((x) => x.toJson())),
         "page": page,
         "perPage": perPage,
-        "totalPages": totalPages,
         "totalItems": totalItems,
-        "items": List<dynamic>.from(items.map((x) => x.toJson())),
+        "totalPages": totalPages,
       };
-
-  String toRawJson() => json.encode(toJson());
-
-  Messages updateMessage(Message updatedMessage) {
-    final index =
-        items.indexWhere((element) => element.id == updatedMessage.id);
-    items[index] = updatedMessage;
-    return Messages(
-      page: page,
-      perPage: perPage,
-      totalPages: totalPages,
-      totalItems: totalItems,
-      items: items,
-    );
-  }
 }
