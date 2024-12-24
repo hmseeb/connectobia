@@ -25,7 +25,6 @@ class _ChatsState extends State<Chats> {
             icon: const Icon(LucideIcons.search),
             onPressed: () {},
           ),
-          IconButton(onPressed: () {}, icon: const Icon(LucideIcons.plus)),
         ],
       ),
       body: ChatsList(scrollController: _scrollController),
