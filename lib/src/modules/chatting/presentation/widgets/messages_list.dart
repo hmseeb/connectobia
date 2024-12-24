@@ -67,6 +67,7 @@ class MessagesList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: RichText(
+                      textAlign: isMe ? TextAlign.justify : TextAlign.justify,
                       text: TextSpan(
                         text: message.messageText,
                         style: TextStyle(
