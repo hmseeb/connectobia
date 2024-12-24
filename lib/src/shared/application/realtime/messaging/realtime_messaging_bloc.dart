@@ -10,6 +10,7 @@ import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -77,6 +78,8 @@ class RealtimeMessagingBloc
           collectionId: brand.collectionId,
         ));
 
+        HapticFeedback.vibrate();
+
         if (prevState is MessagesLoaded) {
           final Messages messages = prevState.messages;
           final updatedMessages = messages.addMessage(event.message);
@@ -84,6 +87,7 @@ class RealtimeMessagingBloc
         }
       } else {
         final influencer = Influencer.fromRecord(record);
+
         emit(MessageNotificationReceived(
           avatar: influencer.avatar,
           name: influencer.fullName,
@@ -92,6 +96,9 @@ class RealtimeMessagingBloc
           chatId: event.message.chat,
           collectionId: influencer.collectionId,
         ));
+
+        HapticFeedback.vibrate();
+
         if (prevState is MessagesLoaded) {
           final Messages messages = prevState.messages;
           final updatedMessages = messages.addMessage(event.message);
