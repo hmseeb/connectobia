@@ -66,33 +66,84 @@ class MessagesList extends StatelessWidget {
                               : ShadColors.darkForeground,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: RichText(
-                      textAlign: isMe ? TextAlign.justify : TextAlign.justify,
-                      text: TextSpan(
-                        text: message.messageText,
-                        style: TextStyle(
-                          color: isMe
-                              ? ShadColors.light
-                              : brightness == Brightness.dark
-                                  ? ShadColors.light
-                                  : ShadColors.dark,
-                        ),
-                        children: [
-                          TextSpan(
-                            text:
-                                ' ${DateAndTime.formatDateTimeTo12Hour(message.created)}',
-                            style: TextStyle(
-                              color: isMe
-                                  ? ShadColors.light
-                                  : brightness == Brightness.dark
-                                      ? ShadColors.light
-                                      : ShadColors.dark,
-                              fontSize: 10,
-                            ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          message.messageText,
+                          style: TextStyle(
+                            color: isMe
+                                ? ShadColors.light
+                                : brightness == Brightness.dark
+                                    ? ShadColors.light
+                                    : ShadColors.dark,
                           ),
-                          if (message.sent != null && !message.sent!)
-                            WidgetSpan(
-                              child: Padding(
+                        ),
+                        if (message.sent == null)
+                          Wrap(
+                            spacing: 4,
+                            children: [
+                              Text(
+                                DateAndTime.formatDateTimeTo12Hour(
+                                    message.created),
+                                style: TextStyle(
+                                  color: isMe
+                                      ? ShadColors.light
+                                      : brightness == Brightness.dark
+                                          ? ShadColors.light
+                                          : ShadColors.dark,
+                                  fontSize: 11,
+                                ),
+                              ),
+                              if (isMe)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 4.0),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Positioned(
+                                        bottom: -3,
+                                        left: 0,
+                                        child: Icon(
+                                          Icons.check,
+                                          size: 12,
+                                          color: isMe
+                                              ? ShadColors.light
+                                              : brightness == Brightness.dark
+                                                  ? ShadColors.light
+                                                  : ShadColors.dark,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.check,
+                                        size: 12,
+                                        color: isMe
+                                            ? ShadColors.light
+                                            : brightness == Brightness.dark
+                                                ? ShadColors.light
+                                                : ShadColors.dark,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          )
+                        else if (message.sent != null && !message.sent!)
+                          Wrap(
+                            children: [
+                              Text(
+                                DateAndTime.formatDateTimeTo12Hour(
+                                    message.created),
+                                style: TextStyle(
+                                  color: isMe
+                                      ? ShadColors.light
+                                      : brightness == Brightness.dark
+                                          ? ShadColors.light
+                                          : ShadColors.dark,
+                                  fontSize: 11,
+                                ),
+                              ),
+                              Padding(
                                 padding: const EdgeInsets.only(left: 4.0),
                                 child: Icon(
                                   Icons.access_time,
@@ -104,43 +155,9 @@ class MessagesList extends StatelessWidget {
                                           : ShadColors.dark,
                                 ),
                               ),
-                            ),
-                          if (isMe && message.sent == null) ...[
-                            WidgetSpan(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
-                                child: Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    Positioned(
-                                      bottom: 0,
-                                      left: 4,
-                                      child: Icon(
-                                        Icons.check,
-                                        size: 12,
-                                        color: isMe
-                                            ? ShadColors.light
-                                            : brightness == Brightness.dark
-                                                ? ShadColors.light
-                                                : ShadColors.dark,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.check,
-                                      size: 12,
-                                      color: isMe
-                                          ? ShadColors.light
-                                          : brightness == Brightness.dark
-                                              ? ShadColors.light
-                                              : ShadColors.dark,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ]
-                        ],
-                      ),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
                 );
