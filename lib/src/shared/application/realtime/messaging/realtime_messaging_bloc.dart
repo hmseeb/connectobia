@@ -35,6 +35,7 @@ class RealtimeMessagingBloc
             }
           },
           filter: "recipientId = '$userId'",
+          expand: 'chat',
         ).asStream();
         debugPrint('Subscribed to messages');
       } catch (e) {
@@ -138,9 +139,8 @@ class RealtimeMessagingBloc
           messageText: event.message,
           messageType: 'text',
           chat: event.chatId,
-          isRead: false,
           sent: false,
-          created: DateTime.now(),
+          created: DateTime.now().toIso8601String(),
         );
         final Messages addSendingMessage = messages.addMessage(sendingMessage);
         emit(MessagesLoaded(addSendingMessage, senderId));

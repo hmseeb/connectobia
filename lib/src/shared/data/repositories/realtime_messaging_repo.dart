@@ -39,6 +39,7 @@ class MessagesRepository {
             perPage: 20,
             filter: filter,
             sort: '-created',
+            expand: 'chat',
           );
 
       Messages messages = Messages.fromRecord(resultList);

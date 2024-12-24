@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final chats = chatsFromJson(jsonString);
+
 import 'dart:convert';
 
 import 'package:connectobia/src/modules/chatting/domain/models/chat.dart';
@@ -5,6 +9,10 @@ import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:pocketbase/pocketbase.dart';
+
+Chats chatsFromJson(String str) => Chats.fromJson(json.decode(str));
+
+String chatsToJson(Chats data) => json.encode(data.toJson());
 
 class Chats {
   final List<Chat> items;
@@ -29,11 +37,8 @@ class Chats {
         totalPages: json["totalPages"],
       );
 
-  factory Chats.fromRawJson(String str) => Chats.fromJson(json.decode(str));
-
   factory Chats.fromRecord(ResultList<RecordModel> record) =>
       Chats.fromJson(record.toJson());
-
   Chats addChat(Chat chat) {
     items.add(chat);
     items.sort((a, b) => b.updated.compareTo(a.updated));
@@ -67,8 +72,6 @@ class Chats {
         "totalPages": totalPages,
       };
 
-  String toRawJson() => json.encode(toJson());
-
   // Method to add a message to the items list
   Chats updateChat(
       {required String influencer,
@@ -94,29 +97,24 @@ class Chats {
 }
 
 class Expand {
-  final Brand? brand;
-  final Influencer? influencer;
-  final Message? message;
+  final Influencer influencer;
+  final Brand brand;
+  final Message message;
 
   Expand({
-    required this.brand,
     required this.influencer,
     required this.message,
+    required this.brand,
   });
 
   factory Expand.fromJson(Map<String, dynamic> json) => Expand(
-        brand: Brand.fromJson(json["brand"]),
         influencer: Influencer.fromJson(json["influencer"]),
         message: Message.fromJson(json["message"]),
+        brand: Brand.fromJson(json["brand"]),
       );
 
-  factory Expand.fromRawJson(String str) => Expand.fromJson(json.decode(str));
-
   Map<String, dynamic> toJson() => {
-        "brand": brand!.toJson(),
-        "influencer": influencer!.toJson(),
-        "message": message!.toJson(),
+        "influencer": influencer.toJson(),
+        "message": message.toJson(),
       };
-
-  String toRawJson() => json.encode(toJson());
 }
