@@ -22,6 +22,7 @@ class MessageInput extends StatelessWidget {
         maxLines: 5,
         minLines: 1,
         controller: messageController,
+        maxLength: 4000,
         placeholder: Text('Enter your message'),
         decoration: ShadDecoration(
           secondaryFocusedBorder: ShadBorder.all(

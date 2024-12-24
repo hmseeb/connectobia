@@ -89,7 +89,7 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
           name: user.fullName,
           email: user.email,
           collectionId: user.collectionId,
-          avatar: '',
+          avatar: user.avatar,
           userId: user.id,
         ),
         body: IndexedStack(
@@ -98,8 +98,12 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
             NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 CommonAppBar(
-                    userName: user.fullName,
-                    searchPlaceholder: 'Search for Brands'),
+                  userName: user.fullName,
+                  searchPlaceholder: 'Search for Brands',
+                  userId: user.id,
+                  collectionId: user.collectionId,
+                  image: user.avatar,
+                ),
               ],
               body: SingleChildScrollView(
                 controller: scrollController,

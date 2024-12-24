@@ -1,7 +1,9 @@
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../application/brand_profile/brand_profile_bloc.dart';
@@ -159,19 +161,29 @@ class _UserProfileState extends State<UserProfile> {
                   onPressed: isLoading
                       ? null
                       : () async {
-                          BlocProvider.of<RealtimeMessagingBloc>(context)
-                              .add(GetMessagesByUserId(userId));
-                          Navigator.pushNamed(
-                            context,
-                            singleChatScreen,
-                            arguments: {
-                              'userId': userId,
-                              'name': name,
-                              'avatar': avatar,
-                              'collectionId': collectionId,
-                              'hasConnectedInstagram': connectedSocial,
-                            },
-                          );
+                          String accountType = CollectionNameSingleton.instance;
+                          if (connectedSocial || accountType == 'brands') {
+                            BlocProvider.of<RealtimeMessagingBloc>(context)
+                                .add(GetMessagesByUserId(userId));
+                            Navigator.pushNamed(
+                              context,
+                              singleChatScreen,
+                              arguments: {
+                                'userId': userId,
+                                'name': name,
+                                'avatar': avatar,
+                                'collectionId': collectionId,
+                                'hasConnectedInstagram': connectedSocial,
+                              },
+                            );
+                          } else {
+                            ShadToaster.of(context).show(
+                              ShadToast.destructive(
+                                title: const Text(
+                                    'Please connect your Instagram account to be able to connect with other users'),
+                              ),
+                            );
+                          }
                         },
                   child: const Icon(Icons.message),
                 )

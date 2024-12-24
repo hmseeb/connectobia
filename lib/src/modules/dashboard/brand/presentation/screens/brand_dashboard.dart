@@ -89,7 +89,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
           name: user.brandName,
           email: user.email,
           collectionId: user.collectionId,
-          avatar: '',
+          avatar: user.avatar,
           userId: user.id,
         ),
         body: IndexedStack(
@@ -98,8 +98,12 @@ class _BrandDashboardState extends State<BrandDashboard> {
             NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 CommonAppBar(
-                    userName: user.brandName,
-                    searchPlaceholder: 'Search for influencers'),
+                  userName: user.brandName,
+                  searchPlaceholder: 'Search for influencers',
+                  userId: user.id,
+                  collectionId: user.collectionId,
+                  image: user.avatar,
+                ),
               ],
               body: SingleChildScrollView(
                 controller: scrollController,
