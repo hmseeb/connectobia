@@ -162,7 +162,7 @@ class _UserProfileState extends State<UserProfile> {
                       ? null
                       : () async {
                           String accountType = CollectionNameSingleton.instance;
-                          if (connectedSocial || accountType == 'brands') {
+                          if (!connectedSocial || accountType == 'brands') {
                             BlocProvider.of<RealtimeMessagingBloc>(context)
                                 .add(GetMessagesByUserId(userId));
                             Navigator.pushNamed(

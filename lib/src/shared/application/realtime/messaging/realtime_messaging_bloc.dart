@@ -116,6 +116,17 @@ class RealtimeMessagingBloc
       try {
         final Messages messages =
             await msgsRepo.getMessagesByUserId(userId: event.userId);
+        if (messages.items.isNotEmpty) {
+          final recipientId = messages.items[0].recipientId;
+          String currentUserId = await AuthRepository.getUserId();
+          final chatId = messages.items[0].chat;
+          if (currentUserId == recipientId) {
+            await msgsRepo.updateChatById(
+              chatId: chatId,
+              isRead: true,
+            );
+          }
+        }
 
         final pb = await PocketBaseSingleton.instance;
         final selfId = pb.authStore.record!.id;
@@ -157,9 +168,7 @@ class RealtimeMessagingBloc
           emit(MessagesLoaded(sentMessage, message.senderId));
 
           await msgsRepo.updateChatById(
-            chatId: message.chat,
-            messageId: message.id!,
-          );
+              chatId: message.chat, messageId: message.id!, isRead: false);
         } else {
           final message = await msgsRepo.sendMessage(
             recipientId: event.recipientId,
@@ -175,6 +184,7 @@ class RealtimeMessagingBloc
           await msgsRepo.updateChatById(
             chatId: message.chat,
             messageId: message.id!,
+            isRead: false,
           );
         }
       } catch (e) {

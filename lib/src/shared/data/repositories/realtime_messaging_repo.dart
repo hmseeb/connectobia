@@ -93,12 +93,15 @@ class MessagesRepository {
   }
 
   Future<void> updateChatById(
-      {required String chatId, required String messageId}) async {
+      {required String chatId, String? messageId, required bool isRead}) async {
     final pb = await PocketBaseSingleton.instance;
     final body = <String, dynamic>{
-      "message": messageId,
+      "isRead": isRead,
     };
 
+    if (messageId != null) {
+      body.addAll({'message': messageId});
+    }
     await pb.collection('chats').update(chatId, body: body);
   }
 }

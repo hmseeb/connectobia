@@ -41,19 +41,15 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
           (e) {
             if (e.action == 'update') {
               final Chat chat = Chat.fromRecord(e.record!);
-              debugPrint('Updated chat: ${chat.id}');
               add(UpdatedChat(newChat: chat, prevChats: event.prevChats));
-            } else if (e.action == 'create') {
-              final Chat chat = Chat.fromRecord(e.record!);
-              add(CreatedChat(newChat: chat, prevChats: event.prevChats));
             }
           },
           filter: filter,
           expand: 'message,brand,influencer',
         );
-        debugPrint('Subscribed to chats');
       } catch (e) {
-        emit(ChatsLoadingError(e.toString()));
+        ErrorRepository errorRepo = ErrorRepository();
+        debugPrint(errorRepo.handleError(e));
       }
     });
     on<UpdatedChat>((event, emit) {
@@ -78,7 +74,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       try {
         final pb = await PocketBaseSingleton.instance;
 
-        pb.collection('chats').unsubscribe();
+        await pb.collection('chats').unsubscribe();
         debugPrint('Unsubscribed to chats');
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();

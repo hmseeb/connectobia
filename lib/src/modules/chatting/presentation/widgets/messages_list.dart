@@ -98,29 +98,16 @@ class MessagesList extends StatelessWidget {
                               ),
                               if (isMe)
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 4.0),
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      if (state.messages.items[index].expand!
-                                          .chat.isRead)
-                                        Positioned(
-                                          bottom: -3,
-                                          left: 0,
-                                          child: Icon(Icons.check,
-                                              size: 12,
-                                              color: ShadColors.light),
-                                        ),
-                                      Icon(
-                                        Icons.check,
-                                        size: 12,
-                                        color: isMe
+                                  padding:
+                                      const EdgeInsets.only(left: 4.0, top: 2),
+                                  child: Icon(
+                                    Icons.check,
+                                    size: 12,
+                                    color: isMe
+                                        ? ShadColors.light
+                                        : brightness == Brightness.dark
                                             ? ShadColors.light
-                                            : brightness == Brightness.dark
-                                                ? ShadColors.light
-                                                : ShadColors.dark,
-                                      ),
-                                    ],
+                                            : ShadColors.dark,
                                   ),
                                 ),
                             ],

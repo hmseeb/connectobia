@@ -32,18 +32,19 @@ class ChatsRepository {
 
       final chatRecord = await pb.collection('chats').create(body: body);
 
-      String chatId = chatRecord.id;
-
       MessagesRepository msgsRepo = MessagesRepository();
 
-      final message = await msgsRepo.sendMessage(
-        chatId: chatId,
+      final messageRecord = await msgsRepo.sendMessage(
+        chatId: chatRecord.id,
         recipientId: recipientId,
         messageType: 'text',
         messageText: messageText,
       );
 
-      return message;
+      await msgsRepo.updateChatById(
+          chatId: chatRecord.id, isRead: false, messageId: messageRecord.id);
+
+      return messageRecord;
     } catch (e) {
       throw ClientException;
     }
