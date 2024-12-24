@@ -53,9 +53,9 @@ class ProfileHeader extends StatelessWidget {
         // Location icon or social link
         if (hasConnectedInstagram)
           GestureDetector(
-            onTap: () {
+            onTap: () async {
               final url = 'https://instagram.com/$username';
-              launchUrl(Uri.parse(url));
+              await launchUrl(Uri.parse(url));
             },
             child: Container(
               padding: const EdgeInsets.all(8),

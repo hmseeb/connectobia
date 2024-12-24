@@ -10,6 +10,12 @@ final class InfluencerLoginSuccess extends LoginBlocState {
   InfluencerLoginSuccess(this.user);
 }
 
+final class InstagramFailure extends LoginBlocState {
+  final String error;
+
+  InstagramFailure(this.error);
+}
+
 final class InstagramLoading extends LoginBlocState {}
 
 final class LoginBlocInitial extends LoginBlocState {}

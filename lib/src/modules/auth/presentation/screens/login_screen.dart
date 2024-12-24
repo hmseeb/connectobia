@@ -1,4 +1,5 @@
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/presentation/widgets/custom_dialogue.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,13 +143,23 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: SocialAuthBtn(
                             icon: AssetsPath.instagram,
                             onPressed: () {
-                              HapticFeedback.mediumImpact();
-                              BlocProvider.of<LoginBloc>(context)
-                                  .add(InstagramAuth(accountType: accountType));
+                              customDialogue(
+                                  context: context,
+                                  title: 'Connect with Instagram',
+                                  description:
+                                      'By connecting with Instagram, you agree to our terms and conditions.',
+                                  onContinue: () {
+                                    HapticFeedback.mediumImpact();
+                                    loginBloc.add(InstagramAuth(
+                                      accountType: accountType,
+                                    ));
+                                  });
                             },
                             text: state is InstagramLoading
                                 ? 'Logging in with Instagram...'
-                                : 'Login with Instagram',
+                                : state is InstagramFailure
+                                    ? 'Try again'
+                                    : 'Log in with Instagram',
                             borderSide: const BorderSide(),
                             backgroundColor: ShadColors.lightForeground,
                           ),

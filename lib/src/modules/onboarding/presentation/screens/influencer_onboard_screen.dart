@@ -8,6 +8,7 @@ import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../shared/domain/models/influencer.dart';
+import '../../../../shared/presentation/widgets/custom_dialogue.dart';
 import '../../../../theme/colors.dart';
 import '../../application/bloc/influencer_onboard_bloc.dart';
 
@@ -91,12 +92,20 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                   SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                      BlocProvider.of<InfluencerOnboardBloc>(context)
-                          .add(UpdateOnboardBool());
-                      HapticFeedback.mediumImpact();
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, influencerDashboard, (route) => false,
-                          arguments: {'influencers': widget.user});
+                      customDialogue(
+                        context: context,
+                        title: 'Connect with Instagram',
+                        description:
+                            'Connect your Instagram account to get verified',
+                        onContinue: () {
+                          BlocProvider.of<InfluencerOnboardBloc>(context)
+                              .add(UpdateOnboardBool());
+                          HapticFeedback.mediumImpact();
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, influencerDashboard, (route) => false,
+                              arguments: {'influencers': widget.user});
+                        },
+                      );
                     },
                     child: Text(
                       'Skip for now',
