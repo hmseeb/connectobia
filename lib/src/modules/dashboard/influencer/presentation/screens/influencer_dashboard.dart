@@ -3,7 +3,6 @@ import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_s
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -30,6 +29,7 @@ class InfluencerDashboard extends StatefulWidget {
 }
 
 class _InfluencerDashboardState extends State<InfluencerDashboard> {
+  RealtimeMessagingBloc realtimeMessagingBloc = RealtimeMessagingBloc();
   late Influencer user = widget.user;
   late final brightness = ShadTheme.of(context).brightness;
   final ScrollController scrollController = ScrollController();
@@ -37,9 +37,10 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return BlocListener<NotificationsBloc, NotificationsState>(
+    return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
       listener: (context, state) {
-        if (state is MessageReceived && _selectedIndex != 2) {
+        if (state is MessageNotificationReceived) {
+          debugPrint('Here');
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,
@@ -74,9 +75,9 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                       ),
                     ),
                     subtitle: Text(
-                      state.message.messageText.length > 30
-                          ? '${state.message.messageText.substring(0, 30)}...'
-                          : state.message.messageText,
+                      state.message.length > 30
+                          ? '${state.message.substring(0, 30)}...'
+                          : state.message,
                       style: TextStyle(
                         fontSize: 14,
                       ),
