@@ -6,6 +6,7 @@ import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/date_and_time.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
+import 'package:connectobia/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -116,7 +117,7 @@ class ChatsList extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: ShadColors.primary,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),

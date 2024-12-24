@@ -1,3 +1,4 @@
+import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 import '../../../../theme/colors.dart';
 
@@ -48,103 +50,35 @@ class MessagesList extends StatelessWidget {
               itemBuilder: (context, index) {
                 final isMe =
                     state.messages.items[index].senderId == state.selfId;
-                return Align(
-                  alignment:
-                      isMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isMe
-                          ? ShadColors.primary
-                          : brightness == Brightness.light
-                              ? ShadColors.lightForeground
-                              : ShadColors.darkForeground,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          state.messages.items[index].messageText,
-                          style: TextStyle(
-                            color: isMe
+                final myMessageIndex = state.messages.items
+                    .indexWhere((msg) => msg.senderId == state.selfId);
+                final otherMessageIndex = state.messages.items
+                    .indexWhere((msg) => msg.senderId != state.selfId);
+                return SwipeTo(
+                  leftSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
+                      DateTime.parse(state.messages.items[index].created))),
+                  onLeftSwipe: (details) {},
+                  rightSwipeWidget: Icon(
+                    LucideIcons.reply,
+                    color: ShadColors.light,
+                  ),
+                  onRightSwipe: (details) {},
+                  child: BubbleSpecialThree(
+                    sent: state.messages.items[index].sent == null && isMe,
+                    isSender: isMe,
+                    tail: index == myMessageIndex || index == otherMessageIndex,
+                    text: state.messages.items[index].messageText,
+                    color: isMe
+                        ? ShadColors.primary
+                        : brightness == Brightness.light
+                            ? ShadColors.lightForeground
+                            : ShadColors.darkForeground,
+                    textStyle: TextStyle(
+                        color: isMe
+                            ? ShadColors.light
+                            : brightness == Brightness.dark
                                 ? ShadColors.light
-                                : brightness == Brightness.dark
-                                    ? ShadColors.light
-                                    : ShadColors.dark,
-                          ),
-                        ),
-                        if (state.messages.items[index].sent == null)
-                          Wrap(
-                            spacing: 4,
-                            children: [
-                              Text(
-                                DateAndTime.formatDateTimeTo12Hour(
-                                    DateTime.parse(
-                                        state.messages.items[index].created)),
-                                style: TextStyle(
-                                  color: isMe
-                                      ? ShadColors.light
-                                      : brightness == Brightness.dark
-                                          ? ShadColors.light
-                                          : ShadColors.dark,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              if (isMe)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 4.0, top: 2),
-                                  child: Icon(
-                                    Icons.check,
-                                    size: 12,
-                                    color: isMe
-                                        ? ShadColors.light
-                                        : brightness == Brightness.dark
-                                            ? ShadColors.light
-                                            : ShadColors.dark,
-                                  ),
-                                ),
-                            ],
-                          )
-                        else if (state.messages.items[index].sent != null &&
-                            !state.messages.items[index].sent!)
-                          Wrap(
-                            children: [
-                              Text(
-                                DateAndTime.formatDateTimeTo12Hour(
-                                    DateTime.parse(
-                                        state.messages.items[index].created)),
-                                style: TextStyle(
-                                  color: isMe
-                                      ? ShadColors.light
-                                      : brightness == Brightness.dark
-                                          ? ShadColors.light
-                                          : ShadColors.dark,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
-                                child: Icon(
-                                  Icons.access_time,
-                                  size: 12,
-                                  color: isMe
-                                      ? ShadColors.light
-                                      : brightness == Brightness.dark
-                                          ? ShadColors.light
-                                          : ShadColors.dark,
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
+                                : ShadColors.dark),
                   ),
                 );
               },

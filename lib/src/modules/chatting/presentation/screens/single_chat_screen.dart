@@ -76,7 +76,6 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                   Text(
                     widget.name,
                   ),
-                  // Blue tick
                   if (widget.hasConnectedInstagram)
                     const Icon(
                       Icons.verified,
