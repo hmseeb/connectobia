@@ -8,6 +8,7 @@ import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/industries.dart';
 import '../../../../shared/data/constants/screen_size.dart';
+import '../../../../shared/presentation/widgets/custom_dialogue.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
@@ -128,13 +129,21 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                       child: SocialAuthBtn(
                         icon: AssetsPath.instagram,
                         onPressed: () {
-                          HapticFeedback.mediumImpact();
-                          BlocProvider.of<SignupBloc>(context)
-                              .add(InstagramSignup(accountType: accountType));
+                          customDialogue(
+                              context: context,
+                              title: 'Instagram Sign Up',
+                              description: 'This feature is not available yet.',
+                              onContinue: () {
+                                HapticFeedback.mediumImpact();
+                                BlocProvider.of<SignupBloc>(context).add(
+                                    InstagramSignup(accountType: accountType));
+                              });
                         },
                         text: state is InstagramLoading
                             ? 'Signing up...'
-                            : 'Sign up with Instagram',
+                            : state is InstagramFailure
+                                ? 'Try again'
+                                : 'Sign up with Instagram',
                         borderSide: const BorderSide(),
                         backgroundColor: ShadColors.lightForeground,
                       ),

@@ -99,7 +99,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
-        emit(SignupFailure(errorRepo.handleError(e)));
+        emit(InstagramFailure(errorRepo.handleError(e)));
       }
     });
   }

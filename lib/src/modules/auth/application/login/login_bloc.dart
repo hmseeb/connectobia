@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../shared/data/repositories/error_repo.dart';
 import '../../../../shared/domain/models/brand.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../data/helpers/validation/input_validation.dart';
@@ -79,9 +78,7 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
         emit(InfluencerLoginSuccess(influencer));
         debugPrint('Logged in with Instagram');
       } catch (e) {
-        emit(LoginFailure(e.toString()));
-        ErrorRepository errorRepo = ErrorRepository();
-        emit(LoginFailure(errorRepo.handleError(e)));
+        emit(InstagramFailure(e.toString()));
       }
     });
   }
