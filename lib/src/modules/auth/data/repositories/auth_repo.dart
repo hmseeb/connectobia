@@ -235,8 +235,10 @@ class AuthRepository {
   static Future<void> logout() async {
     try {
       final pb = await PocketBaseSingleton.instance;
+      await pb.collection('chats').unsubscribe();
+      await pb.collection('messages').unsubscribe();
       pb.authStore.clear();
-      debugPrint('Logged out');
+      debugPrint('Logged out successfully');
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
