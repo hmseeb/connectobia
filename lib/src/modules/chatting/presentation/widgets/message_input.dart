@@ -19,6 +19,8 @@ class MessageInput extends StatelessWidget {
     final Brightness brightness = ShadTheme.of(context).brightness;
     return Expanded(
       child: ShadInputFormField(
+        maxLines: 5,
+        minLines: 1,
         controller: messageController,
         placeholder: Text('Enter your message'),
         decoration: ShadDecoration(
