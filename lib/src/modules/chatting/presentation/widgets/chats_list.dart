@@ -52,8 +52,13 @@ class ChatsList extends StatelessWidget {
             itemBuilder: (context, index) {
               bool isBrand = CollectionNameSingleton.instance == 'brands';
               final chat = state.chats.items[index];
-              bool isMe =
-                  chat.expand!.message.senderId != chat.expand!.brand.id;
+              late bool isMe;
+              if (isBrand) {
+                isMe = chat.expand!.message.senderId == chat.expand!.brand.id;
+              } else {
+                isMe =
+                    chat.expand!.message.senderId == chat.expand!.influencer.id;
+              }
               return ListTile(
                 onTap: () {
                   String userId = isBrand
