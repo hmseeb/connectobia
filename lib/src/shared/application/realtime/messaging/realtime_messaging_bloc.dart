@@ -162,6 +162,8 @@ class RealtimeMessagingBloc
 
           Messages sentMessage = messages.removeMessage(0);
           sentMessage.addMessage(message);
+
+          HapticFeedback.lightImpact();
           emit(MessagesLoaded(messages: sentMessage, selfId: senderId));
 
           await msgsRepo.updateChatById(
@@ -176,6 +178,8 @@ class RealtimeMessagingBloc
 
           Messages sentMessage = messages.removeMessage(0);
           sentMessage.addMessage(message);
+
+          HapticFeedback.lightImpact();
           emit(MessagesLoaded(
             messages: sentMessage,
             selfId: senderId,
