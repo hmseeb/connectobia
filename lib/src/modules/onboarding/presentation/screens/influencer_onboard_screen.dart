@@ -31,7 +31,7 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
         if (state is Onboarded) {
           Navigator.pushNamedAndRemoveUntil(
               context, influencerDashboard, (route) => false,
-              arguments: {'influencers': widget.user});
+              arguments: {'user': widget.user});
         } else if (state is ConnectingInstagram) {
           setState(() {
             instagramButtonText = 'Connecting Instagram...';

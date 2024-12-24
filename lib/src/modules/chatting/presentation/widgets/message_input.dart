@@ -39,6 +39,13 @@ class MessageInput extends StatelessWidget {
         ),
         onChanged: onChanged,
         onSubmitted: (value) => onSubmitted!(value),
+        validator: (value) {
+          if (value.length > 4000) {
+            return 'Please enter a message';
+          }
+          return null;
+        },
+        autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
     );
   }
