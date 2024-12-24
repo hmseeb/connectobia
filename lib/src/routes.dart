@@ -15,7 +15,7 @@ library;
 
 import 'package:connectobia/src/app.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/brand_signup_screen.dart';
-import 'package:connectobia/src/modules/auth/presentation/screens/creator_signup_screen.dart';
+import 'package:connectobia/src/modules/auth/presentation/screens/influencer_signup_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
@@ -85,7 +85,7 @@ class GenerateRoutes {
       case influencerDashboard:
         final args = settings.arguments as Map<String, dynamic>;
         return _buildAnimatedRoute(InfluencerDashboard(
-          user: args['influencers'],
+          user: args['user'],
         ));
       case singleChatScreen:
         final args = settings.arguments as Map<String, dynamic>;
