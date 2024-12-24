@@ -164,8 +164,6 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                           },
                         )
                       else ...[
-                        Icon(Icons.mic),
-                        const SizedBox(width: 16),
                         Icon(LucideIcons.image),
                       ],
                       const SizedBox(width: 16),

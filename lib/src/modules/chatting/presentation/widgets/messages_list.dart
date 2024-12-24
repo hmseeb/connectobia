@@ -58,9 +58,9 @@ class MessagesList extends StatelessWidget {
                   leftSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
                       DateTime.parse(state.messages.items[index].created))),
                   onLeftSwipe: (details) {},
+                  onRightSwipe: (details) {},
                   rightSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
                       DateTime.parse(state.messages.items[index].created))),
-                  onRightSwipe: (details) {},
                   child: BubbleSpecialThree(
                     sent: state.messages.items[index].sent == null && isMe,
                     isSender: isMe,
