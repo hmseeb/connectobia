@@ -94,9 +94,9 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                     onPressed: () {
                       customDialogue(
                         context: context,
-                        title: 'Connect with Instagram',
+                        title: 'You need an Instagram Business account',
                         description:
-                            'Connect your Instagram account to get verified',
+                            'If you don\'t have one, you can create one by converting your personal account to a business account.',
                         onContinue: () {
                           BlocProvider.of<InfluencerOnboardBloc>(context)
                               .add(UpdateOnboardBool());

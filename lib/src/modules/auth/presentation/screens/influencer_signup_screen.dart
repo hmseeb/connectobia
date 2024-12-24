@@ -131,8 +131,9 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                         onPressed: () {
                           customDialogue(
                               context: context,
-                              title: 'Instagram Sign Up',
-                              description: 'This feature is not available yet.',
+                              title: 'You need an Instagram Business account',
+                              description:
+                                  'If you don\'t have one, you can create one by converting your personal account to a business account.',
                               onContinue: () {
                                 HapticFeedback.mediumImpact();
                                 BlocProvider.of<SignupBloc>(context).add(

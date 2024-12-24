@@ -97,11 +97,19 @@ class ChatsList extends StatelessWidget {
                           image: chat.expand!.brand.avatar,
                         )),
                 ),
-                title: Wrap(
+                title: Text(isBrand
+                    ? chat.expand!.influencer.fullName
+                    : chat.expand!.brand.brandName),
+                subtitle: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text(isBrand
-                        ? chat.expand!.influencer.fullName
-                        : chat.expand!.brand.brandName),
+                    Text(
+                      isMe
+                          ? 'You: ${chat.expand!.message.messageText.length > 20 ? '${chat.expand!.message.messageText.substring(0, 20)}...' : chat.expand!.message.messageText}'
+                          : chat.expand!.message.messageText.length > 20
+                              ? '${chat.expand!.message.messageText.substring(0, 20)}...'
+                              : chat.expand!.message.messageText,
+                    ),
                     if (!chat.isRead && !isMe)
                       Container(
                         margin: const EdgeInsets.only(left: 8),
@@ -113,13 +121,6 @@ class ChatsList extends StatelessWidget {
                         ),
                       ),
                   ],
-                ),
-                subtitle: Text(
-                  isMe
-                      ? 'You: ${chat.expand!.message.messageText.length > 20 ? '${chat.expand!.message.messageText.substring(0, 20)}...' : chat.expand!.message.messageText}'
-                      : chat.expand!.message.messageText.length > 20
-                          ? '${chat.expand!.message.messageText.substring(0, 20)}...'
-                          : chat.expand!.message.messageText,
                 ),
                 trailing: Text(
                   DateAndTime.timeAgo(

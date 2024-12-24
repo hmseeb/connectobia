@@ -145,9 +145,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () {
                               customDialogue(
                                   context: context,
-                                  title: 'Connect with Instagram',
+                                  title:
+                                      'You need an Instagram Business account',
                                   description:
-                                      'By connecting with Instagram, you agree to our terms and conditions.',
+                                      'If you don\'t have one, you can create one by converting your personal account to a business account.',
                                   onContinue: () {
                                     HapticFeedback.mediumImpact();
                                     loginBloc.add(InstagramAuth(

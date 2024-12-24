@@ -25,7 +25,10 @@ Future<dynamic> customDialogue({
           onPressed: () => Navigator.of(context).pop(false),
         ),
         ShadButton(
-          onPressed: onContinue,
+          onPressed: () {
+            onContinue();
+            Navigator.of(context).pop(true);
+          },
           child: const Text('Continue'),
         ),
       ],
