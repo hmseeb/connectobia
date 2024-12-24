@@ -39,15 +39,14 @@ class MessagesList extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        if (state is MessagesLoaded) {
+        if (state is MessagesLoaded && state.messages.items.isNotEmpty) {
           return Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 8),
               reverse: true,
               itemCount: state.messages.items.length,
               itemBuilder: (context, index) {
-                final Message message =
-                    state.messages.items.reversed.toList()[index];
+                final Message message = state.messages.items.toList()[index];
                 final isMe = message.senderId == state.selfId;
                 return Align(
                   alignment:

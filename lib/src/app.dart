@@ -103,7 +103,7 @@ class ConnectobiaState extends State<Connectobia> {
           context,
           influencerDashboard,
           (route) => false,
-          arguments: {'influencers': state.user},
+          arguments: {'user': state.user},
         );
       } else {
         Navigator.pushNamedAndRemoveUntil(

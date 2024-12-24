@@ -35,26 +35,6 @@ final class MessagesLoadingError extends RealtimeMessagingState {
 
 final class NoMessages extends RealtimeMessagingState {}
 
-final class RealtimeMessageReceived extends RealtimeMessagingState {
-  final Message message;
-  final String avatar;
-  final String name;
-  final String userId;
-  final String collectionId;
-  final String chatId;
-  final bool hasConnectedInstagram;
-
-  RealtimeMessageReceived({
-    required this.message,
-    required this.avatar,
-    required this.name,
-    required this.userId,
-    required this.collectionId,
-    required this.chatId,
-    required this.hasConnectedInstagram,
-  });
-}
-
 final class RealtimeMessagingError extends RealtimeMessagingState {
   final String error;
 

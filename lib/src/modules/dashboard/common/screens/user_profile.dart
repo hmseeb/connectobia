@@ -95,7 +95,6 @@ class _UserProfileState extends State<UserProfile> {
       },
       builder: (context, state) {
         if (state is InfluencerProfileLoaded) {
-          debugPrint(state.influencerProfile.description);
           return _buildProfileScaffold(
             isLoading: false,
             context: context,

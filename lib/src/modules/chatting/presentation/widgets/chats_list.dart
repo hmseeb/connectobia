@@ -51,6 +51,8 @@ class ChatsList extends StatelessWidget {
             itemBuilder: (context, index) {
               bool isBrand = CollectionNameSingleton.instance == 'brands';
               final chat = state.chats.items[index];
+              bool isMe =
+                  chat.expand.message!.senderId != chat.expand.brand!.id;
               return ListTile(
                 onTap: () {
                   String userId = isBrand
@@ -99,9 +101,11 @@ class ChatsList extends StatelessWidget {
                     ? chat.expand.influencer!.fullName
                     : chat.expand.brand!.brandName),
                 subtitle: Text(
-                  chat.expand.message!.messageText.length > 30
-                      ? '${chat.expand.message!.messageText.substring(0, 30)}...'
-                      : chat.expand.message!.messageText,
+                  isMe
+                      ? 'You: ${chat.expand.message!.messageText.length > 20 ? '${chat.expand.message!.messageText.substring(0, 20)}...' : chat.expand.message!.messageText}'
+                      : chat.expand.message!.messageText.length > 20
+                          ? '${chat.expand.message!.messageText.substring(0, 20)}...'
+                          : chat.expand.message!.messageText,
                 ),
                 trailing:
                     Text(DateAndTime.timeAgo(chat.expand.message!.created)),

@@ -4,6 +4,7 @@ import 'package:connectobia/src/modules/chatting/data/chats_repository.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:connectobia/src/shared/data/repositories/realtime_messaging_repo.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
@@ -54,15 +55,19 @@ class RealtimeMessagingBloc
       if (otherUserAccountType == 'brands') {
         final brand = Brand.fromRecord(record);
 
-        emit(RealtimeMessageReceived(
-          message: event.message,
-          avatar: brand.avatar,
-          name: brand.brandName,
-          collectionId: record.collectionId,
-          userId: brand.id,
-          chatId: event.message.chat,
-          hasConnectedInstagram: false,
-        ));
+        add(SendMessageNotification(sendNotification: () {
+          // add send notification event to NotificationBloc
+          NotificationsBloc notificationsBloc = NotificationsBloc();
+          notificationsBloc.add(MessageNotificationReceived(
+            message: event.message,
+            avatar: brand.avatar,
+            name: brand.brandName,
+            userId: brand.id,
+            collectionId: record.collectionId,
+            chatId: event.message.chat,
+            hasConnectedInstagram: false,
+          ));
+        }));
         try {
           final Messages messages = (state as MessagesLoaded).messages;
           final updatedMessages = messages.addMessage(event.message);
@@ -73,15 +78,21 @@ class RealtimeMessagingBloc
         }
       } else {
         final influencer = Influencer.fromRecord(record);
-        emit(RealtimeMessageReceived(
-          message: event.message,
-          avatar: influencer.avatar,
-          name: influencer.fullName,
-          collectionId: record.collectionId,
-          userId: influencer.id,
-          chatId: event.message.chat,
-          hasConnectedInstagram: influencer.connectedSocial,
-        ));
+
+        add(SendMessageNotification(sendNotification: () {
+          // add send notification event to NotificationBloc
+
+          NotificationsBloc notificationsBloc = NotificationsBloc();
+          notificationsBloc.add(MessageNotificationReceived(
+            message: event.message,
+            avatar: influencer.avatar,
+            name: influencer.fullName,
+            userId: influencer.id,
+            collectionId: record.collectionId,
+            chatId: event.message.chat,
+            hasConnectedInstagram: influencer.connectedSocial,
+          ));
+        }));
 
         try {
           final Messages messages = (state as MessagesLoaded).messages;
@@ -92,6 +103,10 @@ class RealtimeMessagingBloc
           emit(MessagesLoadingError(errorRepo.handleError(e)));
         }
       }
+    });
+
+    on<SendMessageNotification>((event, emit) async {
+      event.sendNotification();
     });
 
     on<GetMessagesByUserId>((event, emit) async {
@@ -137,8 +152,7 @@ class RealtimeMessagingBloc
             messageText: event.message,
           );
 
-          Messages sentMessage =
-              messages.removeMessage(messages.items.length - 1);
+          Messages sentMessage = messages.removeMessage(0);
           sentMessage.addMessage(message);
           emit(MessagesLoaded(sentMessage, message.senderId));
 
@@ -154,8 +168,7 @@ class RealtimeMessagingBloc
             chatId: chatId,
           );
 
-          Messages sentMessage =
-              messages.removeMessage(messages.items.length - 1);
+          Messages sentMessage = messages.removeMessage(0);
           sentMessage.addMessage(message);
           emit(MessagesLoaded(sentMessage, message.senderId));
 

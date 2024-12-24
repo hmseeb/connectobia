@@ -36,6 +36,12 @@ class SendMessage extends RealtimeMessagingEvent {
   });
 }
 
+class SendMessageNotification extends RealtimeMessagingEvent {
+  // callback function to be called when the notification is sent
+  final Function() sendNotification;
+  SendMessageNotification({required this.sendNotification});
+}
+
 class SubscribeMessages extends RealtimeMessagingEvent {
   SubscribeMessages();
 }

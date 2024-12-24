@@ -17,6 +17,7 @@ class MessagesRepository {
             page: 1,
             perPage: 20,
             filter: 'chat == $chatId',
+            sort: '-updated',
           );
 
       Messages messages = Messages.fromRecord(resultList);
@@ -37,6 +38,7 @@ class MessagesRepository {
             page: 1,
             perPage: 20,
             filter: filter,
+            sort: '-created',
           );
 
       Messages messages = Messages.fromRecord(resultList);
