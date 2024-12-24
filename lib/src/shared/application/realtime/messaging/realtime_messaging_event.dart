@@ -45,3 +45,7 @@ class SendMessageNotification extends RealtimeMessagingEvent {
 class SubscribeMessages extends RealtimeMessagingEvent {
   SubscribeMessages();
 }
+
+class UnsubscribeMessages extends RealtimeMessagingEvent {
+  UnsubscribeMessages();
+}
