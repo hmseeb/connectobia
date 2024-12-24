@@ -24,7 +24,7 @@ class SingleChatScreen extends StatefulWidget {
     required this.avatar,
     required this.userId,
     required this.collectionId,
-    required this.hasConnectedInstagram,
+    this.hasConnectedInstagram = false,
   });
 
   @override
