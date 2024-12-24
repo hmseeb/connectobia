@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_s
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -36,9 +37,9 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
+    return BlocListener<NotificationsBloc, NotificationsState>(
       listener: (context, state) {
-        if (state is RealtimeMessageReceived && _selectedIndex != 2) {
+        if (state is MessageReceived && _selectedIndex != 2) {
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,

@@ -18,14 +18,6 @@ class Messages {
     required this.items,
   });
 
-  factory Messages.fromRecord(ResultList<RecordModel> record) =>
-      Messages.fromJson(record.toJson());
-
-  factory Messages.fromRawJson(String str) =>
-      Messages.fromJson(json.decode(str));
-
-  String toRawJson() => json.encode(toJson());
-
   factory Messages.fromJson(Map<String, dynamic> json) => Messages(
         page: json["page"],
         perPage: json["perPage"],
@@ -35,17 +27,15 @@ class Messages {
             List<Message>.from(json["items"].map((x) => Message.fromJson(x))),
       );
 
-  Map<String, dynamic> toJson() => {
-        "page": page,
-        "perPage": perPage,
-        "totalPages": totalPages,
-        "totalItems": totalItems,
-        "items": List<dynamic>.from(items.map((x) => x.toJson())),
-      };
+  factory Messages.fromRawJson(String str) =>
+      Messages.fromJson(json.decode(str));
+
+  factory Messages.fromRecord(ResultList<RecordModel> record) =>
+      Messages.fromJson(record.toJson());
 
   // Method to add a message to the items list
   Messages addMessage(Message newMessage) {
-    items.add(newMessage);
+    items.insert(0, newMessage);
     return Messages(
       page: page,
       perPage: perPage,
@@ -62,6 +52,29 @@ class Messages {
       perPage: perPage,
       totalPages: totalPages,
       totalItems: totalItems - 1,
+      items: items,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "page": page,
+        "perPage": perPage,
+        "totalPages": totalPages,
+        "totalItems": totalItems,
+        "items": List<dynamic>.from(items.map((x) => x.toJson())),
+      };
+
+  String toRawJson() => json.encode(toJson());
+
+  Messages updateMessage(Message updatedMessage) {
+    final index =
+        items.indexWhere((element) => element.id == updatedMessage.id);
+    items[index] = updatedMessage;
+    return Messages(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: totalItems,
       items: items,
     );
   }

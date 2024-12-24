@@ -108,7 +108,7 @@ class ChatsRepository {
             perPage: 20,
             filter: '$accountType = "$userId"',
             expand: 'influencer,brand,message',
-            sort: 'created',
+            sort: '-updated',
           );
 
       Chats chats = Chats.fromRecord(resultList);
