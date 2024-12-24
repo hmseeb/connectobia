@@ -6,26 +6,6 @@ import '../../../../../shared/domain/models/brands.dart';
 import '../../../../../shared/domain/models/influencers.dart';
 
 class DashboardRepository {
-  static Future<Influencers> getInfluencersList() async {
-    final pb = await PocketBaseSingleton.instance;
-    late final Influencers list;
-    try {
-      final resultList = await pb.collection('influencers').getList(
-            page: 1,
-            perPage: 20,
-            // where account type = profile and avatar and banner is not empty
-            filter: 'profile != "" && banner != "" && avatar != ""',
-            // expand: 'influencers',
-          );
-      list = Influencers.fromRecord(resultList);
-      debugPrint('Fetched ${list.items.length} influencers');
-      return list;
-    } catch (e) {
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
-    }
-  }
-
   static Future<Brands> getBrandsList() async {
     final pb = await PocketBaseSingleton.instance;
     late final Brands list;
@@ -33,12 +13,33 @@ class DashboardRepository {
       final resultList = await pb.collection('brands').getList(
             page: 1,
             perPage: 20,
-            // where account type = profile and avatar and banner is not empty
-            filter: 'profile != "" && banner != "" && avatar != ""',
+            // TODO: Remove images check after empty images are handled
+            filter:
+                'profile != "" && banner != "" && avatar != "" && verified = True',
             // expand: 'influencers',
           );
       list = Brands.fromRecord(resultList);
       debugPrint('Fetched ${list.items.length} brands');
+      return list;
+    } catch (e) {
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  static Future<Influencers> getInfluencersList() async {
+    final pb = await PocketBaseSingleton.instance;
+    late final Influencers list;
+    try {
+      final resultList = await pb.collection('influencers').getList(
+            page: 1,
+            perPage: 20,
+            // TODO: Remove images check after empty images are handled
+            filter:
+                'connectedSocial = True && profile != "" && banner != "" && avatar != ""',
+          );
+      list = Influencers.fromRecord(resultList);
+      debugPrint('Fetched ${list.items.length} influencers');
       return list;
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();

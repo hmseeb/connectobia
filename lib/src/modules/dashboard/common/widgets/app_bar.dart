@@ -11,8 +11,16 @@ import '../../../../theme/colors.dart';
 class CommonAppBar extends StatelessWidget {
   final String userName;
   final String searchPlaceholder;
+  final String userId;
+  final String collectionId;
+  final String image;
   const CommonAppBar(
-      {super.key, required this.userName, required this.searchPlaceholder});
+      {super.key,
+      required this.userName,
+      required this.searchPlaceholder,
+      required this.userId,
+      required this.collectionId,
+      required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +56,13 @@ class CommonAppBar extends StatelessWidget {
               },
               child: CircleAvatar(
                 backgroundImage: CachedNetworkImageProvider(
-                  // user.avatar.isNotEmpty
-                  //     ? Avatar.getUserImage(
-                  //         id: user.id,
-                  //         image: user.avatar,
-                  //       )
-                  //     :
-                  Avatar.getAvatarPlaceholder('HA'),
+                  image.isNotEmpty
+                      ? Avatar.getUserImage(
+                          userId: userId,
+                          image: image,
+                          collectionId: collectionId,
+                        )
+                      : Avatar.getAvatarPlaceholder('HA'),
                 ),
               ),
             ),

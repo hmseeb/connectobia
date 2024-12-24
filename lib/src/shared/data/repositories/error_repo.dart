@@ -24,7 +24,11 @@ class ErrorRepository {
         return _mapClientError(originalError);
       }
     } else {
-      return originalError.toString();
+      if (originalError.toString().contains('unique')) {
+        return 'An account with this email already exists.';
+      } else {
+        return originalError.toString();
+      }
     }
   }
 
@@ -52,7 +56,9 @@ class ErrorRepository {
         }
       }
     } catch (error) {
-      debugPrint('$error');
+      if (error.toString().contains('unique')) {
+        return 'An account with this email already exists.';
+      }
     }
     return 'Something went wrong. Please try again.';
   }
