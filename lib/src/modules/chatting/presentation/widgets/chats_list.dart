@@ -97,9 +97,23 @@ class ChatsList extends StatelessWidget {
                           image: chat.expand!.brand.avatar,
                         )),
                 ),
-                title: Text(isBrand
-                    ? chat.expand!.influencer.fullName
-                    : chat.expand!.brand.brandName),
+                title: Wrap(
+                  children: [
+                    Text(isBrand
+                        ? chat.expand!.influencer.fullName
+                        : chat.expand!.brand.brandName),
+                    if (!chat.isRead && !isMe)
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                  ],
+                ),
                 subtitle: Text(
                   isMe
                       ? 'You: ${chat.expand!.message.messageText.length > 20 ? '${chat.expand!.message.messageText.substring(0, 20)}...' : chat.expand!.message.messageText}'
@@ -107,8 +121,11 @@ class ChatsList extends StatelessWidget {
                           ? '${chat.expand!.message.messageText.substring(0, 20)}...'
                           : chat.expand!.message.messageText,
                 ),
-                trailing: Text(DateAndTime.timeAgo(
-                    DateTime.parse(chat.expand!.message.created))),
+                trailing: Text(
+                  DateAndTime.timeAgo(
+                    DateTime.parse(chat.expand!.message.created),
+                  ),
+                ),
               );
             },
           );
