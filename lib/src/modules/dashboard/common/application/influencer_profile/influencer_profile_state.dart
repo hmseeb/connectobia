@@ -11,12 +11,10 @@ final class InfluencerProfileInitial extends InfluencerProfileState {}
 final class InfluencerProfileLoaded extends InfluencerProfileState {
   final InfluencerProfile influencerProfile;
   final Influencer influencer;
-  final bool hasConnectedSocialMedia;
 
   InfluencerProfileLoaded({
     required this.influencerProfile,
     required this.influencer,
-    required this.hasConnectedSocialMedia,
   });
 }
 

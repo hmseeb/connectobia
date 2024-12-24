@@ -1,21 +1,25 @@
 part of 'brand_profile_bloc.dart';
 
-@immutable
-sealed class BrandProfileState {}
-
-final class BrandProfileInitial extends BrandProfileState {}
-
-class BrandProfileLoading extends BrandProfileState {}
-
-class BrandProfileLoaded extends BrandProfileState {
-  final Brand brand;
-  final BrandProfile brandProfile;
-
-  BrandProfileLoaded({required this.brand, required this.brandProfile});
-}
-
 class BrandProfileError extends BrandProfileState {
   final String message;
 
   BrandProfileError(this.message);
 }
+
+final class BrandProfileInitial extends BrandProfileState {}
+
+class BrandProfileLoaded extends BrandProfileState {
+  final Brand brand;
+  final BrandProfile brandProfile;
+  final bool isInfluencerVerified;
+
+  BrandProfileLoaded(
+      {required this.brand,
+      required this.brandProfile,
+      required this.isInfluencerVerified});
+}
+
+class BrandProfileLoading extends BrandProfileState {}
+
+@immutable
+sealed class BrandProfileState {}

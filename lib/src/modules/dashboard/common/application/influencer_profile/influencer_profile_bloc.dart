@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../shared/data/repositories/error_repo.dart';
@@ -19,12 +18,10 @@ class InfluencerProfileBloc
         InfluencerProfile influencerProfile =
             await ProfileRepository.getInfluencerProfile(
                 profileId: event.profileId);
-        final Influencer influencer = await AuthRepository.getUser();
 
         emit(InfluencerProfileLoaded(
           influencer: event.influencer,
           influencerProfile: influencerProfile,
-          hasConnectedSocialMedia: influencer.connectedSocial,
         ));
         debugPrint('Fetched ${event.influencer.fullName} profile');
       } catch (e) {
