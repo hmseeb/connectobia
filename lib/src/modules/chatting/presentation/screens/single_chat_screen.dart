@@ -156,10 +156,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                                   );
                                 }
                               },
-                              child: Icon(
-                                LucideIcons.send,
-                                color: ShadColors.primary,
-                              ),
+                              child: Icon(LucideIcons.send),
                             );
                           },
                         )
