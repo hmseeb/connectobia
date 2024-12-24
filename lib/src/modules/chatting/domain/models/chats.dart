@@ -36,6 +36,8 @@ class Chats {
 
   Chats addChat(Chat chat) {
     items.add(chat);
+    items.sort((a, b) => b.updated.compareTo(a.updated));
+
     return Chats(
       items: items,
       page: page,
@@ -47,6 +49,7 @@ class Chats {
 
   Chats removeMessage(int index) {
     items.remove(items[index]);
+
     return Chats(
       page: page,
       perPage: perPage,
@@ -75,8 +78,10 @@ class Chats {
         element.influencer == influencer && element.brand == brand);
     if (index != -1) {
       items[index] = updatedChat; // Update the chat if it exists
+      items.sort((a, b) => b.updated.compareTo(a.updated));
     } else {
       items.add(updatedChat); // Add new chat if it does not exist
+      items.sort((a, b) => b.updated.compareTo(a.updated));
     }
     return Chats(
       items: items,
