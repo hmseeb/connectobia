@@ -1,5 +1,11 @@
 part of 'signup_bloc.dart';
 
+final class InstagramFailure extends SignupState {
+  final String error;
+
+  InstagramFailure(this.error);
+}
+
 final class InstagramLoading extends SignupState {}
 
 final class SignupFailure extends SignupState {

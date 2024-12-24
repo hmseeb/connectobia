@@ -164,38 +164,39 @@ class AuthRepository {
   ///  [instagramAuth] is a method that authenticates a user with their Instagram brand account.
   static Future<Influencer> instagramAuth(
       {required String collectionName}) async {
-    try {
-      final pb = await PocketBaseSingleton.instance;
+    final pb = await PocketBaseSingleton.instance;
 
-      final recordAuth = await pb
-          .collection(collectionName)
-          .authWithOAuth2('instagram2', (url) async {
-        await launchUrl(url);
-      });
-
-      final Influencer influencer = Influencer.fromRecord(recordAuth.record);
-      // Implement brand if instagram auth is introduced for brands in future
-      if (influencer.profile.isEmpty) {
-        final Meta meta = Meta.fromJson(recordAuth.meta);
-        final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
-        final String influencerId = influencer.id;
-        final influencerProfileId = await createInfluencerProfileByInstagram(
-            meta: meta, rawUser: rawUser);
-
-        debugPrint('Created influencer profile');
-        await linkProfileWithAccount(
-          userId: influencerId,
-          profileId: influencerProfileId,
-          pb: pb,
-          collectionName: 'influencers',
-        );
-        debugPrint('Linked profile with account');
+    final recordAuth = await pb
+        .collection(collectionName)
+        .authWithOAuth2('instagram2', (url) async {
+      await launchUrl(url);
+      await Future.delayed(Duration(milliseconds: 100));
+      while (
+          WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+        await Future.delayed(Duration(milliseconds: 100));
       }
-      return influencer;
-    } catch (e) {
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
+      Influencer.fromRecord(pb.authStore.record!);
+    });
+
+    final Influencer influencer = Influencer.fromRecord(recordAuth.record);
+    // Implement brand if instagram auth is introduced for brands in future
+    if (influencer.profile.isEmpty) {
+      final Meta meta = Meta.fromJson(recordAuth.meta);
+      final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
+      final String influencerId = influencer.id;
+      final influencerProfileId = await createInfluencerProfileByInstagram(
+          meta: meta, rawUser: rawUser);
+
+      debugPrint('Created influencer profile');
+      await linkProfileWithAccount(
+        userId: influencerId,
+        profileId: influencerProfileId,
+        pb: pb,
+        collectionName: 'influencers',
+      );
+      debugPrint('Linked profile with account');
     }
+    return influencer;
   }
 
   static Future<void> linkProfileWithAccount(
