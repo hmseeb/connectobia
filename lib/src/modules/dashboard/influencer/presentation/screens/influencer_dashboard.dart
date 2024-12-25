@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_s
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
+import 'package:connectobia/src/modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -104,7 +105,10 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                   userId: user.id,
                   collectionId: user.collectionId,
                   image: user.avatar,
-                  onChange: (value) {},
+                  onChange: (value) {
+                    BlocProvider.of<InfluencerDashboardBloc>(context)
+                        .add(FilterBrands(filter: value));
+                  },
                 ),
               ],
               body: SingleChildScrollView(

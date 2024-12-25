@@ -47,11 +47,17 @@ class Brands {
       );
 
   Brands filterBrands(String filter) {
-    return copyWith(
-      items: items
-          .where((brand) =>
-              brand.brandName.toLowerCase().contains(filter.toLowerCase()))
-          .toList(),
+    //
+    List<Brand> filteredItems = items.where((brand) {
+      return brand.brandName.contains(filter) ||
+          brand.industry.contains(filter);
+    }).toList();
+    return Brands(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: filteredItems.length,
+      items: filteredItems,
     );
   }
 
