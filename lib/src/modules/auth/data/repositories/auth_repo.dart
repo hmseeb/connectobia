@@ -171,11 +171,6 @@ class AuthRepository {
         .authWithOAuth2('instagram2', (url) async {
       await launchUrl(url);
       await Future.delayed(Duration(milliseconds: 100));
-      while (
-          WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
-        await Future.delayed(Duration(milliseconds: 100));
-      }
-      Influencer.fromRecord(pb.authStore.record!);
     });
 
     final Influencer influencer = Influencer.fromRecord(recordAuth.record);
