@@ -106,10 +106,15 @@ class GenerateRoutes {
       case campaignsScreen:
         return _buildRoute(const CampaignScreen());
 
-      case '/editProfile':
-        return _buildRoute(BlocProvider<EditProfileBloc>(
-            create: (context) => EditProfileBloc(),
-            child: const EditProfileScreen()));
+      // Assuming this is inside your Router or MaterialApp's routes configuration.
+       case '/editProfile':
+  return _buildRoute(
+    BlocProvider<EditProfileBloc>(
+      create: (context) => EditProfileBloc(), // Providing the Bloc to the screen
+      child: const EditUserProfileScreen(name: 'name', username: 'username', description: '', avatar: '', banner: '',), // The screen that uses this Bloc
+    ),
+  );
+
 
       default:
         return _buildRoute(WelcomeScreen());
