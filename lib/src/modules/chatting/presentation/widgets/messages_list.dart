@@ -51,7 +51,6 @@ class MessagesList extends StatelessWidget {
   final String senderId;
   final Message? message;
   final bool isMediaSelected;
-  final int mediaCount;
   final Function()? onDismiss;
 
   final String newMessage = '';
@@ -61,7 +60,6 @@ class MessagesList extends StatelessWidget {
     required this.recipientName,
     required this.senderId,
     this.message,
-    this.mediaCount = 0,
     required this.isMediaSelected,
     this.onDismiss,
   });
@@ -132,13 +130,9 @@ class MessagesList extends StatelessWidget {
                       ShadAlert(
                         iconSrc: LucideIcons.image,
                         title: Text(
-                          'Selected $mediaCount ${mediaCount > 1 ? 'attachments' : 'attachment'}',
-                          style: TextStyle(
-                            color: ShadColors.light,
-                          ),
+                          'Selected an image',
                         ),
-                        iconColor: ShadColors.light,
-                        decoration: ShadDecoration(color: ShadColors.primary),
+                        decoration: ShadDecoration(color: ShadColors.success),
                       ),
                     ]
                   ],

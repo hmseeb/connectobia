@@ -145,8 +145,7 @@ class RealtimeMessagingBloc
         Message sendingMessage = Message(
           senderId: senderId,
           recipientId: event.recipientId,
-          messageText:
-              'Sending ${event.images.isNotEmpty ? 'attachments' : 'attachment'}',
+          messageText: ' Sending image...',
           id: messageId,
           messageType: 'text',
           chat: event.chatId,
@@ -158,7 +157,7 @@ class RealtimeMessagingBloc
         emit(MessagesLoaded(messages: addSendingMessage, selfId: senderId));
 
         final message = await msgsRepo.sendMedia(
-          images: event.images,
+          image: event.image,
           senderId: senderId,
           recipientId: event.recipientId,
           chatId: chatId,

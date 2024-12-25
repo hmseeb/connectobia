@@ -23,13 +23,13 @@ class GetMessagesByUserId extends RealtimeMessagingEvent {
 sealed class RealtimeMessagingEvent {}
 
 class SendMedia extends RealtimeMessagingEvent {
-  final List<XFile> images;
+  final XFile image;
   final String recipientId;
   final String chatId;
   final Messages messages;
 
   SendMedia({
-    required this.images,
+    required this.image,
     required this.recipientId,
     required this.messages,
     required this.chatId,
