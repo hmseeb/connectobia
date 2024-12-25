@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
@@ -31,8 +30,8 @@ class ChatMedia extends StatelessWidget {
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: CachedNetworkImage(
-            imageUrl: Avatar.getUserImage(
+          child: Image.network(
+            Avatar.getUserImage(
                 collectionId: message.collectionId!,
                 recordId: message.id!,
                 image: message.image!.first),
