@@ -83,11 +83,7 @@ class AuthRepository {
       {required Meta meta, required RawUser rawUser}) async {
     final pocketBase = await PocketBaseSingleton.instance;
     final body = <String, dynamic>{
-      "title": null,
-      "description": null,
       "followers": rawUser.followersCount,
-      "engRate": null,
-      "location": null,
       "mediaCount": rawUser.mediaCount,
     };
 
@@ -164,17 +160,16 @@ class AuthRepository {
   ///  [instagramAuth] is a method that authenticates a user with their Instagram brand account.
   static Future<Influencer> instagramAuth(
       {required String collectionName}) async {
-    final pb = await PocketBaseSingleton.instance;
+    try {
+      final pb = await PocketBaseSingleton.instance;
 
-    final recordAuth = await pb
-        .collection(collectionName)
-        .authWithOAuth2('instagram2', (url) async {
-      await launchUrl(url);
-    });
+      final recordAuth = await pb
+          .collection('influencers')
+          .authWithOAuth2('instagram2', (url) async {
+        await launchUrl(url);
+      });
 
-    final Influencer influencer = Influencer.fromRecord(recordAuth.record);
-    // Implement brand if instagram auth is introduced for brands in future
-    if (influencer.profile.isEmpty) {
+      final Influencer influencer = Influencer.fromRecord(recordAuth.record);
       final Meta meta = Meta.fromJson(recordAuth.meta);
       final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
       final String influencerId = influencer.id;
@@ -189,8 +184,12 @@ class AuthRepository {
         collectionName: 'influencers',
       );
       debugPrint('Linked profile with account');
+      return influencer;
+    } catch (e) {
+      debugPrint('$e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
-    return influencer;
   }
 
   static Future<void> linkProfileWithAccount(

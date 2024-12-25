@@ -105,7 +105,7 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                       HapticFeedback.mediumImpact();
                       Navigator.pushNamedAndRemoveUntil(
                           context, influencerDashboard, (route) => false,
-                          arguments: {'influencers': widget.user});
+                          arguments: {'user': widget.user});
                     },
                     child: Text(
                       'Skip for now',
