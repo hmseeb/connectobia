@@ -63,6 +63,7 @@ dependencies:
   delightful_toast: ^1.1.0
   chat_bubbles: ^1.6.0
   swipe_to: ^1.0.6
+  card_slider: ^1.0.5
 
 dev_dependencies:
   flutter_test:

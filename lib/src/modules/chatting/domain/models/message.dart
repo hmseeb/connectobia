@@ -27,7 +27,7 @@ class Message {
   final bool? sent;
   final String? file;
   final String? id;
-  final String? image;
+  final List<String>? image;
   final String messageText;
   final String messageType;
   final String recipientId;
@@ -61,7 +61,7 @@ class Message {
         expand: json["expand"] != null ? Expand.fromJson(json["expand"]) : null,
         file: json["file"],
         id: json["id"],
-        image: json["image"],
+        image: List<String>.from(json["image"].map((x) => x)),
         messageText: json["messageText"],
         messageType: json["messageType"],
         recipientId: json["recipientId"],
@@ -81,7 +81,7 @@ class Message {
         "expand": expand?.toJson(),
         "file": file,
         "id": id,
-        "image": image,
+        "image": List<dynamic>.from(image!.map((x) => x)),
         "messageText": messageText,
         "messageType": messageType,
         "recipientId": recipientId,

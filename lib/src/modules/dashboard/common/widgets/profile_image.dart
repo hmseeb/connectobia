@@ -35,7 +35,7 @@ class ProfileImage extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: banner.isNotEmpty
                     ? Avatar.getUserImage(
-                        userId: userId,
+                        recordId: userId,
                         image: banner,
                         collectionId: collectionId,
                       )
@@ -51,7 +51,7 @@ class ProfileImage extends StatelessWidget {
                   backgroundImage: CachedNetworkImageProvider(
                     avatar.isNotEmpty
                         ? Avatar.getUserImage(
-                            userId: userId,
+                            recordId: userId,
                             image: avatar,
                             collectionId: collectionId,
                           )

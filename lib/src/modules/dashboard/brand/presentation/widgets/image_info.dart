@@ -57,7 +57,7 @@ class _FeatureImageInfoState extends State<FeatureImageInfo> {
                   backgroundImage: CachedNetworkImageProvider(
                     hasAvatar
                         ? Avatar.getUserImage(
-                            userId: widget.userId,
+                            recordId: widget.userId,
                             image: widget.avatar,
                             collectionId: widget.collectionId,
                           )

@@ -1,24 +1,25 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/message_input.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../theme/colors.dart';
 import '../widgets/messages_list.dart';
 
-class SingleChatScreen extends StatefulWidget {
+class MessagesScreen extends StatefulWidget {
   final String name;
   final String avatar;
   final bool hasConnectedInstagram;
   final String collectionId;
   final String userId;
-  const SingleChatScreen({
+  const MessagesScreen({
     super.key,
     required this.name,
     required this.avatar,
@@ -28,12 +29,16 @@ class SingleChatScreen extends StatefulWidget {
   });
 
   @override
-  State<SingleChatScreen> createState() => _SingleChatScreenState();
+  State<MessagesScreen> createState() => _MessagesScreenState();
 }
 
-class _SingleChatScreenState extends State<SingleChatScreen> {
+class _MessagesScreenState extends State<MessagesScreen> {
   late final TextEditingController messageController;
+
+  bool selectedMedia = false;
+  final ImagePicker picker = ImagePicker();
   bool isTyping = false;
+  List<XFile> media = [];
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +74,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                         CachedNetworkImageProvider(Avatar.getUserImage(
                       collectionId: widget.collectionId,
                       image: widget.avatar,
-                      userId: widget.userId,
+                      recordId: widget.userId,
                     )),
                   ),
                   const SizedBox(width: 24),
@@ -95,6 +100,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                 MessagesList(
                   recipientName: widget.name,
                   senderId: widget.userId,
+                  isMediaSelected: selectedMedia,
+                  mediaCount: media.length,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -108,7 +115,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                             onSubmitted: (value) {
                               if (state is MessagesLoaded && value.isNotEmpty) {
                                 bool isListEmpty = state.messages.items.isEmpty;
-                                sendMessage(
+                                sendTextMessage(
                                   context,
                                   message: messageController.text,
                                   chatId: isListEmpty
@@ -146,7 +153,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                                     messageController.text.isNotEmpty) {
                                   bool isListEmpty =
                                       state.messages.items.isEmpty;
-                                  sendMessage(
+                                  sendTextMessage(
                                     context,
                                     message: messageController.text,
                                     chatId: isListEmpty
@@ -161,7 +168,43 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                           },
                         )
                       else ...[
-                        Icon(LucideIcons.image),
+                        BlocBuilder<RealtimeMessagingBloc,
+                            RealtimeMessagingState>(
+                          builder: (context, state) {
+                            return GestureDetector(
+                              child: Icon(
+                                selectedMedia
+                                    ? LucideIcons.send
+                                    : LucideIcons.image,
+                                color:
+                                    selectedMedia ? ShadColors.primary : null,
+                              ),
+                              onTap: () async {
+                                if (state is MessagesLoaded) {
+                                  if (selectedMedia) {
+                                    sendMediaFiles(
+                                      context,
+                                      chatId: state.messages.items.first.chat,
+                                      prevMessages: state.messages,
+                                      media: media,
+                                    );
+                                  } else {
+                                    media = await picker.pickMultipleMedia(
+                                      limit: 5,
+                                    );
+
+                                    if (media.isNotEmpty) {
+                                      setState(() {
+                                        selectedMedia = true;
+                                      });
+                                    }
+                                    HapticFeedback.lightImpact();
+                                  }
+                                }
+                              },
+                            );
+                          },
+                        ),
                       ],
                       const SizedBox(width: 16),
                     ],
@@ -188,7 +231,29 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     messageController = TextEditingController();
   }
 
-  void sendMessage(
+  void sendMediaFiles(
+    BuildContext context, {
+    required String chatId,
+    required Messages prevMessages,
+    required List<XFile> media,
+  }) {
+    HapticFeedback.lightImpact();
+    String recipientId = widget.userId;
+    BlocProvider.of<RealtimeMessagingBloc>(context).add(
+      SendMedia(
+        recipientId: recipientId,
+        chatId: chatId,
+        messages: prevMessages,
+        images: media,
+      ),
+    );
+
+    setState(() {
+      selectedMedia = false;
+    });
+  }
+
+  void sendTextMessage(
     BuildContext context, {
     required String message,
     required String chatId,
@@ -197,11 +262,12 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     HapticFeedback.lightImpact();
     String recipientId = widget.userId;
     BlocProvider.of<RealtimeMessagingBloc>(context).add(
-      SendMessage(
+      SendTextMessage(
         message: message.trim(),
         recipientId: recipientId,
         chatId: chatId,
         messages: prevMessages,
+        messageType: 'text',
       ),
     );
     messageController.clear();

@@ -51,7 +51,7 @@ class CommonDrawer extends StatelessWidget {
                                       ? Avatar.getUserImage(
                                           collectionId: collectionId,
                                           image: avatar,
-                                          userId: userId,
+                                          recordId: userId,
                                         )
                                       : Avatar.getAvatarPlaceholder(
                                           'HA',

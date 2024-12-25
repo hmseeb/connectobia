@@ -23,7 +23,7 @@ class FeatureImage extends StatelessWidget {
     if (image.isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: Avatar.getUserImage(
-            userId: id, image: image, collectionId: collectionId),
+            recordId: id, image: image, collectionId: collectionId),
         width: double.infinity,
         height: 300,
         fit: BoxFit.cover,

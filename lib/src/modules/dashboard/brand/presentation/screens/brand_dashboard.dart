@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -46,7 +46,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     leading: CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
                           Avatar.getUserImage(
-                              userId: state.userId,
+                              recordId: state.userId,
                               image: state.avatar,
                               collectionId: state.collectionId)),
                     ),
@@ -55,7 +55,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                           .add(GetMessagesByUserId(state.userId));
                       Navigator.pushNamed(
                         context,
-                        singleChatScreen,
+                        messagesScreen,
                         arguments: {
                           'userId': state.userId,
                           'name': state.name,
