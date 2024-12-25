@@ -12,7 +12,6 @@ import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 part 'realtime_messaging_event.dart';
@@ -157,10 +156,11 @@ class RealtimeMessagingBloc
         emit(MessagesLoaded(messages: addSendingMessage, selfId: senderId));
 
         final message = await msgsRepo.sendMedia(
-          image: event.image,
           senderId: senderId,
           recipientId: event.recipientId,
           chatId: chatId,
+          path: event.path,
+          fileName: event.fileName,
         );
 
         Messages sentMessage = messages.removeMessageWithId(messageId);
