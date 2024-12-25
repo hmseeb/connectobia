@@ -104,6 +104,7 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                   userId: user.id,
                   collectionId: user.collectionId,
                   image: user.avatar,
+                  onChange: (value) {},
                 ),
               ],
               body: SingleChildScrollView(

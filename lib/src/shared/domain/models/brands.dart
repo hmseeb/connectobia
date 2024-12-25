@@ -46,6 +46,15 @@ class Brands {
         items: items ?? this.items,
       );
 
+  Brands filterBrands(String filter) {
+    return copyWith(
+      items: items
+          .where((brand) =>
+              brand.brandName.toLowerCase().contains(filter.toLowerCase()))
+          .toList(),
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         "page": page,
         "perPage": perPage,
