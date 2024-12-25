@@ -4,7 +4,6 @@ import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 /// [MessagesRepository] is a class that handles all the message related operations.
@@ -66,7 +65,8 @@ class MessagesRepository {
   }
 
   Future<Message> sendMedia({
-    required XFile image,
+    required String path,
+    required String fileName,
     required String senderId,
     required String recipientId,
     required String chatId,
@@ -74,8 +74,8 @@ class MessagesRepository {
     try {
       var multipartFile = await http.MultipartFile.fromPath(
         'image',
-        image.path,
-        filename: image.name, // You can change this to any file name
+        path,
+        filename: fileName, // You can change this to any file name
       );
       final pb = await PocketBaseSingleton.instance;
 

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/chatting/data/watermark.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/message_input.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
@@ -38,7 +41,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   bool selectedMedia = false;
   final ImagePicker picker = ImagePicker();
   bool isTyping = false;
-  XFile? media;
+  File? watermarkedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -182,39 +185,44 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 if (state is MessagesLoaded) {
                                   int maxFileSizeInBytes = 5 * 1048576;
                                   if (selectedMedia) {
-                                    sendMediaFiles(
+                                    sendImage(
                                       context,
                                       chatId: state.messages.items.first.chat,
                                       prevMessages: state.messages,
-                                      media: media!,
+                                      path: watermarkedImage!.path,
+                                      fileName: watermarkedImage!.path,
                                     );
                                   } else {
-                                    media = await picker.pickImage(
+                                    XFile? pickedImage = await picker.pickImage(
                                       source: ImageSource.gallery,
                                     );
-                                    var imagePath = await media!.readAsBytes();
-                                    var fileSize = imagePath.length;
-                                    if (fileSize <= maxFileSizeInBytes) {
-                                      if (media != null) {
+                                    if (pickedImage != null) {
+                                      var imagePath =
+                                          await pickedImage.readAsBytes();
+                                      var fileSize = imagePath.length;
+                                      if (fileSize <= maxFileSizeInBytes) {
+                                        watermarkedImage = await WatermarkImage
+                                            .addWaterMarkToPhoto(
+                                          image: File(pickedImage.path),
+                                          waterMarkText: "CONNECTOBIA",
+                                        );
                                         setState(() {
                                           selectedMedia = true;
+                                          HapticFeedback.lightImpact();
+                                        });
+                                      } else {
+                                        setState(() {
+                                          ShadToaster.of(context).show(
+                                            ShadToast.destructive(
+                                              title: const Text(
+                                                'File size cannot exceed 5MB',
+                                              ),
+                                            ),
+                                          );
+                                          selectedMedia = false;
                                         });
                                       }
-                                      // File is too large, ask user to upload a smaller file, or compress the file/image
-                                    } else {
-                                      setState(() {
-                                        ShadToaster.of(context).show(
-                                          ShadToast.destructive(
-                                            title: const Text(
-                                              'File size cannot exceed 5MB',
-                                            ),
-                                          ),
-                                        );
-                                        selectedMedia = false;
-                                      });
                                     }
-
-                                    HapticFeedback.lightImpact();
                                   }
                                 }
                               },
@@ -247,11 +255,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
     messageController = TextEditingController();
   }
 
-  void sendMediaFiles(
+  void sendImage(
     BuildContext context, {
     required String chatId,
     required Messages prevMessages,
-    required XFile media,
+    required String path,
+    required String fileName,
   }) {
     HapticFeedback.lightImpact();
     String recipientId = widget.userId;
@@ -260,7 +269,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
         recipientId: recipientId,
         chatId: chatId,
         messages: prevMessages,
-        image: media,
+        path: path,
+        fileName: fileName,
       ),
     );
 
