@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:meta/meta.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
@@ -93,10 +94,9 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     on<InstagramSignup>((event, emit) async {
       emit(InstagramLoading());
       try {
-        await AuthRepository.instagramAuth(collectionName: event.accountType);
-        emit(SignupSuccess(
-          email: null,
-        ));
+        final Influencer influencer = await AuthRepository.instagramAuth(
+            collectionName: event.accountType);
+        emit(InstagramSignupSuccess(influencer: influencer));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(InstagramFailure(errorRepo.handleError(e)));

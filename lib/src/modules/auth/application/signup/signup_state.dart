@@ -8,6 +8,11 @@ final class InstagramFailure extends SignupState {
 
 final class InstagramLoading extends SignupState {}
 
+final class InstagramSignupSuccess extends SignupState {
+  final Influencer influencer;
+  InstagramSignupSuccess({required this.influencer});
+}
+
 final class SignupFailure extends SignupState {
   final String error;
 

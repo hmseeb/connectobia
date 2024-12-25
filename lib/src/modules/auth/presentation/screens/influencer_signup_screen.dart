@@ -69,6 +69,13 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                 verifyEmailScreen,
                 arguments: {'email': state.email},
               );
+            } else if (state is InstagramSignupSuccess) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                influencerDashboard,
+                (route) => false,
+                arguments: {'user': state.influencer},
+              );
             } else if (state is SignupFailure) {
               ShadToaster.of(context).show(
                 ShadToast.destructive(
