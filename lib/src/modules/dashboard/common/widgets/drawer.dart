@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/modules/edit_profile/presentation/screens/edit_profile_page.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,7 +44,7 @@ class CommonDrawer extends StatelessWidget {
                           builder: (context) => const Text('Edit Profile'),
                           child: GestureDetector(
                             onTap: () {
-                              // _displayEditUserSettings(context);
+                              Navigator.pushNamed(context, '/editProfile');
                             },
                             child: CircleAvatar(
                               backgroundImage:
