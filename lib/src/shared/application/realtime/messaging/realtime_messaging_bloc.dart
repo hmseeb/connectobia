@@ -140,11 +140,13 @@ class RealtimeMessagingBloc
         String senderId = await AuthRepository.getUserId();
         Messages messages = event.messages;
         String chatId = event.chatId;
-
+        // generate a random id for the message
+        String messageId = DateTime.now().millisecondsSinceEpoch.toString();
         Message sendingMessage = Message(
           senderId: senderId,
           recipientId: event.recipientId,
           messageText: event.message,
+          id: messageId,
           messageType: 'text',
           chat: event.chatId,
           sent: false,
@@ -160,7 +162,7 @@ class RealtimeMessagingBloc
             messageText: event.message,
           );
 
-          Messages sentMessage = messages.removeMessage(0);
+          Messages sentMessage = messages.removeMessageWithId(messageId);
           sentMessage.addMessage(message);
 
           HapticFeedback.lightImpact();
@@ -176,7 +178,7 @@ class RealtimeMessagingBloc
             chatId: chatId,
           );
 
-          Messages sentMessage = messages.removeMessage(0);
+          Messages sentMessage = messages.removeMessageWithId(messageId);
           sentMessage.addMessage(message);
 
           HapticFeedback.lightImpact();
