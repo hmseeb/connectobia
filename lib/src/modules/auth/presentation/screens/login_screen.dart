@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: state is InstagramLoading
                                 ? 'Logging in with Instagram...'
                                 : state is InstagramFailure
-                                    ? 'Try again'
+                                    ? 'An unexpected error occurred'
                                     : 'Log in with Instagram',
                             borderSide: const BorderSide(),
                             backgroundColor: ShadColors.lightForeground,

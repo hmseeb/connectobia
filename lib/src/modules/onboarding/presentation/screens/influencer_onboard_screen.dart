@@ -1,4 +1,5 @@
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/presentation/widgets/custom_dialogue.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +9,6 @@ import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 import '../../../../shared/data/constants/assets.dart';
 import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../shared/domain/models/influencer.dart';
-import '../../../../shared/presentation/widgets/custom_dialogue.dart';
 import '../../../../theme/colors.dart';
 import '../../application/bloc/influencer_onboard_bloc.dart';
 
@@ -80,9 +80,17 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                     child: SocialAuthBtn(
                       icon: AssetsPath.instagram,
                       onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        BlocProvider.of<InfluencerOnboardBloc>(context)
-                            .add(ConnectInstagram());
+                        customDialogue(
+                          context: context,
+                          title: 'You need an Instagram Business account',
+                          description:
+                              'If you don\'t have one, you can create one by converting your personal account to a business account.',
+                          onContinue: () {
+                            HapticFeedback.mediumImpact();
+                            BlocProvider.of<InfluencerOnboardBloc>(context)
+                                .add(ConnectInstagram());
+                          },
+                        );
                       },
                       text: instagramButtonText,
                       borderSide: const BorderSide(),
@@ -92,20 +100,12 @@ class _InfluencerOnboardingState extends State<InfluencerOnboarding> {
                   SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
-                      customDialogue(
-                        context: context,
-                        title: 'You need an Instagram Business account',
-                        description:
-                            'If you don\'t have one, you can create one by converting your personal account to a business account.',
-                        onContinue: () {
-                          BlocProvider.of<InfluencerOnboardBloc>(context)
-                              .add(UpdateOnboardBool());
-                          HapticFeedback.mediumImpact();
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, influencerDashboard, (route) => false,
-                              arguments: {'influencers': widget.user});
-                        },
-                      );
+                      BlocProvider.of<InfluencerOnboardBloc>(context)
+                          .add(UpdateOnboardBool());
+                      HapticFeedback.mediumImpact();
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, influencerDashboard, (route) => false,
+                          arguments: {'influencers': widget.user});
                     },
                     child: Text(
                       'Skip for now',

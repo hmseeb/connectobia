@@ -143,7 +143,7 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                         text: state is InstagramLoading
                             ? 'Signing up...'
                             : state is InstagramFailure
-                                ? 'Try again'
+                                ? 'An unexpected error occurred'
                                 : 'Sign up with Instagram',
                         borderSide: const BorderSide(),
                         backgroundColor: ShadColors.lightForeground,

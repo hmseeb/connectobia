@@ -169,32 +169,10 @@ class VerifyEmailState extends State<VerifyEmail> {
     try {
       // Android: Will open mail app or show native picker.
       // iOS: Will open mail app if single mail app found.
-      bool isInstalled = await LaunchApp.isAppInstalled(
+      await LaunchApp.openApp(
         iosUrlScheme: 'message://',
         androidPackageName: 'com.google.android.gm',
       );
-
-      if (isInstalled) {
-        await LaunchApp.openApp(
-          iosUrlScheme: 'message://',
-          androidPackageName: 'com.google.android.gm',
-        );
-      } else {
-        if (context.mounted) {
-          showShadDialog(
-            context: context,
-            builder: (context) => ShadDialog.alert(
-              title: const Text('There is no mail app installed'),
-              actions: [
-                ShadButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(true),
-                ),
-              ],
-            ),
-          );
-        }
-      }
     } catch (e) {
       if (context.mounted) {
         // Show error toast
