@@ -111,7 +111,7 @@ class GenerateRoutes {
   return _buildRoute(
     BlocProvider<EditProfileBloc>(
       create: (context) => EditProfileBloc(), // Providing the Bloc to the screen
-      child: const EditUserProfileScreen(name: 'name', username: 'username', description: '', avatar: '', banner: '',), // The screen that uses this Bloc
+      child: const EditUserProfileScreen(name: 'name', industry: 'industry', description: '', avatar: '', banner: '',), // The screen that uses this Bloc
     ),
   );
 
