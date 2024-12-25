@@ -63,6 +63,7 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                           'avatar': state.avatar,
                           'collectionId': state.collectionId,
                           'hasConnectedInstagram': state.hasConnectedInstagram,
+                          'chatExists': true,
                         },
                       );
                     },

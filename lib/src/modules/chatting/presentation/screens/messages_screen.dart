@@ -106,7 +106,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   isMediaSelected: selectedMedia,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
                       BlocBuilder<RealtimeMessagingBloc,
@@ -141,11 +141,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           );
                         },
                       ),
-                      const SizedBox(width: 16),
-                      if (isTyping)
-                        BlocBuilder<RealtimeMessagingBloc,
-                            RealtimeMessagingState>(
-                          builder: (context, state) {
+                      const SizedBox(width: 8),
+                      BlocBuilder<RealtimeMessagingBloc,
+                          RealtimeMessagingState>(
+                        builder: (context, state) {
+                          if (isTyping) {
                             return GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -167,70 +167,87 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               },
                               child: Icon(LucideIcons.send),
                             );
-                          },
-                        )
-                      else ...[
-                        BlocBuilder<RealtimeMessagingBloc,
-                            RealtimeMessagingState>(
-                          builder: (context, state) {
-                            return GestureDetector(
-                              child: Icon(
-                                selectedMedia
-                                    ? LucideIcons.send
-                                    : LucideIcons.image,
-                                color:
-                                    selectedMedia ? ShadColors.primary : null,
-                              ),
-                              onTap: () async {
+                          } else {
+                            return BlocBuilder<RealtimeMessagingBloc,
+                                RealtimeMessagingState>(
+                              builder: (context, state) {
                                 if (state is MessagesLoaded) {
-                                  int maxFileSizeInBytes = 5 * 1048576;
-                                  if (selectedMedia) {
-                                    sendImage(
-                                      context,
-                                      chatId: state.messages.items.first.chat,
-                                      prevMessages: state.messages,
-                                      path: watermarkedImage!.path,
-                                      fileName: watermarkedImage!.path,
-                                    );
-                                  } else {
-                                    XFile? pickedImage = await picker.pickImage(
-                                      source: ImageSource.gallery,
-                                    );
-                                    if (pickedImage != null) {
-                                      var imagePath =
-                                          await pickedImage.readAsBytes();
-                                      var fileSize = imagePath.length;
-                                      if (fileSize <= maxFileSizeInBytes) {
-                                        watermarkedImage = await WatermarkImage
-                                            .addWaterMarkToPhoto(
-                                          image: File(pickedImage.path),
-                                          waterMarkText: "CONNECTOBIA",
-                                        );
-                                        setState(() {
-                                          selectedMedia = true;
-                                          HapticFeedback.lightImpact();
-                                        });
-                                      } else {
-                                        setState(() {
+                                  return GestureDetector(
+                                      child: Icon(
+                                        selectedMedia
+                                            ? LucideIcons.send
+                                            : state.messages.items.isNotEmpty
+                                                ? LucideIcons.image
+                                                : LucideIcons.send,
+                                        color: selectedMedia
+                                            ? ShadColors.primary
+                                            : null,
+                                      ),
+                                      onTap: () async {
+                                        if (state.messages.items.isEmpty) {
                                           ShadToaster.of(context).show(
                                             ShadToast.destructive(
                                               title: const Text(
-                                                'File size cannot exceed 5MB',
+                                                'Message cannot be empty',
                                               ),
                                             ),
                                           );
-                                          selectedMedia = false;
-                                        });
-                                      }
-                                    }
-                                  }
+                                          return;
+                                        }
+                                        int maxFileSizeInBytes = 5 * 1048576;
+                                        if (selectedMedia) {
+                                          sendImage(
+                                            context,
+                                            chatId:
+                                                state.messages.items.first.chat,
+                                            prevMessages: state.messages,
+                                            path: watermarkedImage!.path,
+                                            fileName: watermarkedImage!.path,
+                                          );
+                                        } else {
+                                          XFile? pickedImage =
+                                              await picker.pickImage(
+                                            source: ImageSource.gallery,
+                                          );
+                                          if (pickedImage != null) {
+                                            var imagePath =
+                                                await pickedImage.readAsBytes();
+                                            var fileSize = imagePath.length;
+                                            if (fileSize <=
+                                                maxFileSizeInBytes) {
+                                              watermarkedImage =
+                                                  await WatermarkImage
+                                                      .addWaterMarkToPhoto(
+                                                image: File(pickedImage.path),
+                                                waterMarkText: "CONNECTOBIA",
+                                              );
+                                              setState(() {
+                                                selectedMedia = true;
+                                                HapticFeedback.lightImpact();
+                                              });
+                                            } else {
+                                              setState(() {
+                                                ShadToaster.of(context).show(
+                                                  ShadToast.destructive(
+                                                    title: const Text(
+                                                      'File size cannot exceed 5MB',
+                                                    ),
+                                                  ),
+                                                );
+                                                selectedMedia = false;
+                                              });
+                                            }
+                                          }
+                                        }
+                                      });
+                                } else {
+                                  return const SizedBox();
                                 }
                               },
                             );
-                          },
-                        ),
-                      ],
-                      const SizedBox(width: 16),
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),

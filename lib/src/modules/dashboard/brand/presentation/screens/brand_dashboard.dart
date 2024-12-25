@@ -62,6 +62,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                           'avatar': state.avatar,
                           'collectionId': state.collectionId,
                           'hasConnectedInstagram': state.hasConnectedInstagram,
+                          'chatExists': true,
                         },
                       );
                     },
