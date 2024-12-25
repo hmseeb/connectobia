@@ -9,19 +9,21 @@ import '../../../../shared/data/constants/greetings.dart';
 import '../../../../theme/colors.dart';
 
 class CommonAppBar extends StatelessWidget {
+  final Function(String) onChange;
   final String userName;
   final String searchPlaceholder;
   final String userId;
   final String collectionId;
   final String image;
-  const CommonAppBar(
-      {super.key,
-      required this.userName,
-      required this.searchPlaceholder,
-      required this.userId,
-      required this.collectionId,
-      required this.image});
-
+  const CommonAppBar({
+    super.key,
+    required this.userName,
+    required this.searchPlaceholder,
+    required this.userId,
+    required this.collectionId,
+    required this.image,
+    required this.onChange,
+  });
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(
@@ -46,6 +48,7 @@ class CommonAppBar extends StatelessWidget {
                 placeholder: Text(searchPlaceholder),
                 prefix: const Icon(LucideIcons.search),
                 suffix: const Icon(LucideIcons.filter),
+                onChanged: onChange,
               ),
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -103,6 +104,10 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   userId: user.id,
                   collectionId: user.collectionId,
                   image: user.avatar,
+                  onChange: (value) {
+                    BlocProvider.of<BrandDashboardBloc>(context)
+                        .add(FilterInfluencers(filter: value));
+                  },
                 ),
               ],
               body: SingleChildScrollView(

@@ -49,6 +49,21 @@ class Influencers {
         items: items ?? this.items,
       );
 
+  Influencers filterInfluencers(String filter) {
+    //
+    List<Influencer> filteredItems = items.where((influencer) {
+      return influencer.fullName.contains(filter) ||
+          influencer.industry.contains(filter);
+    }).toList();
+    return Influencers(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: filteredItems.length,
+      items: filteredItems,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         "page": page,
         "perPage": perPage,
