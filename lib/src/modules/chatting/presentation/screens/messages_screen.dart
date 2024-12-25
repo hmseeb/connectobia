@@ -165,7 +165,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   );
                                 }
                               },
-                              child: Icon(LucideIcons.send),
+                              child: Icon(
+                                LucideIcons.send,
+                                color: ShadColors.primary,
+                              ),
                             );
                           } else {
                             return BlocBuilder<RealtimeMessagingBloc,
