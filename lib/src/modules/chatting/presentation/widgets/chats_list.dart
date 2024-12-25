@@ -87,6 +87,7 @@ class ChatsList extends StatelessWidget {
                       'avatar': avatar,
                       'collectionId': collectionId,
                       'hasConnectedInstagram': connectedSocial,
+                      'chatExists': true,
                     },
                   );
                 },
