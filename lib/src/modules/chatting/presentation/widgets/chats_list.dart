@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/date_and_time.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
@@ -47,6 +47,7 @@ class ChatsList extends StatelessWidget {
             );
           }
           return ListView.builder(
+            padding: const EdgeInsets.only(top: 0),
             controller: _scrollController,
             itemCount: state.chats.items.length,
             itemBuilder: (context, index) {
@@ -80,25 +81,26 @@ class ChatsList extends StatelessWidget {
                       .add(GetMessagesByUserId(userId));
                   Navigator.pushNamed(
                     context,
-                    singleChatScreen,
+                    messagesScreen,
                     arguments: {
                       'userId': userId,
                       'name': name,
                       'avatar': avatar,
                       'collectionId': collectionId,
                       'hasConnectedInstagram': connectedSocial,
+                      'chatExists': true,
                     },
                   );
                 },
                 leading: CircleAvatar(
                   backgroundImage: isBrand
                       ? CachedNetworkImageProvider(Avatar.getUserImage(
-                          userId: chat.expand!.influencer.id,
+                          recordId: chat.expand!.influencer.id,
                           collectionId: chat.expand!.influencer.collectionId,
                           image: chat.expand!.influencer.avatar,
                         ))
                       : CachedNetworkImageProvider(Avatar.getUserImage(
-                          userId: chat.expand!.brand.id,
+                          recordId: chat.expand!.brand.id,
                           collectionId: chat.expand!.brand.collectionId,
                           image: chat.expand!.brand.avatar,
                         )),
@@ -140,6 +142,7 @@ class ChatsList extends StatelessWidget {
           return Skeletonizer(
             enabled: state is ChatsLoading,
             child: ListView.builder(
+              padding: const EdgeInsets.only(top: 0),
               controller: _scrollController,
               itemCount: 20,
               itemBuilder: (context, index) {

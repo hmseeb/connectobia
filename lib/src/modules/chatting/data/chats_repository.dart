@@ -1,10 +1,12 @@
+import 'package:connectobia/src/modules/chatting/data/messaging_repo.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/chats.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
-import 'package:connectobia/src/shared/data/repositories/realtime_messaging_repo.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
-import 'package:pocketbase/pocketbase.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 
 /// [ChatsRepository] is a class that handles all the chat related operations.
 /// It is responsible for creating a chat, getting all the chats, and getting the chat ID.
@@ -34,7 +36,7 @@ class ChatsRepository {
 
       MessagesRepository msgsRepo = MessagesRepository();
 
-      final messageRecord = await msgsRepo.sendMessage(
+      final messageRecord = await msgsRepo.sendTextMessage(
         chatId: chatRecord.id,
         recipientId: recipientId,
         messageType: 'text',
@@ -115,6 +117,44 @@ class ChatsRepository {
       Chats chats = Chats.fromRecord(resultList);
 
       return chats;
+    } catch (e) {
+      debugPrint('$e');
+      throw ClientException;
+    }
+  }
+
+  Future<Message> sendMedia({
+    required List<XFile> images,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+  }) async {
+    try {
+      List<http.MultipartFile> multipartFiles = [];
+      for (var img in images) {
+        var multipartFile = await http.MultipartFile.fromPath(
+          'image',
+          img.path,
+          filename: img.name, // You can change this to any file name
+        );
+        multipartFiles.add(multipartFile);
+      }
+      final pb = await PocketBaseSingleton.instance;
+
+      // example create body
+      final body = <String, dynamic>{
+        "senderId": senderId,
+        "recipientId": recipientId,
+        "messageType": "image",
+        "chat": chatId,
+      };
+      final record = await pb
+          .collection('messages')
+          .create(body: body, files: multipartFiles);
+
+      Message message = Message.fromRecord(record);
+
+      return message;
     } catch (e) {
       debugPrint('$e');
       throw ClientException;

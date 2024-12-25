@@ -50,8 +50,8 @@ class Messages {
     );
   }
 
-  Messages removeMessage(int index) {
-    items.remove(items[index]);
+  Messages removeMessageWithId(String messageId) {
+    items.removeWhere((element) => element.id == messageId);
     return Messages(
       page: page,
       perPage: perPage,

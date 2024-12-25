@@ -20,18 +20,6 @@ class SectionTitle extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const Spacer(),
-        // view all button
-        GestureDetector(
-          onTap: onTap,
-          child: const Text(
-            'View all',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-        ),
       ],
     );
   }

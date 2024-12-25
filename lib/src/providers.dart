@@ -1,10 +1,7 @@
 import 'package:connectobia/src/app.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
-import 'package:connectobia/src/modules/edit_profile/application/bloc/edit_profile_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
-import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,6 +10,7 @@ import 'modules/auth/application/login/login_bloc.dart';
 import 'modules/auth/application/signup/signup_bloc.dart';
 import 'modules/auth/application/verification/email_verification_bloc.dart';
 import 'modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
+import 'modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
 import 'modules/dashboard/brand/application/profile_settings/profile_settings.dart';
 import 'modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
 import 'modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
@@ -46,6 +44,7 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(
             create: (context) => InfluencerDashboardBloc()
               ..add(InfluencerDashboardLoadBrands())),
+        BlocProvider(create: (context) => EditProfileBloc()),
         BlocProvider(create: (context) => BrandProfileBloc()),
         BlocProvider(create: (context) => ProfileSettingsBloc()),
         BlocProvider(create: (context) => AuthBloc()..add(CheckAuth())),
@@ -57,7 +56,6 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),
-        BlocProvider(create: (context) => NotificationsBloc()),
       ],
       child: Connectobia(
         isDarkMode: isDarkMode,

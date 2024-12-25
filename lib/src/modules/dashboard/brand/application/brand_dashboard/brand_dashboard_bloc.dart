@@ -10,6 +10,7 @@ part 'brand_dashboard_state.dart';
 
 class BrandDashboardBloc
     extends Bloc<BrandDashboardEvent, BrandDashboardState> {
+  Influencers? influencers;
   int page = 0;
   BrandDashboardBloc() : super(BrandDashboardInitial()) {
     on<BrandDashboardLoadInfluencers>((event, emit) async {
@@ -18,12 +19,20 @@ class BrandDashboardBloc
       }
       emit(BrandDashboardLoadingInfluencers());
       try {
-        final influencers = await DashboardRepository.getInfluencersList();
-        emit(BrandDashboardLoadedInfluencers(influencers));
+        influencers = await DashboardRepository.getInfluencersList();
+        emit(BrandDashboardLoadedInfluencers(influencers!));
         page++;
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         throw errorRepo.handleError(e);
+      }
+    });
+
+    on<FilterInfluencers>((event, emit) async {
+      if (state is BrandDashboardLoadedInfluencers) {
+        final filteredInfluencers =
+            influencers!.filterInfluencers(event.filter);
+        emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
       }
     });
   }

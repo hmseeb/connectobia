@@ -43,26 +43,23 @@ class CommonDrawer extends StatelessWidget {
                           builder: (context) => const Text('Edit Profile'),
                           child: GestureDetector(
                             onTap: () {
-                            Navigator.pushNamed(context, '/editProfile');
-
+                              // _displayEditUserSettings(context);
                             },
                             child: CircleAvatar(
-                              radius: 30,
-                              backgroundImage: avatar.isNotEmpty
-                                  ? CachedNetworkImageProvider(
-                                      Avatar.getUserImage(
-                                        collectionId: collectionId,
-                                        image: avatar,
-                                        userId: userId,
-                                      ),
-                                    )
-                                  : CachedNetworkImageProvider(
-                                      Avatar.getAvatarPlaceholder('HA'),
-                                    ),
-                              backgroundColor: Colors.transparent,
+                              backgroundImage:
+                                  CachedNetworkImageProvider(avatar.isNotEmpty
+                                      ? Avatar.getUserImage(
+                                          collectionId: collectionId,
+                                          image: avatar,
+                                          recordId: userId,
+                                        )
+                                      : Avatar.getAvatarPlaceholder(
+                                          'HA',
+                                        )),
                             ),
                           ),
                         ),
+                        // toggle theme button
                         const Spacer(),
                         IconButton(
                           icon: Icon(

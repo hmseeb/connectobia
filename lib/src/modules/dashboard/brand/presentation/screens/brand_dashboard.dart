@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
-import 'package:connectobia/src/shared/application/realtime/notifications/notifications_bloc.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -37,9 +37,9 @@ class _BrandDashboardState extends State<BrandDashboard> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    return BlocListener<NotificationsBloc, NotificationsState>(
+    return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
       listener: (context, state) {
-        if (state is MessageReceived && _selectedIndex != 2) {
+        if (state is MessageNotificationReceived) {
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,
@@ -47,7 +47,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     leading: CircleAvatar(
                       backgroundImage: CachedNetworkImageProvider(
                           Avatar.getUserImage(
-                              userId: state.userId,
+                              recordId: state.userId,
                               image: state.avatar,
                               collectionId: state.collectionId)),
                     ),
@@ -56,13 +56,14 @@ class _BrandDashboardState extends State<BrandDashboard> {
                           .add(GetMessagesByUserId(state.userId));
                       Navigator.pushNamed(
                         context,
-                        singleChatScreen,
+                        messagesScreen,
                         arguments: {
                           'userId': state.userId,
                           'name': state.name,
                           'avatar': state.avatar,
                           'collectionId': state.collectionId,
                           'hasConnectedInstagram': state.hasConnectedInstagram,
+                          'chatExists': true,
                         },
                       );
                     },
@@ -74,9 +75,9 @@ class _BrandDashboardState extends State<BrandDashboard> {
                       ),
                     ),
                     subtitle: Text(
-                      state.message.messageText.length > 30
-                          ? '${state.message.messageText.substring(0, 30)}...'
-                          : state.message.messageText,
+                      state.message.length > 30
+                          ? '${state.message.substring(0, 30)}...'
+                          : state.message,
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -103,6 +104,10 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   userId: user.id,
                   collectionId: user.collectionId,
                   image: user.avatar,
+                  onChange: (value) {
+                    BlocProvider.of<BrandDashboardBloc>(context)
+                        .add(FilterInfluencers(filter: value));
+                  },
                 ),
               ],
               body: SingleChildScrollView(

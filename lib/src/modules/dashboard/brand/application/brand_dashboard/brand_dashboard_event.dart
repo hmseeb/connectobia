@@ -4,3 +4,8 @@ part of 'brand_dashboard_bloc.dart';
 sealed class BrandDashboardEvent {}
 
 class BrandDashboardLoadInfluencers extends BrandDashboardEvent {}
+
+class FilterInfluencers extends BrandDashboardEvent {
+  final String filter;
+  FilterInfluencers({required this.filter});
+}

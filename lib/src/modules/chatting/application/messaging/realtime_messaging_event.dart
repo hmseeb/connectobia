@@ -22,17 +22,19 @@ class GetMessagesByUserId extends RealtimeMessagingEvent {
 @immutable
 sealed class RealtimeMessagingEvent {}
 
-class SendMessage extends RealtimeMessagingEvent {
+class SendMedia extends RealtimeMessagingEvent {
+  final String path;
+  final String fileName;
   final String recipientId;
-  final String message;
   final String chatId;
   final Messages messages;
 
-  SendMessage({
-    required this.message,
+  SendMedia({
+    required this.path,
+    required this.fileName,
     required this.recipientId,
-    required this.chatId,
     required this.messages,
+    required this.chatId,
   });
 }
 
@@ -42,6 +44,26 @@ class SendMessageNotification extends RealtimeMessagingEvent {
   SendMessageNotification({required this.sendNotification});
 }
 
+class SendTextMessage extends RealtimeMessagingEvent {
+  final String recipientId;
+  final String message;
+  final String chatId;
+  final Messages messages;
+  final String messageType;
+
+  SendTextMessage({
+    required this.message,
+    required this.recipientId,
+    required this.chatId,
+    required this.messages,
+    required this.messageType,
+  });
+}
+
 class SubscribeMessages extends RealtimeMessagingEvent {
   SubscribeMessages();
+}
+
+class UnsubscribeMessages extends RealtimeMessagingEvent {
+  UnsubscribeMessages();
 }
