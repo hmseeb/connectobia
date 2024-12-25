@@ -1,15 +1,15 @@
-
+import 'package:connectobia/src/modules/auth/presentation/widgets/custom_shad_select.dart';
 import 'package:connectobia/src/theme/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:connectobia/src/modules/edit_profile/presentation/Widget/shad_input_field.dart';
-
 import 'package:connectobia/src/modules/edit_profile/presentation/Widget/user_profile_banner.dart';
 import 'package:connectobia/src/modules/edit_profile/presentation/Widget/user_profile_avatar.dart';
+import 'package:connectobia/src/shared/data/constants/industries.dart';
 
 class EditUserProfileScreen extends StatefulWidget {
   final String name;
-  final String username;
+  final String industry;
   final String description;
   final String avatar;
   final String banner;
@@ -17,7 +17,7 @@ class EditUserProfileScreen extends StatefulWidget {
   const EditUserProfileScreen({
     super.key,
     required this.name,
-    required this.username,
+    required this.industry,
     required this.description,
     required this.avatar,
     required this.banner,
@@ -31,21 +31,21 @@ class _EditUserProfileScreenState extends State<EditUserProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController _nameController;
-  late TextEditingController _usernameController;
   late TextEditingController _descriptionController;
+
+  String? _selectedIndustry;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.name);
-    _usernameController = TextEditingController(text: widget.username);
     _descriptionController = TextEditingController(text: widget.description);
+    _selectedIndustry = widget.industry;
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _usernameController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -76,6 +76,7 @@ class _EditUserProfileScreenState extends State<EditUserProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Profile Header Section
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -113,34 +114,52 @@ class _EditUserProfileScreenState extends State<EditUserProfileScreen> {
                 ],
               ),
               const SizedBox(height: 70),
-              // Input Fields
-              ShadInputField(
-                controller: _nameController,
-                placeholder: 'Enter your full name',
-              ),
-              const SizedBox(height: 16),
-              ShadInputField(
-                controller: _usernameController,
-                placeholder: 'Enter your username',
-              ),
-              const SizedBox(height: 16),
-              ShadInputField(
-                controller: _descriptionController,
-                placeholder: 'Add a short bio about yourself',
-                maxLines: 3,
-              ),
-              const SizedBox(height: 24),
-              // Save Button
+
+              // Fields Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: PrimaryButton(
-                    text: 'Save Changes',
-                    onPressed: _saveProfile,
-                    isLoading: false,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name Field
+                    ShadInputField(
+                      controller: _nameController,
+                      placeholder: 'Enter your full name',
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Industry Field
+                    CustomShadSelect(
+                      items: IndustryList.industries,
+                      placeholder: 'Select industry...',
+                      initialValue: _selectedIndustry,
+                      onSelected: (selectedIndustry) {
+                        setState(() {
+                          _selectedIndustry = selectedIndustry;
+                        });
+                      }, focusNode: FocusNode(),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Bio/Description Field
+                    ShadInputField(
+                      controller: _descriptionController,
+                      placeholder: 'Add a short bio about yourself',
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Save Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: PrimaryButton(
+                        text: 'Save Changes',
+                        onPressed: _saveProfile,
+                        isLoading: false,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
