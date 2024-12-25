@@ -50,7 +50,6 @@ class _ChatsState extends State<Chats> {
                             onChanged: (value) {
                               BlocProvider.of<ChatsBloc>(context)
                                   .add(FilterChats(filter: value));
-                              print('Filtering chats');
                             },
                           );
                         },
