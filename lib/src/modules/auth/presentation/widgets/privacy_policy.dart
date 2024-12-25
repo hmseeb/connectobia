@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../theme/colors.dart';
 
@@ -16,7 +17,7 @@ class PrivacyPolicy extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Wrap(
+    return Wrap(
       children: [
         Text(
           'By creating an account, you agree to our ',
@@ -24,11 +25,18 @@ class PrivacyPolicy extends StatelessWidget {
             fontSize: 12,
           ),
         ),
-        Text(
-          'terms of service ',
-          style: TextStyle(
-            fontSize: 12,
-            color: ShadColors.primary,
+        GestureDetector(
+          onTap: () {
+            final Uri url = Uri.parse(
+                'https://github.com/hmseeb/connectobia/blob/main/tos.md');
+            launchUrl(url);
+          },
+          child: Text(
+            'terms of service ',
+            style: TextStyle(
+              fontSize: 12,
+              color: ShadColors.primary,
+            ),
           ),
         ),
         Text(
@@ -37,11 +45,18 @@ class PrivacyPolicy extends StatelessWidget {
             fontSize: 12,
           ),
         ),
-        Text(
-          'privacy policy',
-          style: TextStyle(
-            fontSize: 12,
-            color: ShadColors.primary,
+        GestureDetector(
+          onTap: () {
+            final Uri url = Uri.parse(
+                'https://github.com/hmseeb/connectobia/blob/main/privacy_policy.md');
+            launchUrl(url);
+          },
+          child: Text(
+            'privacy policy',
+            style: TextStyle(
+              fontSize: 12,
+              color: ShadColors.primary,
+            ),
           ),
         ),
       ],
