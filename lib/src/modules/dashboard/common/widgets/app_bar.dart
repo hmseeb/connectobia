@@ -47,7 +47,6 @@ class CommonAppBar extends StatelessWidget {
               child: ShadInputFormField(
                 placeholder: Text(searchPlaceholder),
                 prefix: const Icon(LucideIcons.search),
-                suffix: const Icon(LucideIcons.filter),
                 onChanged: onChange,
               ),
             ),
