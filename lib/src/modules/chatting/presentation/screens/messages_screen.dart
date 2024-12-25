@@ -38,7 +38,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   bool selectedMedia = false;
   final ImagePicker picker = ImagePicker();
   bool isTyping = false;
-  List<XFile> media = [];
+  XFile? media;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +101,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   recipientName: widget.name,
                   senderId: widget.userId,
                   isMediaSelected: selectedMedia,
-                  mediaCount: media.length,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -186,14 +185,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                       context,
                                       chatId: state.messages.items.first.chat,
                                       prevMessages: state.messages,
-                                      media: media,
+                                      media: media!,
                                     );
                                   } else {
-                                    media = await picker.pickMultipleMedia(
-                                      limit: 5,
+                                    media = await picker.pickImage(
+                                      source: ImageSource.gallery,
                                     );
 
-                                    if (media.isNotEmpty) {
+                                    if (media != null) {
                                       setState(() {
                                         selectedMedia = true;
                                       });
@@ -235,7 +234,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     BuildContext context, {
     required String chatId,
     required Messages prevMessages,
-    required List<XFile> media,
+    required XFile media,
   }) {
     HapticFeedback.lightImpact();
     String recipientId = widget.userId;
@@ -244,7 +243,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         recipientId: recipientId,
         chatId: chatId,
         messages: prevMessages,
-        images: media,
+        image: media,
       ),
     );
 

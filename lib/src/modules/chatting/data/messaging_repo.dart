@@ -66,21 +66,17 @@ class MessagesRepository {
   }
 
   Future<Message> sendMedia({
-    required List<XFile> images,
+    required XFile image,
     required String senderId,
     required String recipientId,
     required String chatId,
   }) async {
     try {
-      List<http.MultipartFile> multipartFiles = [];
-      for (var img in images) {
-        var multipartFile = await http.MultipartFile.fromPath(
-          'image',
-          img.path,
-          filename: img.name, // You can change this to any file name
-        );
-        multipartFiles.add(multipartFile);
-      }
+      var multipartFile = await http.MultipartFile.fromPath(
+        'image',
+        image.path,
+        filename: image.name, // You can change this to any file name
+      );
       final pb = await PocketBaseSingleton.instance;
 
       // example create body
@@ -89,11 +85,11 @@ class MessagesRepository {
         "recipientId": recipientId,
         "messageType": "image",
         "chat": chatId,
-        "messageText": 'sent an attachment'
+        "messageText": 'sent an image'
       };
       final record = await pb
           .collection('messages')
-          .create(body: body, files: multipartFiles);
+          .create(body: body, files: [multipartFile]);
 
       Message message = Message.fromRecord(record);
 
