@@ -20,7 +20,7 @@ import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.d
 import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
-import 'package:connectobia/src/modules/chatting/presentation/screens/single_chat_screen.dart';
+import 'package:connectobia/src/modules/chatting/presentation/screens/messages_screen.dart';
 import 'package:connectobia/src/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.dart';
 import 'package:connectobia/src/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
@@ -87,9 +87,9 @@ class GenerateRoutes {
         return _buildAnimatedRoute(InfluencerDashboard(
           user: args['user'],
         ));
-      case singleChatScreen:
+      case messagesScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildRoute(SingleChatScreen(
+        return _buildRoute(MessagesScreen(
           collectionId: args['collectionId'],
           userId: args['userId'],
           name: args['name'],

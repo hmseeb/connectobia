@@ -58,7 +58,7 @@ class CommonAppBar extends StatelessWidget {
                 backgroundImage: CachedNetworkImageProvider(
                   image.isNotEmpty
                       ? Avatar.getUserImage(
-                          userId: userId,
+                          recordId: userId,
                           image: image,
                           collectionId: collectionId,
                         )

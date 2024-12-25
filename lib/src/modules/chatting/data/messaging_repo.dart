@@ -3,6 +3,8 @@ import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 /// [MessagesRepository] is a class that handles all the message related operations.
@@ -43,6 +45,7 @@ class MessagesRepository {
           );
 
       Messages messages = Messages.fromRecord(resultList);
+
       return messages;
     } catch (e) {
       debugPrint('$e');
@@ -62,11 +65,50 @@ class MessagesRepository {
     return record;
   }
 
-  /// [sendMessage] is a method that sends a message to a user.
+  Future<Message> sendMedia({
+    required List<XFile> images,
+    required String senderId,
+    required String recipientId,
+    required String chatId,
+  }) async {
+    try {
+      List<http.MultipartFile> multipartFiles = [];
+      for (var img in images) {
+        var multipartFile = await http.MultipartFile.fromPath(
+          'image',
+          img.path,
+          filename: img.name, // You can change this to any file name
+        );
+        multipartFiles.add(multipartFile);
+      }
+      final pb = await PocketBaseSingleton.instance;
+
+      // example create body
+      final body = <String, dynamic>{
+        "senderId": senderId,
+        "recipientId": recipientId,
+        "messageType": "image",
+        "chat": chatId,
+        "messageText": 'sent an attachment'
+      };
+      final record = await pb
+          .collection('messages')
+          .create(body: body, files: multipartFiles);
+
+      Message message = Message.fromRecord(record);
+
+      return message;
+    } catch (e) {
+      debugPrint('$e');
+      throw ClientException();
+    }
+  }
+
+  /// [sendTextMessage] is a method that sends a message to a user.
   /// It takes the chat ID, recipient ID, message type, and message text as parameters.
   /// It returns a [Message] object.
   /// The [Message] object contains the message details.
-  Future<Message> sendMessage(
+  Future<Message> sendTextMessage(
       {required String chatId,
       required String recipientId,
       required String messageType,

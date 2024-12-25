@@ -1,17 +1,18 @@
 import 'package:bloc/bloc.dart';
 import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:connectobia/src/modules/chatting/data/chats_repository.dart';
+import 'package:connectobia/src/modules/chatting/data/messaging_repo.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
-import 'package:connectobia/src/shared/data/repositories/realtime_messaging_repo.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 part 'realtime_messaging_event.dart';
@@ -134,7 +135,56 @@ class RealtimeMessagingBloc
       }
     });
 
-    on<SendMessage>((event, emit) async {
+    on<SendMedia>((event, emit) async {
+      try {
+        MessagesRepository msgsRepo = MessagesRepository();
+        String senderId = await AuthRepository.getUserId();
+        Messages messages = event.messages;
+        String chatId = event.chatId;
+        String messageId = DateTime.now().millisecondsSinceEpoch.toString();
+        Message sendingMessage = Message(
+          senderId: senderId,
+          recipientId: event.recipientId,
+          messageText:
+              'Sending ${event.images.isNotEmpty ? 'attachments' : 'attachment'}',
+          id: messageId,
+          messageType: 'text',
+          chat: event.chatId,
+          sent: false,
+          created: DateTime.now().toIso8601String(),
+        );
+
+        final Messages addSendingMessage = messages.addMessage(sendingMessage);
+        emit(MessagesLoaded(messages: addSendingMessage, selfId: senderId));
+
+        final message = await msgsRepo.sendMedia(
+          images: event.images,
+          senderId: senderId,
+          recipientId: event.recipientId,
+          chatId: chatId,
+        );
+
+        Messages sentMessage = messages.removeMessageWithId(messageId);
+        sentMessage.addMessage(message);
+
+        HapticFeedback.lightImpact();
+        emit(MessagesLoaded(
+          messages: sentMessage,
+          selfId: senderId,
+        ));
+
+        await msgsRepo.updateChatById(
+          chatId: message.chat,
+          messageId: message.id!,
+          isRead: false,
+        );
+      } catch (e) {
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(MessageNotSent(errorRepo.handleError(e)));
+      }
+    });
+
+    on<SendTextMessage>((event, emit) async {
       MessagesRepository msgsRepo = MessagesRepository();
       try {
         String senderId = await AuthRepository.getUserId();
@@ -171,7 +221,7 @@ class RealtimeMessagingBloc
           await msgsRepo.updateChatById(
               chatId: message.chat, messageId: message.id!, isRead: false);
         } else {
-          final message = await msgsRepo.sendMessage(
+          final message = await msgsRepo.sendTextMessage(
             recipientId: event.recipientId,
             messageType: 'text',
             messageText: event.message,

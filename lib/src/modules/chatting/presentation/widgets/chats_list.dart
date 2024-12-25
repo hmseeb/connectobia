@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/date_and_time.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
@@ -80,7 +80,7 @@ class ChatsList extends StatelessWidget {
                       .add(GetMessagesByUserId(userId));
                   Navigator.pushNamed(
                     context,
-                    singleChatScreen,
+                    messagesScreen,
                     arguments: {
                       'userId': userId,
                       'name': name,
@@ -93,12 +93,12 @@ class ChatsList extends StatelessWidget {
                 leading: CircleAvatar(
                   backgroundImage: isBrand
                       ? CachedNetworkImageProvider(Avatar.getUserImage(
-                          userId: chat.expand!.influencer.id,
+                          recordId: chat.expand!.influencer.id,
                           collectionId: chat.expand!.influencer.collectionId,
                           image: chat.expand!.influencer.avatar,
                         ))
                       : CachedNetworkImageProvider(Avatar.getUserImage(
-                          userId: chat.expand!.brand.id,
+                          recordId: chat.expand!.brand.id,
                           collectionId: chat.expand!.brand.collectionId,
                           image: chat.expand!.brand.avatar,
                         )),

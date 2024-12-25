@@ -12,9 +12,9 @@ class Avatar {
 
   /// Returns the user image.
   static String getUserImage(
-      {required String userId,
+      {required String recordId,
       required String image,
       required String collectionId}) {
-    return 'https://connectobia.pockethost.io/api/files/$collectionId/$userId/$image';
+    return 'https://connectobia.pockethost.io/api/files/$collectionId/$recordId/$image';
   }
 }

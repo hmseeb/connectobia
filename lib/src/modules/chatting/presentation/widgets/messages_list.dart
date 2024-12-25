@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
-import 'package:connectobia/src/shared/application/realtime/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/date_and_time.dart';
 import 'package:connectobia/src/shared/data/constants/messages.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +14,31 @@ import 'package:swipe_to/swipe_to.dart';
 
 import '../../../../theme/colors.dart';
 
+class ChatMedia extends StatelessWidget {
+  final Message message;
+  const ChatMedia({
+    super.key,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CachedNetworkImage(
+      imageUrl: Avatar.getUserImage(
+          collectionId: message.collectionId!,
+          recordId: message.id!,
+          image: message.image!.first),
+    );
+  }
+}
+
 class MessagesList extends StatelessWidget {
   final String recipientName;
   final String senderId;
   final Message? message;
+  final bool isMediaSelected;
+  final int mediaCount;
+  final Function()? onDismiss;
 
   final String newMessage = '';
 
@@ -24,6 +47,9 @@ class MessagesList extends StatelessWidget {
     required this.recipientName,
     required this.senderId,
     this.message,
+    this.mediaCount = 0,
+    required this.isMediaSelected,
+    this.onDismiss,
   });
 
   @override
@@ -54,30 +80,50 @@ class MessagesList extends StatelessWidget {
                     .indexWhere((msg) => msg.senderId == state.selfId);
                 final otherMessageIndex = state.messages.items
                     .indexWhere((msg) => msg.senderId != state.selfId);
-                return SwipeTo(
-                  leftSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
-                      DateTime.parse(state.messages.items[index].created))),
-                  onLeftSwipe: (details) {},
-                  onRightSwipe: (details) {},
-                  rightSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
-                      DateTime.parse(state.messages.items[index].created))),
-                  child: BubbleSpecialThree(
-                    sent: state.messages.items[index].sent == null && isMe,
-                    isSender: isMe,
-                    tail: index == myMessageIndex || index == otherMessageIndex,
-                    text: state.messages.items[index].messageText,
-                    color: isMe
-                        ? ShadColors.primary
-                        : brightness == Brightness.light
-                            ? ShadColors.lightForeground
-                            : ShadColors.darkForeground,
-                    textStyle: TextStyle(
-                        color: isMe
-                            ? ShadColors.light
-                            : brightness == Brightness.dark
-                                ? ShadColors.light
-                                : ShadColors.dark),
-                  ),
+                return Column(
+                  children: [
+                    SwipeTo(
+                      leftSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
+                          DateTime.parse(state.messages.items[index].created))),
+                      onLeftSwipe: (details) {},
+                      onRightSwipe: (details) {},
+                      rightSwipeWidget: Text(DateAndTime.formatDateTimeTo12Hour(
+                          DateTime.parse(state.messages.items[index].created))),
+                      child: state.messages.items[index].messageType == 'text'
+                          ? BubbleSpecialThree(
+                              sent: state.messages.items[index].sent == null &&
+                                  isMe,
+                              isSender: isMe,
+                              tail: index == myMessageIndex ||
+                                  index == otherMessageIndex,
+                              text: state.messages.items[index].messageText,
+                              color: isMe
+                                  ? ShadColors.primary
+                                  : brightness == Brightness.light
+                                      ? ShadColors.lightForeground
+                                      : ShadColors.darkForeground,
+                              textStyle: TextStyle(
+                                  color: isMe
+                                      ? ShadColors.light
+                                      : brightness == Brightness.dark
+                                          ? ShadColors.light
+                                          : ShadColors.dark),
+                            )
+                          : ChatMedia(message: state.messages.items[index]),
+                    ),
+                    if (index == 0 && isMediaSelected) ...[
+                      ShadAlert(
+                        iconSrc: LucideIcons.image,
+                        title: Text(
+                            '$mediaCount ${mediaCount > 1 ? 'attachments are' : 'attachment is'} ready to be sent'),
+                        decoration: ShadDecoration(
+                          color: mediaCount > 0
+                              ? ShadColors.success
+                              : ShadColors.lightForeground,
+                        ),
+                      ),
+                    ]
+                  ],
                 );
               },
             ),
