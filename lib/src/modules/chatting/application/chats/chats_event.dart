@@ -17,6 +17,12 @@ class CreatedChat extends ChatsEvent {
   CreatedChat({required this.newChat, required this.prevChats});
 }
 
+class FilterChats extends ChatsEvent {
+  final String filter;
+
+  FilterChats({required this.filter});
+}
+
 class GetChatId extends ChatsEvent {
   final String recipientId;
 

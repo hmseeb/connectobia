@@ -10,18 +10,16 @@ part 'chats_event.dart';
 part 'chats_state.dart';
 
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
+  Chats? chats;
   ChatsBloc() : super(ChatsInitial()) {
-    if (state is ChatsLoaded) {
-      return;
-    }
     on<GetChats>((event, emit) async {
       try {
         emit(ChatsLoading());
         ChatsRepository chatsRepo = ChatsRepository();
-        final Chats chats = await chatsRepo.getChats();
+        chats = await chatsRepo.getChats();
         debugPrint('Loaded chats');
-        emit(ChatsLoaded(chats));
-        add(SubscribeChats(prevChats: chats));
+        emit(ChatsLoaded(chats!));
+        add(SubscribeChats(prevChats: chats!));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(ChatsLoadingError(errorRepo.handleError(e)));
@@ -41,7 +39,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
           (e) {
             if (e.action == 'update') {
               final Chat chat = Chat.fromRecord(e.record!);
-              add(UpdatedChat(newChat: chat, prevChats: event.prevChats));
+              add(UpdatedChat(newChat: chat, prevChats: chats!));
             }
           },
           filter: filter,
@@ -52,19 +50,27 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         debugPrint(errorRepo.handleError(e));
       }
     });
+
+    on<FilterChats>((event, emit) {
+      if (state is ChatsLoaded) {
+        final filteredChats = chats!.filterChats(event.filter);
+        emit(ChatsLoaded(filteredChats));
+      }
+    });
+
     on<UpdatedChat>((event, emit) {
-      final Chats updatedChats = event.prevChats.updateChat(
+      chats = chats!.updateChat(
         influencer: event.newChat.influencer,
         brand: event.newChat.brand,
         updatedChat: event.newChat,
       );
-      emit(ChatsLoaded(updatedChats));
+      emit(ChatsLoaded(chats!));
     });
 
     on<CreatedChat>((event, emit) async {
       try {
-        final Chats updatedChats = event.prevChats.addChat(event.newChat);
-        emit(ChatsLoaded(updatedChats));
+        chats = chats!.addChat(event.newChat);
+        emit(ChatsLoaded(chats!));
       } catch (e) {
         ErrorRepository errorRepo = ErrorRepository();
         emit(ChatsLoadingError(errorRepo.handleError(e)));
@@ -73,7 +79,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     on<UnsubscribeChats>((event, emit) async {
       try {
         final pb = await PocketBaseSingleton.instance;
-
         await pb.collection('chats').unsubscribe();
         debugPrint('Unsubscribed to chats');
       } catch (e) {

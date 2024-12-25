@@ -52,6 +52,22 @@ class Chats {
     );
   }
 
+  Chats filterChats(String filter) {
+    //
+    List<Chat> filteredItems = items.where((chat) {
+      return chat.expand!.message.messageText.contains(filter) ||
+          chat.expand!.influencer.fullName.contains(filter) ||
+          chat.expand!.brand.brandName.contains(filter);
+    }).toList();
+    return Chats(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: filteredItems.length,
+      items: filteredItems,
+    );
+  }
+
   Chats removeMessage(int index) {
     items.remove(items[index]);
 

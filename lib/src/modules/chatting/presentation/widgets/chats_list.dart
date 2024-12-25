@@ -47,6 +47,7 @@ class ChatsList extends StatelessWidget {
             );
           }
           return ListView.builder(
+            padding: const EdgeInsets.only(top: 0),
             controller: _scrollController,
             itemCount: state.chats.items.length,
             itemBuilder: (context, index) {
@@ -141,6 +142,7 @@ class ChatsList extends StatelessWidget {
           return Skeletonizer(
             enabled: state is ChatsLoading,
             child: ListView.builder(
+              padding: const EdgeInsets.only(top: 0),
               controller: _scrollController,
               itemCount: 20,
               itemBuilder: (context, index) {
