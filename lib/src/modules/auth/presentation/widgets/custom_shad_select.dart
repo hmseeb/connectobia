@@ -28,7 +28,7 @@ class CustomShadSelect extends StatefulWidget {
     required this.items,
     required this.placeholder,
     required this.onSelected,
-    required this.focusNode,
+    required this.focusNode, String? initialValue,
   });
 
   @override
