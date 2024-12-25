@@ -35,10 +35,10 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
   late final TextEditingController messageController;
 
-  List<XFile> media = [];
   bool selectedMedia = false;
   final ImagePicker picker = ImagePicker();
   bool isTyping = false;
+  List<XFile> media = [];
 
   @override
   Widget build(BuildContext context) {
@@ -176,30 +176,29 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 selectedMedia
                                     ? LucideIcons.send
                                     : LucideIcons.image,
+                                color:
+                                    selectedMedia ? ShadColors.primary : null,
                               ),
                               onTap: () async {
                                 if (state is MessagesLoaded) {
-                                  if (media.isEmpty) {
+                                  if (selectedMedia) {
+                                    sendMediaFiles(
+                                      context,
+                                      chatId: state.messages.items.first.chat,
+                                      prevMessages: state.messages,
+                                      media: media,
+                                    );
+                                  } else {
                                     media = await picker.pickMultipleMedia(
                                       limit: 5,
                                     );
+
                                     if (media.isNotEmpty) {
                                       setState(() {
                                         selectedMedia = true;
-                                        sendMediaFiles(
-                                          context,
-                                          chatId:
-                                              state.messages.items.first.chat,
-                                          prevMessages: state.messages,
-                                        );
                                       });
                                     }
                                     HapticFeedback.lightImpact();
-                                  } else {
-                                    setState(() {
-                                      selectedMedia = false;
-                                      media.clear();
-                                    });
                                   }
                                 }
                               },
@@ -236,6 +235,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     BuildContext context, {
     required String chatId,
     required Messages prevMessages,
+    required List<XFile> media,
   }) {
     HapticFeedback.lightImpact();
     String recipientId = widget.userId;
@@ -247,6 +247,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
         images: media,
       ),
     );
+
+    setState(() {
+      selectedMedia = false;
+    });
   }
 
   void sendTextMessage(

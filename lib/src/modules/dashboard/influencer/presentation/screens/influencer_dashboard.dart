@@ -40,7 +40,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
     return BlocListener<RealtimeMessagingBloc, RealtimeMessagingState>(
       listener: (context, state) {
         if (state is MessageNotificationReceived) {
-          debugPrint('Here');
           DelightToastBar(
               autoDismiss: true,
               position: DelightSnackbarPosition.top,

@@ -16,18 +16,32 @@ import '../../../../theme/colors.dart';
 
 class ChatMedia extends StatelessWidget {
   final Message message;
+  final bool isMe;
   const ChatMedia({
     super.key,
     required this.message,
+    required this.isMe,
   });
 
   @override
   Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: Avatar.getUserImage(
-          collectionId: message.collectionId!,
-          recordId: message.id!,
-          image: message.image!.first),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      child: Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: CachedNetworkImage(
+            imageUrl: Avatar.getUserImage(
+                collectionId: message.collectionId!,
+                recordId: message.id!,
+                image: message.image!.first),
+            width: 300,
+            height: 300,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -109,18 +123,22 @@ class MessagesList extends StatelessWidget {
                                           ? ShadColors.light
                                           : ShadColors.dark),
                             )
-                          : ChatMedia(message: state.messages.items[index]),
+                          : ChatMedia(
+                              message: state.messages.items[index],
+                              isMe: isMe,
+                            ),
                     ),
                     if (index == 0 && isMediaSelected) ...[
                       ShadAlert(
                         iconSrc: LucideIcons.image,
                         title: Text(
-                            '$mediaCount ${mediaCount > 1 ? 'attachments are' : 'attachment is'} ready to be sent'),
-                        decoration: ShadDecoration(
-                          color: mediaCount > 0
-                              ? ShadColors.success
-                              : ShadColors.lightForeground,
+                          'Selected $mediaCount ${mediaCount > 1 ? 'attachments' : 'attachment'}',
+                          style: TextStyle(
+                            color: ShadColors.light,
+                          ),
                         ),
+                        iconColor: ShadColors.light,
+                        decoration: ShadDecoration(color: ShadColors.primary),
                       ),
                     ]
                   ],

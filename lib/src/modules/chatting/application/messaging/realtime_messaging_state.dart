@@ -32,12 +32,6 @@ final class MessageSending extends RealtimeMessagingState {
   MessageSending(this.message);
 }
 
-final class MessageSent extends RealtimeMessagingState {
-  final Message message;
-
-  MessageSent(this.message);
-}
-
 final class MessagesLoaded extends RealtimeMessagingState {
   final Messages messages;
   final String selfId;
