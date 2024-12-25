@@ -180,6 +180,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               ),
                               onTap: () async {
                                 if (state is MessagesLoaded) {
+                                  int maxFileSizeInBytes = 5 * 1048576;
                                   if (selectedMedia) {
                                     sendMediaFiles(
                                       context,
@@ -191,12 +192,28 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     media = await picker.pickImage(
                                       source: ImageSource.gallery,
                                     );
-
-                                    if (media != null) {
+                                    var imagePath = await media!.readAsBytes();
+                                    var fileSize = imagePath.length;
+                                    if (fileSize <= maxFileSizeInBytes) {
+                                      if (media != null) {
+                                        setState(() {
+                                          selectedMedia = true;
+                                        });
+                                      }
+                                      // File is too large, ask user to upload a smaller file, or compress the file/image
+                                    } else {
                                       setState(() {
-                                        selectedMedia = true;
+                                        ShadToaster.of(context).show(
+                                          ShadToast.destructive(
+                                            title: const Text(
+                                              'File size cannot exceed 5MB',
+                                            ),
+                                          ),
+                                        );
+                                        selectedMedia = false;
                                       });
                                     }
+
                                     HapticFeedback.lightImpact();
                                   }
                                 }
