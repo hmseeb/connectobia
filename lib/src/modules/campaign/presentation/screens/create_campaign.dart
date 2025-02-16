@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_goals_form.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -13,6 +14,7 @@ class _CreateCampaignState extends State<CreateCampaign> {
   final TextEditingController _campaignNameController = TextEditingController();
   final TextEditingController _campaignDescriptionController = TextEditingController();
   int _currentStep = 1;
+  bool _isStep2Valid = false;
 
   @override
   void dispose() {
@@ -22,6 +24,13 @@ class _CreateCampaignState extends State<CreateCampaign> {
   }
 
   void _goToNextStep() {
+    if (_currentStep == 2 && !_isStep2Valid) {
+      // Show error if Step 2 is not valid
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You must select at least one goal')),
+      );
+      return;
+    }
     if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -60,7 +69,13 @@ class _CreateCampaignState extends State<CreateCampaign> {
           ],
         );
       case 2:
-        return const Center(child: Text('Step 2 Content'));
+        return CampaignGoals(
+          onValidationChanged: (isValid) {
+            setState(() {
+              _isStep2Valid = isValid;
+            });
+          },
+        );
       case 3:
         return const Center(child: Text('Step 3 Content'));
       case 4:
