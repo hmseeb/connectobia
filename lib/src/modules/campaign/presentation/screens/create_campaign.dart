@@ -1,6 +1,6 @@
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_goals_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/contract_details.dart';
-import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer_step.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -11,20 +11,17 @@ class CreateCampaign extends StatefulWidget {
   @override
   State<CreateCampaign> createState() => _CreateCampaignState();
 }
-
 class _CreateCampaignState extends State<CreateCampaign> {
   final TextEditingController _campaignNameController = TextEditingController();
   final TextEditingController _campaignDescriptionController = TextEditingController();
   int _currentStep = 1;
   bool _isStep2Valid = false; // Track validation for Step 2
-
   @override
   void dispose() {
     _campaignNameController.dispose();
     _campaignDescriptionController.dispose();
     super.dispose();
   }
-
   void _goToNextStep() {
     if (_currentStep == 2 && !_isStep2Valid) {
       // Show error if Step 2 is not valid
@@ -33,7 +30,6 @@ class _CreateCampaignState extends State<CreateCampaign> {
       );
       return;
     }
-
     if (_currentStep < 4) {
       setState(() {
         _currentStep++;
@@ -41,7 +37,6 @@ class _CreateCampaignState extends State<CreateCampaign> {
       print('Moving to step $_currentStep');
     }
   }
-
   void _goToPreviousStep() {
     if (_currentStep > 1) {
       setState(() {
@@ -50,7 +45,6 @@ class _CreateCampaignState extends State<CreateCampaign> {
       print('Moving to step $_currentStep');
     }
   }
-
   Widget _buildStepContent() {
     switch (_currentStep) {
       case 1:
@@ -85,7 +79,6 @@ class _CreateCampaignState extends State<CreateCampaign> {
           print("Selected Influencers: $selected");
         },
   );
-
       case 4:
         return ContractDetailsStep();
       default:
@@ -109,10 +102,35 @@ class _CreateCampaignState extends State<CreateCampaign> {
               children: [
                 // Keep space for Back button even when it's hidden
                 if (_currentStep > 1)
-                  TextButton(
-                    onPressed: _goToPreviousStep,
-                    child: const Text('Back'),
-                  )
+                 TextButton(
+  onPressed: () {
+    if (_canGoBack()) {
+      _goToPreviousStep();
+    } else {
+      _showCannotGoBackMessage();
+    }
+  },
+  style: TextButton.styleFrom(
+    foregroundColor: Colors.white, // Text color
+    backgroundColor: Colors.blue, // Button color
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+  ),
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      const Icon(Icons.arrow_back, size: 18, color: Colors.white), // Back arrow
+      const SizedBox(width: 5),
+      const Text(
+        'Back',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    ],
+  ),
+),
+
                 else
                   const SizedBox(width: 70), // Maintain space for hidden Back button
                 TextButton(
