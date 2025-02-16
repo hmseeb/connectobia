@@ -8,7 +8,8 @@ const String influencerSignupScreen = "/InfluencerSignupScreen";
 const String loginScreen = "/LoginScreen";
 const String messagesScreen = "/messagesScreen";
 const String profile = "/profile";
-const String splashScreen = "/createcapmaign";
+const String splashScreen = "/";
 const String verifyEmailScreen = "/verifyEmailScreen";
 const String welcomeScreen = "/welcomeScreen";
-const String createCampaign = "/";
+const String createCampaign = "/createcapmaign";
+
