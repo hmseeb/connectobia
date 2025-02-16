@@ -75,7 +75,7 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                     });
                   },
                   inputSublabel:
-                      const Text('Generate leads and boost conversions'),
+                      const Text('Attract Potential Customers and Enhance Sales Performance'),
                 ),
                 const SizedBox(height: 16), // Consistent spacing
                 ShadCheckboxFormField(
