@@ -17,19 +17,23 @@ class FollowerCountSelect extends StatelessWidget {
       '500k-1M': '500k-1M',
     };
 
-    return ShadSelect<String>(
-      placeholder: const Text('Not Selected'),
-      options: followerCounts.entries
-          .map((e) => ShadOption(value: e.key, child: Text(e.value)))
-          .toList(),
-      selectedOptionBuilder: (context, value) {
-        return Text(followerCounts[value]!);
-      },
-      onChanged: (value) {
-        if (value != null) {
-          onSelected(value);
-        }
-      },
+    return SizedBox(
+      width: 200, // Fixed width
+      height: 50,
+      child: ShadSelect<String>(
+        placeholder: const Text('Not Selected'),
+        options: followerCounts.entries
+            .map((e) => ShadOption(value: e.key, child: Text(e.value)))
+            .toList(),
+        selectedOptionBuilder: (context, value) {
+          return Text(followerCounts[value]!);
+        },
+        onChanged: (value) {
+          if (value != null) {
+            onSelected(value);
+          }
+        },
+      ),
     );
   }
 }

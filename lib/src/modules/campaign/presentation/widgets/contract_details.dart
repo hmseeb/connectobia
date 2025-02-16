@@ -41,28 +41,31 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
         ),
         const SizedBox(height: 15),
 
-        // Post Type Checkboxes
+        // Post Type Row
         const Text(
           'Post Type',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        ..._postTypes.map((type) {
-          return CheckboxListTile(
-            title: Text(type),
-            value: _selectedPostTypes.contains(type),
-            onChanged: (bool? value) {
-              setState(() {
-                if (value == true) {
-                  _selectedPostTypes.add(type);
-                } else {
-                  _selectedPostTypes.remove(type);
-                }
-              });
-            },
-            controlAffinity: ListTileControlAffinity.leading,
-          );
-        }).toList(),
-        const SizedBox(height: 10),
+        const SizedBox(height: 5),
+        Wrap(
+          spacing: 10,
+          children: _postTypes.map((type) {
+            return FilterChip(
+              label: Text(type),
+              selected: _selectedPostTypes.contains(type),
+              onSelected: (bool selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedPostTypes.add(type);
+                  } else {
+                    _selectedPostTypes.remove(type);
+                  }
+                });
+              },
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 15),
 
         // Delivery Date Picker
         const Text(
@@ -125,32 +128,42 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
         ),
         const SizedBox(height: 15),
 
+        // Additional Requirements Input
+        const Text(
+          'Write Requirement',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 5),
+        ShadInputFormField(
+          placeholder: const Text('Enter any additional requirements'),
+          maxLines: 3,
+        ),
+        const SizedBox(height: 15),
+
         // Terms and Conditions
         const Text(
           'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
           style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
 
-        CheckboxListTile(
-          title: const Text('I confirm all details are correct'),
-          value: _confirmDetails,
-          onChanged: (bool? value) {
-            setState(() {
-              _confirmDetails = value ?? false;
-            });
-          },
-          controlAffinity: ListTileControlAffinity.leading,
-        ),
-        CheckboxListTile(
-          title: const Text('I accept all terms and conditions'),
-          value: _acceptTerms,
-          onChanged: (bool? value) {
-            setState(() {
-              _acceptTerms = value ?? false;
-            });
-          },
-          controlAffinity: ListTileControlAffinity.leading,
+        // Confirmation Checkboxes using ShadCheckbox
+        const SizedBox(height: 5),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ShadCheckbox(
+              value: _confirmDetails,
+              onChanged: (value) {
+                setState(() {
+                  _confirmDetails = value!;
+                });
+              },
+              label: const Text('I confirm all details are correct'),
+            ),
+            const SizedBox(height: 5),
+            
+          ],
         ),
       ],
     );
