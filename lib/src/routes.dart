@@ -49,9 +49,11 @@ class GenerateRoutes {
     switch (settings.name) {
       case splashScreen:
         final args = settings.arguments as Map<String, dynamic>;
-        return _buildRoute(Connectobia(
-          isDarkMode: args['isDarkMode'],
-        ));
+        return _buildRoute(
+        //Connectobia(
+        //   isDarkMode: args['isDarkMode'],
+        // )
+        const CreateCampaign());
       case welcomeScreen:
         return _buildAnimatedRoute(const WelcomeScreen());
       case loginScreen:
