@@ -41,6 +41,7 @@ class _CreateCampaignState extends State<CreateCampaign> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            const SizedBox(height: 100), // Add space at the top to push fields down
             // Campaign Name Field
             ShadInputFormField(
               controller: _campaignNameController,
