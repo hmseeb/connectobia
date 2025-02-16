@@ -29,21 +29,51 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Select Influencer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Select Influencer',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 10),
+
+        // Category Selection
         ShadInputFormField(
           label: const Text('Category *'),
           placeholder: const Text('Fashion, Beauty, Tech'),
         ),
         const SizedBox(height: 10),
-        ShadInputFormField(
-          label: const Text('Follower Count & Engagement'),
-          placeholder: const Text('10k-50k, 50k-100k, High, Medium, Low'),
+
+        // Row for Follower Count & Engagement
+        Row(
+          children: [
+            Expanded(
+              child: ShadInputFormField(
+                label: const Text('Follower Count'),
+                placeholder: const Text('10k-50k, 50k-100k, etc.'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ShadInputFormField(
+                label: const Text('Engagement'),
+                placeholder: const Text('High, Medium, Low'),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 20),
-        const Text('Available Influencers', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
+        // Available Influencers Box
+        const Text(
+          'Available Influencers',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 10),
-        Expanded(
+        Container(
+          height: 150, // Fixed height for scrollable area
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: ListView(
             children: List.generate(5, (index) {
               String influencer = 'Influencer ${index + 1}';
@@ -63,19 +93,32 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
           ),
         ),
         const SizedBox(height: 20),
-        const Text('Selected Influencers', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        Column(
-          children: _selectedInfluencers.map((influencer) {
-            return ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(influencer),
-              subtitle: const Text('@username | Fashion & Beauty | 100k+ followers'),
-              trailing: IconButton(
-                icon: const Icon(Icons.remove_circle, color: Colors.red),
-                onPressed: () => _toggleInfluencerSelection(influencer),
-              ),
-            );
-          }).toList(),
+
+        // Selected Influencers Box
+        const Text(
+          'Selected Influencers',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          height: 100, // Fixed height for scrollable area
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ListView(
+            children: _selectedInfluencers.map((influencer) {
+              return ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.person)),
+                title: Text(influencer),
+                subtitle: const Text('@username | Fashion & Beauty | 100k+ followers'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.remove_circle, color: Colors.red),
+                  onPressed: () => _toggleInfluencerSelection(influencer),
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
