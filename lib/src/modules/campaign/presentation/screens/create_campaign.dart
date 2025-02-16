@@ -102,35 +102,10 @@ class _CreateCampaignState extends State<CreateCampaign> {
               children: [
                 // Keep space for Back button even when it's hidden
                 if (_currentStep > 1)
-                 TextButton(
-  onPressed: () {
-    if (_canGoBack()) {
-      _goToPreviousStep();
-    } else {
-      _showCannotGoBackMessage();
-    }
-  },
-  style: TextButton.styleFrom(
-    foregroundColor: Colors.white, // Text color
-    backgroundColor: Colors.blue, // Button color
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  ),
-  child: Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      
-        'Back',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-    ],
-  ),
-),
-const Icon(Icons.arrow_back, size: 18, color: Colors.white), // Back arrow
-      const SizedBox(width: 5),
-      const Text(
+                  TextButton(
+                    onPressed: _goToPreviousStep,
+                    child: const Text('Back'),
+                  )
                 else
                   const SizedBox(width: 70), // Maintain space for hidden Back button
                 TextButton(
