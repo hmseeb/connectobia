@@ -20,6 +20,7 @@ import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.d
 import 'package:connectobia/src/modules/auth/presentation/screens/verify_email_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/welcome_screen.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
+import 'package:connectobia/src/modules/campaign/presentation/screens/create_campaign.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/messages_screen.dart';
 import 'package:connectobia/src/modules/dashboard/brand/presentation/screens/brand_dashboard.dart';
 import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.dart';
@@ -101,6 +102,9 @@ class GenerateRoutes {
 
       case campaignsScreen:
         return _buildRoute(const CampaignScreen());
+        
+      case createCampaign:
+        return _buildRoute(const CreateCampaign());
 
       default:
         return _buildRoute(WelcomeScreen());
