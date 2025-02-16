@@ -121,16 +121,16 @@ class _CreateCampaignState extends State<CreateCampaign> {
   child: Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      const Icon(Icons.arrow_back, size: 18, color: Colors.white), // Back arrow
-      const SizedBox(width: 5),
-      const Text(
+      
         'Back',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),
     ],
   ),
 ),
-
+const Icon(Icons.arrow_back, size: 18, color: Colors.white), // Back arrow
+      const SizedBox(width: 5),
+      const Text(
                 else
                   const SizedBox(width: 70), // Maintain space for hidden Back button
                 TextButton(
