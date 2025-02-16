@@ -108,7 +108,22 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
               ),
             ),
             const SizedBox(width: 10),
-            
+            DropdownButton<String>(
+              value: _currency,
+              underline: Container(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _currency = newValue!;
+                });
+              },
+              items: <String>['USD', 'EUR', 'GBP', 'INR']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
           ],
         ),
         const SizedBox(height: 15),
@@ -121,7 +136,9 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
         const SizedBox(height: 5),
         ShadInputFormField(
           placeholder: const Text('Enter any additional requirements'),
-        
+          maxLines: 3,
+        ),
+        const SizedBox(height: 15),
 
         // Terms and Conditions
         const Text(
