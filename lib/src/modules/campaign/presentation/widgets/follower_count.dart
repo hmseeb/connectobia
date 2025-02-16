@@ -18,7 +18,7 @@ class FollowerCountSelect extends StatelessWidget {
     };
 
     return ShadSelect<String>(
-      placeholder: const Text('Select follower count'),
+      placeholder: const Text('Not Selected'),
       options: followerCounts.entries
           .map((e) => ShadOption(value: e.key, child: Text(e.value)))
           .toList(),
