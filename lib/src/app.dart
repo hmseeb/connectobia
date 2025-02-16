@@ -46,8 +46,8 @@ class ConnectobiaState extends State<Connectobia> {
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
           return ShadApp(
-            title: 'Connectobia',
-            initialRoute: '/',
+            title: 'createCampaign',
+            initialRoute: createCampaign,
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) =>
                 GenerateRoutes.onGenerateRoute(settings),
