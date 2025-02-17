@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
-class CampaignForm extends StatelessWidget {
+class CampaignFormCard extends StatelessWidget {
   final TextEditingController campaignNameController;
   final TextEditingController campaignDescriptionController;
 
-  const CampaignForm({
-    Key? key,
+  const CampaignFormCard({
+    super.key,
     required this.campaignNameController,
     required this.campaignDescriptionController,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +32,10 @@ class CampaignForm extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              TextField(
+              ShadInputFormField(
                 controller: campaignNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Campaign Name',
-                  hintText: 'Enter campaign name',
-                  border: OutlineInputBorder(),
-                ),
+                label: const Text('Campaign Name'),
+                placeholder: const Text('Enter campaign name'),
               ),
               const SizedBox(height: 20),
               Text(
@@ -45,14 +43,11 @@ class CampaignForm extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              TextField(
+              ShadInputFormField(
                 controller: campaignDescriptionController,
+                label: const Text('Campaign Description'),
+                placeholder: const Text('Enter campaign description'),
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Campaign Description',
-                  hintText: 'Enter campaign description',
-                  border: OutlineInputBorder(),
-                ),
               ),
               const SizedBox(height: 20),
             ],
