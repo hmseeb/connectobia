@@ -34,7 +34,6 @@ class CampaignFormCard extends StatelessWidget {
               const SizedBox(height: 10),
               ShadInputFormField(
                 controller: campaignNameController,
-                label: const Text('Campaign Name'),
                 placeholder: const Text('Enter campaign name'),
               ),
               const SizedBox(height: 20),
@@ -45,7 +44,6 @@ class CampaignFormCard extends StatelessWidget {
               const SizedBox(height: 10),
               ShadInputFormField(
                 controller: campaignDescriptionController,
-                label: const Text('Campaign Description'),
                 placeholder: const Text('Enter campaign description'),
                 maxLines: 5,
               ),
