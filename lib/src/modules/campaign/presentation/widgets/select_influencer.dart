@@ -3,7 +3,6 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/engagement
 import 'package:connectobia/src/modules/campaign/presentation/widgets/follower_count.dart';
 import 'package:connectobia/src/shared/data/constants/industries.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SelectInfluencerStep extends StatefulWidget {
   final Function(List<String>) onSelectedInfluencersChanged;
