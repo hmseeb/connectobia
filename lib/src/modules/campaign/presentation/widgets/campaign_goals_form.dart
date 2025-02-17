@@ -1,5 +1,5 @@
+import 'package:connectobia/src/modules/campaign/presentation/widgets/goals_cheakbox.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CampaignGoals extends StatefulWidget {
   final Function(bool) onValidationChanged;
@@ -21,16 +21,19 @@ class _CampaignGoalsState extends State<CampaignGoals> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight, // Align content to the right
-      child: Padding(
-        padding: const EdgeInsets.only(right: 20.0), // Add right padding
+    return Center(
+      child: SizedBox(
+        width: 400, // Increase width of the card
         child: Card(
-          elevation: 4, // Add elevation for a polished look
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
@@ -38,95 +41,75 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                ShadCheckboxFormField(
+                
+                // Use the reusable checkbox widget
+                CampaignGoalCheckbox(
                   id: 'goal1',
+                  label: 'Increase Brand Awareness',
+                  sublabel: 'Expand your reach and brand awareness',
                   initialValue: _selectedGoals[0],
-                  inputLabel: const Text(
-                    'Increase Brand Awareness',
-                    style: TextStyle(fontSize: 16), // Larger font size
-                  ),
                   onChanged: (value) {
                     setState(() {
                       _selectedGoals[0] = value;
                       _updateValidation();
                     });
                   },
-                  inputSublabel:
-                      const Text('Expand your reach and brand awareness'),
-                  validator: (value) {
-                    if (!isAtLeastOneGoalSelected) {
-                      return 'You must select at least one goal';
-                    }
-                    return null;
-                  },
                 ),
-                const SizedBox(height: 16), // Consistent spacing
-                ShadCheckboxFormField(
+                const SizedBox(height: 16),
+
+                CampaignGoalCheckbox(
                   id: 'goal2',
+                  label: 'Drive Sales',
+                  sublabel: 'Attract Potential Customers and Enhance Sales Performance',
                   initialValue: _selectedGoals[1],
-                  inputLabel: const Text(
-                    'Drive Sales',
-                    style: TextStyle(fontSize: 16), // Larger font size
-                  ),
                   onChanged: (value) {
                     setState(() {
                       _selectedGoals[1] = value;
                       _updateValidation();
                     });
                   },
-                  inputSublabel:
-                      const Text('Attract Potential Customers and Enhance Sales Performance'),
                 ),
-                const SizedBox(height: 16), // Consistent spacing
-                ShadCheckboxFormField(
+                const SizedBox(height: 16),
+
+                CampaignGoalCheckbox(
                   id: 'goal3',
+                  label: 'Boost Engagement',
+                  sublabel: 'Increase audience interaction and participation',
                   initialValue: _selectedGoals[2],
-                  inputLabel: const Text(
-                    'Boost Engagement',
-                    style: TextStyle(fontSize: 16), // Larger font size
-                  ),
                   onChanged: (value) {
                     setState(() {
                       _selectedGoals[2] = value;
                       _updateValidation();
                     });
                   },
-                  inputSublabel:
-                      const Text('Increase audience interaction and participation'),
                 ),
-                const SizedBox(height: 16), // Consistent spacing
-                ShadCheckboxFormField(
+                const SizedBox(height: 16),
+
+                CampaignGoalCheckbox(
                   id: 'goal4',
+                  label: 'More Website Visits',
+                  sublabel: 'Use influencers to bring users to your site',
                   initialValue: _selectedGoals[3],
-                  inputLabel: const Text(
-                    'More Website Visits',
-                    style: TextStyle(fontSize: 16), // Larger font size
-                  ),
                   onChanged: (value) {
                     setState(() {
                       _selectedGoals[3] = value;
                       _updateValidation();
                     });
                   },
-                  inputSublabel:
-                      const Text('Use influencers to bring users to your site'),
                 ),
-                const SizedBox(height: 16), // Consistent spacing
-                ShadCheckboxFormField(
+                const SizedBox(height: 16),
+
+                CampaignGoalCheckbox(
                   id: 'goal5',
+                  label: 'Improve Brand Recognition',
+                  sublabel: 'Ensure users remember and recognize the brand.',
                   initialValue: _selectedGoals[4],
-                  inputLabel: const Text(
-                    'Improve Brand Recognition',
-                    style: TextStyle(fontSize: 16), // Larger font size
-                  ),
                   onChanged: (value) {
                     setState(() {
                       _selectedGoals[4] = value;
                       _updateValidation();
                     });
                   },
-                  inputSublabel:
-                      const Text('Ensure users remember and recognize the brand.'),
                 ),
               ],
             ),
