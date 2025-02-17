@@ -99,7 +99,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
         Container(
-          height: 150,
+          height: 180,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.transparent), // Transparent border
             borderRadius: BorderRadius.circular(8),

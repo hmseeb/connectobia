@@ -1,8 +1,7 @@
-// lib/modules/campaign/presentation/screens/campaign_screen.dart
-
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -75,6 +74,12 @@ class CampaignScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(createCampaign);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
