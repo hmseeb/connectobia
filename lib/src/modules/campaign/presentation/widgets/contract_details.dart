@@ -8,7 +8,6 @@ class ContractDetailsStep extends StatefulWidget {
 
 class _ContractDetailsStepState extends State<ContractDetailsStep> {
   DateTime? _selectedDate;
-  double _amount = 0;
   String _currency = 'USD';
 
   final List<String> _postTypes = ['Reel', 'Carousel', 'Post'];
@@ -102,7 +101,6 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   setState(() {
-                    _amount = double.tryParse(value) ?? 0;
                   });
                 },
               ),
@@ -156,7 +154,7 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
               value: _confirmDetails,
               onChanged: (value) {
                 setState(() {
-                  _confirmDetails = value!;
+                  _confirmDetails = value;
                 });
               },
               label: const Text('I confirm all details are correct'),
@@ -166,7 +164,7 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
               value: _acceptTerms,
               onChanged: (value) {
                 setState(() {
-                  _acceptTerms = value!;
+                  _acceptTerms = value;
                 });
               },
               label: const Text('I accept all terms and conditions'),
