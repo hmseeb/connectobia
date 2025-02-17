@@ -1,9 +1,9 @@
+import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_discreption.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_goals_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/contract_details.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CreateCampaign extends StatefulWidget {
   const CreateCampaign({super.key});
@@ -48,23 +48,10 @@ class _CreateCampaignState extends State<CreateCampaign> {
   Widget _buildStepContent() {
     switch (_currentStep) {
       case 1:
-        return Column(
-          children: [
-            const SizedBox(height: 100),
-            ShadInputFormField(
-              controller: _campaignNameController,
-              label: const Text('Campaign Name'),
-              placeholder: const Text('Enter campaign name'),
-            ),
-            const SizedBox(height: 20),
-            ShadInputFormField(
-              controller: _campaignDescriptionController,
-              label: const Text('Campaign Description'),
-              placeholder: const Text('Enter campaign description'),
-              maxLines: 5,
-            ),
-          ],
-        );
+        return CampaignFormCard(
+        campaignNameController: _campaignNameController,
+        campaignDescriptionController: _campaignDescriptionController,
+      );
       case 2:
         return CampaignGoals(
           onValidationChanged: (isValid) {
