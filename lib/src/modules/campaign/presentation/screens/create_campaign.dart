@@ -1,4 +1,4 @@
-import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_discreption.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_goals_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/contract_details.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer.dart';

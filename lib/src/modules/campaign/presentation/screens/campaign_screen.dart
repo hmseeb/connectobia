@@ -4,12 +4,15 @@ import 'package:connectobia/src/modules/campaign/application/campaign_state.dart
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';  // Import the package
 
 class CampaignScreen extends StatelessWidget {
   const CampaignScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final textController = TextEditingController(); // Define controller
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Campaigns'),
@@ -18,15 +21,14 @@ class CampaignScreen extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              onChanged: (query) {
+            child: ShadInputFormField(
+              controller: textController,
+              placeholder: const Text('Search Campaigns'),
+              prefix: const Icon(Icons.search), // Replace with your desired icon
+              onChanged: (value) {
                 // Trigger the search event in the Bloc
-                context.read<CampaignBloc>().add(SearchCampaigns(query));
+                context.read<CampaignBloc>().add(SearchCampaigns(value));
               },
-              decoration: const InputDecoration(
-                labelText: 'Search Campaigns',
-                border: OutlineInputBorder(),
-              ),
             ),
           ),
           Expanded(
