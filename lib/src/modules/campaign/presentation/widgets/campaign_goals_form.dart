@@ -1,5 +1,6 @@
 import 'package:connectobia/src/modules/campaign/presentation/widgets/goals_cheakbox.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CampaignGoals extends StatefulWidget {
   final Function(bool) onValidationChanged;
@@ -19,19 +20,13 @@ class _CampaignGoalsState extends State<CampaignGoals> {
     widget.onValidationChanged(isAtLeastOneGoalSelected);
   }
 
-@override
-Widget build(BuildContext context) {
-  return Align(
-    alignment: Alignment.center,
-    child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 400), // Keeps it responsive
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        child: Padding(
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 400), // Keeps it responsive
+        child: ShadCard(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +105,6 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
