@@ -108,7 +108,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         Container(
           height: 280,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
+            border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(8),
           ),
           child: _availableInfluencers.isEmpty
