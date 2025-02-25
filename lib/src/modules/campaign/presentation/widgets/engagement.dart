@@ -16,8 +16,6 @@ class EngagementSelect extends StatelessWidget {
     };
 
     return SizedBox(
-      width: 200, // Fixed width for the dropdown
-      height: 50, // Fixed height
       child: ShadSelect<String>(
         placeholder: const Text('Engage...'),
         options: engagementOptions.entries
