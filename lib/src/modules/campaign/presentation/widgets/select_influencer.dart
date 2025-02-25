@@ -64,14 +64,12 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
           children: [
             Expanded(
               child: CustomShadSelect(
-                items: IndustryList.industries,
-                placeholder: 'Industry',
-                onSelected: (selectedIndustry) {
-                  setState(() {
-                    industry = selectedIndustry;
-                  });
-                },
-                focusNode: industryFocusNode,
+              items: IndustryList.industries,
+              placeholder: 'Industry',
+              onSelected: (selectedIndustry) {
+                industry = selectedIndustry;
+              },
+              focusNode: industryFocusNode,
               ),
             ),
             const SizedBox(width: 10),
@@ -105,7 +103,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
         Container(
-          height: 180,
+          height: 280,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.transparent),
             borderRadius: BorderRadius.circular(8),
@@ -145,15 +143,15 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
         Container(
-          height: 180,
+          height: 90,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent),
+            border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(8),
           ),
           child: _selectedInfluencers.isEmpty
               ? const Center(
                   child: Text(
-                    'No influencers selected',
+                    'No influencer selected',
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                   ),
                 )
