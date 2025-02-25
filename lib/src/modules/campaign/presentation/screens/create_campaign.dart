@@ -99,7 +99,6 @@ class _CreateCampaignState extends State<CreateCampaign> {
                 ],
               ),
             ),
-            // Sticky Bottom Section
             Column(
               children: [
                 // Use the NavigationButtons widget
