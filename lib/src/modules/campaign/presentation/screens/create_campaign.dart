@@ -115,6 +115,7 @@ class _CreateCampaignState extends State<CreateCampaign> {
       }),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,28 +125,38 @@ class _CreateCampaignState extends State<CreateCampaign> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Expanded(child: _buildStepContent()),
-            // Buttons Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Expanded(
+              child: SingleChildScrollView(
+                child: _buildStepContent(), // Wrap step content in a scrollable widget
+              ),
+            ),
+            // Sticky Bottom Section
+            Column(
               children: [
-                // Keep space for Back button even when it's hidden
-                if (_currentStep > 1)
-                  TextButton(
-                    onPressed: _goToPreviousStep,
-                    child: const Text('Back'),
-                  )
-                else
-                  const SizedBox(width: 70), // Maintain space for hidden Back button
-                TextButton(
-                  onPressed: _goToNextStep,
-                  child: const Text('Next'),
+                // Buttons Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Keep space for Back button even when it's hidden
+                    if (_currentStep > 1)
+                      TextButton(
+                        onPressed: _goToPreviousStep,
+                        child: const Text('Back'),
+                      )
+                    else
+                      const SizedBox(width: 70), // Maintain space for hidden Back button
+                    TextButton(
+                      onPressed: _goToNextStep,
+                      child: const Text('Next'),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 10),
+                // Custom Step Progress Indicator
+                _buildCustomProgressIndicator(),
+                const SizedBox(height: 10),
               ],
             ),
-            // Custom Step Progress Indicator
-            _buildCustomProgressIndicator(),
-            const SizedBox(height: 10),
           ],
         ),
       ),
