@@ -18,8 +18,6 @@ class FollowerCountSelect extends StatelessWidget {
     };
 
     return SizedBox(
-      width: 200, // Fixed width
-      height: 50,
       child: ShadSelect<String>(
         placeholder: const Text('Follower'),
         options: followerCounts.entries
