@@ -19,7 +19,7 @@ class EngagementSelect extends StatelessWidget {
       width: 200, // Fixed width
       height: 50, // Fixed height
       child: ShadSelect<String>(
-        placeholder: const Text('Not Selected'),
+        placeholder: const Text('Engagement'),
         options: engagementOptions.entries
             .map((e) => ShadOption(value: e.key, child: Text(e.value)))
             .toList(),
