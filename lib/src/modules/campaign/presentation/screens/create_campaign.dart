@@ -90,8 +90,13 @@ class _CreateCampaignState extends State<CreateCampaign> {
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: _buildStepContent(), // Wrap step content in a scrollable widget
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SingleChildScrollView(
+                    child: _buildStepContent(), // Wrap step content in a scrollable widget
+                  ),
+                ],
               ),
             ),
             // Sticky Bottom Section
