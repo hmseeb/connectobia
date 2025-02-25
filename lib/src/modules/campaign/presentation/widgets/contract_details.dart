@@ -68,7 +68,7 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
 
         // Delivery Date Picker
         const Text(
-          'Delivery',
+          'Delivery Date',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 5),
@@ -76,7 +76,6 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
           onTap: () => _pickDate(context),
           child: AbsorbPointer(
             child: ShadInputFormField(
-              label: const Text('Select Date'),
               placeholder: Text(
                 _selectedDate == null
                     ? 'DD / MM / YYYY'
