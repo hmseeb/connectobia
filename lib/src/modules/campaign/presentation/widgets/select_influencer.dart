@@ -64,12 +64,24 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
           children: [
             Expanded(
               child: CustomShadSelect(
-              items: IndustryList.industries,
-              placeholder: 'Industry',
-              onSelected: (selectedIndustry) {
-                industry = selectedIndustry;
-              },
-              focusNode: industryFocusNode,
+                items: IndustryList.industries,
+                placeholder: 'Industry',
+                onSelected: (selectedIndustry) {
+                  setState(() {
+                    industry = selectedIndustry;
+                  });
+                },
+                focusNode: industryFocusNode,
+                selectedItemBuilder: (context, selectedIndustry) {
+                  return SizedBox(
+                    width: 100, // Set a fixed width or use Flexible
+                    child: Text(
+                      selectedIndustry ?? 'Industry',
+                      overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 10),
