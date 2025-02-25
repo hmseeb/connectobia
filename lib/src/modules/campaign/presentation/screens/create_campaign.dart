@@ -90,13 +90,13 @@ class _CreateCampaignState extends State<CreateCampaign> {
         child: Column(
           children: [
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              child: Align(
+                alignment: Alignment.center,
+                child: 
                   SingleChildScrollView(
                     child: _buildStepContent(), // Wrap step content in a scrollable widget
                   ),
-                ],
+                
               ),
             ),
             Column(
