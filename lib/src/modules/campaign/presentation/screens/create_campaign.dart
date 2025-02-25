@@ -1,6 +1,8 @@
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_goals_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/contract_details.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/custom_progress_indicator.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/navigation_buttons.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -78,44 +80,6 @@ class _CreateCampaignState extends State<CreateCampaign> {
     }
   }
 
-  // Custom Step Progress Indicator
-  Widget _buildCustomProgressIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (index) {
-        return Row(
-          children: [
-            // Step Circle
-            Container(
-              width: 30,
-              height: 25,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _currentStep > index ? Colors.blue : Colors.grey[300],
-              ),
-              child: Center(
-                child: Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    color: _currentStep > index ? Colors.white : Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            // Line between steps (except for the last step)
-            if (index < 3)
-              Container(
-                width: 50,
-                height: 2,
-                color: _currentStep > index + 1 ? Colors.blue : Colors.grey[300],
-              ),
-          ],
-        );
-      }),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,27 +97,15 @@ class _CreateCampaignState extends State<CreateCampaign> {
             // Sticky Bottom Section
             Column(
               children: [
-                // Buttons Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Keep space for Back button even when it's hidden
-                    if (_currentStep > 1)
-                      TextButton(
-                        onPressed: _goToPreviousStep,
-                        child: const Text('Back'),
-                      )
-                    else
-                      const SizedBox(width: 70), // Maintain space for hidden Back button
-                    TextButton(
-                      onPressed: _goToNextStep,
-                      child: const Text('Next'),
-                    ),
-                  ],
+                // Use the NavigationButtons widget
+                NavigationButtons(
+                  currentStep: _currentStep,
+                  onPrevious: _goToPreviousStep,
+                  onNext: _goToNextStep,
                 ),
                 const SizedBox(height: 10),
-                // Custom Step Progress Indicator
-                _buildCustomProgressIndicator(),
+                // Use the CustomProgressIndicator widget
+                CustomProgressIndicator(currentStep: _currentStep),
                 const SizedBox(height: 10),
               ],
             ),
