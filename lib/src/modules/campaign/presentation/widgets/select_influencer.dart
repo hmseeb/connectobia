@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/engagement
 import 'package:connectobia/src/modules/campaign/presentation/widgets/follower_count.dart';
 import 'package:connectobia/src/shared/data/constants/industries.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SelectInfluencerStep extends StatefulWidget {
   final Function(List<String>) onSelectedInfluencersChanged;
@@ -17,9 +18,11 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
   final List<String> _selectedInfluencers = [];
   final List<String> _availableInfluencers = List.generate(5, (index) => 'Influencer ${index + 1}');
   final FocusNode industryFocusNode = FocusNode();
+  final TextEditingController searchController = TextEditingController();
   String industry = '';
-  String selectedFollowerCount = ''; // Track selected follower count
-  String selectedEngagement = ''; // Track selected engagement
+  String selectedFollowerCount = '';
+  String selectedEngagement = '';
+  String searchQuery = '';
 
   void _toggleInfluencerSelection(String influencer) {
     setState(() {
@@ -43,49 +46,52 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
 
-        // Category Selection
-        CustomShadSelect(
-          items: IndustryList.industries,
-          placeholder: 'Select industry...',
-          onSelected: (selectedIndustry) {
-            industry = selectedIndustry;
+        // Search Bar
+        ShadInputFormField(
+          controller: searchController,
+          placeholder: const Text('Search influencers...'),
+          prefix: const Icon(Icons.search),
+          onChanged: (query) {
+            setState(() {
+              searchQuery = query;
+            });
           },
-          focusNode: industryFocusNode,
         ),
         const SizedBox(height: 10),
 
-        // Row for Follower Count & Engagement
+        // Filters (Category, Follower Count, Engagement Rate)
         Row(
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Follower Count'),
-                  FollowerCountSelect(
-                    onSelected: (value) {
-                      setState(() {
-                        selectedFollowerCount = value;
-                      });
-                    },
-                  ),
-                ],
+              child: CustomShadSelect(
+                items: IndustryList.industries,
+                placeholder: 'Industry',
+                onSelected: (selectedIndustry) {
+                  setState(() {
+                    industry = selectedIndustry;
+                  });
+                },
+                focusNode: industryFocusNode,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Engagement'),
-                  EngagementSelect(
-                    onSelected: (value) {
-                      setState(() {
-                        selectedEngagement = value;
-                      });
-                    },
-                  ),
-                ],
+              child: FollowerCountSelect(
+                onSelected: (value) {
+                  setState(() {
+                    selectedFollowerCount = value;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: EngagementSelect(
+                onSelected: (value) {
+                  setState(() {
+                    selectedEngagement = value;
+                  });
+                },
               ),
             ),
           ],
@@ -101,7 +107,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         Container(
           height: 180,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent), // Transparent border
+            border: Border.all(color: Colors.transparent),
             borderRadius: BorderRadius.circular(8),
           ),
           child: _availableInfluencers.isEmpty
@@ -112,7 +118,9 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
                   ),
                 )
               : ListView(
-                  children: _availableInfluencers.map((influencer) {
+                  children: _availableInfluencers
+                      .where((influencer) => influencer.toLowerCase().contains(searchQuery.toLowerCase()))
+                      .map((influencer) {
                     return ListTile(
                       leading: const CircleAvatar(child: Icon(Icons.person)),
                       title: Text(influencer),
@@ -139,7 +147,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         Container(
           height: 180,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.transparent), // Transparent border
+            border: Border.all(color: Colors.transparent),
             borderRadius: BorderRadius.circular(8),
           ),
           child: _selectedInfluencers.isEmpty
