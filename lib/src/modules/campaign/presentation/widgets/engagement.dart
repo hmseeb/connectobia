@@ -16,15 +16,32 @@ class EngagementSelect extends StatelessWidget {
     };
 
     return SizedBox(
-      width: 200, // Fixed width
+      width: 200, // Fixed width for the dropdown
       height: 50, // Fixed height
       child: ShadSelect<String>(
         placeholder: const Text('Engage...'),
         options: engagementOptions.entries
-            .map((e) => ShadOption(value: e.key, child: Text(e.value)))
+            .map(
+              (e) => ShadOption(
+                value: e.key,
+                child: SizedBox(
+                  width: 180, // Constrain the width of the option text
+                  child: Text(
+                    e.value,
+                    overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+                  ),
+                ),
+              ),
+            )
             .toList(),
         selectedOptionBuilder: (context, value) {
-          return Text(engagementOptions[value]!);
+          return SizedBox(
+            width: 180, // Constrain the width of the selected text
+            child: Text(
+              engagementOptions[value]!,
+              overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+            ),
+          );
         },
         onChanged: (value) {
           if (value != null) {
