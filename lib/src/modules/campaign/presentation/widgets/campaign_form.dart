@@ -22,7 +22,7 @@ class CampaignFormCard extends StatelessWidget {
         // Add the SVG image here
         Center(
           child: SvgPicture.asset(
-            AssetsPath.login, // Replace with your SVG asset path
+            AssetsPath.campaign, // Replace with your SVG asset path
             height: 150,
             width: 150,
           ),
