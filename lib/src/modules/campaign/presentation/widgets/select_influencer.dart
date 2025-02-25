@@ -26,9 +26,12 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
 
   void _toggleInfluencerSelection(String influencer) {
     setState(() {
+      // If the selected influencer is already selected, deselect it
       if (_selectedInfluencers.contains(influencer)) {
-        _selectedInfluencers.remove(influencer);
+        _selectedInfluencers.clear();
       } else {
+        // Deselect any previously selected influencer and select the new one
+        _selectedInfluencers.clear();
         _selectedInfluencers.add(influencer);
       }
       widget.onSelectedInfluencersChanged(_selectedInfluencers);
