@@ -59,11 +59,8 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
 
-        // Filters (Category, Follower Count, Engagement Rate)
-        Row(
-          children: [
-            Expanded(
-              child: CustomShadSelect(
+        // Industry Filter (Full Width)
+         CustomShadSelect(
               items: IndustryList.industries,
               placeholder: 'Industry',
               onSelected: (selectedIndustry) {
@@ -71,8 +68,11 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
               },
               focusNode: industryFocusNode,
               ),
-            ),
-            const SizedBox(width: 10),
+        const SizedBox(height: 10),
+
+        // Follower Count and Engagement Filters (Row)
+        Row(
+          children: [
             Expanded(
               child: FollowerCountSelect(
                 onSelected: (value) {
@@ -103,7 +103,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
         Container(
-          height: 280,
+          height: 220,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.transparent),
             borderRadius: BorderRadius.circular(8),
