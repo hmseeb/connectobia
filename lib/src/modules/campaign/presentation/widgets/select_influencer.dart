@@ -137,7 +137,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
                   }).toList(),
                 ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
 
         // Selected Influencers Box
         const Text(
@@ -146,7 +146,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep> {
         ),
         const SizedBox(height: 10),
         Container(
-          height: 90,
+          height: 83,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(8),
