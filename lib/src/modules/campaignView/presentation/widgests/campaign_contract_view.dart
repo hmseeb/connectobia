@@ -110,6 +110,7 @@ class _CampaignContractState extends State<CampaignContract> {
           'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
           style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
+        const SizedBox(height: 8),
     
     
         // Confirm Details Checkbox
