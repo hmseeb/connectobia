@@ -12,3 +12,4 @@ const String splashScreen = "/";
 const String verifyEmailScreen = "/verifyEmailScreen";
 const String welcomeScreen = "/welcomeScreen";
 const String createCampaign = "/createcapmaign";
+const String campaignDetails = "/capmaigndetails";
