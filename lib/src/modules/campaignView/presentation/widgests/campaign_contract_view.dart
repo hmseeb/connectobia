@@ -106,9 +106,9 @@ class _CampaignContractState extends State<CampaignContract> {
         const SizedBox(height: 24),
     
         // Terms and Conditions Section
-        Text(
-          'Read the terms and conditions',
-          style: theme.textTheme.p,
+        const Text(
+          'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
+          style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
     
     
