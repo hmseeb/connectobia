@@ -119,7 +119,7 @@ class _CampaignContractState extends State<CampaignContract> {
               value: _confirmDetails,
               onChanged: (value) {
                 setState(() {
-                  _confirmDetails = value!;
+                  _confirmDetails = value;
                 });
               },
             ),
@@ -139,7 +139,7 @@ class _CampaignContractState extends State<CampaignContract> {
               value: _acceptTerms,
               onChanged: (value) {
                 setState(() {
-                  _acceptTerms = value!;
+                  _acceptTerms = value;
                 });
               },
             ),
