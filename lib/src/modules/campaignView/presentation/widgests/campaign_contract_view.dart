@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class CampaignContract extends StatelessWidget {
+class CampaignContract extends StatefulWidget {
   const CampaignContract({super.key});
+
+  @override
+  State<CampaignContract> createState() => _CampaignContractState();
+}
+
+class _CampaignContractState extends State<CampaignContract> {
+  bool _confirmDetails = false;
+  bool _acceptTerms = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +42,10 @@ class CampaignContract extends StatelessWidget {
                     const SizedBox(height: 8),
                     ShadCard(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text('Post', style: theme.textTheme.p),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Text('Post', style: theme.textTheme.p),
+                      ),
                     ),
                   ],
                 ),
@@ -51,7 +62,10 @@ class CampaignContract extends StatelessWidget {
                     const SizedBox(height: 8),
                     ShadCard(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text('\$300 USD', style: theme.textTheme.p),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Text('\$300 USD', style: theme.textTheme.p),
+                      ),
                     ),
                   ],
                 ),
@@ -68,7 +82,10 @@ class CampaignContract extends StatelessWidget {
           const SizedBox(height: 8),
           ShadCard(
             padding: const EdgeInsets.all(16.0),
-            child: Text('March 10, 2025', style: theme.textTheme.p),
+            child: SizedBox(
+              width: double.infinity,
+              child: Text('March 10, 2025', style: theme.textTheme.p),
+            ),
           ),
           const SizedBox(height: 16),
 
@@ -80,10 +97,60 @@ class CampaignContract extends StatelessWidget {
           const SizedBox(height: 8),
           ShadCard(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Influencer must have at least 50K followers and engage in sustainable living content.',
-              style: theme.textTheme.p,
+            child: SizedBox(
+              width: double.infinity,
+              child: Text(
+                'Influencer must have at least 50K followers and engage in sustainable living content.',
+                style: theme.textTheme.p,
+              ),
             ),
+          ),
+          const SizedBox(height: 24),
+
+          // Terms and Conditions Section
+          Text(
+            'Read the terms and conditions',
+            style: theme.textTheme.p,
+          ),
+
+
+          // Confirm Details Checkbox
+          Row(
+            children: [
+              ShadCheckbox(
+                value: _confirmDetails,
+                onChanged: (value) {
+                  setState(() {
+                    _confirmDetails = value!;
+                  });
+                },
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'I confirm all details are correct',
+                style: TextStyle(fontSize: 16.0),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Accept Terms Checkbox
+          Row(
+            children: [
+              ShadCheckbox(
+                value: _acceptTerms,
+                onChanged: (value) {
+                  setState(() {
+                    _acceptTerms = value!;
+                  });
+                },
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'I accept all terms and conditions',
+                style: TextStyle(fontSize: 16.0),
+              ),
+            ],
           ),
         ],
       ),
