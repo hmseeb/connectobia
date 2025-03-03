@@ -98,7 +98,7 @@ class _CampaignContractState extends State<CampaignContract> {
           child: SizedBox(
             width: double.infinity,
             child: Text(
-              'Influencer must have at least 50K followers and engage in sustainable living content.',
+              'Influencer must have at least 50K followers and engage in sustainable living content. Content should focus on eco-friendly practices, ethical consumerism, and green lifestyle choices. The influencer should actively interact with their audience through posts, stories, and live sessions to promote sustainability. Additionally, the influencers engagement rate should be above 3%, and they should avoid partnerships with brands that contradict environmental values.',
               style: theme.textTheme.p,
             ),
           ),
