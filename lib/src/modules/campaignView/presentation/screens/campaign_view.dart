@@ -133,28 +133,29 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             Expanded(
               child: SingleChildScrollView(child: _buildStepContent()),
             ),
-            Column(
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _currentStep > 1 ? _goToPreviousStep : null,
-                      child: const Text('Back'),
-                    ),
-                    ElevatedButton(
-                      onPressed: _currentStep < 2 ? _goToNextStep : null,
-                      child: const Text('Next'),
-                    ),
-                  ],
+                ShadButton(
+                  onPressed: _currentStep > 1 ? _goToPreviousStep : null,
+                  child: const Text('Back'),
                 ),
-                const SizedBox(height: 10),
-                LinearProgressIndicator(
-                  value: _currentStep / 2,
-                  backgroundColor: Colors.grey[300],
-                  color: Colors.blue,
-                ),
-                const SizedBox(height: 10),
+                _currentStep < 2
+                    ? ShadButton(
+                        onPressed: _goToNextStep,
+                        child: const Text('Next'),
+                      )
+                    : ShadButton(
+                        onPressed: () {
+                          // Handle contract signing logic
+                        },
+                        size: ShadButtonSize.lg,
+                        child: const Text(
+                          'Sign Contract',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
               ],
             ),
           ],
