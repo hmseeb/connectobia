@@ -71,7 +71,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                     onPressed: _currentStep < 2 ? _goToNextStep : () {
                       // Handle contract signing logic
                     },
-                    size: ShadButtonSize.lg,
                     child: Text(
                       _currentStep < 2 ? 'Next' : 'Sign Contract',
                       style: const TextStyle(fontWeight: FontWeight.bold),
