@@ -80,10 +80,9 @@ class CampaignScreen extends StatelessWidget {
 
           // ✅ Price (Added Instead of Progress Bar)
           const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Price:',
+                'Price: ',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               Text(
