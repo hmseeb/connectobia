@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/campaign/presentation/widgets/delete_confirmation_dialog.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -63,7 +64,6 @@ class CampaignScreen extends StatelessWidget {
                   ),
                 ),
                 _statusBadge('In Progress', Colors.blue),
-                const SizedBox(width: 8),
 
                 // More options menu
                 PopupMenuButton<String>(
@@ -74,7 +74,7 @@ class CampaignScreen extends StatelessWidget {
                       Navigator.of(context).pushNamed(createCampaign);
                     } else if (value == 'delete') {
                       // Show delete confirmation dialog
-                      _showDeleteConfirmationDialog(context);
+                      showDeleteConfirmationDialog(context);
                     }
                   },
                   itemBuilder: (BuildContext context) => [
@@ -162,60 +162,60 @@ class CampaignScreen extends StatelessWidget {
   }
 
   /// 🗑️ Delete Confirmation Dialog
-void _showDeleteConfirmationDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ShadCard(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center, // Center content
-            children: [
-              const Text(
-                'Delete Campaign',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center, // Center text
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Are you sure you want to delete this campaign?',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-                textAlign: TextAlign.center, // Center text
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ShadButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ShadButton(
-                      onPressed: () {
-                        // Handle campaign deletion logic here
-                        Navigator.of(context).pop(); // Close the dialog after deleting
-                      },
-                      child: const Text('Delete'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
+// void _showDeleteConfirmationDialog(BuildContext context) {
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return Dialog(
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(12),
+//         ),
+//         child: ShadCard(
+//           padding: const EdgeInsets.all(16.0),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             crossAxisAlignment: CrossAxisAlignment.center, // Center content
+//             children: [
+//               const Text(
+//                 'Delete Campaign',
+//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//                 textAlign: TextAlign.center, // Center text
+//               ),
+//               const SizedBox(height: 8),
+//               const Text(
+//                 'Are you sure you want to delete this campaign?',
+//                 style: TextStyle(fontSize: 14, color: Colors.grey),
+//                 textAlign: TextAlign.center, // Center text
+//               ),
+//               const SizedBox(height: 16),
+//               Row(
+//                 children: [
+//                   Expanded(
+//                     child: ShadButton(
+//                       onPressed: () {
+//                         Navigator.of(context).pop(); // Close the dialog
+//                       },
+//                       child: const Text('Cancel'),
+//                     ),
+//                   ),
+//                   const SizedBox(width: 8),
+//                   Expanded(
+//                     child: ShadButton(
+//                       onPressed: () {
+//                         // Handle campaign deletion logic here
+//                         Navigator.of(context).pop(); // Close the dialog after deleting
+//                       },
+//                       child: const Text('Delete'),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     },
+//   );
+// }
 
 }
