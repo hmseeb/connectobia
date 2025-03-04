@@ -135,27 +135,28 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             ),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ShadButton(
-                  onPressed: _currentStep > 1 ? _goToPreviousStep : null,
-                  child: const Text('Back'),
+                Expanded(
+                  flex: 3, // 30% width
+                  child: ShadButton(
+                    onPressed: _currentStep > 1 ? _goToPreviousStep : null,
+                    child: const Text('Back'),
+                  ),
                 ),
-                _currentStep < 2
-                    ? ShadButton(
-                        onPressed: _goToNextStep,
-                        child: const Text('Next'),
-                      )
-                    : ShadButton(
-                        onPressed: () {
-                          // Handle contract signing logic
-                        },
-                        size: ShadButtonSize.lg,
-                        child: const Text(
-                          'Sign Contract',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 7, // 70% width
+                  child: ShadButton(
+                    onPressed: _currentStep < 2 ? _goToNextStep : () {
+                      // Handle contract signing logic
+                    },
+                    size: ShadButtonSize.lg,
+                    child: Text(
+                      _currentStep < 2 ? 'Next' : 'Sign Contract',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
