@@ -43,7 +43,7 @@ class CampaignScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Header (Category, Status, Menu)
+          // ✅ Header (Campaign Status & Menu)
           Row(
             children: [
               Expanded(
@@ -53,12 +53,8 @@ class CampaignScreen extends StatelessWidget {
                   maxLines: 1,
                 ),
               ),
-              Row(
-                children: [
-                  _statusBadge('In Progress', Colors.blue),
-                  const SizedBox(width: 8),
-                ],
-              ),
+              _statusBadge('In Progress', Colors.blue),
+              const SizedBox(width: 8),
               const Icon(Icons.more_vert, color: Colors.grey),
             ],
           ),
@@ -82,40 +78,31 @@ class CampaignScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // ✅ Progress Bar with Percentage
-          Row(
+          // ✅ Price (Added Instead of Progress Bar)
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text('Progress', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              Text('80%', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            children: [
+              Text(
+                'Price:',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '2000 Rs',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
             ],
-          ),
-          const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: 0.8, // 80% progress
-              backgroundColor: Colors.grey[300],
-              color: Colors.blue,
-              minHeight: 6,
-            ),
           ),
           const SizedBox(height: 12),
 
           // ✅ Profile Avatar + Brand Name + Arrow Icon
           Row(
             children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  _profileAvatar('https://via.placeholder.com/40'),
-                ],
-              ),
+              _profileAvatar('https://via.placeholder.com/40'),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'LifeBuoy',
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
