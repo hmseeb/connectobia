@@ -17,7 +17,7 @@ class CampaignScreen extends StatelessWidget {
           children: [
             _buildSearchField(context),
             const SizedBox(height: 16),
-            _buildCampaignCard(context), // Pass context to navigate
+            _buildCampaignCard(context),
           ],
         ),
       ),
@@ -54,8 +54,8 @@ class CampaignScreen extends StatelessWidget {
             // ✅ Header (Campaign Title, Status & Menu)
             Row(
               children: [
-                Expanded(
-                  child: const Text(
+                const Expanded(
+                  child: Text(
                     'Clean Pakistan',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
@@ -64,11 +64,34 @@ class CampaignScreen extends StatelessWidget {
                 ),
                 _statusBadge('In Progress', Colors.blue),
                 const SizedBox(width: 8),
-                const Icon(Icons.more_vert, color: Colors.grey),
+
+                // More options menu
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, color: Colors.grey),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      // Navigate to edit campaign page
+                      Navigator.of(context).pushNamed(createCampaign);
+                    } else if (value == 'delete') {
+                      // Show delete confirmation dialog
+                      _showDeleteConfirmationDialog(context);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Text('Edit'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Text('Delete'),
+                    ),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 8),
-            
+
             // ✅ Campaign Description (Truncated)
             const Text(
               'Design a clean and professional landing page for a finance appkekfsdkfsdkc',
@@ -77,6 +100,8 @@ class CampaignScreen extends StatelessWidget {
               maxLines: 1,
             ),
             const SizedBox(height: 12),
+
+            // ✅ Price Section
             const Row(
               children: [
                 Text(
@@ -96,7 +121,7 @@ class CampaignScreen extends StatelessWidget {
               children: [
                 _profileAvatar('https://via.placeholder.com/40'),
                 const SizedBox(width: 10),
-                Expanded(
+                const Expanded(
                   child: Text(
                     'LifeBuoy',
                     style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -135,4 +160,62 @@ class CampaignScreen extends StatelessWidget {
       backgroundImage: NetworkImage(imageUrl),
     );
   }
+
+  /// 🗑️ Delete Confirmation Dialog
+void _showDeleteConfirmationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ShadCard(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center, // Center content
+            children: [
+              const Text(
+                'Delete Campaign',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center, // Center text
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Are you sure you want to delete this campaign?',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+                textAlign: TextAlign.center, // Center text
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ShadButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ShadButton(
+                      onPressed: () {
+                        // Handle campaign deletion logic here
+                        Navigator.of(context).pop(); // Close the dialog after deleting
+                      },
+                      child: const Text('Delete'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
 }
