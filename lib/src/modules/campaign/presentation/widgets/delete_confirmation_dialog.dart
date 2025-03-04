@@ -41,8 +41,8 @@ void showDeleteConfirmationDialog(BuildContext context, VoidCallback onDelete) {
                   Expanded(
                     child: ShadButton(
                       onPressed: () {
+                        onDelete(); // Execute the delete action
                         Navigator.of(context).pop(); // Close the dialog
-                        onDelete(); // Call the delete function
                       },
                       child: const Text('Delete'),
                     ),
