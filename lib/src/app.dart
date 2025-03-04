@@ -123,7 +123,7 @@ class ConnectobiaState extends State<Connectobia> {
     } else if (state is Unauthenticated) {
       Navigator.pushReplacementNamed(
         context,
-        welcomeScreen,
+        campaignDetails,//welcomeScreen
       );
     } else if (state is Unverified) {
       Navigator.pushReplacementNamed(
@@ -141,7 +141,7 @@ class ConnectobiaState extends State<Connectobia> {
       );
       Navigator.pushReplacementNamed(
         context,
-        welcomeScreen,
+        campaignDetails,//welcomeScreen
       );
     }
   }
