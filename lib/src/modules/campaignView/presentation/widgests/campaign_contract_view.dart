@@ -21,7 +21,7 @@ class _CampaignContractState extends State<CampaignContract> {
       children: [
         // Campaign Details Title
         const Text(
-          'Campaign Details',
+          'Contract Details',
           style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
@@ -106,7 +106,7 @@ class _CampaignContractState extends State<CampaignContract> {
         const SizedBox(height: 24),
         // Terms and Conditions Section
         const Text(
-          'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
+          'Please review the contract details carefully before accepting. Make sure all information is correct and that you are comfortable with the terms and conditions.',
           style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
         const SizedBox(height: 8),
