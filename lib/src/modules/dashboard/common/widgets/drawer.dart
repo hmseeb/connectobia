@@ -43,7 +43,7 @@ class CommonDrawer extends StatelessWidget {
                           builder: (context) => const Text('Edit Profile'),
                           child: GestureDetector(
                             onTap: () {
-                              // _displayEditUserSettings(context);
+                              Navigator.pushNamed(context, '/editProfile');
                             },
                             child: CircleAvatar(
                               backgroundImage:

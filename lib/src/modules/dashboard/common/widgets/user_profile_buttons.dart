@@ -14,7 +14,7 @@ class ProfileButtons extends StatelessWidget {
         Expanded(
           child: ShadButton(
             onPressed: () {
-              // Add your edit profile logic here
+              Navigator.pushNamed(context, '/editProfile');
             },
             child: const Text('Edit Profile'),
           ),
