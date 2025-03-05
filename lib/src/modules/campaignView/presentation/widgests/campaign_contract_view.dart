@@ -104,7 +104,6 @@ class _CampaignContractState extends State<CampaignContract> {
           ),
         ),
         const SizedBox(height: 24),
-    
         // Terms and Conditions Section
         const Text(
           'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
