@@ -16,12 +16,17 @@ class CampaignScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: [
-            const SearchField(),
-            const SizedBox(height: 16),
-            CampaignCard(),
-          ],
-        ),
+  children: [
+    const SearchField(),
+    const SizedBox(height: 16),
+    ...List.generate(
+      3,
+      (index) => Padding(
+        padding: const EdgeInsets.only(bottom: 8.0), // Adds space between cards
+        child: const CampaignCard())),// Generates 5 CampaignCards
+  ],
+),
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
