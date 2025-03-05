@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/campaignView/presentation/widgests/campaign_analytics.dart';
 import 'package:connectobia/src/modules/campaignView/presentation/widgests/campaign_contract_view.dart';
 import 'package:connectobia/src/modules/campaignView/presentation/widgests/campaign_info.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
@@ -12,11 +13,10 @@ class CampaignDetailsPage extends StatefulWidget {
 }
 
 class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
-
   int _currentStep = 1;
 
   void _goToNextStep() {
-    if (_currentStep < 2) {
+    if (_currentStep < 3) {
       setState(() {
         _currentStep++;
       });
@@ -37,6 +37,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         return const CampaignInfoWidget();
       case 2:
         return const CampaignContract();
+      case 3:
+        return const AnalyticsScreen();
       default:
         return const Center(child: Text('Invalid Step'));
     }
@@ -68,11 +70,9 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 Expanded(
                   flex: 7, // 70% width
                   child: ShadButton(
-                    onPressed: _currentStep < 2 ? _goToNextStep : () {
-                      // Handle contract signing logic
-                    },
+                    onPressed: _currentStep < 3 ? _goToNextStep : null,
                     child: Text(
-                      _currentStep < 2 ? 'Next' : 'Sign Contract',
+                      _currentStep < 2 ? 'Next' : (_currentStep == 2 ? 'Sign Contract' : 'Completed'),
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
