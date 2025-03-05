@@ -39,7 +39,6 @@ class CampaignCard extends StatelessWidget {
                       Navigator.of(context).pushNamed(createCampaign);
                     } else if (value == 'delete') {
                       showDeleteConfirmationDialog(context, () {
-                        // Handle campaign deletion logic here
                       });
                     }
                   },
@@ -57,8 +56,6 @@ class CampaignCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-
-            // ✅ Campaign Description
             const Text(
               'Design a clean and professional landing page for a finance app.',
               style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -66,8 +63,6 @@ class CampaignCard extends StatelessWidget {
               maxLines: 1,
             ),
             const SizedBox(height: 12),
-
-            // ✅ Price Section
             const Row(
               children: [
                 Text(
@@ -81,8 +76,6 @@ class CampaignCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
-            // ✅ Profile Avatar + Brand Name + Arrow Icon
             Row(
               children: [
                 const ProfileAvatar(imageUrl: 'https://via.placeholder.com/40'),
