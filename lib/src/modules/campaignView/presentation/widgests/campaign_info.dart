@@ -9,7 +9,6 @@ class CampaignInfoWidget extends StatefulWidget {
 }
 
 class _CampaignInfoWidgetState extends State<CampaignInfoWidget> {
-  bool _isExpanded = false;
   final String _campaignDescription =
       "This campaign aims to promote eco-friendly products that help reduce carbon footprints. "
       "We are looking for influencers who can create engaging content showcasing sustainability.";
@@ -71,24 +70,9 @@ class _CampaignInfoWidgetState extends State<CampaignInfoWidget> {
         const SizedBox(height: 8),
         ShadCard(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _isExpanded
-                    ? _campaignDescription
-                    : '${_campaignDescription.substring(0, 100)}...',
-                style: ShadTheme.of(context).textTheme.p,
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () => setState(() => _isExpanded = !_isExpanded),
-                child: Text(
-                  _isExpanded ? 'See Less' : 'See More',
-                  style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+          child: Text(
+            _campaignDescription,
+            style: ShadTheme.of(context).textTheme.p,
           ),
         ),
       ],
