@@ -16,6 +16,13 @@ class UserLoaded extends UserState {
 
 class UserLoading extends UserState {}
 
+class UserProfileLoaded extends UserState {
+  final dynamic user;
+  final dynamic profileData;
+
+  UserProfileLoaded({required this.user, required this.profileData});
+}
+
 @immutable
 abstract class UserState {}
 

@@ -7,7 +7,9 @@ import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/industries.dart';
 import '../../../../shared/data/repositories/error_repo.dart';
 import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/brand_profile.dart';
 import '../../../../shared/domain/models/influencer.dart';
+import '../../../../shared/domain/models/influencer_profile.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
@@ -36,6 +38,46 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           emit(UserLoaded(influencer));
         }
       } catch (e) {
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(UserError(errorRepo.handleError(e)));
+      }
+    });
+
+    on<FetchUserProfile>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final pb = await PocketBaseSingleton.instance;
+
+        // First get the current user
+        if (!pb.authStore.isValid) {
+          emit(UserError('User not authenticated'));
+          return;
+        }
+
+        final id = pb.authStore.record!.id;
+        final collectionName = pb.authStore.record!.collectionName;
+        final userRecord = await pb.collection(collectionName).getOne(id);
+
+        // Then get the profile data
+        final profileCollectionName =
+            event.isBrand ? 'brandProfile' : 'influencerProfile';
+        final profileRecord =
+            await pb.collection(profileCollectionName).getOne(event.profileId);
+
+        debugPrint('Fetched profile data: ${profileRecord.data}');
+
+        if (event.isBrand) {
+          final brand = Brand.fromRecord(userRecord);
+          final brandProfile = BrandProfile.fromRecord(profileRecord);
+          emit(UserProfileLoaded(user: brand, profileData: brandProfile));
+        } else {
+          final influencer = Influencer.fromRecord(userRecord);
+          final influencerProfile = InfluencerProfile.fromRecord(profileRecord);
+          emit(UserProfileLoaded(
+              user: influencer, profileData: influencerProfile));
+        }
+      } catch (e) {
+        debugPrint('Error fetching profile: $e');
         ErrorRepository errorRepo = ErrorRepository();
         emit(UserError(errorRepo.handleError(e)));
       }

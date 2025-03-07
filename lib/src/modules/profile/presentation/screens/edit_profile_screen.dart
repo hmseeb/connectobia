@@ -355,25 +355,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          ShadSelect<String>(
-            initialValue: _selectedIndustry,
-            placeholder: const Text('Select industry...'),
-            options: IndustryList.industries.entries
-                .map(
-                  (entry) => ShadOption(
-                    value: entry.value,
-                    child: Text(entry.value),
-                  ),
-                )
-                .toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _selectedIndustry = value;
-                  _updateFormState();
-                });
-              }
-            },
+          SizedBox(
+            width: double.infinity,
+            child: ShadSelect<String>(
+              initialValue: _selectedIndustry,
+              placeholder: const Text('Select industry...'),
+              options: IndustryList.industries.entries
+                  .map(
+                    (entry) => ShadOption(
+                      value: entry.key,
+                      child: Text(entry.value),
+                    ),
+                  )
+                  .toList(),
+              selectedOptionBuilder: (context, value) {
+                return Text(IndustryList.industries[value] ?? value);
+              },
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedIndustry = value;
+                    _updateFormState();
+                  });
+                }
+              },
+            ),
           ),
           if (_formKey.currentState?.validate() == false &&
               _selectedIndustry == null)
@@ -444,8 +450,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return false;
   }
 
+  // Helper method to find industry key by its display value
+  String _findIndustryKeyByValue(String industryValue) {
+    for (var entry in IndustryList.industries.entries) {
+      if (entry.value == industryValue) {
+        return entry.key;
+      }
+    }
+    // Fallback to returning the value if no match is found
+    return industryValue;
+  }
+
   void _handleSave() {
     if (!_formKey.currentState!.validate() || !_formIsDirty) return;
+
+    // Format description text - wrap it in <p> tags if it doesn't already have them
+    String formattedDescription = _bioController.text;
+    if (formattedDescription.isNotEmpty &&
+        !formattedDescription.trim().startsWith('<p>') &&
+        !formattedDescription.trim().endsWith('</p>')) {
+      formattedDescription = '<p>$formattedDescription</p>';
+    }
 
     // First update main user data
     context.read<UserBloc>().add(
@@ -456,7 +481,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             username: _isBrand ? null : _usernameController.text,
             industry: _selectedIndustry,
             description:
-                _bioController.text.isNotEmpty ? _bioController.text : null,
+                formattedDescription.isNotEmpty ? formattedDescription : null,
             socialHandle: (!_isBrand && _socialController.text.isNotEmpty)
                 ? _socialController.text
                 : null,
@@ -502,9 +527,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _nameController.text = brand.brandName;
           _emailController.text = brand.email;
           _usernameController.text = '';
-          _bioController.text = (_profileData as BrandProfile).description;
+
+          // Clean description text before showing in editor
+          String description = (_profileData as BrandProfile).description;
+          if (description.contains('<p>') || description.contains('</p>')) {
+            description =
+                description.replaceAll('<p>', '').replaceAll('</p>', '');
+          }
+          _bioController.text = description;
+
           _socialController.text = '';
-          _selectedIndustry = brand.industry;
+
+          // Find the industry key by matching its value
+          _selectedIndustry = _findIndustryKeyByValue(brand.industry);
         } else {
           final Influencer influencer = user;
           _profileData = InfluencerProfile.fromRecord(profileRecord);
@@ -512,9 +547,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _nameController.text = influencer.fullName;
           _emailController.text = influencer.email;
           _usernameController.text = influencer.username;
-          _bioController.text = (_profileData as InfluencerProfile).description;
+
+          // Clean description text before showing in editor
+          String description = (_profileData as InfluencerProfile).description;
+          if (description.contains('<p>') || description.contains('</p>')) {
+            description =
+                description.replaceAll('<p>', '').replaceAll('</p>', '');
+          }
+          _bioController.text = description;
+
           _socialController.text = influencer.socialHandle ?? '';
-          _selectedIndustry = influencer.industry;
+
+          // Find the industry key by matching its value
+          _selectedIndustry = _findIndustryKeyByValue(influencer.industry);
         }
 
         _isLoading = false;

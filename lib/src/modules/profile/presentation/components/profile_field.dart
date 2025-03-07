@@ -64,6 +64,17 @@ class ProfileBioField extends StatelessWidget {
   }
 
   Widget _buildReadOnlyBioField(BuildContext context) {
+    // Clean HTML tags from the text and add debugging
+    debugPrint('Original bio value: "$value"');
+
+    String cleanText = value;
+    if (value.contains('<p>') || value.contains('</p>')) {
+      debugPrint('Removing HTML tags from bio');
+      cleanText = value.replaceAll('<p>', '').replaceAll('</p>', '');
+    }
+
+    debugPrint('Cleaned bio text: "$cleanText"');
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -80,11 +91,11 @@ class ProfileBioField extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            value.isEmpty ? 'No bio added yet' : value,
+            cleanText.isEmpty ? 'No bio added yet' : cleanText,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: value.isEmpty
+              color: cleanText.isEmpty
                   ? (Theme.of(context).brightness == Brightness.dark
                       ? ShadColors.disabled
                       : Colors.grey)

@@ -2,6 +2,13 @@ part of 'user_bloc.dart';
 
 class FetchUser extends UserEvent {}
 
+class FetchUserProfile extends UserEvent {
+  final String profileId;
+  final bool isBrand;
+
+  FetchUserProfile({required this.profileId, required this.isBrand});
+}
+
 class UpdateUser extends UserEvent {
   final String? fullName;
   final String? username;
