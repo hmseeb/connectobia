@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/industries.dart';
 import '../../../../shared/domain/models/brand.dart';
+import '../../../../shared/domain/models/brand_profile.dart';
 import '../../../../shared/domain/models/influencer.dart';
+import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../theme/colors.dart';
 import '../../application/user/user_bloc.dart';
 import '../components/avatar_uploader.dart';
-import '../components/profile_field.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -32,7 +34,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _formIsValid = false;
 
   dynamic _originalUser;
+  dynamic _profileData;
   bool _isBrand = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserLoaded && _originalUser == null) {
-            _populateFields(state.user);
+            _loadUserData(state.user);
           }
         },
         builder: (context, state) {
@@ -60,6 +64,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
           if (state is UserError && _originalUser == null) {
             return Center(child: Text(state.message));
+          }
+
+          if (_isLoading) {
+            return const Center(child: CircularProgressIndicator());
           }
 
           return _buildForm();
@@ -90,7 +98,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserLoaded) {
+      _loadUserData(userState.user);
+    } else {
+      context.read<UserBloc>().add(FetchUser());
+    }
   }
 
   Widget _buildForm() {
@@ -140,62 +153,116 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSection(
               title: 'Personal Information',
               children: [
-                ProfileField(
-                  label: _isBrand ? 'Brand Name' : 'Full Name',
-                  value: '',
-                  icon: _isBrand ? Icons.business : Icons.person,
-                  isEditable: true,
-                  controller: _nameController,
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'This field is required';
-                    }
-                    return null;
-                  },
-                  isRequired: true,
-                  onChanged: (_) => _updateFormState(),
-                ),
-
-                ProfileField(
-                  label: 'Email',
-                  value: '',
-                  icon: Icons.email,
-                  isEditable: true,
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return 'Email is required';
-                    }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(val)) {
-                      return 'Enter a valid email';
-                    }
-                    return null;
-                  },
-                  isRequired: true,
-                  onChanged: (_) => _updateFormState(),
-                ),
-
-                if (!_isBrand)
-                  ProfileField(
-                    label: 'Username',
-                    value: '',
-                    icon: Icons.alternate_email,
-                    isEditable: true,
-                    controller: _usernameController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Username is required';
-                      }
-                      if (val.contains(' ')) {
-                        return 'Username cannot contain spaces';
-                      }
-                      return null;
-                    },
-                    isRequired: true,
-                    onChanged: (_) => _updateFormState(),
+                // Name field
+                ShadCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _isBrand ? 'Brand Name *' : 'Full Name *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? ShadColors.disabled
+                              : Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      ShadInputFormField(
+                        controller: _nameController,
+                        placeholder:
+                            Text(_isBrand ? 'Brand name' : 'Full name'),
+                        prefix: _isBrand
+                            ? const Icon(LucideIcons.building2)
+                            : const Icon(LucideIcons.user),
+                        validator: (val) {
+                          if (val.isEmpty) {
+                            return 'This field is required';
+                          }
+                          return null;
+                        },
+                        onChanged: (_) => _updateFormState(),
+                      ),
+                    ],
                   ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Email field
+                ShadCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Email *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      ShadInputFormField(
+                        controller: _emailController,
+                        placeholder: const Text('Email address'),
+                        prefix: const Icon(LucideIcons.mail),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (val) {
+                          if (val.isEmpty) {
+                            return 'Email is required';
+                          }
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                              .hasMatch(val)) {
+                            return 'Enter a valid email';
+                          }
+                          return null;
+                        },
+                        onChanged: (_) => _updateFormState(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                if (!_isBrand) ...[
+                  const SizedBox(height: 12),
+
+                  // Username field
+                  ShadCard(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Username *',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        ShadInputFormField(
+                          controller: _usernameController,
+                          placeholder: const Text('Username'),
+                          prefix: const Icon(LucideIcons.atSign),
+                          validator: (val) {
+                            if (val.isEmpty) {
+                              return 'Username is required';
+                            }
+                            if (val.contains(' ')) {
+                              return 'Username cannot contain spaces';
+                            }
+                            return null;
+                          },
+                          onChanged: (_) => _updateFormState(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 12),
 
                 // Industry Dropdown
                 _buildIndustryDropdown(),
@@ -208,21 +275,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _buildSection(
               title: 'Bio & Social',
               children: [
-                ProfileBioField(
-                  label: 'Bio',
-                  value: '',
-                  isEditable: true,
-                  controller: _bioController,
-                  onChanged: (_) => _updateFormState(),
+                // Bio field
+                ShadCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Bio',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      TextField(
+                        controller: _bioController,
+                        decoration: const InputDecoration(
+                          hintText:
+                              'Write something about yourself or your brand...',
+                          border: OutlineInputBorder(),
+                        ),
+                        minLines: 3,
+                        maxLines: 5,
+                        onChanged: (_) => _updateFormState(),
+                      ),
+                    ],
+                  ),
                 ),
-                ProfileField(
-                  label: 'Social Media Handle',
-                  value: '',
-                  icon: Icons.link,
-                  isEditable: true,
-                  controller: _socialController,
-                  onChanged: (_) => _updateFormState(),
-                ),
+
+                if (!_isBrand) ...[
+                  const SizedBox(height: 12),
+
+                  // Social media handle field
+                  ShadCard(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Social Media Handle',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        ShadInputFormField(
+                          controller: _socialController,
+                          placeholder: const Text('Your social media handle'),
+                          prefix: const Icon(LucideIcons.link),
+                          onChanged: (_) => _updateFormState(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ],
@@ -232,8 +340,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildIndustryDropdown() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+    return ShadCard(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -247,33 +355,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          DropdownButtonFormField<String>(
-            value: _selectedIndustry,
-            onChanged: (value) {
-              setState(() {
-                _selectedIndustry = value;
-                _updateFormState();
-              });
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select an industry';
-              }
-              return null;
-            },
-            items: IndustryList.industries.entries
+          ShadSelect<String>(
+            initialValue: _selectedIndustry,
+            placeholder: const Text('Select industry...'),
+            options: IndustryList.industries.entries
                 .map(
-                  (entry) => DropdownMenuItem<String>(
+                  (entry) => ShadOption(
                     value: entry.value,
                     child: Text(entry.value),
                   ),
                 )
                 .toList(),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            ),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  _selectedIndustry = value;
+                  _updateFormState();
+                });
+              }
+            },
           ),
+          if (_formKey.currentState?.validate() == false &&
+              _selectedIndustry == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+              child: Text(
+                'Please select an industry',
+                style: TextStyle(
+                  color: Colors.red[700],
+                  fontSize: 12,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -305,17 +418,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_nameController.text != brand.brandName) return true;
       if (_emailController.text != brand.email) return true;
       if (_selectedIndustry != brand.industry) return true;
+
+      if (_profileData != null) {
+        final BrandProfile profile = _profileData;
+        if (_bioController.text != (profile.description)) return true;
+      }
     } else {
       final Influencer influencer = _originalUser;
       if (_nameController.text != influencer.fullName) return true;
       if (_emailController.text != influencer.email) return true;
       if (_usernameController.text != influencer.username) return true;
       if (_selectedIndustry != influencer.industry) return true;
+      if (_socialController.text != (influencer.socialHandle ?? ''))
+        return true;
+
+      if (_profileData != null) {
+        final InfluencerProfile profile = _profileData;
+        if (_bioController.text != (profile.description)) return true;
+      }
     }
 
-    // Always check these fields
-    if (_bioController.text.isNotEmpty) return true;
-    if (_socialController.text.isNotEmpty) return true;
+    // Always check profile image
     if (_profileImage != null) return true;
 
     return false;
@@ -332,8 +455,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             email: _emailController.text,
             username: _isBrand ? null : _usernameController.text,
             industry: _selectedIndustry,
-            bio: _bioController.text.isNotEmpty ? _bioController.text : null,
-            socialHandle: _socialController.text.isNotEmpty
+            description:
+                _bioController.text.isNotEmpty ? _bioController.text : null,
+            socialHandle: (!_isBrand && _socialController.text.isNotEmpty)
                 ? _socialController.text
                 : null,
           ),
@@ -350,12 +474,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     Navigator.pop(context);
   }
 
-  void _loadUserData() {
-    final userState = context.read<UserBloc>().state;
-    if (userState is UserLoaded) {
-      _populateFields(userState.user);
-    } else {
-      context.read<UserBloc>().add(FetchUser());
+  Future<void> _loadUserData(dynamic user) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      _originalUser = user;
+      _isBrand = user is Brand;
+
+      // Get the profile ID from the user
+      final String profileId =
+          _isBrand ? (user as Brand).profile : (user as Influencer).profile;
+
+      // Fetch the profile data
+      final pb = await PocketBaseSingleton.instance;
+      final profileCollectionName =
+          _isBrand ? 'brandProfile' : 'influencerProfile';
+      final profileRecord =
+          await pb.collection(profileCollectionName).getOne(profileId);
+
+      setState(() {
+        if (_isBrand) {
+          final Brand brand = user;
+          _profileData = BrandProfile.fromRecord(profileRecord);
+
+          _nameController.text = brand.brandName;
+          _emailController.text = brand.email;
+          _usernameController.text = '';
+          _bioController.text = (_profileData as BrandProfile).description;
+          _socialController.text = '';
+          _selectedIndustry = brand.industry;
+        } else {
+          final Influencer influencer = user;
+          _profileData = InfluencerProfile.fromRecord(profileRecord);
+
+          _nameController.text = influencer.fullName;
+          _emailController.text = influencer.email;
+          _usernameController.text = influencer.username;
+          _bioController.text = (_profileData as InfluencerProfile).description;
+          _socialController.text = influencer.socialHandle ?? '';
+          _selectedIndustry = influencer.industry;
+        }
+
+        _isLoading = false;
+      });
+
+      // Setup listeners for dirty state
+      _nameController.addListener(_updateFormState);
+      _emailController.addListener(_updateFormState);
+      _usernameController.addListener(_updateFormState);
+      _bioController.addListener(_updateFormState);
+      _socialController.addListener(_updateFormState);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading profile data: ${e.toString()}')),
+      );
     }
   }
 
@@ -364,40 +541,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _profileImage = image;
       _formIsDirty = true;
     });
-  }
-
-  void _populateFields(dynamic user) {
-    setState(() {
-      _originalUser = user;
-      _isBrand = user is Brand;
-
-      if (_isBrand) {
-        final Brand brand = user;
-        _nameController.text = brand.brandName;
-        _emailController.text = brand.email;
-        _usernameController.text = '';
-        _bioController.text = ''; // Assuming bio field exists
-        _socialController.text =
-            ''; // Assuming social media handle field exists
-        _selectedIndustry = brand.industry;
-      } else {
-        final Influencer influencer = user;
-        _nameController.text = influencer.fullName;
-        _emailController.text = influencer.email;
-        _usernameController.text = influencer.username;
-        _bioController.text = ''; // Assuming bio field exists
-        _socialController.text =
-            ''; // Assuming social media handle field exists
-        _selectedIndustry = influencer.industry;
-      }
-    });
-
-    // Setup listeners for dirty state
-    _nameController.addListener(_updateFormState);
-    _emailController.addListener(_updateFormState);
-    _usernameController.addListener(_updateFormState);
-    _bioController.addListener(_updateFormState);
-    _socialController.addListener(_updateFormState);
   }
 
   void _updateFormState() {

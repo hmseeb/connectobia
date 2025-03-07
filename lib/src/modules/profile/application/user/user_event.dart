@@ -7,7 +7,7 @@ class UpdateUser extends UserEvent {
   final String? username;
   final String? email;
   final String? industry;
-  final String? bio;
+  final String? description;
   final String? socialHandle;
   final String? brandName;
 
@@ -16,7 +16,7 @@ class UpdateUser extends UserEvent {
     this.username,
     this.email,
     this.industry,
-    this.bio,
+    this.description,
     this.socialHandle,
     this.brandName,
   });

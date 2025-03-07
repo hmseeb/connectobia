@@ -17,6 +17,8 @@ class Influencer {
   final bool onboarded;
   final String industry;
   final String profile;
+  final String? description;
+  final String? socialHandle;
   final DateTime created;
   final DateTime updated;
 
@@ -35,6 +37,8 @@ class Influencer {
     required this.onboarded,
     required this.industry,
     required this.profile,
+    this.description,
+    this.socialHandle,
     required this.created,
     required this.updated,
   });
@@ -54,6 +58,8 @@ class Influencer {
         connectedSocial: json["connectedSocial"],
         industry: json["industry"] ?? '',
         profile: json["profile"],
+        description: json["description"],
+        socialHandle: json["socialHandle"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
       );
@@ -79,6 +85,8 @@ class Influencer {
     bool? onboarded,
     String? industry,
     String? profile,
+    String? description,
+    String? socialHandle,
     DateTime? created,
     DateTime? updated,
   }) =>
@@ -97,6 +105,8 @@ class Influencer {
         connectedSocial: connectedSocial ?? this.connectedSocial,
         industry: industry ?? this.industry,
         profile: profile ?? this.profile,
+        description: description ?? this.description,
+        socialHandle: socialHandle ?? this.socialHandle,
         created: created ?? this.created,
         updated: updated ?? this.updated,
       );
@@ -116,6 +126,8 @@ class Influencer {
         "onboarded": onboarded,
         "industry": industry,
         "profile": profile,
+        "description": description,
+        "socialHandle": socialHandle,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
       };

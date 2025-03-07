@@ -15,6 +15,7 @@ class Brand {
   final bool onboarded;
   final String industry;
   final String profile;
+  final String? description;
   final DateTime created;
   final DateTime updated;
 
@@ -31,6 +32,7 @@ class Brand {
     required this.onboarded,
     required this.industry,
     required this.profile,
+    this.description,
     required this.created,
     required this.updated,
   });
@@ -48,6 +50,7 @@ class Brand {
         onboarded: json["onboarded"],
         industry: json["industry"],
         profile: json["profile"],
+        description: json["description"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),
       );
@@ -70,6 +73,7 @@ class Brand {
     bool? onboarded,
     String? industry,
     String? profile,
+    String? description,
     DateTime? created,
     DateTime? updated,
   }) =>
@@ -86,6 +90,7 @@ class Brand {
         onboarded: onboarded ?? this.onboarded,
         industry: industry ?? this.industry,
         profile: profile ?? this.profile,
+        description: description ?? this.description,
         created: created ?? this.created,
         updated: updated ?? this.updated,
       );
@@ -103,6 +108,7 @@ class Brand {
         "onboarded": onboarded,
         "industry": industry,
         "profile": profile,
+        "description": description,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
       };

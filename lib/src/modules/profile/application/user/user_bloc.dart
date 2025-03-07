@@ -48,28 +48,53 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final id = pb.authStore.record!.id;
         final collectionName = pb.authStore.record!.collectionName;
 
+        // Create body for main collection update
         final body = <String, dynamic>{};
 
         if (event.fullName != null) body['fullName'] = event.fullName;
         if (event.username != null) body['username'] = event.username;
         if (event.email != null) body['email'] = event.email;
-        if (event.industry != null)
+        if (event.industry != null) {
           body['industry'] = IndustryFormatter.keyToValue(event.industry!);
-        if (event.bio != null) body['bio'] = event.bio;
-        if (event.socialHandle != null)
+        }
+        if (event.socialHandle != null) {
           body['socialHandle'] = event.socialHandle;
+        }
         if (collectionName == 'brands' && event.brandName != null) {
           body['brandName'] = event.brandName;
         }
 
-        final updatedRecord =
-            await pb.collection(collectionName).update(id, body: body);
+        // Update the main user document if there are fields to update
+        if (body.isNotEmpty) {
+          await pb.collection(collectionName).update(id, body: body);
+        }
+
+        // If description is provided, update the profile collection
+        if (event.description != null) {
+          // Get the profile ID from the user record
+          final userRecord = await pb.collection(collectionName).getOne(id);
+          final profileId = userRecord.data["profile"];
+
+          // Determine which profile collection to update
+          final profileCollectionName =
+              collectionName == 'brands' ? 'brandProfile' : 'influencerProfile';
+
+          // Update the description in the profile collection
+          await pb.collection(profileCollectionName).update(
+            profileId,
+            body: {"description": event.description},
+          );
+        }
+
+        // Fetch the updated user
+        final updatedUserRecord =
+            await pb.collection(collectionName).getOne(id);
 
         if (collectionName == 'brands') {
-          final brand = Brand.fromRecord(updatedRecord);
+          final brand = Brand.fromRecord(updatedUserRecord);
           emit(UserLoaded(brand));
         } else {
-          final influencer = Influencer.fromRecord(updatedRecord);
+          final influencer = Influencer.fromRecord(updatedUserRecord);
           emit(UserLoaded(influencer));
         }
       } catch (e) {
