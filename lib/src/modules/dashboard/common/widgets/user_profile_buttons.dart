@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../shared/data/constants/screens.dart';
+
 class ProfileButtons extends StatelessWidget {
   const ProfileButtons({
     super.key,
@@ -14,7 +16,7 @@ class ProfileButtons extends StatelessWidget {
         Expanded(
           child: ShadButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/editProfile');
+              Navigator.pushNamed(context, editProfileScreen);
             },
             child: const Text('Edit Profile'),
           ),

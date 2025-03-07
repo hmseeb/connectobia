@@ -55,6 +55,8 @@ class CommonAppBar extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Scaffold.of(context).openEndDrawer();
+                // or navigate to profile
+                // Navigator.pushNamed(context, profileScreen);
               },
               child: CircleAvatar(
                 backgroundImage: CachedNetworkImageProvider(

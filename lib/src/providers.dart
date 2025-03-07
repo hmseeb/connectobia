@@ -4,6 +4,7 @@ import 'package:connectobia/src/modules/campaign/application/collaboration/colla
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/profile/application/user/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,6 +56,7 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => CampaignBloc()),
         BlocProvider(create: (context) => CollaborationBloc()),
         BlocProvider(create: (context) => ContractBloc()),
+        BlocProvider(create: (context) => UserBloc()),
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),
