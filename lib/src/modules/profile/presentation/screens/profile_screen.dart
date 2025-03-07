@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../shared/data/constants/screens.dart';
 import '../../../../shared/domain/models/brand.dart';
