@@ -25,7 +25,7 @@ class NavigationButtons extends StatelessWidget {
         // Back button
         isFirstStep
             ? ShadButton.outline(
-                onPressed: onPrevious,
+                onPressed: () => Navigator.of(context).pop(),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
