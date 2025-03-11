@@ -82,7 +82,7 @@ class _CampaignContractState extends State<CampaignContract> {
       children: [
         ShadCheckbox(
           value: value,
-          onChanged: (val) => onChanged(val!),
+          onChanged: (val) => onChanged(val),
         ),
         const SizedBox(width: 8),
         Text(label, style: const TextStyle(fontSize: 16.0)),
