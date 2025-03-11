@@ -37,7 +37,7 @@ class _CampaignContractState extends State<CampaignContract> {
 
         // Additional Requirements
         _buildLabeledInfoCard(
-          'Additional Requirements',
+          'Content Guidelines',
           'We want content that truly represents our brand’s commitment to sustainability. '
           'Your posts should highlight eco-friendly practices, ethical consumerism, and green lifestyle choices. '
           'The content should feel authentic—whether it’s through engaging stories, informative posts, or interactive live sessions. '
