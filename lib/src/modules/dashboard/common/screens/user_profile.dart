@@ -225,7 +225,7 @@ class _UserProfileState extends State<UserProfile> {
                 followers: followers,
                 mediaCount: mediaCount,
                 hasConnectedInstagram: connectedSocial,
-                profileType: profileType,
+                // profileType: profileType,
               ),
             ],
           ),
