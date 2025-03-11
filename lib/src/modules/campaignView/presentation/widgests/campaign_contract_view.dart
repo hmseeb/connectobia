@@ -12,6 +12,7 @@ class CampaignContract extends StatefulWidget {
 class _CampaignContractState extends State<CampaignContract> {
   bool _confirmDetails = false;
   bool _acceptTerms = false;
+  final TextEditingController _suggestionsController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +65,31 @@ class _CampaignContractState extends State<CampaignContract> {
         _buildCheckbox('I accept all terms and conditions', _acceptTerms, (value) {
           setState(() => _acceptTerms = value);
         }),
+        const SizedBox(height: 16),
+
+        // Suggestions Input Field
+        _buildSectionTitle('Suggestions'),
+        const SizedBox(height: 8),
+        ShadInput(
+          controller: _suggestionsController,
+          placeholder: Text('Enter your suggestions...'),
+          maxLines: 5,
+        ),
+        const SizedBox(height: 16),
+
+        // Submit Button
+        ShadButton(
+          onPressed: () {
+            // Handle submission logic
+            final suggestions = _suggestionsController.text;
+            print('Submitted Suggestions: $suggestions');
+          },
+          child: const Text('Submit'),
+        ),
       ],
     );
   }
+
   Widget _buildLabeledInfoCard(String title, String content, {bool isMultiline = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,6 +100,7 @@ class _CampaignContractState extends State<CampaignContract> {
       ],
     );
   }
+
   Widget _buildCheckbox(String label, bool value, Function(bool) onChanged) {
     return Row(
       children: [
@@ -89,6 +113,7 @@ class _CampaignContractState extends State<CampaignContract> {
       ],
     );
   }
+
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
