@@ -2,7 +2,6 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/goals_chea
 import 'package:connectobia/src/shared/data/constants/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CampaignGoals extends StatefulWidget {
   final Function(bool) onValidationChanged;
