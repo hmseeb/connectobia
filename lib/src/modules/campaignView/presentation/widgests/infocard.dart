@@ -19,7 +19,6 @@ class InfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Container(
         color: Colors.white.withOpacity(0.8), // Semi-transparent background
-        padding: const EdgeInsets.all(16.0),
         child: Row(
           crossAxisAlignment: isMultiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
           children: [
