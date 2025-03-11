@@ -1,6 +1,7 @@
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/constants/industries.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
+import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,13 @@ class CampaignRepository {
             await ContractRepository.createContract(contract);
         debugPrint(
             'Contract created successfully with ID: ${createdContract.id}');
+
+        // Create a notification for the influencer about the new contract
+        await NotificationRepository.createContractNotification(
+          userId: influencerId,
+          contractId: createdContract.id,
+          campaignTitle: campaign.title,
+        );
       } catch (e) {
         debugPrint('Error creating contract for assignment: $e');
         // Don't fail the assignment if contract creation fails
@@ -165,6 +173,13 @@ class CampaignRepository {
               await ContractRepository.createContract(contract);
           debugPrint(
               'Contract created successfully with ID: ${createdContract.id}');
+
+          // Create a notification after successfully creating a contract
+          await NotificationRepository.createContractNotification(
+            userId: createdCampaign.selectedInfluencer!,
+            contractId: createdContract.id,
+            campaignTitle: createdCampaign.title,
+          );
         } catch (e) {
           debugPrint('Error creating contract: $e');
           // Don't fail the campaign creation if contract creation fails

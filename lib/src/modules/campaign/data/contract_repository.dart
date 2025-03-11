@@ -1,5 +1,6 @@
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
+import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:flutter/material.dart';
 
@@ -201,7 +202,25 @@ class ContractRepository {
           'status': 'signed',
         },
       );
-      return Contract.fromRecord(record);
+
+      final signedContract = Contract.fromRecord(record);
+
+      // Create notification for the brand
+      try {
+        // Create notification for brand owner
+        await NotificationRepository.createContractSignedNotification(
+          brandId: signedContract.brand,
+          influencerName:
+              "Influencer", // Generic name since we don't have detailed info
+          contractId: signedContract.id,
+          campaignTitle: "your campaign", // Generic title
+        );
+      } catch (e) {
+        debugPrint('Error creating notification after contract signing: $e');
+        // Do not fail the contract signing if notification fails
+      }
+
+      return signedContract;
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
