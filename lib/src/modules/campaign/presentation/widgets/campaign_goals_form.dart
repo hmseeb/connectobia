@@ -36,7 +36,6 @@ class _CampaignGoalsState extends State<CampaignGoals> {
             width: 150,
           ),
           const SizedBox(height: 10), // Adds space between image and card
-
           // The ShadCard containing goals
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 400), // Keeps it responsive
@@ -51,7 +50,6 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-
                   CampaignGoalCheckbox(
                     id: 'goal1',
                     label: 'Increase Brand Awareness',
@@ -65,7 +63,6 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                     },
                   ),
                   const SizedBox(height: 16),
-
                   CampaignGoalCheckbox(
                     id: 'goal2',
                     label: 'Drive Sales',
@@ -79,7 +76,6 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                     },
                   ),
                   const SizedBox(height: 16),
-
                   CampaignGoalCheckbox(
                     id: 'goal3',
                     label: 'Boost Engagement',
@@ -93,7 +89,6 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                     },
                   ),
                   const SizedBox(height: 16),
-
                   CampaignGoalCheckbox(
                     id: 'goal4',
                     label: 'More Website Visits',
@@ -107,7 +102,6 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                     },
                   ),
                   const SizedBox(height: 16),
-
                   CampaignGoalCheckbox(
                     id: 'goal5',
                     label: 'Improve Brand Recognition',
