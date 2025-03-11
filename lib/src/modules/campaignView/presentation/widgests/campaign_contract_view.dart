@@ -27,7 +27,7 @@ class _CampaignContractState extends State<CampaignContract> {
           children: [
             Expanded(child: _buildLabeledInfoCard('Post Type', 'Post')),
             const SizedBox(width: 16),
-            Expanded(child: _buildLabeledInfoCard('Budget', '\$300 USD')),
+            Expanded(child: _buildLabeledInfoCard('Budget', '300 Rs')),
           ],
         ),
         const SizedBox(height: 16),
