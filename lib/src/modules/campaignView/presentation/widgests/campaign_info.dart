@@ -1,5 +1,5 @@
+import 'package:connectobia/src/modules/campaignView/presentation/widgests/infocard.dart';
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CampaignInfoWidget extends StatefulWidget {
   const CampaignInfoWidget({super.key});
@@ -18,64 +18,34 @@ class _CampaignInfoWidgetState extends State<CampaignInfoWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Campaign Name',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-        ),
-        const SizedBox(height: 8),
-        ShadCard(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: Text('Innovate Your World', style: ShadTheme.of(context).textTheme.p),
+        _buildSectionTitle('Campaign Name'),
+        const InfoCard(text: 'Innovate Your World'),
+        const SizedBox(height: 16),
+        
+        _buildSectionTitle('Campaign Goals'),
+        const InfoCard(text: 'Brand Awareness'),
+        const SizedBox(height: 16),
+
+        _buildSectionTitle('Brand Name'),
+        const InfoCard(
+          text: 'Brand ABC',
+          leading: CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Icon(Icons.business, color: Colors.white),
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          'Campaign Goals',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-        ),
-        const SizedBox(height: 8),
-        ShadCard(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: Text('Brand Awareness', style: ShadTheme.of(context).textTheme.p),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Brand Name',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-        ),
-        const SizedBox(height: 8),
-        ShadCard(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              const CircleAvatar(
-                backgroundColor: Colors.blue,
-                child: Icon(Icons.business, color: Colors.white),
-              ),
-              const SizedBox(width: 10),
-              Text('Brand ABC', style: ShadTheme.of(context).textTheme.p),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Campaign Description',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-        ),
-        const SizedBox(height: 8),
-        ShadCard(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            _campaignDescription,
-            style: ShadTheme.of(context).textTheme.p,
-          ),
-        ),
+
+        _buildSectionTitle('Campaign Description'),
+        InfoCard(text: _campaignDescription),
       ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
     );
   }
 }
