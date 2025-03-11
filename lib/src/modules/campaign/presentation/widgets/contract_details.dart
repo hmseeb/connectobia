@@ -127,7 +127,7 @@ class _ContractDetailsStepState extends State<ContractDetailsStep> {
 
         // Additional Requirements Input
         const Text(
-          'Write Requirement',
+          'Content Guidelines',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 5),
