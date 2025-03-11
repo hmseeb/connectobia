@@ -62,6 +62,7 @@ class _UserProfileState extends State<UserProfile> {
             description: state.brandProfile.description,
             followers: null,
             mediaCount: null,
+            profileType: 'brands',
           );
         } else {
           return _buildProfileScaffold(
@@ -77,10 +78,10 @@ class _UserProfileState extends State<UserProfile> {
             username: 'username',
             isVerified: true,
             connectedSocial: false,
-            description:
-                'Incididunt reprehenderit eu do consectetur irure reprehenderit id eiusmod irure sint enim culpa est. Incididunt eiusmod est do fugiat anim cupidatat velit et occaecat incididunt culpa. Est amet laboris ea sint laborum nisi. Ea magna et qui non enim commodo qui nostrud enim laboris reprehenderit. Tempor nulla id sint eu.',
+            description: 'Loading brand description...',
             followers: 0,
             mediaCount: 0,
+            profileType: 'brands',
           );
         }
       },
@@ -106,14 +107,15 @@ class _UserProfileState extends State<UserProfile> {
             banner: state.influencer.banner,
             collectionId: state.influencer.collectionId,
             name: state.influencer.fullName,
-            isInfluencerVerified: true,
             industry: state.influencer.industry,
+            isInfluencerVerified: true,
             username: state.influencer.username,
             isVerified: state.influencer.verified,
             connectedSocial: state.influencer.connectedSocial,
             description: state.influencerProfile.description,
             followers: state.influencerProfile.followers,
             mediaCount: state.influencerProfile.mediaCount,
+            profileType: 'influencers',
           );
         } else {
           return _buildProfileScaffold(
@@ -129,10 +131,10 @@ class _UserProfileState extends State<UserProfile> {
             username: 'username',
             isVerified: true,
             connectedSocial: false,
-            description:
-                'Veniam id laborum proident qui. Pariatur incididunt Lorem mollit cillum mollit incididunt cupidatat ad sunt officia velit. Fugiat eu laborum ex esse ut sit. Proident consectetur in exercitation veniam ullamco qui eiusmod consequat ipsum ad amet. Voluptate officia eiusmod ipsum amet commodo mollit. Est labore nostrud eu magna quis nostrud sunt ipsum. Ea eu amet ex deserunt id qui fugiat do esse eu sint aliqua.',
+            description: 'Loading influencer description...',
             followers: 0,
             mediaCount: 0,
+            profileType: 'influencers',
           );
         }
       },
@@ -155,6 +157,7 @@ class _UserProfileState extends State<UserProfile> {
     required String industry,
     required String username,
     required bool isVerified,
+    required String profileType,
   }) {
     return Scaffold(
       floatingActionButton:
@@ -222,6 +225,7 @@ class _UserProfileState extends State<UserProfile> {
                 followers: followers,
                 mediaCount: mediaCount,
                 hasConnectedInstagram: connectedSocial,
+                profileType: profileType,
               ),
             ],
           ),
