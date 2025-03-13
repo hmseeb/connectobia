@@ -12,7 +12,6 @@ class _SwipeHintState extends State<SwipeHint>
     with SingleTickerProviderStateMixin {
   bool _showHint = true;
   late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
 
   @override
@@ -62,14 +61,6 @@ class _SwipeHintState extends State<SwipeHint>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0),
-      end: const Offset(-0.15, 0),
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
 
     _fadeAnimation = Tween<double>(
       begin: 1.0,

@@ -61,9 +61,9 @@ class Contract {
       isSignedByBrand: record.data['is_signed_by_brand'] ?? false,
       isSignedByInfluencer: record.data['is_signed_by_influencer'] ?? false,
       status: record.data['status'] ?? 'pending',
-      campaignRecord: record.expand['campaign'],
-      brandRecord: record.expand['brand'],
-      influencerRecord: record.expand['influencer'],
+      campaignRecord: record.get<dynamic>("expand.campaign"),
+      brandRecord: record.get<dynamic>("expand.brand"),
+      influencerRecord: record.get<dynamic>("expand.influencer"),
     );
   }
 

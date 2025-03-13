@@ -15,7 +15,6 @@ class CampaignErrorBoundary extends StatefulWidget {
 
 class _CampaignErrorBoundaryState extends State<CampaignErrorBoundary> {
   bool _hasError = false;
-  FlutterErrorDetails? _errorDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +49,6 @@ class _CampaignErrorBoundaryState extends State<CampaignErrorBoundary> {
                 onPressed: () {
                   setState(() {
                     _hasError = false;
-                    _errorDetails = null;
                   });
                 },
                 child: const Text('Try Again'),
@@ -83,7 +81,6 @@ class _CampaignErrorBoundaryState extends State<CampaignErrorBoundary> {
     if (mounted) {
       setState(() {
         _hasError = true;
-        _errorDetails = details;
       });
     }
     // Log the error

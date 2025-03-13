@@ -212,7 +212,7 @@ class CampaignRepository {
   static Future<List<Campaign>> getAssignedCampaigns() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.model.id;
+      final userId = pb.authStore.record?.id ?? '';
 
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
@@ -303,7 +303,7 @@ class CampaignRepository {
   static Future<List<Campaign>> getCampaigns() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.model.id;
+      final userId = pb.authStore.record?.id ?? '';
 
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,

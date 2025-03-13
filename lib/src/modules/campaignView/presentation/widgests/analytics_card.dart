@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class AnalyticsCard extends StatelessWidget {
@@ -21,7 +21,9 @@ class AnalyticsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           SizedBox(
             height: 200,
@@ -40,15 +42,18 @@ class AnalyticsCard extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 40,
                       getTitlesWidget: (value, meta) {
-                        return Text('${value.toInt()}K', style: const TextStyle(fontSize: 12));
+                        return Text('${value.toInt()}K',
+                            style: const TextStyle(fontSize: 12));
                       },
                     ),
                   ),
                   rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // ❌ Hide right-side titles
+                    sideTitles: SideTitles(
+                        showTitles: false), // ❌ Hide right-side titles
                   ),
                   topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // ❌ Hide top titles
+                    sideTitles:
+                        SideTitles(showTitles: false), // ❌ Hide top titles
                   ),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
@@ -83,7 +88,8 @@ class AnalyticsCard extends StatelessWidget {
                     isCurved: true,
                     color: color,
                     barWidth: 4,
-                    belowBarData: BarAreaData(show: true, color: color.withOpacity(0.3)),
+                    belowBarData:
+                        BarAreaData(show: true, color: color.withAlpha(76)),
                     dotData: FlDotData(show: true),
                   ),
                 ],

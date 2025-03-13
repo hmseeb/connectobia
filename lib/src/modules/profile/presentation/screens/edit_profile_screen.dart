@@ -433,8 +433,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (_nameController.text != influencer.fullName) return true;
       if (_usernameController.text != influencer.username) return true;
       if (_selectedIndustry != influencer.industry) return true;
-      if (_socialController.text != (influencer.socialHandle ?? ''))
+      if (_socialController.text != (influencer.socialHandle ?? '')) {
         return true;
+      }
 
       if (_profileData != null) {
         final InfluencerProfile profile = _profileData;
@@ -497,6 +498,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _loadUserData(dynamic user) async {
+    if (!mounted) return;
+
+    final BuildContext currentContext = context;
+
     setState(() {
       _isLoading = true;
     });
@@ -515,6 +520,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _isBrand ? 'brandProfile' : 'influencerProfile';
       final profileRecord =
           await pb.collection(profileCollectionName).getOne(profileId);
+
+      if (!mounted) return;
 
       setState(() {
         if (_isBrand) {
@@ -569,10 +576,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _bioController.addListener(_updateFormState);
       _socialController.addListener(_updateFormState);
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(currentContext).showSnackBar(
         SnackBar(content: Text('Error loading profile data: ${e.toString()}')),
       );
     }

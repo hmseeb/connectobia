@@ -58,13 +58,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          final currentContext = context;
           await Navigator.pushNamed(context, editProfileScreen);
           // Refresh data when returning from edit screen
+          if (!mounted) return;
           setState(() {
             _profileData = null; // Clear cached profile data
             _isLoadingProfile = false;
           });
-          context.read<UserBloc>().add(FetchUser()); // Refresh user data
+          currentContext.read<UserBloc>().add(FetchUser()); // Refresh user data
         },
         backgroundColor: Colors.red.shade400,
         foregroundColor: Colors.white,
@@ -224,6 +226,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _refreshProfileData(String profileId, bool isBrand) async {
     if (_isLoadingProfile || profileId.isEmpty) return;
 
+    final BuildContext currentContext = context;
+
     setState(() {
       _isLoadingProfile = true;
     });
@@ -236,6 +240,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final profileRecord =
           await pb.collection(profileCollectionName).getOne(profileId);
 
+      if (!mounted) return;
+
       setState(() {
         if (isBrand) {
           _profileData = BrandProfile.fromRecord(profileRecord);
@@ -245,10 +251,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isLoadingProfile = false;
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _isLoadingProfile = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(currentContext).showSnackBar(
         SnackBar(content: Text('Error loading profile data: ${e.toString()}')),
       );
     }

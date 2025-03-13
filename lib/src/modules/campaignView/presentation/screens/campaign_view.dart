@@ -738,13 +738,13 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       case 'draft':
         return Colors.grey.shade200;
       case 'active':
-        return AppColors.success.withOpacity(0.2);
+        return AppColors.success.withAlpha(51);
       case 'assigned':
         return Colors.blue.shade100;
       case 'closed':
         return Colors.grey.shade300;
       case 'deleted':
-        return AppColors.error.withOpacity(0.2);
+        return AppColors.error.withAlpha(51);
       default:
         return Colors.grey.shade200;
     }
@@ -772,9 +772,9 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       case 'pending':
         return Colors.grey.shade200;
       case 'accepted':
-        return AppColors.success.withOpacity(0.2);
+        return AppColors.success.withAlpha(51);
       case 'rejected':
-        return AppColors.error.withOpacity(0.2);
+        return AppColors.error.withAlpha(51);
       case 'countered':
         return Colors.blue.shade100;
       default:
@@ -802,11 +802,11 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       case 'pending':
         return Colors.amber.shade100;
       case 'signed':
-        return AppColors.success.withOpacity(0.2);
+        return AppColors.success.withAlpha(51);
       case 'completed':
         return Colors.purple.shade100;
       case 'rejected':
-        return AppColors.error.withOpacity(0.2);
+        return AppColors.error.withAlpha(51);
       default:
         return Colors.grey.shade200;
     }
@@ -832,7 +832,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       final pb = await PocketBaseSingleton.instance;
       if (pb.authStore.isValid) {
         setState(() {
-          userId = pb.authStore.model.id;
+          userId = pb.authStore.record?.id ?? '';
         });
       }
     } catch (e) {

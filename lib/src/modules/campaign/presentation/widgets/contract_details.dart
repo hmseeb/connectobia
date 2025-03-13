@@ -207,7 +207,7 @@ class ContractDetailsCard extends StatelessWidget {
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color),
       ),
@@ -223,7 +223,9 @@ class ContractDetailsCard extends StatelessWidget {
   }
 
   String _formatPostTypes(List<String> types) {
-    if (types.isEmpty) return 'N/A';
+    if (types.isEmpty) {
+      return 'N/A';
+    }
 
     return types.map((type) {
       // Capitalize first letter of each type
@@ -353,6 +355,51 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                             '${entry.key[0].toUpperCase()}${entry.key.substring(1)}'),
                       );
                     }).toList(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Delivery Date Section
+            ShadCard(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Delivery Date",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Select the date when content should be delivered:",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 12),
+                  InkWell(
+                    onTap: () => _selectDeliveryDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            DateFormat('MMM dd, yyyy').format(_deliveryDate),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const Icon(Icons.calendar_today, size: 20),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -565,13 +612,15 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
   }
 
   void _selectDeliveryDate(BuildContext context) async {
+    final currentContext = context;
     final DateTime? picked = await showDatePicker(
-      context: context,
+      context: currentContext,
       initialDate: _deliveryDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null && picked != _deliveryDate) {
+      if (!mounted) return;
       setState(() {
         _deliveryDate = picked;
         _notifyChanges();
