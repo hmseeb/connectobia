@@ -1,4 +1,4 @@
-import 'package:connectobia/src/modules/campaignView/presentation/widgests/infocard.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/infocard.dart';
 import 'package:flutter/material.dart';
 
 class CampaignInfoWidget extends StatefulWidget {
@@ -21,11 +21,9 @@ class _CampaignInfoWidgetState extends State<CampaignInfoWidget> {
         _buildSectionTitle('Campaign Name'),
         const InfoCard(text: 'Innovate Your World'),
         const SizedBox(height: 16),
-        
         _buildSectionTitle('Campaign Goals'),
         const InfoCard(text: 'Brand Awareness'),
         const SizedBox(height: 16),
-
         _buildSectionTitle('Brand Name'),
         const InfoCard(
           text: 'Brand ABC',
@@ -35,7 +33,6 @@ class _CampaignInfoWidgetState extends State<CampaignInfoWidget> {
           ),
         ),
         const SizedBox(height: 16),
-
         _buildSectionTitle('Campaign Description'),
         InfoCard(text: _campaignDescription),
       ],

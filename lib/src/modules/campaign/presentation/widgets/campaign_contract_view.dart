@@ -1,4 +1,4 @@
-import 'package:connectobia/src/modules/campaignView/presentation/widgests/infocard.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/infocard.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -40,10 +40,10 @@ class _CampaignContractState extends State<CampaignContract> {
         _buildLabeledInfoCard(
           'Content Guidelines',
           'We want content that truly represents our brand’s commitment to sustainability. '
-          'Your posts should highlight eco-friendly practices, ethical consumerism, and green lifestyle choices. '
-          'The content should feel authentic—whether it’s through engaging stories, informative posts, or interactive live sessions. '
-          'Show how our product fits into a sustainable lifestyle, making it a natural choice for conscious consumers. '
-          'Avoid any messaging that contradicts environmental values, and ensure that your audience walks away feeling inspired to make greener choices.',
+              'Your posts should highlight eco-friendly practices, ethical consumerism, and green lifestyle choices. '
+              'The content should feel authentic—whether it’s through engaging stories, informative posts, or interactive live sessions. '
+              'Show how our product fits into a sustainable lifestyle, making it a natural choice for conscious consumers. '
+              'Avoid any messaging that contradicts environmental values, and ensure that your audience walks away feeling inspired to make greener choices.',
           isMultiline: true,
         ),
         const SizedBox(height: 24),
@@ -56,13 +56,15 @@ class _CampaignContractState extends State<CampaignContract> {
         const SizedBox(height: 8),
 
         // Confirm Details Checkbox
-        _buildCheckbox('I confirm all details are correct', _confirmDetails, (value) {
+        _buildCheckbox('I confirm all details are correct', _confirmDetails,
+            (value) {
           setState(() => _confirmDetails = value);
         }),
         const SizedBox(height: 8),
 
         // Accept Terms Checkbox
-        _buildCheckbox('I accept all terms and conditions', _acceptTerms, (value) {
+        _buildCheckbox('I accept all terms and conditions', _acceptTerms,
+            (value) {
           setState(() => _acceptTerms = value);
         }),
         const SizedBox(height: 16),
@@ -90,17 +92,6 @@ class _CampaignContractState extends State<CampaignContract> {
     );
   }
 
-  Widget _buildLabeledInfoCard(String title, String content, {bool isMultiline = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle(title),
-        const SizedBox(height: 8),
-        InfoCard(text: content, isMultiline: isMultiline),
-      ],
-    );
-  }
-
   Widget _buildCheckbox(String label, bool value, Function(bool) onChanged) {
     return Row(
       children: [
@@ -110,6 +101,18 @@ class _CampaignContractState extends State<CampaignContract> {
         ),
         const SizedBox(width: 8),
         Text(label, style: const TextStyle(fontSize: 16.0)),
+      ],
+    );
+  }
+
+  Widget _buildLabeledInfoCard(String title, String content,
+      {bool isMultiline = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle(title),
+        const SizedBox(height: 8),
+        InfoCard(text: content, isMultiline: isMultiline),
       ],
     );
   }

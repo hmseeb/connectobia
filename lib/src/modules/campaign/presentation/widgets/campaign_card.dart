@@ -1,8 +1,8 @@
 import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
+import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_view.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/create_campaign.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/delete_confirmation_dialog.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/status_badge.dart';
-import 'package:connectobia/src/modules/campaignView/presentation/screens/campaign_view.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
