@@ -338,7 +338,8 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
 
   Widget _buildCampaignCard(Campaign campaign) {
     // Format currency
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final currencyFormat =
+        NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0);
     final formattedBudget = currencyFormat.format(campaign.budget);
 
     // Format date

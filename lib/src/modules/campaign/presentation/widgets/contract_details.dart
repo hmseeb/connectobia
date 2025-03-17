@@ -4,6 +4,9 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../shared/domain/models/contract.dart';
 
+// Define a consistent currency format to use throughout the app
+final currencyFormat = NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0);
+
 class ContractDetailsCard extends StatelessWidget {
   final Contract contract;
   final bool allowActions;
@@ -20,7 +23,6 @@ class ContractDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return ShadCard(
@@ -270,6 +272,8 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
   };
   late DateTime _deliveryDate;
   final TextEditingController _guidelinesController = TextEditingController();
+  final TextEditingController _paymentDetailsController =
+      TextEditingController();
   bool _confirmDetails = false;
   bool _acceptTerms = false;
 
@@ -284,201 +288,216 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            const Text(
-              'Contract Details',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
+    final dateFormat = DateFormat('MMM dd, yyyy');
 
-            // Campaign Summary
-            ShadCard(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Campaign Summary',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildSummaryRow(
-                      'Name', widget.campaignFormState?.title ?? "Campaign"),
-                  _buildSummaryRow('Category',
-                      widget.campaignFormState?.category ?? "Category"),
-                  _buildSummaryRow('Budget',
-                      "\$${widget.campaignFormState?.budget.toString() ?? "0"}"),
-                  _buildSummaryRow('Timeline',
-                      '${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.startDate ?? DateTime.now())} - ${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.endDate ?? DateTime.now().add(const Duration(days: 30)))}'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        final formattedBudget =
+            currencyFormat.format(widget.campaignFormState?.budget ?? 0);
+        return FadeTransition(
+          opacity: _fadeAnimation,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                const Text(
+                  'Contract Details',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
 
-            // Post Type Section
-            ShadCard(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Content Types",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                // Campaign Summary
+                ShadCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Campaign Summary',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildSummaryRow('Name',
+                          widget.campaignFormState?.title ?? "Campaign"),
+                      _buildSummaryRow('Category',
+                          widget.campaignFormState?.category ?? "Category"),
+                      _buildSummaryRow(
+                          'Budget',
+                          currencyFormat
+                              .format(widget.campaignFormState?.budget ?? 0)),
+                      _buildSummaryRow('Timeline',
+                          '${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.startDate ?? DateTime.now())} - ${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.endDate ?? DateTime.now().add(const Duration(days: 30)))}'),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Select the types of content you need from the influencer:",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+
+                // Post Type Section
+                ShadCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Content Types",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Select the types of content you need from the influencer:",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 10,
+                        children: _selectedPostTypes.entries.map((entry) {
+                          return ShadCheckbox(
+                            value: entry.value,
+                            onChanged: (bool value) {
+                              setState(() {
+                                _selectedPostTypes[entry.key] = value;
+                                _notifyChanges();
+                              });
+                            },
+                            label: Text(
+                                '${entry.key[0].toUpperCase()}${entry.key.substring(1)}'),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    children: _selectedPostTypes.entries.map((entry) {
-                      return ShadCheckbox(
-                        value: entry.value,
-                        onChanged: (bool value) {
+                ),
+                const SizedBox(height: 20),
+
+                // Delivery Date Section
+                ShadCard(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Delivery Date",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Select the date when content should be delivered:",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 12),
+                      InkWell(
+                        onTap: () => _selectDeliveryDate(context),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                DateFormat('MMM dd, yyyy')
+                                    .format(_deliveryDate),
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const Icon(Icons.calendar_today, size: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Content Guidelines Section
+                ShadCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Content Guidelines',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Provide any specific requirements or instructions:',
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 12),
+                      ShadInputFormField(
+                        controller: _guidelinesController,
+                        placeholder: const Text(
+                            'Examples: specific colors, messaging, hashtags, etc.'),
+                        maxLines: 5,
+                        onChanged: (value) {
+                          _notifyChanges();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Terms and Agreement
+                ShadCard(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Agreement',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                      const SizedBox(height: 16),
+                      ShadCheckbox(
+                        value: _confirmDetails,
+                        onChanged: (value) {
                           setState(() {
-                            _selectedPostTypes[entry.key] = value;
+                            _confirmDetails = value;
                             _notifyChanges();
                           });
                         },
-                        label: Text(
-                            '${entry.key[0].toUpperCase()}${entry.key.substring(1)}'),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Delivery Date Section
-            ShadCard(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Delivery Date",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Select the date when content should be delivered:",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 12),
-                  InkWell(
-                    onTap: () => _selectDeliveryDate(context),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
+                        label: const Text('I confirm all details are correct'),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            DateFormat('MMM dd, yyyy').format(_deliveryDate),
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const Icon(Icons.calendar_today, size: 20),
-                        ],
+                      const SizedBox(height: 8),
+                      ShadCheckbox(
+                        value: _acceptTerms,
+                        onChanged: (value) {
+                          setState(() {
+                            _acceptTerms = value;
+                            _notifyChanges();
+                          });
+                        },
+                        label: const Text('I accept all terms and conditions'),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-
-            // Content Guidelines Section
-            ShadCard(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Content Guidelines',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Provide any specific requirements or instructions:',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 12),
-                  ShadInputFormField(
-                    controller: _guidelinesController,
-                    placeholder: const Text(
-                        'Examples: specific colors, messaging, hashtags, etc.'),
-                    maxLines: 5,
-                    onChanged: (value) {
-                      _notifyChanges();
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Terms and Agreement
-            ShadCard(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Agreement',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
-                  ),
-                  const SizedBox(height: 16),
-                  ShadCheckbox(
-                    value: _confirmDetails,
-                    onChanged: (value) {
-                      setState(() {
-                        _confirmDetails = value;
-                        _notifyChanges();
-                      });
-                    },
-                    label: const Text('I confirm all details are correct'),
-                  ),
-                  const SizedBox(height: 8),
-                  ShadCheckbox(
-                    value: _acceptTerms,
-                    onChanged: (value) {
-                      setState(() {
-                        _acceptTerms = value;
-                        _notifyChanges();
-                      });
-                    },
-                    label: const Text('I accept all terms and conditions'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../shared/data/constants/date_and_time.dart';
@@ -180,17 +181,21 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                     ShadInputFormField(
                       controller: _budgetController,
                       placeholder: const Text('Enter campaign budget'),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      prefix: const Text('\$',
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: false, signed: false),
+                      prefix: const Text('PKR',
                           style: TextStyle(fontWeight: FontWeight.bold)),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       onChanged: (value) {
                         setState(() => _showBudgetError = false);
-                        double? budget = double.tryParse(value);
+                        // Only allow integer values
+                        int? budget = int.tryParse(value);
                         debugPrint(
                             'Budget input changed: $value, parsed to: $budget');
                         if (budget != null) {
-                          widget.onBudgetChanged(budget);
+                          widget.onBudgetChanged(budget.toDouble());
                         }
                       },
                     ),
@@ -412,7 +417,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
     // Validate budget
     final budgetText = _budgetController.text;
-    final budget = double.tryParse(budgetText);
+    final budget = int.tryParse(budgetText);
     if (budgetText.isEmpty || budget == null || budget <= 0) {
       setState(() => _showBudgetError = true);
       isValid = false;
@@ -561,13 +566,13 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
   void _validateBudget() {
     final budgetText = _budgetController.text.trim();
-    final budget = double.tryParse(budgetText);
+    final budget = int.tryParse(budgetText);
     setState(() {
       _showBudgetError = budget == null || budget <= 0;
     });
 
     if (budget != null && budget > 0) {
-      widget.onBudgetChanged(budget);
+      widget.onBudgetChanged(budget.toDouble());
     }
   }
 

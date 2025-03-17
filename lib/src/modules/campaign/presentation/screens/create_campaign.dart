@@ -134,6 +134,25 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           _contentGuidelines = campaignForm.contentGuidelines;
           _confirmDetails = campaignForm.confirmDetails;
           _acceptTerms = campaignForm.acceptTerms;
+        } else if (!_isEditing) {
+          // Fallback if form state is not initialized yet
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted &&
+                context.read<CampaignBloc>().state is! CampaignFormState) {
+              debugPrint('Fallback: Initializing form state for new campaign');
+              context.read<CampaignBloc>().add(
+                    InitCampaignForm(
+                      title: '',
+                      description: '',
+                      category: 'fashion',
+                      budget: 0,
+                      startDate: DateTime.now(),
+                      endDate: DateTime.now().add(const Duration(days: 30)),
+                      goals: [],
+                    ),
+                  );
+            }
+          });
         }
 
         // Update validation errors from form state
@@ -334,6 +353,20 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           // This is a double-check to make sure edit mode data is loaded
           debugPrint('Post-frame callback: ensuring edit data is loaded');
           _updateBasicDetails();
+        } else if (mounted) {
+          // Initialize form state for new campaign
+          debugPrint('Initializing form state for new campaign');
+          context.read<CampaignBloc>().add(
+                InitCampaignForm(
+                  title: '',
+                  description: '',
+                  category: 'fashion',
+                  budget: 0,
+                  startDate: DateTime.now(),
+                  endDate: DateTime.now().add(const Duration(days: 30)),
+                  goals: [],
+                ),
+              );
         }
       });
     }

@@ -4,7 +4,6 @@ import 'package:connectobia/src/modules/campaign/application/campaign_state.dart
 import 'package:connectobia/src/modules/campaign/application/collaboration/collaboration_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
-import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/collaboration.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
@@ -350,20 +349,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 ),
                 Row(
                   children: [
-                    // Add edit button for campaign owners
-                    if (isOwner) ...[
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.grey),
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(
-                            createCampaign,
-                            arguments: {'campaign': campaign},
-                          );
-                        },
-                        tooltip: 'Edit Campaign',
-                      ),
-                      const SizedBox(width: 8),
-                    ],
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),

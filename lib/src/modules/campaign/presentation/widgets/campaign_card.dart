@@ -32,7 +32,8 @@ class CampaignCard extends StatelessWidget {
         campaign?.endDate ?? DateTime.now().add(const Duration(days: 30));
 
     // Format currency
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final currencyFormat =
+        NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0);
     final formattedBudget = currencyFormat.format(budget);
 
     // Format date
