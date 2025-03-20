@@ -36,6 +36,63 @@ class CampaignFormCard extends StatefulWidget {
   State<CampaignFormCard> createState() => _CampaignFormCardState();
 }
 
+/// Input formatter that adds thousands separators to numbers
+class ThousandsFormatter extends TextInputFormatter {
+  final NumberFormat _formatter = NumberFormat('#,###', 'en_US');
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // Only process if the input has changed and isn't empty
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    // Remove all non-digit characters
+    String digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+
+    // Remove leading zeros
+    if (digitsOnly.length > 1 && digitsOnly.startsWith('0')) {
+      digitsOnly = digitsOnly.replaceFirst(RegExp(r'^0+'), '');
+    }
+
+    // If empty after removing leading zeros, return '0'
+    if (digitsOnly.isEmpty) {
+      return const TextEditingValue(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    // Parse to int
+    int value = int.parse(digitsOnly);
+
+    // Format with commas
+    String formatted = _formatter.format(value);
+
+    // Maintain cursor position relative to the digits
+    int cursorPos = newValue.selection.end;
+    int oldDigitCount = oldValue.text.replaceAll(RegExp(r'[^\d]'), '').length;
+    int newDigitCount = digitsOnly.length;
+    int commaCount = formatted.length - digitsOnly.length;
+
+    // Adjust cursor for added/removed commas
+    int newCursorPos = cursorPos;
+    if (oldValue.text.isNotEmpty && oldDigitCount != newDigitCount) {
+      int oldCommaCount = oldValue.text.length - oldDigitCount;
+      newCursorPos += (commaCount - oldCommaCount);
+    }
+
+    // Ensure cursor position is within bounds
+    newCursorPos = newCursorPos.clamp(0, formatted.length);
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: newCursorPos),
+    );
+  }
+}
+
 class _CampaignFormCardState extends State<CampaignFormCard>
     with SingleTickerProviderStateMixin {
   final TextEditingController _budgetController = TextEditingController();
@@ -66,6 +123,15 @@ class _CampaignFormCardState extends State<CampaignFormCard>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Campaign Illustration
+              Center(
+                child: SvgPicture.asset(
+                  'assets/illustrations/campaign.svg',
+                  height: 180,
+                ),
+              ),
+              const SizedBox(height: 20),
+
               // Campaign Name
               ShadCard(
                 padding: const EdgeInsets.all(12),
@@ -181,17 +247,22 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                     ShadInputFormField(
                       controller: _budgetController,
                       placeholder: const Text('Enter campaign budget'),
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: false, signed: false),
+                      keyboardType: TextInputType.number,
                       prefix: const Text('PKR',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
+                        ThousandsFormatter(),
                       ],
                       onChanged: (value) {
                         setState(() => _showBudgetError = false);
-                        // Only allow integer values
-                        int? budget = int.tryParse(value);
+
+                        // Get only the digits from the formatted string
+                        String digitsOnly =
+                            value.replaceAll(RegExp(r'[^\d]'), '');
+                        if (digitsOnly.isEmpty) return;
+
+                        int? budget = int.tryParse(digitsOnly);
                         debugPrint(
                             'Budget input changed: $value, parsed to: $budget');
                         if (budget != null) {
@@ -319,7 +390,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     // Update budget controller if the value has changed from parent
     if (widget.budgetValue != null &&
         widget.budgetValue.toString() != _budgetController.text) {
-      _budgetController.text = widget.budgetValue.toString();
+      _budgetController.text = widget.budgetValue!.toInt().toString();
       debugPrint(
           'Updated budget field in didUpdateWidget: ${_budgetController.text}');
     }
@@ -371,7 +442,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
     // Initialize budget controller
     if (widget.budgetValue != null && widget.budgetValue! > 0) {
-      _budgetController.text = widget.budgetValue.toString();
+      _budgetController.text = widget.budgetValue!.toInt().toString();
       debugPrint('Set budget field in initState: ${_budgetController.text}');
     } else {
       _budgetController.text = '';
@@ -566,7 +637,11 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
   void _validateBudget() {
     final budgetText = _budgetController.text.trim();
-    final budget = int.tryParse(budgetText);
+
+    // Get only the digits from the formatted string
+    String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
+
+    final budget = int.tryParse(digitsOnly);
     setState(() {
       _showBudgetError = budget == null || budget <= 0;
     });

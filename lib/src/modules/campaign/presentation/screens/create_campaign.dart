@@ -505,7 +505,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
   void _updateBasicDetails() {
     final budgetText = _budgetController.text;
-    final budget = double.tryParse(budgetText) ?? 0;
+    // Remove any commas or non-digit characters from the budget text
+    final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
+    final budget = int.tryParse(digitsOnly)?.toDouble() ?? 0.0;
     debugPrint(
         'Updating basic details with budget text: $budgetText, parsed value: $budget');
 
@@ -542,7 +544,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
       // Check budget
       final budgetText = _budgetController.text;
-      final budget = double.tryParse(budgetText);
+      // Remove any commas or non-digit characters from the budget text
+      final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
+      final budget = int.tryParse(digitsOnly);
       debugPrint('Budget text: $budgetText, parsed value: $budget');
       if (budgetText.isEmpty || budget == null || budget <= 0) {
         errors.add('Budget must be greater than 0');
