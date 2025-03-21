@@ -221,6 +221,98 @@ onTap: () {
                 ),
               ],
             ),
+              return GestureDetector(
+    onTap: () {
+      if (campaign != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CampaignDetailsPage(
+              campaignId: campaign!.id,
+              userType: 'brand',
+            ),
+          ),
+        );
+      }
+    },
+    child: ShadCard(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              StatusBadge(
+                text: status.capitalizeFirst(),
+                color: _getStatusColor(status),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Description
+          Text(
+            description,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+          const SizedBox(height: 12),
+
+          // Budget
+          Row(
+            children: [
+              const Text(
+                'Budget: ',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                formattedBudget,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Timeline
+          Row(
+            children: [
+              const Text(
+                'Timeline: ',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '${dateFormat.format(startDate)} - ${dateFormat.format(endDate)}',
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // New fields:
+          if (campaign?.category != null)
+            Row(
+              children: [
+                const Text(
+                  'Category: ',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  campaign!.category,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          const SizedBox(height: 6),
+
             const SizedBox(height: 8),
             Text(
               description,
