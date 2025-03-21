@@ -28,6 +28,21 @@ void showDeleteConfirmationDialog(BuildContext context, VoidCallback onDelete) {
               ),
               const SizedBox(height: 16),
               Row(
+                void showDeleteConfirmationDialog(BuildContext context, VoidCallback onDelete) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // Rounded edges
+        ),
+        child: ShadCard(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Wrap content vertically
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+
                 children: [
                   Expanded(
                     child: ShadButton(
