@@ -164,6 +164,15 @@ Row(
       );
     }
   }
+onTap: () {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: Text('Campaign Selected'),
+      content: Text('You tapped on ${campaign?.title ?? 'Campaign'}'),
+    ),
+  );
+},
 
   Widget _buildCardContent(
     BuildContext context,
