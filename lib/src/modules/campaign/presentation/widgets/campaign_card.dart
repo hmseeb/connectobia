@@ -124,6 +124,20 @@ class CampaignCard extends StatelessWidget {
               ),
             ),
           ],
+          const SizedBox(height: 8),
+Row(
+  children: [
+    const Text(
+      'Location: ',
+      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+    ),
+    Text(
+      campaign?.location ?? 'N/A',
+      style: const TextStyle(fontSize: 14),
+    ),
+  ],
+),
+
         ),
         child: _buildCardContent(
           context,
