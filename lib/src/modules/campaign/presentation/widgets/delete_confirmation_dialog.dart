@@ -65,6 +65,28 @@ void showDeleteConfirmationDialog(BuildContext context, VoidCallback onDelete) {
                 ],
               ),
             ],
+                          const Text(
+                'Delete Campaign',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 10),
+
+              const Text(
+                'Are you sure you want to delete this campaign? This action cannot be undone.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 20),
+
           ),
         ),
       );
