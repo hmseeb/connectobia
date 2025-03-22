@@ -15,4 +15,5 @@ const String profileScreen = "/profileScreen";
 const String reviewScreen = '/review';
 const String splashScreen = "/";
 const String verifyEmailScreen = "/verifyEmailScreen";
+const String walletScreen = '/walletScreen';
 const String welcomeScreen = "/welcomeScreen";

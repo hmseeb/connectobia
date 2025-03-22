@@ -399,7 +399,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-
+              // Wallet button for brands
+              if (isBrand) ...[
+                _buildWalletButton(context, userId),
+                const SizedBox(height: 24),
+              ],
               // Profile fields
               ProfileField(
                 label: 'Email',
@@ -503,6 +507,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Helper method to build wallet button for brands
+  Widget _buildWalletButton(BuildContext context, String userId) {
+    return ShadCard(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.shade400.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.account_balance_wallet_outlined,
+              color: Colors.red.shade400,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Manage your funds',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Add funds in PKR to create campaigns',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ShadButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                walletScreen,
+                arguments: {
+                  'userId': userId,
+                },
+              );
+            },
+            child: const Text('View Wallet'),
+          ),
+        ],
       ),
     );
   }

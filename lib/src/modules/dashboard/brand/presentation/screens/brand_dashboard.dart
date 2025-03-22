@@ -117,6 +117,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _buildWalletCard(),
                       const SectionTitle('Featured Influencers'),
                       const SizedBox(height: 16),
                       BrandFeaturedListings(),
@@ -161,6 +162,66 @@ class _BrandDashboardState extends State<BrandDashboard> {
   void initState() {
     super.initState();
     scrollController.addListener(_scrollListener); // Pass the function directly
+  }
+
+  Widget _buildWalletCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+      child: ShadCard(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade400.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.account_balance_wallet_outlined,
+                color: Colors.red.shade400,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Manage your funds',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Add funds in PKR to create campaigns',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ShadButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  walletScreen,
+                  arguments: {
+                    'userId': user.id,
+                  },
+                );
+              },
+              child: const Text('View Wallet'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   _scrollListener() {

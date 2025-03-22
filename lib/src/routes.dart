@@ -33,6 +33,7 @@ import 'package:connectobia/src/modules/profile/presentation/screens/edit_profil
     as new_profile;
 import 'package:connectobia/src/modules/profile/presentation/screens/profile_screen.dart';
 import 'package:connectobia/src/modules/profile/presentation/screens/review_screen.dart';
+import 'package:connectobia/src/modules/wallet/presentation/screens/wallet_screen.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
@@ -144,6 +145,12 @@ class GenerateRoutes {
         final args = settings.arguments as Map<String, dynamic>;
         return _buildRoute(ReviewScreen(
           contractId: args['contractId'],
+        ));
+
+      case walletScreen:
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildRoute(WalletScreen(
+          userId: args['userId'],
         ));
 
       default:
