@@ -1,19 +1,19 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class Review {
   final String id;
   final String collectionId;
   final String collectionName;
-  final String? fromBrand;
-  final String? toInfluencer;
-  final String? fromInfluencer;
-  final String? toBrand;
+  final String brand;
+  final String influencer;
   final String campaign;
   final int rating;
   final String comment;
-  final String role;
+  final String
+      role; // 'brand' if brand gave review, 'influencer' if influencer gave review
   final DateTime submittedAt;
   final DateTime created;
   final DateTime updated;
@@ -27,10 +27,8 @@ class Review {
     required this.id,
     required this.collectionId,
     required this.collectionName,
-    this.fromBrand,
-    this.toInfluencer,
-    this.fromInfluencer,
-    this.toBrand,
+    required this.brand,
+    required this.influencer,
     required this.campaign,
     required this.rating,
     required this.comment,
@@ -44,62 +42,77 @@ class Review {
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
-    return Review(
-      id: json['id'],
-      collectionId: json['collectionId'],
-      collectionName: json['collectionName'],
-      fromBrand: json['from_brand'],
-      toInfluencer: json['to_influencer'],
-      fromInfluencer: json['from_influencer'],
-      toBrand: json['to_brand'],
-      campaign: json['campaign'],
-      rating: int.tryParse(json['rating'].toString()) ?? 5,
-      comment: json['comment'] ?? '',
-      role: json['role'] ?? '',
-      submittedAt: DateTime.parse(json['submitted_at']),
-      created: DateTime.parse(json['created']),
-      updated: DateTime.parse(json['updated']),
-      campaignRecord: json['expand']?['campaign'],
-      brandRecord: json['expand']?['from_brand'] ?? json['expand']?['to_brand'],
-      influencerRecord: json['expand']?['from_influencer'] ??
-          json['expand']?['to_influencer'],
-    );
+    try {
+      return Review(
+        id: json['id'] ?? '',
+        collectionId: json['collectionId'] ?? '',
+        collectionName: json['collectionName'] ?? '',
+        brand: json['brand'] ?? '',
+        influencer: json['influencer'] ?? '',
+        campaign: json['campaign'] ?? '',
+        rating: _parseRating(json['rating']),
+        comment: json['comment'] ?? '',
+        role: json['role'] ?? '',
+        submittedAt: _parseDateTime(json['submitted_at']),
+        created: _parseDateTime(json['created']),
+        updated: _parseDateTime(json['updated']),
+        campaignRecord: json['expand']?['campaign'],
+        brandRecord: json['expand']?['brand'],
+        influencerRecord: json['expand']?['influencer'],
+      );
+    } catch (e) {
+      debugPrint('❌ Error parsing Review from JSON: $e');
+      rethrow;
+    }
   }
 
   factory Review.fromRawJson(String str) => Review.fromJson(json.decode(str));
 
   factory Review.fromRecord(RecordModel record) {
-    return Review(
-      id: record.id,
-      collectionId: record.collectionId,
-      collectionName: record.collectionName,
-      fromBrand: record.data['from_brand'],
-      toInfluencer: record.data['to_influencer'],
-      fromInfluencer: record.data['from_influencer'],
-      toBrand: record.data['to_brand'],
-      campaign: record.data['campaign'],
-      rating: int.tryParse(record.data['rating'].toString()) ?? 5,
-      comment: record.data['comment'] ?? '',
-      role: record.data['role'] ?? '',
-      submittedAt: DateTime.parse(record.data['submitted_at']),
-      created: DateTime.parse(record.created),
-      updated: DateTime.parse(record.updated),
-      campaignRecord: record.expand['campaign'],
-      brandRecord: record.expand['from_brand'] ?? record.expand['to_brand'],
-      influencerRecord:
-          record.expand['from_influencer'] ?? record.expand['to_influencer'],
-    );
+    try {
+      return Review(
+        id: record.id,
+        collectionId: record.collectionId,
+        collectionName: record.collectionName,
+        brand: record.data['brand'] ?? '',
+        influencer: record.data['influencer'] ?? '',
+        campaign: record.data['campaign'] ?? '',
+        rating: _parseRating(record.data['rating']),
+        comment: record.data['comment'] ?? '',
+        role: record.data['role'] ?? '',
+        submittedAt: _parseDateTime(record.data['submitted_at']),
+        created: _parseDateTime(record.created),
+        updated: _parseDateTime(record.updated),
+        campaignRecord: record.expand['campaign'],
+        brandRecord: record.expand['brand'],
+        influencerRecord: record.expand['influencer'],
+      );
+    } catch (e) {
+      debugPrint('❌ Error parsing Review from Record: $e');
+      debugPrint('Record data: ${record.data}');
+      rethrow;
+    }
   }
+
+  // Helper getter for the reviewer ID
+  String get fromId => isBrandReviewer ? brand : influencer;
+
+  // Helper getter to determine if the brand is the reviewer
+  bool get isBrandReviewer => role == 'brand';
+
+  // Helper getter to determine if the influencer is the reviewer
+  bool get isInfluencerReviewer => role == 'influencer';
+
+  // Helper getter for the reviewed ID
+  String get toId => isBrandReviewer ? influencer : brand;
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'collectionId': collectionId,
       'collectionName': collectionName,
-      'from_brand': fromBrand,
-      'to_influencer': toInfluencer,
-      'from_influencer': fromInfluencer,
-      'to_brand': toBrand,
+      'brand': brand,
+      'influencer': influencer,
       'campaign': campaign,
       'rating': rating,
       'comment': comment,
@@ -111,4 +124,64 @@ class Review {
   }
 
   String toRawJson() => json.encode(toJson());
+
+  // Helper method to safely parse DateTime values
+  static DateTime _parseDateTime(dynamic dateValue) {
+    if (dateValue == null) {
+      return DateTime.now();
+    }
+
+    if (dateValue is DateTime) {
+      return dateValue;
+    }
+
+    if (dateValue is String) {
+      try {
+        // Try standard ISO format
+        return DateTime.parse(dateValue);
+      } catch (_) {
+        // If that fails, try alternative formats
+        try {
+          // Try format with space instead of T
+          // e.g. "2022-01-01 10:00:00.123Z" instead of "2022-01-01T10:00:00.123Z"
+          final fixedDate = dateValue.replaceAll(' ', 'T');
+          return DateTime.parse(fixedDate);
+        } catch (_) {
+          // Default to current time if all parsing fails
+          return DateTime.now();
+        }
+      }
+    }
+
+    // Default fallback
+    return DateTime.now();
+  }
+
+  // Helper method to safely parse rating values
+  static int _parseRating(dynamic ratingValue) {
+    if (ratingValue == null) return 5;
+
+    if (ratingValue is int) return ratingValue;
+
+    // Handle string ratings
+    if (ratingValue is String) {
+      // Try int.parse first
+      try {
+        return int.parse(ratingValue);
+      } catch (_) {}
+
+      // Try double.parse then convert to int
+      try {
+        return double.parse(ratingValue).round();
+      } catch (_) {}
+    }
+
+    // Handle double ratings
+    if (ratingValue is double) {
+      return ratingValue.round();
+    }
+
+    // Default to 5 if parsing fails
+    return 5;
+  }
 }

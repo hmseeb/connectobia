@@ -20,7 +20,7 @@ class ReviewRepository {
             page: 1,
             perPage: 1,
             filter:
-                'campaign = "$campaignId" && from_brand = "$brandId" && to_influencer = "$influencerId"',
+                'campaign = "$campaignId" && brand = "$brandId" && influencer = "$influencerId" && role = "brand"',
           );
 
       return resultList.items.isNotEmpty;
@@ -39,14 +39,11 @@ class ReviewRepository {
     try {
       // If user is a brand
       if (isBrand) {
-        // Brand can delete reviews they wrote or received
-        return (review.fromBrand == userId || review.toBrand == userId);
+        return review.brand == userId;
       }
       // If user is an influencer
       else {
-        // Influencer can delete reviews they wrote or received
-        return (review.fromInfluencer == userId ||
-            review.toInfluencer == userId);
+        return review.influencer == userId;
       }
     } catch (e) {
       debugPrint('Error checking if user can delete review: $e');
@@ -67,8 +64,8 @@ class ReviewRepository {
 
       // Create the review
       final body = {
-        'from_brand': brandId,
-        'to_influencer': influencerId,
+        'brand': brandId,
+        'influencer': influencerId,
         'campaign': campaignId,
         'rating': rating,
         'comment': comment,
@@ -76,7 +73,7 @@ class ReviewRepository {
         'submitted_at': DateTime.now().toIso8601String(),
       };
 
-      debugPrint('Creating brand-to-influencer review: $body');
+      debugPrint('Creating brand-to-influencer review');
 
       final record = await pb.collection(_collectionName).create(body: body);
       return Review.fromRecord(record);
@@ -100,8 +97,8 @@ class ReviewRepository {
 
       // Create the review
       final body = {
-        'from_influencer': influencerId,
-        'to_brand': brandId,
+        'influencer': influencerId,
+        'brand': brandId,
         'campaign': campaignId,
         'rating': rating,
         'comment': comment,
@@ -109,7 +106,7 @@ class ReviewRepository {
         'submitted_at': DateTime.now().toIso8601String(),
       };
 
-      debugPrint('Creating influencer-to-brand review: $body');
+      debugPrint('Creating influencer-to-brand review');
 
       final record = await pb.collection(_collectionName).create(body: body);
       return Review.fromRecord(record);
@@ -130,6 +127,133 @@ class ReviewRepository {
       debugPrint('Error deleting review: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Diagnostic method to fetch all reviews, ignoring filters
+  static Future<List<Review>> getAllReviews({int limit = 20}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      debugPrint('🔍 ReviewRepository: Fetching all reviews (limit: $limit)');
+
+      try {
+        // First try with standard approach
+        final resultList = await pb.collection(_collectionName).getList(
+              page: 1,
+              perPage: limit,
+              sort: '-created',
+              expand: 'campaign,brand,influencer',
+            );
+
+        debugPrint(
+            '📊 ReviewRepository: Found ${resultList.items.length} reviews');
+
+        return _processReviewRecords(resultList.items);
+      } catch (e) {
+        // If that fails, try without expansion which can sometimes cause issues
+        debugPrint('⚠️ Error fetching with expansion: $e');
+        debugPrint('   Trying without expansion...');
+
+        final resultList = await pb.collection(_collectionName).getList(
+              page: 1,
+              perPage: limit,
+              sort: '-created',
+            );
+
+        debugPrint(
+            '📊 ReviewRepository: Found ${resultList.items.length} reviews (without expansion)');
+
+        return _processReviewRecords(resultList.items);
+      }
+    } catch (e) {
+      debugPrint('❌ ReviewRepository: Error getting all reviews: $e');
+      return [];
+    }
+  }
+
+  /// Get all reviews involving a user (as sender or recipient)
+  static Future<List<Review>> getAllReviewsForUser(
+      String userId, bool isBrand) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      debugPrint(
+          '🔍 ReviewRepository: Fetching ALL reviews involving user $userId');
+
+      try {
+        // First try with filter approach
+        String filter;
+        if (isBrand) {
+          // For brands:
+          // - Reviews where they are the brand mentioned (regardless of role)
+          filter = 'brand = "$userId"';
+        } else {
+          // For influencers:
+          // - Reviews where they are the influencer mentioned (regardless of role)
+          filter = 'influencer = "$userId"';
+        }
+
+        debugPrint('📋 ReviewRepository: Using filter: $filter');
+
+        final resultList = await pb.collection(_collectionName).getList(
+              page: 1,
+              perPage: 50,
+              filter: filter,
+              expand: 'campaign,brand,influencer',
+            );
+
+        debugPrint(
+            '📊 ReviewRepository: Received ${resultList.items.length} raw records');
+
+        return _processReviewRecords(resultList.items);
+      } catch (e) {
+        // If filtering fails, get all reviews and filter manually
+        debugPrint('⚠️ Error fetching with filter: $e');
+        debugPrint('   Trying alternative approach...');
+
+        final resultList = await pb.collection(_collectionName).getList(
+              page: 1,
+              perPage: 100,
+              expand: 'campaign,brand,influencer',
+            );
+
+        debugPrint(
+            '📊 ReviewRepository: Received ${resultList.items.length} raw records (without filter)');
+
+        // Filter manually
+        final List<Review> allReviews = _processReviewRecords(resultList.items);
+        final List<Review> userReviews = [];
+
+        for (var review in allReviews) {
+          bool isInvolved = false;
+
+          if (isBrand) {
+            if (review.brand == userId) {
+              isInvolved = true;
+            }
+          } else {
+            if (review.influencer == userId) {
+              isInvolved = true;
+            }
+          }
+
+          if (isInvolved) {
+            userReviews.add(review);
+            debugPrint('✅ Found review involving user: ${review.id}');
+            debugPrint('   Brand: ${review.brand}');
+            debugPrint('   Influencer: ${review.influencer}');
+            debugPrint('   Role: ${review.role}');
+          }
+        }
+
+        debugPrint(
+            '✓ ReviewRepository: Found ${userReviews.length} reviews involving this user');
+        return userReviews;
+      }
+    } catch (e) {
+      debugPrint('❌ ReviewRepository: Error getting reviews for user: $e');
+      return [];
     }
   }
 
@@ -167,6 +291,34 @@ class ReviewRepository {
     }
   }
 
+  /// Diagnostic method to directly fetch a review by ID
+  static Future<Review?> getReviewById(String reviewId) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      debugPrint('🔍 ReviewRepository: Fetching review with ID: $reviewId');
+
+      final record = await pb.collection(_collectionName).getOne(
+            reviewId,
+            expand: 'campaign,brand,influencer',
+          );
+
+      debugPrint('✓ ReviewRepository: Found review: ${record.id}');
+      debugPrint('   Review data: ${record.data}');
+
+      try {
+        final review = Review.fromRecord(record);
+        return review;
+      } catch (e) {
+        debugPrint('⚠️ ReviewRepository: Error parsing review: $e');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('❌ ReviewRepository: Error fetching review by ID: $e');
+      return null;
+    }
+  }
+
   /// Get all reviews for a campaign
   static Future<List<Review>> getReviewsByCampaignId(String campaignId) async {
     try {
@@ -176,8 +328,7 @@ class ReviewRepository {
             page: 1,
             perPage: 50,
             filter: 'campaign = "$campaignId"',
-            expand:
-                'campaign,from_brand,to_influencer,from_influencer,to_brand',
+            expand: 'campaign,brand,influencer',
           );
 
       return resultList.items
@@ -195,11 +346,14 @@ class ReviewRepository {
     try {
       final pb = await PocketBaseSingleton.instance;
 
+      // Get reviews where:
+      // 1. The brand is the brandId AND
+      // 2. The review was given by an influencer (role = "influencer")
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 50,
-            filter: 'to_brand = "$brandId"',
-            expand: 'campaign,from_influencer',
+            filter: 'brand = "$brandId" && role = "influencer"',
+            expand: 'campaign,influencer',
           );
 
       return resultList.items
@@ -218,11 +372,14 @@ class ReviewRepository {
     try {
       final pb = await PocketBaseSingleton.instance;
 
+      // Get reviews where:
+      // 1. The influencer is the influencerId AND
+      // 2. The review was given by a brand (role = "brand")
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 50,
-            filter: 'to_influencer = "$influencerId"',
-            expand: 'campaign,from_brand',
+            filter: 'influencer = "$influencerId" && role = "brand"',
+            expand: 'campaign,brand',
           );
 
       return resultList.items
@@ -248,7 +405,7 @@ class ReviewRepository {
             page: 1,
             perPage: 1,
             filter:
-                'campaign = "$campaignId" && from_influencer = "$influencerId" && to_brand = "$brandId"',
+                'campaign = "$campaignId" && influencer = "$influencerId" && brand = "$brandId" && role = "influencer"',
           );
 
       return resultList.items.isNotEmpty;
@@ -256,5 +413,30 @@ class ReviewRepository {
       debugPrint('Error checking if influencer review exists: $e');
       return false;
     }
+  }
+
+  /// Helper method to process review records
+  static List<Review> _processReviewRecords(List<dynamic> records) {
+    final List<Review> reviews = [];
+
+    for (var record in records) {
+      try {
+        final review = Review.fromRecord(record);
+        reviews.add(review);
+
+        debugPrint('✓ Review ID: ${review.id}');
+        debugPrint('  Brand: ${review.brand}');
+        debugPrint('  Influencer: ${review.influencer}');
+        debugPrint('  Role: ${review.role}');
+        debugPrint('  Rating: ${review.rating}');
+        debugPrint('  Comment: ${review.comment}');
+        debugPrint('  Date: ${review.submittedAt}');
+      } catch (e) {
+        debugPrint('⚠️ Error parsing review: $e');
+        debugPrint('   Record data: ${record.data}');
+      }
+    }
+
+    return reviews;
   }
 }

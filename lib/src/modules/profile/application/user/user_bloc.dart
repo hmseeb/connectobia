@@ -33,6 +33,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final userId = userData.id;
         final collectionId = userData.collectionId;
 
+        // Log the collection ID for debugging
+        debugPrint('User collection ID: $collectionId');
+
         if (collectionId == 'brands') {
           final brand = await BrandRepository.getBrandById(userId);
           emit(UserLoaded(brand));
@@ -41,7 +44,32 @@ class UserBloc extends Bloc<UserEvent, UserState> {
               await InfluencerRepository.getInfluencerById(userId);
           emit(UserLoaded(influencer));
         } else {
-          emit(UserError('Unknown user type'));
+          // Try to detect the user type by querying both collections
+          debugPrint('Attempting to detect user type for ID: $userId');
+          try {
+            // Try as brand first
+            final brand = await BrandRepository.getBrandById(userId);
+            debugPrint('Successfully identified user as brand');
+            emit(UserLoaded(brand));
+            return;
+          } catch (e) {
+            debugPrint('Not a brand user: $e');
+          }
+
+          try {
+            // Try as influencer
+            final influencer =
+                await InfluencerRepository.getInfluencerById(userId);
+            debugPrint('Successfully identified user as influencer');
+            emit(UserLoaded(influencer));
+            return;
+          } catch (e) {
+            debugPrint('Not an influencer user: $e');
+          }
+
+          // If we reach here, we couldn't identify the user type
+          emit(UserError(
+              'Unknown user type. Please check your account settings.'));
         }
       } catch (e) {
         emit(UserError(e.toString()));

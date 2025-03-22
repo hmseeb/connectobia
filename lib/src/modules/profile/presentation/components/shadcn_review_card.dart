@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../shared/domain/models/review.dart';
 
-class ReviewCard extends StatelessWidget {
+class ShadcnReviewCard extends StatelessWidget {
   final Review review;
   final Function(Review)? onDelete;
   final bool canDelete;
 
-  const ReviewCard({
+  const ShadcnReviewCard({
     super.key,
     required this.review,
     this.onDelete,
@@ -68,18 +69,10 @@ class ReviewCard extends StatelessWidget {
                   ),
                 ),
                 // Star rating
-                Row(
-                  children: List.generate(5, (index) {
-                    return Icon(
-                      index < review.rating ? Icons.star : Icons.star_border,
-                      color: Colors.amber,
-                      size: 18,
-                    );
-                  }),
-                ),
+                _buildRatingStars(),
                 if (canDelete && onDelete != null)
                   PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert),
+                    icon: const Icon(Icons.more_vert, size: 18),
                     onSelected: (value) {
                       if (value == 'delete') {
                         _showDeleteConfirmation(context);
@@ -94,7 +87,7 @@ class ReviewCard extends StatelessWidget {
                           children: [
                             Icon(Icons.visibility, size: 18),
                             SizedBox(width: 8),
-                            Text('View full review'),
+                            Text('View details'),
                           ],
                         ),
                       ),
@@ -115,15 +108,36 @@ class ReviewCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              review.comment,
-              style: const TextStyle(fontSize: 14),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
+            _buildReviewContent(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildRatingStars() {
+    return Row(
+      children: List.generate(5, (index) {
+        return Icon(
+          index < review.rating ? Icons.star : Icons.star_border,
+          color: Colors.amber,
+          size: 18,
+        );
+      }),
+    );
+  }
+
+  Widget _buildReviewContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _stripHtmlTags(review.comment),
+          style: const TextStyle(fontSize: 14),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 
@@ -191,19 +205,12 @@ class ReviewCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: List.generate(5, (index) {
-                  return Icon(
-                    index < review.rating ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                  );
-                }),
-              ),
+              _buildRatingStars(),
               const SizedBox(height: 8),
               Text('Submitted on $formattedDate'),
               const SizedBox(height: 16),
               Text(
-                review.comment,
+                _stripHtmlTags(review.comment),
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 24),
@@ -230,15 +237,32 @@ class ReviewCard extends StatelessWidget {
       ),
     );
   }
+
+  String _stripHtmlTags(String htmlText) {
+    // Remove HTML tags
+    final RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+    String strippedText = htmlText.replaceAll(exp, '');
+
+    // Decode common HTML entities
+    strippedText = strippedText
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&apos;', "'")
+        .replaceAll('&nbsp;', ' ');
+
+    return strippedText;
+  }
 }
 
-class ReviewList extends StatelessWidget {
+class ShadcnReviewList extends StatelessWidget {
   final List<Review> reviews;
   final String emptyMessage;
   final Function(Review)? onDelete;
   final bool allowDeletion;
 
-  const ReviewList({
+  const ShadcnReviewList({
     super.key,
     required this.reviews,
     this.emptyMessage = 'No reviews yet',
@@ -249,15 +273,18 @@ class ReviewList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (reviews.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Text(
-            emptyMessage,
-            style: const TextStyle(
-              fontSize: 16,
-              fontStyle: FontStyle.italic,
-              color: Colors.grey,
+      return Card(
+        margin: const EdgeInsets.all(16),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              emptyMessage,
+              style: const TextStyle(
+                fontSize: 16,
+                fontStyle: FontStyle.italic,
+                color: Colors.grey,
+              ),
             ),
           ),
         ),
@@ -270,7 +297,7 @@ class ReviewList extends StatelessWidget {
       itemCount: reviews.length,
       itemBuilder: (context, index) {
         final review = reviews[index];
-        return ReviewCard(
+        return ShadcnReviewCard(
           review: review,
           onDelete: onDelete,
           canDelete: allowDeletion,

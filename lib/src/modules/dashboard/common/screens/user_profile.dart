@@ -10,6 +10,7 @@ import '../application/influencer_profile/influencer_profile_bloc.dart';
 import '../widgets/profile_body.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_image.dart';
+import '../widgets/profile_reviews.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -227,6 +228,11 @@ class _UserProfileState extends State<UserProfile> {
                 hasConnectedInstagram: connectedSocial,
                 // profileType: profileType,
               ),
+              if (!isLoading)
+                ProfileReviews(
+                  profileId: userId,
+                  isBrand: profileType == 'brands',
+                ),
             ],
           ),
         ),

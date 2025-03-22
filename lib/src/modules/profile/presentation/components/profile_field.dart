@@ -86,7 +86,7 @@ class ProfileBioField extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 height: 1.5,
-                color: text.isEmpty || text == 'No bio added yet'
+                color: text.isEmpty
                     ? Colors.grey.shade400
                     : Theme.of(context).textTheme.bodyLarge?.color,
               ),
@@ -98,11 +98,10 @@ class ProfileBioField extends StatelessWidget {
   }
 
   Widget _buildReadOnlyBioField(BuildContext context) {
-    // Clean HTML tags from the text
-    String cleanText = value;
-    if (value.contains('<p>') || value.contains('</p>')) {
-      cleanText = value.replaceAll('<p>', '').replaceAll('</p>', '');
-    }
+    // No need to clean HTML tags here, as it's already done in the profile screen
+    String displayText = value.isEmpty
+        ? 'No bio added yet. Edit your profile to add a bio.'
+        : value;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +110,7 @@ class ProfileBioField extends StatelessWidget {
         const SizedBox(height: 8),
         _buildInfoCard(
           context,
-          text: cleanText.isEmpty ? 'No bio added yet' : cleanText,
+          text: displayText,
           isMultiline: true,
         ),
       ],
@@ -215,9 +214,13 @@ class ProfileField extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                color: text.isEmpty
+                    ? Colors.grey.shade400
+                    : Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
           ),
