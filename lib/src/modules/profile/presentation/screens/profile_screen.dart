@@ -222,19 +222,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserLoaded && _profileData == null) {
-            // Explicitly fetch profile data when user is loaded
+            // Schedule profile data loading for after the build is complete
             final user = state.user;
-            if (user is Brand) {
-              final profileId = user.profile;
-              if (profileId.isNotEmpty) {
-                _refreshProfileData(profileId, true);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                if (user is Brand) {
+                  final profileId = user.profile;
+                  if (profileId.isNotEmpty) {
+                    _refreshProfileData(profileId, true);
+                  }
+                } else if (user is Influencer) {
+                  final profileId = user.profile;
+                  if (profileId.isNotEmpty) {
+                    _refreshProfileData(profileId, false);
+                  }
+                }
               }
-            } else if (user is Influencer) {
-              final profileId = user.profile;
-              if (profileId.isNotEmpty) {
-                _refreshProfileData(profileId, false);
-              }
-            }
+            });
+
             setState(() {
               _isLoadingProfile = false;
             });
@@ -314,9 +319,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       avatar = user.avatar;
       profileId = user.profile ?? '';
 
-      // Load profile data if not already loaded
+      // Schedule profile data loading for after the build is complete
       if (_profileData == null && profileId.isNotEmpty) {
-        _refreshProfileData(profileId, true);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _refreshProfileData(profileId, true);
+          }
+        });
       }
     } else if (user is Influencer) {
       name = user.fullName;
@@ -326,9 +335,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       avatar = user.avatar;
       profileId = user.profile ?? '';
 
-      // Load profile data if not already loaded
+      // Schedule profile data loading for after the build is complete
       if (_profileData == null && profileId.isNotEmpty) {
-        _refreshProfileData(profileId, false);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _refreshProfileData(profileId, false);
+          }
+        });
       }
     }
 
