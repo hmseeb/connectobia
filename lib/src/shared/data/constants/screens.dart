@@ -10,6 +10,7 @@ const String influencerOnboarding = "/influencerOnboarding";
 const String influencerSignupScreen = "/InfluencerSignupScreen";
 const String loginScreen = "/LoginScreen";
 const String messagesScreen = "/messagesScreen";
+const String notificationsScreen = "/notificationsScreen";
 const String profile = "/profile";
 const String profileScreen = "/profileScreen";
 const String reviewScreen = '/review';

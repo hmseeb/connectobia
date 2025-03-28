@@ -4,6 +4,7 @@ import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.da
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:connectobia/src/modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
+import 'package:connectobia/src/modules/notifications/application/notification_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -76,17 +77,66 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                       ),
                     ),
                     subtitle: Text(
-                      state.message.length > 30
-                          ? '${state.message.substring(0, 30)}...'
-                          : state.message,
+                      state.message,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                     ),
                   )).show(context);
         }
       },
       child: Scaffold(
+        appBar: AppBar(
+          title: Text('Dashboard'),
+          actions: [
+            // Notification icon with badge
+            BlocBuilder<NotificationBloc, NotificationState>(
+              builder: (context, state) {
+                int unreadCount = 0;
+                if (state is NotificationsLoaded) {
+                  unreadCount = state.unreadCount;
+                }
+
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.notifications),
+                      onPressed: () {
+                        Navigator.pushNamed(context, notificationsScreen);
+                      },
+                    ),
+                    if (unreadCount > 0)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            unreadCount > 9 ? '9+' : unreadCount.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+            // Existing action buttons (if any)
+          ],
+        ),
         endDrawer: CommonDrawer(
           name: user.fullName,
           email: user.email,
@@ -172,6 +222,12 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   @override
   void initState() {
     super.initState();
+    // Subscribe to real-time messages
+    context.read<RealtimeMessagingBloc>().add(SubscribeMessages());
+
+    // Fetch notifications
+    context.read<NotificationBloc>().add(FetchNotifications());
+
     scrollController.addListener(_scrollListener); // Pass the function directly
   }
 

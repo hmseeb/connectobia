@@ -1,4 +1,6 @@
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
+import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/notifications/application/notification_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
@@ -36,55 +38,75 @@ class ConnectobiaState extends State<Connectobia> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus &&
-            currentFocus.focusedChild != null) {
-          FocusManager.instance.primaryFocus?.unfocus();
-        }
-      },
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, state) {
-          return ShadApp(
-            title: 'Connectobia',
-            initialRoute: '/',
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: (settings) =>
-                GenerateRoutes.onGenerateRoute(settings),
-            themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
-            theme: shadThemeData(state),
-            navigatorObservers: [
-              CampaignScreen.routeObserver,
-            ],
-            home: BlocListener<AuthBloc, AuthState>(
-              listener: (context, state) {
-                if (state is BrandAuthenticated ||
-                    state is InfluencerAuthenticated ||
-                    state is Unauthenticated ||
-                    state is Unverified ||
-                    state is AuthError) {
-                  handleNavigation(state: state, context: context);
-                }
-                debugPrint(state.runtimeType.toString());
-                authState = state;
-              },
-              child: BlocListener<AnimationCubit, AnimationState>(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeBloc>(
+          create: (context) => ThemeBloc(),
+        ),
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc()..add(CheckAuth()),
+        ),
+        BlocProvider<AnimationCubit>(
+          create: (context) => AnimationCubit(),
+        ),
+        BlocProvider<RealtimeMessagingBloc>(
+          create: (context) => RealtimeMessagingBloc(),
+        ),
+        BlocProvider<NotificationBloc>(
+          create: (context) =>
+              NotificationBloc()..add(SubscribeToNotifications()),
+        ),
+      ],
+      child: GestureDetector(
+        onTap: () {
+          final currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
+        },
+        child: BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            return ShadApp(
+              title: 'Connectobia',
+              initialRoute: '/',
+              debugShowCheckedModeBanner: false,
+              onGenerateRoute: (settings) =>
+                  GenerateRoutes.onGenerateRoute(settings),
+              themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
+              theme: shadThemeData(state),
+              navigatorObservers: [
+                CampaignScreen.routeObserver,
+              ],
+              home: BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
-                  if (state is AnimationStopped) {}
+                  if (state is BrandAuthenticated ||
+                      state is InfluencerAuthenticated ||
+                      state is Unauthenticated ||
+                      state is Unverified ||
+                      state is AuthError) {
+                    handleNavigation(state: state, context: context);
+                  }
+                  debugPrint(state.runtimeType.toString());
+                  authState = state;
                 },
-                child: Scaffold(
-                  backgroundColor: ShadColors.primary,
-                  body: RiveAnimation.asset(
-                    AssetsPath.splash,
-                    controllers: [_riveAnimationController],
-                    alignment: Alignment.center,
+                child: BlocListener<AnimationCubit, AnimationState>(
+                  listener: (context, state) {
+                    if (state is AnimationStopped) {}
+                  },
+                  child: Scaffold(
+                    backgroundColor: ShadColors.primary,
+                    body: RiveAnimation.asset(
+                      AssetsPath.splash,
+                      controllers: [_riveAnimationController],
+                      alignment: Alignment.center,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

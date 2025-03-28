@@ -28,6 +28,7 @@ import 'package:connectobia/src/modules/dashboard/common/screens/user_profile.da
 import 'package:connectobia/src/modules/dashboard/influencer/presentation/screens/influencer_dashboard.dart';
 import 'package:connectobia/src/modules/edit_profile/presentation/screens/edit_profile_page.dart'
     as old_profile;
+import 'package:connectobia/src/modules/notifications/presentation/screens/notifications_screen.dart';
 import 'package:connectobia/src/modules/onboarding/presentation/screens/influencer_onboard_screen.dart';
 import 'package:connectobia/src/modules/profile/presentation/screens/edit_profile_screen.dart'
     as new_profile;
@@ -106,6 +107,8 @@ class GenerateRoutes {
           avatar: args['avatar'],
           hasConnectedInstagram: args['hasConnectedInstagram'],
         ));
+      case notificationsScreen:
+        return _buildRoute(const NotificationsScreen());
       case influencerSignupScreen:
         return _buildRoute(const InfluencerScreen());
 

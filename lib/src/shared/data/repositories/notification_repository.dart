@@ -1,6 +1,8 @@
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/models/notification.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 /// Repository for handling notifications
 class NotificationRepository {
@@ -32,7 +34,7 @@ class NotificationRepository {
       title: 'Contract Created',
       body: 'A contract has been created for campaign: $campaignTitle',
       type: 'contract',
-      redirectUrl: '/contract/$contractId',
+      redirectUrl: 'contractId',
     );
   }
 
@@ -49,7 +51,23 @@ class NotificationRepository {
       body:
           '$influencerName has signed the contract for campaign: $campaignTitle',
       type: 'contract_signed',
-      redirectUrl: '/contract/$contractId',
+      redirectUrl: contractId,
+    );
+  }
+
+  /// Create a message notification
+  static Future<void> createMessageNotification({
+    required String userId,
+    required String senderName,
+    required String message,
+    required String chatId,
+  }) async {
+    await createNotification(
+      userId: userId,
+      title: 'New Message from $senderName',
+      body: message,
+      type: 'message',
+      redirectUrl: '/messages/$chatId',
     );
   }
 
@@ -80,6 +98,97 @@ class NotificationRepository {
       debugPrint('Notification created successfully');
     } catch (e) {
       debugPrint('Error creating notification: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Get all notifications for a user
+  static Future<List<NotificationModel>> getNotifications(
+      {required String userId}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final records = await pb.collection(_collectionName).getList(
+            filter: 'user = "$userId"',
+            sort: '-created',
+          );
+
+      return records.items
+          .map((record) => NotificationModel.fromRecord(record))
+          .toList();
+    } catch (e) {
+      debugPrint('Error getting notifications: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Get unread notifications count for a user
+  static Future<int> getUnreadCount({required String userId}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final records = await pb.collection(_collectionName).getList(
+            filter: 'user = "$userId" && read = false',
+          );
+
+      return records.items.length;
+    } catch (e) {
+      debugPrint('Error getting unread count: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Mark all notifications as read for a user
+  static Future<void> markAllAsRead({required String userId}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final records = await pb.collection(_collectionName).getList(
+            filter: 'user = "$userId" && read = false',
+          );
+
+      for (var record in records.items) {
+        await pb.collection(_collectionName).update(
+          record.id,
+          body: {'read': true},
+        );
+      }
+    } catch (e) {
+      debugPrint('Error marking all notifications as read: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Mark a notification as read
+  static Future<void> markAsRead({required String notificationId}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      await pb.collection(_collectionName).update(
+        notificationId,
+        body: {'read': true},
+      );
+    } catch (e) {
+      debugPrint('Error marking notification as read: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Subscribe to notifications for a user
+  static Future<dynamic> subscribeToNotifications({
+    required String userId,
+    required Function(RecordSubscriptionEvent) callback,
+  }) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      return pb.collection(_collectionName).subscribe(
+            '*',
+            callback,
+            filter: 'user = "$userId"',
+          );
+    } catch (e) {
+      debugPrint('Error subscribing to notifications: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

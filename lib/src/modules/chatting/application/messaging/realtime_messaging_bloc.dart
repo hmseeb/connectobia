@@ -6,6 +6,7 @@ import 'package:connectobia/src/modules/chatting/domain/models/message.dart';
 import 'package:connectobia/src/modules/chatting/domain/models/messages.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
+import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
@@ -69,6 +70,19 @@ class RealtimeMessagingBloc
       if (otherUserAccountType == 'brands') {
         final brand = Brand.fromRecord(record);
 
+        // Create a notification for the message
+        try {
+          await NotificationRepository.createMessageNotification(
+            userId: userId,
+            senderName: brand.brandName,
+            message: event.message.messageText,
+            chatId: event.message.chat,
+          );
+        } catch (e) {
+          debugPrint('Error creating message notification: $e');
+          // Don't fail the message handling if notification fails
+        }
+
         emit(MessageNotificationReceived(
           avatar: brand.avatar,
           name: brand.brandName,
@@ -87,6 +101,19 @@ class RealtimeMessagingBloc
         }
       } else {
         final influencer = Influencer.fromRecord(record);
+
+        // Create a notification for the message
+        try {
+          await NotificationRepository.createMessageNotification(
+            userId: userId,
+            senderName: influencer.fullName,
+            message: event.message.messageText,
+            chatId: event.message.chat,
+          );
+        } catch (e) {
+          debugPrint('Error creating message notification: $e');
+          // Don't fail the message handling if notification fails
+        }
 
         emit(MessageNotificationReceived(
           avatar: influencer.avatar,
