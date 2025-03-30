@@ -287,39 +287,6 @@ class _ProfileReviewsState extends State<ProfileReviews> {
     );
   }
 
-  Widget _buildRatingBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: Colors.green.withOpacity(0.3),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.star_rounded,
-            size: 20,
-            color: Colors.green,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            _averageRating.toStringAsFixed(1),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildRatingDistribution() {
     // Count reviews by rating
     Map<int, int> ratingCounts = {};
@@ -606,15 +573,6 @@ class _ProfileReviewsState extends State<ProfileReviews> {
         ),
       ],
     );
-  }
-
-  Color _getRatingColor(double rating) {
-    if (rating >= 4.5) return Colors.green; // Excellent
-    if (rating >= 4.0) return Colors.green.withOpacity(0.9); // Very Good
-    if (rating >= 3.5) return Colors.amber.shade700; // Good
-    if (rating >= 3.0) return Colors.amber.shade600; // Average
-    if (rating >= 2.0) return Colors.orange.shade700; // Poor
-    return Colors.red.shade600; // Bad
   }
 
   String _getRatingText(double rating) {
