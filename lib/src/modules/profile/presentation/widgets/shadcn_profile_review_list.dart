@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/domain/models/review.dart';
 import '../../data/review_repository.dart';
-import './review_list.dart';
+import 'shadcn_review_card.dart';
 
-class ProfileReviewList extends StatefulWidget {
+class ShadcnProfileReviewList extends StatefulWidget {
   final List<Review> reviews;
   final bool isLoading;
   final String userId;
@@ -12,7 +12,7 @@ class ProfileReviewList extends StatefulWidget {
   final VoidCallback? onRefresh;
   final double? averageRating;
 
-  const ProfileReviewList({
+  const ShadcnProfileReviewList({
     super.key,
     required this.reviews,
     required this.userId,
@@ -23,10 +23,11 @@ class ProfileReviewList extends StatefulWidget {
   });
 
   @override
-  State<ProfileReviewList> createState() => _ProfileReviewListState();
+  State<ShadcnProfileReviewList> createState() =>
+      _ShadcnProfileReviewListState();
 }
 
-class _ProfileReviewListState extends State<ProfileReviewList> {
+class _ShadcnProfileReviewListState extends State<ShadcnProfileReviewList> {
   String _sortOption = 'newest';
   int? _filterRating;
   bool _isDeleting = false;
@@ -69,7 +70,7 @@ class _ProfileReviewListState extends State<ProfileReviewList> {
             ),
           )
         else
-          ReviewList(
+          ShadcnReviewList(
             reviews: filteredReviews,
             emptyMessage: 'No reviews yet. Be the first to leave a review!',
             onDelete: _handleDeleteReview,
@@ -150,6 +151,7 @@ class _ProfileReviewListState extends State<ProfileReviewList> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
                 ),
               ],

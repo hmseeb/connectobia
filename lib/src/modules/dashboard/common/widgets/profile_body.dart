@@ -256,10 +256,6 @@ class ProfileBody extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.grey.shade200,
-          width: 1,
-        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -270,7 +266,6 @@ class ProfileBody extends StatelessWidget {
               children: [
                 Icon(
                   icon,
-                  color: Colors.grey.shade800,
                 ),
                 const SizedBox(width: 8),
                 Text(

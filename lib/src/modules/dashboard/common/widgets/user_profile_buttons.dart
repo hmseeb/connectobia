@@ -4,8 +4,11 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../shared/data/constants/screens.dart';
 
 class ProfileButtons extends StatelessWidget {
+  final dynamic user;
+
   const ProfileButtons({
     super.key,
+    this.user,
   });
 
   @override
@@ -16,7 +19,11 @@ class ProfileButtons extends StatelessWidget {
         Expanded(
           child: ShadButton(
             onPressed: () {
-              Navigator.pushNamed(context, editProfileScreen);
+              Navigator.pushNamed(
+                context,
+                editProfileScreen,
+                arguments: {'user': user},
+              );
             },
             child: const Text('Edit Profile'),
           ),

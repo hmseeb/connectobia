@@ -139,7 +139,14 @@ class GenerateRoutes {
         return _buildRoute(const ProfileScreen());
 
       case editProfileScreen:
-        return _buildRoute(const new_profile.EditProfileScreen());
+        Map<String, dynamic> args = {};
+        if (settings.arguments != null) {
+          args = settings.arguments as Map<String, dynamic>;
+        }
+        return _buildRoute(new_profile.EditProfileScreen(
+          key: args['key'],
+          user: args['user'],
+        ));
 
       case '/editProfile':
         return _buildRoute(const old_profile.EditProfileScreen());

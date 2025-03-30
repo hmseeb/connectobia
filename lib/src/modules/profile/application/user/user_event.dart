@@ -16,6 +16,12 @@ class FetchUserReviews extends UserEvent {
   FetchUserReviews({required this.userId, required this.isBrand});
 }
 
+class RequestEmailChange extends UserEvent {
+  final String newEmail;
+
+  RequestEmailChange({required this.newEmail});
+}
+
 class UpdateUser extends UserEvent {
   final String? fullName;
   final String? username;

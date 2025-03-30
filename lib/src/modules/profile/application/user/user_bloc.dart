@@ -12,6 +12,7 @@ import '../../../../shared/domain/models/brand_profile.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../shared/domain/models/review.dart';
+import '../../../auth/data/repositories/auth_repo.dart';
 import '../../../profile/data/review_repository.dart';
 
 part 'user_event.dart';
@@ -37,42 +38,32 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         // Log the collection ID for debugging
         debugPrint('User collection ID: $collectionId');
 
+        // We now handle brand/influencer detection more efficiently in the repositories
         if (collectionId == 'brands') {
-          final brand = await BrandRepository.getBrandById(userId);
-          emit(UserLoaded(brand));
-        } else if (collectionId == 'influencers') {
-          final influencer =
-              await InfluencerRepository.getInfluencerById(userId);
-          emit(UserLoaded(influencer));
-        } else {
-          // Try to detect the user type by querying both collections
-          debugPrint('Attempting to detect user type for ID: $userId');
           try {
-            // Try as brand first
             final brand = await BrandRepository.getBrandById(userId);
-            debugPrint('Successfully identified user as brand');
             emit(UserLoaded(brand));
-            return;
           } catch (e) {
-            debugPrint('Not a brand user: $e');
+            debugPrint('Error loading brand: $e');
+            emit(UserError('Failed to load brand: ${e.toString()}'));
           }
-
+        } else if (collectionId == 'influencers') {
           try {
-            // Try as influencer
             final influencer =
                 await InfluencerRepository.getInfluencerById(userId);
-            debugPrint('Successfully identified user as influencer');
             emit(UserLoaded(influencer));
-            return;
           } catch (e) {
-            debugPrint('Not an influencer user: $e');
+            debugPrint('Error loading influencer: $e');
+            emit(UserError('Failed to load influencer: ${e.toString()}'));
           }
-
-          // If we reach here, we couldn't identify the user type
-          emit(UserError(
-              'Unknown user type. Please check your account settings.'));
+        } else {
+          // If we can't determine from authStore, try both collections
+          debugPrint(
+              'Unknown collection type: $collectionId, attempting detection');
+          await _attemptUserTypeDetection(userId, emit);
         }
       } catch (e) {
+        debugPrint('Error in FetchUser: $e');
         emit(UserError(e.toString()));
       }
     });
@@ -322,5 +313,86 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(UserError(e.toString()));
       }
     });
+
+    on<RequestEmailChange>((event, emit) async {
+      try {
+        dynamic currentUser;
+
+        // Check for user state and try to get the current user
+        if (state is UserLoaded) {
+          currentUser = (state as UserLoaded).user;
+          debugPrint('User already loaded: ${currentUser.runtimeType}');
+        } else if (state is UserProfileLoaded) {
+          currentUser = (state as UserProfileLoaded).user;
+          debugPrint('User profile loaded: ${currentUser.runtimeType}');
+        } else {
+          debugPrint('No user loaded. Attempting to fetch user first...');
+
+          // Try to fetch the user first
+          try {
+            final user = await AuthRepository.getUser();
+            if (user == null) {
+              debugPrint('No authenticated user found after fetch attempt');
+              emit(UserError('No authenticated user found'));
+              return;
+            }
+
+            // Successfully fetched user
+            debugPrint('Successfully fetched user: ${user.runtimeType}');
+            currentUser = user;
+            emit(UserLoaded(user));
+          } catch (e) {
+            debugPrint('Error fetching user: $e');
+            emit(UserError('Failed to load user: ${e.toString()}'));
+            return;
+          }
+        }
+
+        // Log the start of email change request
+        debugPrint('Starting email change request to: ${event.newEmail}');
+        emit(UserUpdating());
+
+        // Request email change through AuthRepository
+        await AuthRepository.requestEmailChange(newEmail: event.newEmail);
+        debugPrint('Email change request successful');
+
+        // Show success state
+        emit(EmailChangeRequested());
+
+        // Re-emit the current user state to stay in a valid state
+        emit(UserLoaded(currentUser));
+      } catch (e) {
+        debugPrint('Error requesting email change: $e');
+        emit(UserError(e.toString()));
+      }
+    });
+  }
+
+  // Helper method to detect user type when collection ID doesn't match expected values
+  Future<void> _attemptUserTypeDetection(
+      String userId, Emitter<UserState> emit) async {
+    debugPrint('Attempting to detect user type for ID: $userId');
+    try {
+      // Try as brand first
+      final brand = await BrandRepository.getBrandById(userId);
+      debugPrint('Successfully identified user as brand');
+      emit(UserLoaded(brand));
+      return;
+    } catch (brandError) {
+      debugPrint('Not a brand user: $brandError');
+    }
+
+    try {
+      // Try as influencer
+      final influencer = await InfluencerRepository.getInfluencerById(userId);
+      debugPrint('Successfully identified user as influencer');
+      emit(UserLoaded(influencer));
+      return;
+    } catch (influencerError) {
+      debugPrint('Not an influencer user: $influencerError');
+    }
+
+    // If we reach here, we couldn't identify the user type
+    emit(UserError('Unknown user type. Please check your account settings.'));
   }
 }

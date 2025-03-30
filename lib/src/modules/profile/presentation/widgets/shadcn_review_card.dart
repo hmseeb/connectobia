@@ -73,13 +73,8 @@ class ShadcnReviewCard extends StatelessWidget {
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
               borderRadius: const BorderRadius.vertical(
                 bottom: Radius.circular(16),
-              ),
-              border: Border.all(
-                color: Colors.grey.shade200,
-                width: 1,
               ),
             ),
             child: Padding(
@@ -110,9 +105,6 @@ class ShadcnReviewCard extends StatelessWidget {
                               )
                             : CircleAvatar(
                                 radius: 26,
-                                backgroundColor: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.1),
                                 child: Text(
                                   reviewerName.isNotEmpty
                                       ? reviewerName[0].toUpperCase()
@@ -204,7 +196,6 @@ class ShadcnReviewCard extends StatelessWidget {
                     child: Icon(
                       Icons.format_quote,
                       size: 20,
-                      color: Colors.grey.shade400,
                     ),
                   ),
 
@@ -233,7 +224,7 @@ class ShadcnReviewCard extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(right: 3.0),
           child: Icon(
-            filled ? Icons.star_rounded : Icons.star_border_rounded,
+            filled ? Icons.star : Icons.star_border,
             color: filled ? Colors.amber.shade600 : Colors.grey.shade300,
             size: 16,
           ),
@@ -298,7 +289,6 @@ class ShadcnReviewCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               height: 1.5,
-              color: Colors.grey.shade800,
               letterSpacing: -0.2,
             ),
             maxLines: 3,

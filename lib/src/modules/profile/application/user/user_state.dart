@@ -1,5 +1,7 @@
 part of 'user_bloc.dart';
 
+class EmailChangeRequested extends UserState {}
+
 class UserError extends UserState {
   final String message;
 

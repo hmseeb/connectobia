@@ -11,11 +11,14 @@ import '../../../../shared/domain/models/influencer.dart';
 import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../theme/colors.dart';
 import '../../application/user/user_bloc.dart';
-import '../components/avatar_uploader.dart';
-import '../components/banner_uploader.dart';
+import '../widgets/avatar_uploader.dart';
+import '../widgets/banner_uploader.dart';
+import '../widgets/change_email_sheet.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final dynamic user;
+
+  const EditProfileScreen({super.key, this.user});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -27,7 +30,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
   final _bioController = TextEditingController();
-  final _socialController = TextEditingController();
 
   String? _selectedIndustry;
   XFile? _profileImage;
@@ -121,7 +123,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _emailController.dispose();
     _usernameController.dispose();
     _bioController.dispose();
-    _socialController.dispose();
     super.dispose();
   }
 
@@ -129,7 +130,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     final userState = context.read<UserBloc>().state;
-    if (userState is UserLoaded) {
+
+    // Use the user from widget prop if provided
+    if (widget.user != null) {
+      _loadUserData(widget.user);
+    } else if (userState is UserLoaded) {
       _loadUserData(userState.user);
     } else {
       context.read<UserBloc>().add(FetchUser());
@@ -140,182 +145,124 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_originalUser != null) ...[
-              // Banner image uploader
-              _bannerImage == null
-                  ? BannerUploader(
-                      bannerUrl: _isBrand
-                          ? (_originalUser as Brand).banner
-                          : (_originalUser as Influencer).banner,
-                      userId: _isBrand
-                          ? (_originalUser as Brand).id
-                          : (_originalUser as Influencer).id,
-                      collectionId: _isBrand
-                          ? (_originalUser as Brand).collectionId
-                          : (_originalUser as Influencer).collectionId,
-                      isEditable: true,
-                      onBannerSelected: _onBannerSelected,
-                    )
-                  : TemporaryBannerUploader(
-                      image: _bannerImage,
-                      onPressed: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(
-                          source: ImageSource.gallery,
-                          maxWidth: 1200,
-                          maxHeight: 800,
-                          imageQuality: 85,
-                        );
-                        if (image != null) {
-                          _onBannerSelected(image);
-                        }
-                      },
-                    ),
+              // Stack for banner and profile image with Twitter-style overlay
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Banner image uploader
+                  _bannerImage == null
+                      ? BannerUploader(
+                          bannerUrl: _isBrand
+                              ? (_originalUser as Brand).banner
+                              : (_originalUser as Influencer).banner,
+                          userId: _isBrand
+                              ? (_originalUser as Brand).id
+                              : (_originalUser as Influencer).id,
+                          collectionId: _isBrand
+                              ? (_originalUser as Brand).collectionId
+                              : (_originalUser as Influencer).collectionId,
+                          isEditable: true,
+                          onBannerSelected: _onBannerSelected,
+                          height: 200,
+                        )
+                      : TemporaryBannerUploader(
+                          image: _bannerImage,
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? image = await picker.pickImage(
+                              source: ImageSource.gallery,
+                              maxWidth: 1200,
+                              maxHeight: 800,
+                              imageQuality: 85,
+                            );
+                            if (image != null) {
+                              _onBannerSelected(image);
+                            }
+                          },
+                          height: 200,
+                        ),
 
-              const SizedBox(height: 16),
-
-              // Profile image uploader (avatar)
-              Center(
-                child: _profileImage == null
-                    ? AvatarUploader(
-                        avatarUrl: _isBrand
-                            ? (_originalUser as Brand).avatar
-                            : (_originalUser as Influencer).avatar,
-                        userId: _isBrand
-                            ? (_originalUser as Brand).id
-                            : (_originalUser as Influencer).id,
-                        collectionId: _isBrand
-                            ? (_originalUser as Brand).collectionId
-                            : (_originalUser as Influencer).collectionId,
-                        isEditable: true,
-                        onAvatarSelected: _onAvatarSelected,
-                      )
-                    : TemporaryAvatarUploader(
-                        image: _profileImage,
-                        onPressed: () async {
-                          final ImagePicker picker = ImagePicker();
-                          final XFile? image = await picker.pickImage(
-                            source: ImageSource.gallery,
-                            maxWidth: 800,
-                            maxHeight: 800,
-                            imageQuality: 85,
-                          );
-                          if (image != null) {
-                            _onAvatarSelected(image);
-                          }
-                        },
-                      ),
+                  // Profile image uploader (avatar) positioned to overlay banner
+                  Positioned(
+                    bottom: -50,
+                    left: 16,
+                    child: _profileImage == null
+                        ? AvatarUploader(
+                            avatarUrl: _isBrand
+                                ? (_originalUser as Brand).avatar
+                                : (_originalUser as Influencer).avatar,
+                            userId: _isBrand
+                                ? (_originalUser as Brand).id
+                                : (_originalUser as Influencer).id,
+                            collectionId: _isBrand
+                                ? (_originalUser as Brand).collectionId
+                                : (_originalUser as Influencer).collectionId,
+                            isEditable: true,
+                            onAvatarSelected: _onAvatarSelected,
+                            size: 100,
+                          )
+                        : TemporaryAvatarUploader(
+                            image: _profileImage,
+                            onPressed: () async {
+                              final ImagePicker picker = ImagePicker();
+                              final XFile? image = await picker.pickImage(
+                                source: ImageSource.gallery,
+                                maxWidth: 800,
+                                maxHeight: 800,
+                                imageQuality: 85,
+                              );
+                              if (image != null) {
+                                _onAvatarSelected(image);
+                              }
+                            },
+                            size: 100,
+                          ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
+
+              // Add padding to account for overlapping avatar
+              SizedBox(height: 60),
             ],
 
             // Personal Information Section
-            _buildSection(
-              title: 'Personal Information',
-              children: [
-                // Name field
-                ShadCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _isBrand ? 'Brand Name *' : 'Full Name *',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? ShadColors.disabled
-                              : Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      ShadInputFormField(
-                        controller: _nameController,
-                        placeholder:
-                            Text(_isBrand ? 'Brand name' : 'Full name'),
-                        prefix: _isBrand
-                            ? const Icon(LucideIcons.building2)
-                            : const Icon(LucideIcons.user),
-                        validator: (val) {
-                          if (val.isEmpty) {
-                            return 'This field is required';
-                          }
-                          return null;
-                        },
-                        onChanged: (_) => _updateFormState(),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Email field
-                ShadCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Email *',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      ShadInputFormField(
-                        controller: _emailController,
-                        placeholder: const Text('Email address'),
-                        prefix: const Icon(LucideIcons.mail),
-                        keyboardType: TextInputType.emailAddress,
-                        readOnly: true,
-                        enabled: false,
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Email cannot be changed. Please contact support if you need to update your email address.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                if (!_isBrand) ...[
-                  const SizedBox(height: 12),
-
-                  // Username field
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildSection(
+                title: 'Personal Information',
+                children: [
+                  // Name field
                   ShadCard(
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Username *',
+                        Text(
+                          _isBrand ? 'Brand Name *' : 'Full Name *',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? ShadColors.disabled
+                                    : Colors.grey,
                           ),
                         ),
                         const SizedBox(height: 4),
                         ShadInputFormField(
-                          controller: _usernameController,
-                          placeholder: const Text('Username'),
-                          prefix: const Icon(LucideIcons.atSign),
+                          controller: _nameController,
+                          placeholder:
+                              Text(_isBrand ? 'Brand name' : 'Full name'),
+                          prefix: _isBrand
+                              ? const Icon(LucideIcons.building2)
+                              : const Icon(LucideIcons.user),
                           validator: (val) {
                             if (val.isEmpty) {
-                              return 'Username is required';
-                            }
-                            if (val.contains(' ')) {
-                              return 'Username cannot contain spaces';
+                              return 'This field is required';
                             }
                             return null;
                           },
@@ -324,78 +271,141 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
-                ],
 
-                const SizedBox(height: 12),
-
-                // Industry Dropdown
-                _buildIndustryDropdown(),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Bio Section
-            _buildSection(
-              title: 'Bio & Social',
-              children: [
-                // Bio field
-                ShadCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Bio',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      TextField(
-                        controller: _bioController,
-                        decoration: const InputDecoration(
-                          hintText:
-                              'Write something about yourself or your brand...',
-                          border: OutlineInputBorder(),
-                        ),
-                        minLines: 3,
-                        maxLines: 5,
-                        onChanged: (_) => _updateFormState(),
-                      ),
-                    ],
-                  ),
-                ),
-
-                if (!_isBrand) ...[
                   const SizedBox(height: 12),
 
-                  // Social media handle field
+                  // Email field with Change Email button
                   ShadCard(
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Social Media Handle',
+                          'Email *',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        ShadInputFormField(
-                          controller: _socialController,
-                          placeholder: const Text('Your social media handle'),
-                          prefix: const Icon(LucideIcons.link),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: ShadInputFormField(
+                                controller: _emailController,
+                                placeholder: const Text('Email address'),
+                                prefix: const Icon(LucideIcons.mail),
+                                keyboardType: TextInputType.emailAddress,
+                                readOnly: true,
+                                enabled: false,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ShadButton(
+                              size: ShadButtonSize.sm,
+                              onPressed: _showEmailChangeDialog,
+                              child: const Text('Change'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Email cannot be changed directly. Click the Change button to request a change.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  if (!_isBrand) ...[
+                    const SizedBox(height: 12),
+
+                    // Username field (now non-editable like email)
+                    ShadCard(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Username *',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          ShadInputFormField(
+                            controller: _usernameController,
+                            placeholder: const Text('Username'),
+                            prefix: const Icon(LucideIcons.atSign),
+                            readOnly: true,
+                            enabled: false,
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Username cannot be changed. Please contact support if you need to update your username.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 12),
+
+                  // Industry Dropdown
+                  _buildIndustryDropdown(),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Bio Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildSection(
+                title: 'Bio',
+                children: [
+                  // Bio field
+                  ShadCard(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bio',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        TextField(
+                          controller: _bioController,
+                          decoration: const InputDecoration(
+                            hintText:
+                                'Write something about yourself or your brand...',
+                            border: OutlineInputBorder(),
+                          ),
+                          minLines: 3,
+                          maxLines: 5,
                           onChanged: (_) => _updateFormState(),
                         ),
                       ],
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
           ],
         ),
@@ -498,11 +508,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } else {
       final Influencer influencer = _originalUser;
       if (_nameController.text != influencer.fullName) return true;
-      if (_usernameController.text != influencer.username) return true;
       if (_selectedIndustry != influencer.industry) return true;
-      if (_socialController.text != (influencer.socialHandle ?? '')) {
-        return true;
-      }
 
       if (_profileData != null) {
         final InfluencerProfile profile = _profileData;
@@ -547,12 +553,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           UpdateUser(
             fullName: _isBrand ? null : _nameController.text,
             brandName: _isBrand ? _nameController.text : null,
-            username: _isBrand ? null : _usernameController.text,
+            username: null, // Username is now read-only and cannot be changed
             industry: _selectedIndustry,
             description: formattedDescription, // Always pass description
-            socialHandle: (!_isBrand && _socialController.text.isNotEmpty)
-                ? _socialController.text
-                : null,
           ),
         );
 
@@ -616,8 +619,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
           _bioController.text = description;
 
-          _socialController.text = '';
-
           // Find the industry key by matching its value
           _selectedIndustry = _findIndustryKeyByValue(brand.industry);
         } else {
@@ -636,8 +637,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
           _bioController.text = description;
 
-          _socialController.text = influencer.socialHandle ?? '';
-
           // Find the industry key by matching its value
           _selectedIndustry = _findIndustryKeyByValue(influencer.industry);
         }
@@ -650,7 +649,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _emailController.addListener(_updateFormState);
       _usernameController.addListener(_updateFormState);
       _bioController.addListener(_updateFormState);
-      _socialController.addListener(_updateFormState);
     } catch (e) {
       if (!mounted) return;
 
@@ -675,6 +673,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _bannerImage = image;
       _formIsDirty = true;
     });
+  }
+
+  // Add this method to show email change dialog
+  void _showEmailChangeDialog() {
+    try {
+      // Get the current email value before opening sheet
+      final String currentEmail = _emailController.text.trim();
+      final userBloc = BlocProvider.of<UserBloc>(context);
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useRootNavigator: false, // Use closest navigator instead of root
+        isDismissible: true,
+        backgroundColor: Colors.transparent,
+        builder: (BuildContext ctx) {
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: SafeArea(
+                child: BlocProvider.value(
+                  value: userBloc,
+                  child: ChangeEmailSheet(
+                    side: ShadSheetSide.bottom,
+                    currentEmail: currentEmail,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      debugPrint('Error showing email change dialog: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Error opening email change dialog: ${e.toString()}')),
+      );
+    }
   }
 
   void _updateFormState() {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../../../src/modules/profile/data/review_repository.dart';
-import '../../../../../src/modules/profile/presentation/components/shadcn_review_card.dart';
 import '../../../../../src/shared/domain/models/review.dart';
+import '../../../profile/presentation/widgets/shadcn_review_card.dart';
 
 class ProfileReviews extends StatefulWidget {
   final String profileId;
@@ -41,20 +41,11 @@ class _ProfileReviewsState extends State<ProfileReviews> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: Colors.grey.shade200, width: 1.5),
       ),
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              Colors.grey.shade50,
-            ],
-          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -123,7 +114,7 @@ class _ProfileReviewsState extends State<ProfileReviews> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey.shade700,
+                  color: Colors.green.shade700,
                 ),
               ),
               const SizedBox(width: 4),
@@ -144,7 +135,7 @@ class _ProfileReviewsState extends State<ProfileReviews> {
                       child: Container(
                         height: 4,
                         decoration: BoxDecoration(
-                          color: _getRatingColor(rating.toDouble()),
+                          color: Colors.green,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -300,10 +291,10 @@ class _ProfileReviewsState extends State<ProfileReviews> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: _getRatingColor(_averageRating).withOpacity(0.15),
+        color: Colors.green.withOpacity(0.15),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: _getRatingColor(_averageRating).withOpacity(0.3),
+          color: Colors.green.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -313,15 +304,15 @@ class _ProfileReviewsState extends State<ProfileReviews> {
           Icon(
             Icons.star_rounded,
             size: 20,
-            color: _getRatingColor(_averageRating),
+            color: Colors.green,
           ),
           const SizedBox(width: 8),
           Text(
             _averageRating.toStringAsFixed(1),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: _getRatingColor(_averageRating),
+              color: Colors.green,
             ),
           ),
         ],
@@ -371,7 +362,7 @@ class _ProfileReviewsState extends State<ProfileReviews> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade700,
+                      color: Colors.green.shade700,
                     ),
                   ),
                 ),
@@ -393,7 +384,7 @@ class _ProfileReviewsState extends State<ProfileReviews> {
                         child: Container(
                           height: 6,
                           decoration: BoxDecoration(
-                            color: _getRatingColor(rating.toDouble()),
+                            color: Colors.green,
                             borderRadius: BorderRadius.circular(3),
                           ),
                         ),
@@ -424,43 +415,85 @@ class _ProfileReviewsState extends State<ProfileReviews> {
   Widget _buildReviewsHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Title and rating tag
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.star_rate_rounded,
-              size: 28,
-              color: _reviews.isEmpty
-                  ? Colors.grey.shade400
-                  : Colors.amber.shade600,
+            const Text(
+              'Reviews',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Reviews',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
+            if (_averageRating >= 4.5 && _reviews.isNotEmpty) ...[
+              const SizedBox(width: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.green,
+                    width: 1,
                   ),
                 ),
-                if (_reviews.isNotEmpty)
-                  Text(
-                    '${_getRatingText(_averageRating)} (${_reviews.length})',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      size: 14,
+                      color: Colors.green,
                     ),
-                  ),
-              ],
-            ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Excellent (${_reviews.length})',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
-        if (_reviews.isNotEmpty) _buildRatingBadge(),
+
+        // Rating pill
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.green.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.star,
+                size: 16,
+                color: Colors.green,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                widget.averageRating != null
+                    ? widget.averageRating!
+                    : _averageRating.toStringAsFixed(1),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -500,73 +533,84 @@ class _ProfileReviewsState extends State<ProfileReviews> {
   }
 
   Widget _buildSummaryMetrics() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Text(
-                  _averageRating.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: _getRatingColor(_averageRating),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Average rating display
+        Expanded(
+          flex: 1,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.amber.shade600,
+                    size: 18,
                   ),
+                  const SizedBox(width: 4),
+                  Text(
+                    widget.averageRating != null
+                        ? widget.averageRating!
+                        : _averageRating.toStringAsFixed(1),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "${_reviews.length} ${_reviews.length == 1 ? 'review' : 'reviews'}",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.green.shade700,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 4),
-                Row(
+              ),
+              const SizedBox(height: 12),
+              // Star rating row
+              SizedBox(
+                height: 20,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(5, (index) {
+                    bool isFilled = index < _averageRating.floor();
+                    bool isHalfFilled = index == _averageRating.floor() &&
+                        _averageRating - _averageRating.floor() >= 0.5;
+
                     return Icon(
-                      index < _averageRating.floor()
-                          ? Icons.star_rounded
-                          : (index < _averageRating
-                              ? Icons.star_half_rounded
-                              : Icons.star_border_rounded),
+                      isFilled
+                          ? Icons.star
+                          : (isHalfFilled
+                              ? Icons.star_half
+                              : Icons.star_border),
                       color: Colors.amber.shade600,
-                      size: 20,
+                      size: 18,
                     );
                   }),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '${_reviews.length} reviews',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Container(
-            height: 80,
-            width: 1,
-            color: Colors.grey.shade300,
-          ),
-          Expanded(
-            child: _buildCompactRatingDistribution(),
-          ),
-        ],
-      ),
+        ),
+        // Rating distribution bar chart
+        Expanded(
+          flex: 2,
+          child: _buildCompactRatingDistribution(),
+        ),
+      ],
     );
   }
 
   Color _getRatingColor(double rating) {
-    final primaryColor = Theme.of(context).primaryColor;
-
-    if (rating >= 4.5) return primaryColor; // Excellent
-    if (rating >= 4.0) return primaryColor.withOpacity(0.9); // Very Good
+    if (rating >= 4.5) return Colors.green; // Excellent
+    if (rating >= 4.0) return Colors.green.withOpacity(0.9); // Very Good
     if (rating >= 3.5) return Colors.amber.shade700; // Good
     if (rating >= 3.0) return Colors.amber.shade600; // Average
     if (rating >= 2.0) return Colors.orange.shade700; // Poor

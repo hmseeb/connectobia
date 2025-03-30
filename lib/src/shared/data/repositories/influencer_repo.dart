@@ -5,12 +5,33 @@ import 'package:flutter/material.dart';
 
 class InfluencerRepository {
   static Future<Influencer> getInfluencerById(String id) async {
+    final pb = await PocketBaseSingleton.instance;
     try {
-      final pb = await PocketBaseSingleton.instance;
+      debugPrint('User is Influencer');
+      debugPrint('Attempting to load influencer user with ID: $id');
+
+      // Try to approach directly with the second, working approach
+      // Look up the influencer by searching for an influencer with the profile ID matching our ID
+      debugPrint('Searching for influencer with profile=$id');
+      final influencersResult = await pb.collection('influencers').getList(
+            filter: 'profile = "$id"',
+            page: 1,
+            perPage: 1,
+          );
+
+      if (influencersResult.items.isNotEmpty) {
+        final record = influencersResult.items.first;
+        debugPrint('✅ Found matching influencer: ${record.data['fullName']}');
+        return Influencer.fromRecord(record);
+      }
+
+      // If that fails, try the original approach as fallback
+      debugPrint('No influencer found by profile ID, trying direct ID lookup');
       final record = await pb.collection('influencers').getOne(id);
+      debugPrint('✅ Successfully loaded influencer with ID: $id');
       return Influencer.fromRecord(record);
     } catch (e) {
-      debugPrint('Error getting influencer by ID: $e');
+      debugPrint('❌ Error getting influencer by ID $id: $e');
       final errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

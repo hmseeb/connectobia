@@ -4,7 +4,7 @@ import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
 
-import '../components/review_form.dart';
+import '../widgets/review_form.dart';
 
 class ReviewScreen extends StatefulWidget {
   final String contractId;

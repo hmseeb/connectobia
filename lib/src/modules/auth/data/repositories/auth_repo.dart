@@ -263,6 +263,30 @@ class AuthRepository {
     }
   }
 
+  /// [requestEmailChange] is a method that sends an email change request to the user's
+  /// email address. This will send a verification email to the new email address.
+  static Future<void> requestEmailChange({required String newEmail}) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      if (!pb.authStore.isValid) {
+        throw Exception("You must be logged in to change your email");
+      }
+
+      final String collectionName = pb.authStore.record!.collectionName;
+      final String userId = pb.authStore.record!.id;
+
+      debugPrint(
+          'Requesting email change to $newEmail for user $userId in collection $collectionName');
+
+      // Request the email change - this is the correct and simplest way to do it
+      return await pb.collection(collectionName).requestEmailChange(newEmail);
+    } catch (e) {
+      debugPrint('Email change error: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
   static Future<void> updateOnboardValue(
       {required String collectionName}) async {
     final pb = await PocketBaseSingleton.instance;

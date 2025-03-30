@@ -312,19 +312,27 @@ class _UserProfileState extends State<UserProfile> {
                 if (profileType == 'influencers') {
                   Navigator.pushNamed(
                     context,
-                    'influencer_edit_profile_screen',
+                    editProfileScreen,
                     arguments: {
-                      'userId': userId,
-                      'profileId': influencerProfile?.id ?? '',
+                      'user': context.read<InfluencerProfileBloc>().state
+                              is InfluencerProfileLoaded
+                          ? (context.read<InfluencerProfileBloc>().state
+                                  as InfluencerProfileLoaded)
+                              .influencer
+                          : null,
                     },
                   );
                 } else {
                   Navigator.pushNamed(
                     context,
-                    'brand_edit_profile_screen',
+                    editProfileScreen,
                     arguments: {
-                      'userId': userId,
-                      'profileId': '', // Pass profile ID if available
+                      'user': context.read<BrandProfileBloc>().state
+                              is BrandProfileLoaded
+                          ? (context.read<BrandProfileBloc>().state
+                                  as BrandProfileLoaded)
+                              .brand
+                          : null,
                     },
                   );
                 }

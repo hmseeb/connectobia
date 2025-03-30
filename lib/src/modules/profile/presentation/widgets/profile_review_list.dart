@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/domain/models/review.dart';
 import '../../data/review_repository.dart';
-import 'shadcn_review_card.dart';
+import 'review_list.dart';
 
-class ShadcnProfileReviewList extends StatefulWidget {
+class ProfileReviewList extends StatefulWidget {
   final List<Review> reviews;
   final bool isLoading;
   final String userId;
@@ -12,7 +12,7 @@ class ShadcnProfileReviewList extends StatefulWidget {
   final VoidCallback? onRefresh;
   final double? averageRating;
 
-  const ShadcnProfileReviewList({
+  const ProfileReviewList({
     super.key,
     required this.reviews,
     required this.userId,
@@ -23,11 +23,10 @@ class ShadcnProfileReviewList extends StatefulWidget {
   });
 
   @override
-  State<ShadcnProfileReviewList> createState() =>
-      _ShadcnProfileReviewListState();
+  State<ProfileReviewList> createState() => _ProfileReviewListState();
 }
 
-class _ShadcnProfileReviewListState extends State<ShadcnProfileReviewList> {
+class _ProfileReviewListState extends State<ProfileReviewList> {
   String _sortOption = 'newest';
   int? _filterRating;
   bool _isDeleting = false;
@@ -70,7 +69,7 @@ class _ShadcnProfileReviewListState extends State<ShadcnProfileReviewList> {
             ),
           )
         else
-          ShadcnReviewList(
+          ReviewList(
             reviews: filteredReviews,
             emptyMessage: 'No reviews yet. Be the first to leave a review!',
             onDelete: _handleDeleteReview,

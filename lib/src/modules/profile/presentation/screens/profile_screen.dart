@@ -12,9 +12,9 @@ import '../../../../shared/domain/models/review.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../profile/data/review_repository.dart';
 import '../../application/user/user_bloc.dart';
-import '../components/avatar_uploader.dart';
-import '../components/profile_field.dart';
-import '../components/shadcn_review_card.dart';
+import '../widgets/avatar_uploader.dart';
+import '../widgets/profile_field.dart';
+import '../widgets/shadcn_review_card.dart';
 
 class ProfileReviewsWidget extends StatefulWidget {
   final String userId;
@@ -269,14 +269,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final currentContext = context;
-          await Navigator.pushNamed(context, editProfileScreen);
-          // Refresh data when returning from edit screen
-          if (!mounted) return;
-          setState(() {
-            _profileData = null; // Clear cached profile data
-            _isLoadingProfile = false;
-          });
-          currentContext.read<UserBloc>().add(FetchUser()); // Refresh user data
+          final currentState = currentContext.read<UserBloc>().state;
+          final currentUser = (currentState is UserLoaded)
+              ? (currentState).user
+              : (currentState is UserProfileLoaded)
+                  ? (currentState).user
+                  : null;
+
+          if (currentUser != null) {
+            await Navigator.pushNamed(context, editProfileScreen,
+                arguments: {'user': currentUser});
+            // Refresh data when returning from edit screen
+            if (!mounted) return;
+            setState(() {
+              _profileData = null; // Clear cached profile data
+              _isLoadingProfile = false;
+            });
+            currentContext
+                .read<UserBloc>()
+                .add(FetchUser()); // Refresh user data
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content:
+                      Text('Cannot edit profile: User data not available')),
+            );
+          }
         },
         backgroundColor: Colors.red.shade400,
         foregroundColor: Colors.white,

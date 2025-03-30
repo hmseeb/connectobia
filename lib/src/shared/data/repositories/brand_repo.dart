@@ -5,9 +5,28 @@ import 'package:flutter/material.dart';
 
 class BrandRepository {
   static Future<Brand> getBrandById(String id) async {
+    final pb = await PocketBaseSingleton.instance;
     try {
-      final pb = await PocketBaseSingleton.instance;
-      debugPrint('🔍 Attempting to get brand with ID: $id');
+      debugPrint('User is Brand');
+      debugPrint('Attempting to load brand user with ID: $id');
+
+      // Try to approach directly with the second, working approach
+      // Look up the brand by searching for a brand with the profile ID matching our ID
+      debugPrint('Searching for brand with profile=$id');
+      final brandsResult = await pb.collection('brands').getList(
+            filter: 'profile = "$id"',
+            page: 1,
+            perPage: 1,
+          );
+
+      if (brandsResult.items.isNotEmpty) {
+        final record = brandsResult.items.first;
+        debugPrint('✅ Found matching brand: ${record.data['brandName']}');
+        return Brand.fromRecord(record);
+      }
+
+      // If that fails, try the original approach as fallback
+      debugPrint('No brand found by profile ID, trying direct ID lookup');
       final record = await pb.collection('brands').getOne(id);
       debugPrint('✅ Successfully loaded brand with ID: $id');
       return Brand.fromRecord(record);
