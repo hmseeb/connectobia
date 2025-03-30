@@ -26,6 +26,8 @@ class _ProfileReviewsState extends State<ProfileReviews> {
   List<Review> _reviews = [];
   String _error = '';
   double _averageRating = 0.0;
+  int? _filterRating;
+  String _sortOption = 'newest';
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +63,11 @@ class _ProfileReviewsState extends State<ProfileReviews> {
               else ...[
                 _buildSummaryMetrics(),
                 const SizedBox(height: 16),
+                _buildFilters(),
+                const SizedBox(height: 16),
                 _buildReviewsList(),
-                if (_reviews.length > 3) _buildSeeAllReviewsButton(),
+                if (_getFilteredReviews().length > 3)
+                  _buildSeeAllReviewsButton(),
               ],
             ],
           ),
@@ -249,6 +254,47 @@ class _ProfileReviewsState extends State<ProfileReviews> {
     );
   }
 
+  Widget _buildFilters() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Filter & Sort',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
+            _buildSortDropdown(),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              _buildRatingFilterChip(null, 'All'),
+              const SizedBox(width: 8),
+              _buildRatingFilterChip(5, '5'),
+              const SizedBox(width: 8),
+              _buildRatingFilterChip(4, '4'),
+              const SizedBox(width: 8),
+              _buildRatingFilterChip(3, '3'),
+              const SizedBox(width: 8),
+              _buildRatingFilterChip(2, '2'),
+              const SizedBox(width: 8),
+              _buildRatingFilterChip(1, '1'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildLoadingState() {
     return Card(
       elevation: 2,
@@ -379,6 +425,31 @@ class _ProfileReviewsState extends State<ProfileReviews> {
     );
   }
 
+  Widget _buildRatingFilterChip(int? rating, String label) {
+    final isSelected = _filterRating == rating;
+
+    return FilterChip(
+      label: Row(
+        children: [
+          Text(label),
+          if (rating != null) ...[
+            const SizedBox(width: 4),
+            const Icon(Icons.star, size: 16, color: Colors.amber),
+          ],
+        ],
+      ),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _filterRating = selected ? rating : null;
+        });
+      },
+      backgroundColor: Colors.grey.shade200,
+      selectedColor: Colors.green.withOpacity(0.2),
+      checkmarkColor: Colors.green,
+    );
+  }
+
   Widget _buildReviewsHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -466,14 +537,54 @@ class _ProfileReviewsState extends State<ProfileReviews> {
   }
 
   Widget _buildReviewsList() {
+    final filteredReviews = _getFilteredReviews();
+    final displayCount =
+        filteredReviews.length > 3 ? 3 : filteredReviews.length;
+
+    if (filteredReviews.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.filter_alt_off,
+                size: 40,
+                color: Colors.grey.shade400,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No reviews match your filters',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ShadButton.outline(
+                onPressed: () {
+                  setState(() {
+                    _filterRating = null;
+                    _sortOption = 'newest';
+                  });
+                },
+                child: const Text('Clear filters'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: _reviews.length > 3 ? 3 : _reviews.length,
+      itemCount: displayCount,
       separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         return ShadcnReviewCard(
-          review: _reviews[index],
+          review: filteredReviews[index],
           canDelete: false,
         );
       },
@@ -481,6 +592,8 @@ class _ProfileReviewsState extends State<ProfileReviews> {
   }
 
   Widget _buildSeeAllReviewsButton() {
+    final filteredReviews = _getFilteredReviews();
+
     return Padding(
       padding: const EdgeInsets.only(top: 24.0),
       child: Center(
@@ -491,11 +604,32 @@ class _ProfileReviewsState extends State<ProfileReviews> {
             children: [
               const Icon(Icons.visibility_outlined, size: 18),
               const SizedBox(width: 8),
-              Text('See all ${_reviews.length} reviews'),
+              Text('See all ${filteredReviews.length} reviews'),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSortDropdown() {
+    return DropdownButton<String>(
+      value: _sortOption,
+      underline: Container(height: 0),
+      icon: const Icon(Icons.keyboard_arrow_down),
+      items: const [
+        DropdownMenuItem(value: 'newest', child: Text('Newest')),
+        DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
+        DropdownMenuItem(value: 'highest', child: Text('Highest rated')),
+        DropdownMenuItem(value: 'lowest', child: Text('Lowest rated')),
+      ],
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _sortOption = value;
+          });
+        }
+      },
     );
   }
 
@@ -575,6 +709,34 @@ class _ProfileReviewsState extends State<ProfileReviews> {
     );
   }
 
+  List<Review> _getFilteredReviews() {
+    List<Review> filtered = List.from(_reviews);
+
+    // Apply rating filter
+    if (_filterRating != null) {
+      filtered =
+          filtered.where((review) => review.rating == _filterRating).toList();
+    }
+
+    // Apply sorting
+    switch (_sortOption) {
+      case 'newest':
+        filtered.sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
+        break;
+      case 'oldest':
+        filtered.sort((a, b) => a.submittedAt.compareTo(b.submittedAt));
+        break;
+      case 'highest':
+        filtered.sort((a, b) => b.rating.compareTo(a.rating));
+        break;
+      case 'lowest':
+        filtered.sort((a, b) => a.rating.compareTo(b.rating));
+        break;
+    }
+
+    return filtered;
+  }
+
   String _getRatingText(double rating) {
     if (rating >= 4.5) return 'Excellent';
     if (rating >= 4.0) return 'Very Good';
@@ -626,6 +788,8 @@ class _ProfileReviewsState extends State<ProfileReviews> {
   }
 
   void _showAllReviewsDialog(BuildContext context) {
+    final filteredReviews = _getFilteredReviews();
+
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -673,7 +837,7 @@ class _ProfileReviewsState extends State<ProfileReviews> {
                               ),
                             ),
                             Text(
-                              '${_getRatingText(_averageRating)} (${_reviews.length})',
+                              '${_getRatingText(_averageRating)} (${filteredReviews.length})',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey.shade600,
@@ -699,25 +863,166 @@ class _ProfileReviewsState extends State<ProfileReviews> {
                         ),
                       ],
                     ),
-                    if (_reviews.isNotEmpty) ...[
+                    if (filteredReviews.isNotEmpty) ...[
                       const SizedBox(height: 24),
                       _buildRatingDistribution(),
+                      const SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Filter & Sort',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                              StatefulBuilder(
+                                  builder: (context, setDialogState) {
+                                return DropdownButton<String>(
+                                  value: _sortOption,
+                                  underline: Container(height: 0),
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  items: const [
+                                    DropdownMenuItem(
+                                        value: 'newest', child: Text('Newest')),
+                                    DropdownMenuItem(
+                                        value: 'oldest', child: Text('Oldest')),
+                                    DropdownMenuItem(
+                                        value: 'highest',
+                                        child: Text('Highest rated')),
+                                    DropdownMenuItem(
+                                        value: 'lowest',
+                                        child: Text('Lowest rated')),
+                                  ],
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _sortOption = value;
+                                      });
+                                      setDialogState(() {});
+                                    }
+                                  },
+                                );
+                              }),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          StatefulBuilder(builder: (context, setDialogState) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  FilterChip(
+                                    label: const Text('All'),
+                                    selected: _filterRating == null,
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        setState(() {
+                                          _filterRating = null;
+                                        });
+                                        setDialogState(() {});
+                                      }
+                                    },
+                                    backgroundColor: Colors.grey.shade200,
+                                    selectedColor:
+                                        Colors.green.withOpacity(0.2),
+                                    checkmarkColor: Colors.green,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ...List.generate(5, (index) {
+                                    final rating = 5 - index;
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: FilterChip(
+                                        label: Row(
+                                          children: [
+                                            Text('$rating'),
+                                            const SizedBox(width: 4),
+                                            const Icon(Icons.star,
+                                                size: 16, color: Colors.amber),
+                                          ],
+                                        ),
+                                        selected: _filterRating == rating,
+                                        onSelected: (selected) {
+                                          setState(() {
+                                            _filterRating =
+                                                selected ? rating : null;
+                                          });
+                                          setDialogState(() {});
+                                        },
+                                        backgroundColor: Colors.grey.shade200,
+                                        selectedColor:
+                                            Colors.green.withOpacity(0.2),
+                                        checkmarkColor: Colors.green,
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
                     ],
                   ],
                 ),
               ),
               const Divider(height: 1),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemCount: _reviews.length,
-                  itemBuilder: (context, index) {
-                    return ShadcnReviewCard(
-                      review: _reviews[index],
-                      canDelete: false,
-                    );
-                  },
-                ),
+                child: filteredReviews.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.filter_alt_off,
+                                size: 60,
+                                color: Colors.grey.shade400,
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'No reviews match your filters',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ShadButton.outline(
+                                onPressed: () {
+                                  setState(() {
+                                    _filterRating = null;
+                                    _sortOption = 'newest';
+                                  });
+                                  // Force dialog to rebuild with new filters
+                                  Navigator.of(context).pop();
+                                  _showAllReviewsDialog(context);
+                                },
+                                child: const Text('Clear filters'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        itemCount: filteredReviews.length,
+                        itemBuilder: (context, index) {
+                          return ShadcnReviewCard(
+                            review: filteredReviews[index],
+                            canDelete: false,
+                          );
+                        },
+                      ),
               ),
             ],
           ),
