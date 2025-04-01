@@ -49,8 +49,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Form(
       key: _formKey,
       child: FadeTransition(
