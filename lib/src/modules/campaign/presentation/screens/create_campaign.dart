@@ -378,11 +378,11 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     switch (_currentStep) {
       case 1:
         // Make sure we pass the correct budget value from the form state
-        double budgetValue = 0.0;
+        int budgetValue = 0;
 
         // First priority: use the value from form state if available
         if (formState != null && formState.budget > 0) {
-          budgetValue = formState.budget;
+          budgetValue = formState.budget.toInt();
           debugPrint('Using budget from form state: $budgetValue');
         }
         // Second priority: use the value from the controller if not empty
@@ -393,7 +393,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
           // Parse as integer to avoid decimal issues
           try {
-            budgetValue = int.parse(digitsOnly).toDouble();
+            budgetValue = int.parse(digitsOnly);
             debugPrint('Using budget from controller: $budgetValue');
           } catch (e) {
             debugPrint('Error parsing budget from controller: $e');
@@ -547,7 +547,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
   // Show a dialog with insufficient funds message and a button to navigate to wallet
   void _showInsufficientFundsDialog(
-      double availableBalance, double requiredBudget, String userId) {
+      double availableBalance, int budget, String userId) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -566,9 +566,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
             const SizedBox(height: 12),
             Text(
                 'Available balance: PKR ${availableBalance.toStringAsFixed(0)}'),
-            Text('Required budget: PKR ${requiredBudget.toStringAsFixed(0)}'),
+            Text('Required budget: PKR $budget'),
             Text(
-                'Shortfall: PKR ${(requiredBudget - availableBalance).toStringAsFixed(0)}'),
+                'Shortfall: PKR ${(budget - availableBalance.toInt()).toString()}'),
           ],
         ),
         actions: [
@@ -601,13 +601,13 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     final budgetText = _budgetController.text.trim();
 
     // Parse budget as an integer to avoid decimal point issues
-    double budget = 0.0;
+    int budget = 0;
     if (budgetText.isNotEmpty) {
       try {
         // Strip any non-digit characters first
         final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
-        // Parse as integer first, then convert to double
-        budget = int.parse(digitsOnly).toDouble();
+        // Parse as integer
+        budget = int.parse(digitsOnly);
       } catch (e) {
         debugPrint('Error parsing budget in _updateBasicDetails: $e');
       }
@@ -620,7 +620,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       if (currentState.title != _campaignNameController.text ||
           currentState.description != _campaignDescriptionController.text ||
           currentState.category != _category ||
-          currentState.budget != budget ||
+          currentState.budget != budget.toDouble() ||
           currentState.startDate != _startDate ||
           currentState.endDate != _endDate) {
         debugPrint('Updating basic details - budget: $budget');
@@ -630,7 +630,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                 title: _campaignNameController.text,
                 description: _campaignDescriptionController.text,
                 category: _category,
-                budget: budget,
+                budget: budget.toDouble(),
                 startDate: _startDate,
                 endDate: _endDate,
               ),
@@ -646,7 +646,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
               title: _campaignNameController.text,
               description: _campaignDescriptionController.text,
               category: _category,
-              budget: budget,
+              budget: budget.toDouble(),
               startDate: _startDate,
               endDate: _endDate,
             ),
@@ -704,7 +704,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       // Budget must be non-null here because we checked above
       if (budget != null) {
         // Validate if brand has sufficient funds
-        _validateFundsAndProceed(budget.toDouble());
+        _validateFundsAndProceed(budget);
       }
       return;
     }
@@ -777,7 +777,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     });
   }
 
-  void _validateFundsAndProceed(double budget) {
+  void _validateFundsAndProceed(int budget) {
     setState(() {
       _validationErrors = [];
     });
@@ -786,7 +786,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     AuthRepository.getUserId().then((userId) {
       // Get the brand's current funds
       FundsRepository.getFundsForUser(userId).then((funds) {
-        if (funds.availableBalance < budget) {
+        // Compare budget with available balance, converting to int for clean comparison
+        if (funds.availableBalance.toInt() < budget) {
           // Show insufficient funds UI with a button to add funds
           _showInsufficientFundsDialog(funds.availableBalance, budget, userId);
           return;

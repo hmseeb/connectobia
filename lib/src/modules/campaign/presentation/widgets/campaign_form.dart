@@ -9,11 +9,11 @@ import '../../../../shared/presentation/theme/app_colors.dart';
 class CampaignFormCard extends StatefulWidget {
   final TextEditingController campaignNameController;
   final TextEditingController campaignDescriptionController;
-  final Function(double) onBudgetChanged;
+  final Function(int) onBudgetChanged;
   final Function(String) onCategoryChanged;
   final Function(DateTime) onStartDateChanged;
   final Function(DateTime) onEndDateChanged;
-  final double? budgetValue;
+  final int? budgetValue;
   final String? categoryValue;
   final DateTime? startDateValue;
   final DateTime? endDateValue;
@@ -233,9 +233,9 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                             int budget = int.parse(digitsOnly);
 
                             // Check if value changed before updating
-                            if (widget.budgetValue != budget.toDouble()) {
+                            if (widget.budgetValue != budget) {
                               debugPrint('Budget value changed to: $budget');
-                              widget.onBudgetChanged(budget.toDouble());
+                              widget.onBudgetChanged(budget);
                             }
                           }
                         } catch (e) {
@@ -364,7 +364,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     // Only update budget controller if the value is actually different
     if (widget.budgetValue != null &&
         widget.budgetValue != oldWidget.budgetValue) {
-      final int intValue = widget.budgetValue!.toInt();
+      final int intValue = widget.budgetValue!;
       final int? currentValue = _budgetController.text.isEmpty
           ? null
           : int.tryParse(_budgetController.text);
@@ -427,7 +427,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
     // Initialize budget controller with integer value only
     if (widget.budgetValue != null && widget.budgetValue! > 0) {
-      _budgetController.text = widget.budgetValue!.toInt().toString();
+      _budgetController.text = widget.budgetValue!.toString();
       debugPrint('Set budget field in initState: ${_budgetController.text}');
     } else {
       _budgetController.text = '';
@@ -649,7 +649,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
     // Only update the budget value if it's valid and different from current
     if (budget != null && budget > 0) {
-      double budgetValue = budget.toDouble();
+      int budgetValue = budget;
       if (widget.budgetValue != budgetValue) {
         widget.onBudgetChanged(budgetValue);
       }
