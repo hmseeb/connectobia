@@ -548,26 +548,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     );
   }
 
-  /// Helper method to insert commas in a number string
-  String _insertCommas(String value) {
-    String result = '';
-    int count = 0;
-
-    // Iterate from right to left through the digits
-    for (int i = value.length - 1; i >= 0; i--) {
-      // Add the digit
-      result = value[i] + result;
-      count++;
-
-      // Add a comma after every third digit except at the end
-      if (count % 3 == 0 && i > 0) {
-        result = ',$result';
-      }
-    }
-
-    return result;
-  }
-
   Future<void> _loadCategories() async {
     setState(() {
       _isLoadingCategories = true;
