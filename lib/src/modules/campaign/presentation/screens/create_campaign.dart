@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
@@ -9,6 +10,7 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/custom_pro
 import 'package:connectobia/src/modules/campaign/presentation/widgets/navigation_buttons.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/data/repositories/funds_repository.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/presentation/widgets/error_box.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
@@ -388,8 +390,14 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           // Get only the digits from the formatted string
           String digitsOnly =
               _budgetController.text.replaceAll(RegExp(r'[^\d]'), '');
-          budgetValue = double.tryParse(digitsOnly) ?? 0.0;
-          debugPrint('Using budget from controller: $budgetValue');
+
+          // Parse as integer to avoid decimal issues
+          try {
+            budgetValue = int.parse(digitsOnly).toDouble();
+            debugPrint('Using budget from controller: $budgetValue');
+          } catch (e) {
+            debugPrint('Error parsing budget from controller: $e');
+          }
         }
 
         return CampaignFormCard(
@@ -522,9 +530,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           if (state is CampaignFormState) {
             // Update budget controller with the value from state, if budget controller is empty
             if (_budgetController.text.isEmpty && state.budget > 0) {
-              // Format the budget value
-              final formatter = NumberFormat('#,###', 'en_US');
-              _budgetController.text = formatter.format(state.budget.toInt());
+              // Just use the integer value to avoid any formatting issues
+              _budgetController.text = state.budget.toInt().toString();
               debugPrint(
                   'Updated budget field when returning to step 1: ${_budgetController.text}');
             }
@@ -538,30 +545,113 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     }
   }
 
-  void _updateBasicDetails() {
-    final budgetText = _budgetController.text;
-    // Remove any commas or non-digit characters from the budget text
-    final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
+  // Show a dialog with insufficient funds message and a button to navigate to wallet
+  void _showInsufficientFundsDialog(
+      double availableBalance, double requiredBudget, String userId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Insufficient Funds',
+          style: TextStyle(color: Colors.red),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'You don\'t have enough funds to create this campaign.',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Text(
+                'Available balance: PKR ${availableBalance.toStringAsFixed(0)}'),
+            Text('Required budget: PKR ${requiredBudget.toStringAsFixed(0)}'),
+            Text(
+                'Shortfall: PKR ${(requiredBudget - availableBalance).toStringAsFixed(0)}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              // Close the dialog and navigate to wallet screen with userId
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                walletScreen,
+                arguments: {'userId': userId},
+              );
+            },
+            child: const Text('Add Funds to Wallet'),
+          ),
+        ],
+      ),
+    );
+  }
 
-    // Make sure we have a valid budget value
+  void _updateBasicDetails() {
+    final budgetText = _budgetController.text.trim();
+
+    // Parse budget as an integer to avoid decimal point issues
     double budget = 0.0;
-    if (digitsOnly.isNotEmpty) {
-      budget = int.tryParse(digitsOnly)?.toDouble() ?? 0.0;
+    if (budgetText.isNotEmpty) {
+      try {
+        // Strip any non-digit characters first
+        final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
+        // Parse as integer first, then convert to double
+        budget = int.parse(digitsOnly).toDouble();
+      } catch (e) {
+        debugPrint('Error parsing budget in _updateBasicDetails: $e');
+      }
     }
 
-    debugPrint(
-        'Updating basic details with budget text: $budgetText, parsed value: $budget');
+    // Only update if we have a valid campaign form state
+    final currentState = context.read<CampaignBloc>().state;
+    if (currentState is CampaignFormState) {
+      // Only update if any of the values have changed
+      if (currentState.title != _campaignNameController.text ||
+          currentState.description != _campaignDescriptionController.text ||
+          currentState.category != _category ||
+          currentState.budget != budget ||
+          currentState.startDate != _startDate ||
+          currentState.endDate != _endDate) {
+        debugPrint('Updating basic details - budget: $budget');
 
-    context.read<CampaignBloc>().add(
-          UpdateCampaignBasicDetails(
-            title: _campaignNameController.text,
-            description: _campaignDescriptionController.text,
-            category: _category,
-            budget: budget,
-            startDate: _startDate,
-            endDate: _endDate,
-          ),
-        );
+        context.read<CampaignBloc>().add(
+              UpdateCampaignBasicDetails(
+                title: _campaignNameController.text,
+                description: _campaignDescriptionController.text,
+                category: _category,
+                budget: budget,
+                startDate: _startDate,
+                endDate: _endDate,
+              ),
+            );
+      }
+    } else {
+      // Always update if we don't have a valid form state yet
+      debugPrint(
+          'Updating basic details (no previous state) - budget: $budget');
+
+      context.read<CampaignBloc>().add(
+            UpdateCampaignBasicDetails(
+              title: _campaignNameController.text,
+              description: _campaignDescriptionController.text,
+              category: _category,
+              budget: budget,
+              startDate: _startDate,
+              endDate: _endDate,
+            ),
+          );
+    }
   }
 
   void _validateAndGoToNextStep(CampaignFormState formState) {
@@ -592,7 +682,11 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       // Parse budget value
       int? budget;
       if (digitsOnly.isNotEmpty) {
-        budget = int.tryParse(digitsOnly);
+        try {
+          budget = int.parse(digitsOnly);
+        } catch (e) {
+          debugPrint('Error parsing budget during validation: $e');
+        }
       }
 
       debugPrint('Budget text: $budgetText, parsed value: $budget');
@@ -607,18 +701,11 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         return;
       }
 
-      // Update the data before proceeding - IMPORTANT to do this before changing step
-      _updateBasicDetails();
-
-      // Use a microtask to ensure state updates are processed before moving to next step
-      Future.microtask(() {
-        if (mounted) {
-          setState(() {
-            _currentStep++;
-          });
-        }
-      });
-
+      // Budget must be non-null here because we checked above
+      if (budget != null) {
+        // Validate if brand has sufficient funds
+        _validateFundsAndProceed(budget.toDouble());
+      }
       return;
     }
 
@@ -687,6 +774,44 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           _currentStep++;
         });
       }
+    });
+  }
+
+  void _validateFundsAndProceed(double budget) {
+    setState(() {
+      _validationErrors = [];
+    });
+
+    // Get the current user ID first, then get the funds
+    AuthRepository.getUserId().then((userId) {
+      // Get the brand's current funds
+      FundsRepository.getFundsForUser(userId).then((funds) {
+        if (funds.availableBalance < budget) {
+          // Show insufficient funds UI with a button to add funds
+          _showInsufficientFundsDialog(funds.availableBalance, budget, userId);
+          return;
+        }
+
+        // Update the data before proceeding - IMPORTANT to do this before changing step
+        _updateBasicDetails();
+
+        // Use a microtask to ensure state updates are processed before moving to next step
+        Future.microtask(() {
+          if (mounted) {
+            setState(() {
+              _currentStep++;
+            });
+          }
+        });
+      }).catchError((error) {
+        setState(() {
+          _validationErrors = ['Error validating funds: ${error.toString()}'];
+        });
+      });
+    }).catchError((error) {
+      setState(() {
+        _validationErrors = ['Error getting user ID: ${error.toString()}'];
+      });
     });
   }
 }

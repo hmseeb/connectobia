@@ -251,7 +251,7 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
               budget: formState.budget,
               startDate: formState.startDate,
               endDate: formState.endDate,
-              status: 'active',
+              status: 'draft',
               brand: '', // Will be set by repository
               selectedInfluencer: formState.selectedInfluencer,
               created: DateTime.now(),

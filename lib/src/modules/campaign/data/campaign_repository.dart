@@ -1,6 +1,7 @@
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/constants/industries.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
+import 'package:connectobia/src/shared/data/repositories/funds_repository.dart';
 import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
@@ -114,6 +115,24 @@ class CampaignRepository {
       debugPrint('Creating campaign with brand ID: $userId');
       debugPrint(
           'Selected influencer before creation: ${campaign.selectedInfluencer}');
+
+      // Verify and lock funds first
+      if (campaign.budget > 0) {
+        try {
+          // Import FundsRepository if not already imported at the top
+          final fundsLocked =
+              await FundsRepository.lockFunds(userId, campaign.budget);
+          if (!fundsLocked) {
+            throw Exception(
+                'Insufficient funds to create this campaign. Please add more funds to your account.');
+          }
+          debugPrint(
+              'Successfully locked ${campaign.budget} funds for campaign');
+        } catch (e) {
+          debugPrint('Error locking funds: $e');
+          throw Exception('Unable to lock funds: ${e.toString()}');
+        }
+      }
 
       // Make sure the brand is set to the current user
       final body = campaign.copyWith(brand: userId).toCreateJson();
@@ -325,15 +344,13 @@ class CampaignRepository {
   /// Get all campaign categories
   static Future<Map<String, String>> getCategories() async {
     try {
-      // For now, we'll use the industries as categories
-      // But we need to ensure consistent formatting between app and database
+      // Use a map with display value as key to avoid duplicates
       Map<String, String> normalizedCategories = {};
 
-      // Convert keys to ensure they match database format
+      // Add each industry only once with a consistent format
       IndustryList.industries.forEach((key, value) {
-        // Add both formats to support database inconsistencies
-        normalizedCategories[key] = value; // Original (with underscores)
-        normalizedCategories[key.replaceAll('_', ' ')] = value; // With spaces
+        // Only use the display value (value) as the key to avoid duplicates
+        normalizedCategories[key] = value;
       });
 
       return normalizedCategories;
