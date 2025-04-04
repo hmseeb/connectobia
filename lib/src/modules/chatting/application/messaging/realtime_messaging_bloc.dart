@@ -241,11 +241,40 @@ class RealtimeMessagingBloc
           Messages sentMessage = messages.removeMessageWithId(messageId);
           sentMessage.addMessage(message);
 
+          // Create a notification for the recipient
+          try {
+            // Get sender name based on account type
+            String accountType = CollectionNameSingleton.instance;
+            String senderName = '';
+
+            final currentUser = await AuthRepository.getUser();
+            if (accountType == 'brands') {
+              senderName = (currentUser as Brand).brandName;
+            } else {
+              senderName = (currentUser as Influencer).fullName;
+            }
+
+            await NotificationRepository.createMessageNotification(
+              userId: event.recipientId,
+              senderName: senderName,
+              message: event.message,
+              chatId: message.chat,
+            );
+            debugPrint(
+                'Created message notification for recipient: ${event.recipientId}');
+          } catch (e) {
+            debugPrint('Error creating message notification for recipient: $e');
+            // Don't fail the message handling if notification fails
+          }
+
           HapticFeedback.lightImpact();
           emit(MessagesLoaded(messages: sentMessage, selfId: senderId));
 
           await msgsRepo.updateChatById(
-              chatId: message.chat, messageId: message.id!, isRead: false);
+            chatId: message.chat,
+            messageId: message.id!,
+            isRead: false,
+          );
         } else {
           final message = await msgsRepo.sendTextMessage(
             recipientId: event.recipientId,
@@ -256,6 +285,32 @@ class RealtimeMessagingBloc
 
           Messages sentMessage = messages.removeMessageWithId(messageId);
           sentMessage.addMessage(message);
+
+          // Create a notification for the recipient
+          try {
+            // Get sender name based on account type
+            String accountType = CollectionNameSingleton.instance;
+            String senderName = '';
+
+            final currentUser = await AuthRepository.getUser();
+            if (accountType == 'brands') {
+              senderName = (currentUser as Brand).brandName;
+            } else {
+              senderName = (currentUser as Influencer).fullName;
+            }
+
+            await NotificationRepository.createMessageNotification(
+              userId: event.recipientId,
+              senderName: senderName,
+              message: event.message,
+              chatId: message.chat,
+            );
+            debugPrint(
+                'Created message notification for recipient: ${event.recipientId}');
+          } catch (e) {
+            debugPrint('Error creating message notification for recipient: $e');
+            // Don't fail the message handling if notification fails
+          }
 
           HapticFeedback.lightImpact();
           emit(MessagesLoaded(
