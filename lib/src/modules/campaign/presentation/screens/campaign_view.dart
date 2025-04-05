@@ -1165,28 +1165,27 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       // If no contract exists yet, we just need to update the campaign status
       if (contractId.isEmpty) {
         context.read<CampaignBloc>().add(
-              UpdateCampaignStatus(campaign!.id, 'declined'),
+              UpdateCampaignStatus(campaign!.id, 'rejected'),
             );
 
         // Update local state to prevent reload issues
         setState(() {
           if (campaign != null) {
-            campaign = campaign!.copyWith(status: 'declined');
+            campaign = campaign!.copyWith(status: 'rejected');
           }
         });
+
+        // Show success message
+        _showSuccessToast('Campaign rejected successfully');
       } else {
         // Reject the existing contract
+        // The contract repository will also update the campaign status
         context.read<ContractBloc>().add(RejectContract(contractId));
-
-        // Also update campaign status
-        context.read<CampaignBloc>().add(
-              UpdateCampaignStatus(campaign!.id, 'declined'),
-            );
 
         // Update local state to prevent reload issues
         setState(() {
           if (campaign != null) {
-            campaign = campaign!.copyWith(status: 'declined');
+            campaign = campaign!.copyWith(status: 'rejected');
           }
           if (contract != null) {
             contract = contract!.copyWith(status: 'rejected');
@@ -1194,6 +1193,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         });
       }
     } catch (e) {
+      debugPrint('Error in _rejectContract: $e');
       _showErrorToast('Error rejecting: $e');
     }
   }

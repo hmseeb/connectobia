@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
@@ -238,6 +239,9 @@ class ContractRepository {
       final brandId = existingContract.brand;
       final amount = existingContract.payout;
 
+      debugPrint(
+          'Starting contract rejection process for contract: $id, campaign: $campaignId');
+
       // Update the contract status to rejected
       final record = await pb.collection(_collectionName).update(
         id,
@@ -245,6 +249,8 @@ class ContractRepository {
           'status': 'rejected',
         },
       );
+
+      debugPrint('Contract status updated to rejected successfully');
 
       // Also update the campaign status to rejected
       try {
@@ -257,6 +263,14 @@ class ContractRepository {
         debugPrint('Updated campaign $campaignId status to rejected');
       } catch (e) {
         debugPrint('Error updating campaign status: $e');
+        // Try again with a different approach
+        try {
+          await CampaignRepository.updateCampaignStatus(campaignId, 'rejected');
+          debugPrint('Updated campaign status through CampaignRepository');
+        } catch (innerE) {
+          debugPrint(
+              'Second attempt to update campaign status also failed: $innerE');
+        }
         // Don't fail the contract rejection if campaign update fails
       }
 
@@ -266,6 +280,7 @@ class ContractRepository {
           debugPrint(
               'Releasing $amount funds for brand $brandId after contract rejection');
           await FundsRepository.releaseFunds(brandId, amount);
+          debugPrint('Funds released successfully');
         } catch (e) {
           debugPrint('Error releasing funds after contract rejection: $e');
           // Even if releasing funds fails, we don't want to fail the rejection
@@ -282,6 +297,7 @@ class ContractRepository {
           type: 'contract_rejected',
           redirectUrl: '$campaignDetails?campaignId=$campaignId&userType=brand',
         );
+        debugPrint('Notification sent to brand successfully');
       } catch (e) {
         debugPrint('Error creating notification after contract rejection: $e');
         // Do not fail the contract rejection if notification fails
@@ -289,6 +305,7 @@ class ContractRepository {
 
       return Contract.fromRecord(record);
     } catch (e) {
+      debugPrint('Error in rejectByInfluencer: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

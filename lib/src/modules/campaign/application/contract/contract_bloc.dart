@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
 import 'package:connectobia/src/modules/campaign/data/contract_repository.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
@@ -109,8 +110,23 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
     on<RejectContract>((event, emit) async {
       emit(ContractsLoading());
       try {
+        debugPrint('Rejecting contract: ${event.contractId}');
         final contract =
             await ContractRepository.rejectByInfluencer(event.contractId);
+        debugPrint(
+            'Contract rejected successfully with status: ${contract.status}');
+
+        // Make sure campaign status is updated in backend
+        try {
+          await CampaignRepository.updateCampaignStatus(
+              contract.campaign, 'rejected');
+          debugPrint('Campaign status updated to rejected');
+        } catch (e) {
+          debugPrint(
+              'Error updating campaign status after contract rejection: $e');
+          // Don't fail the whole operation if just this part fails
+        }
+
         emit(ContractRejected(contract));
       } catch (e) {
         debugPrint('Error rejecting contract: $e');
