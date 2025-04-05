@@ -578,10 +578,55 @@ class CampaignRepository {
       String id, Map<String, dynamic> data) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+      final userId = pb.authStore.model.id;
+
+      // Get the original campaign to compare budget changes
+      final originalCampaign = await getCampaignById(id);
+      final originalBudget = originalCampaign.budget;
+
+      // Check if budget is being updated
+      if (data.containsKey('budget')) {
+        final newBudget = data['budget'] is int
+            ? (data['budget'] as int).toDouble()
+            : data['budget'] as double;
+
+        // Don't allow budget reductions
+        if (newBudget < originalBudget) {
+          throw Exception(
+              'Budget cannot be reduced. Current budget: $originalBudget');
+        }
+
+        // If budget increased, only lock the additional amount
+        if (newBudget > originalBudget) {
+          final additionalBudget = newBudget - originalBudget;
+          debugPrint(
+              'Locking additional funds: $additionalBudget (new: $newBudget, original: $originalBudget)');
+
+          if (additionalBudget > 0) {
+            try {
+              final fundsLocked =
+                  await FundsRepository.lockFunds(userId, additionalBudget);
+              if (!fundsLocked) {
+                throw Exception(
+                    'Insufficient funds to increase budget. Please add more funds to your account.');
+              }
+              debugPrint(
+                  'Successfully locked additional $additionalBudget funds for campaign');
+            } catch (e) {
+              debugPrint('Error locking additional funds: $e');
+              throw Exception(
+                  'Unable to lock additional funds: ${e.toString()}');
+            }
+          }
+        }
+      }
+
+      // Proceed with the update
       final record =
           await pb.collection(_collectionName).update(id, body: data);
       return Campaign.fromRecord(record);
     } catch (e) {
+      debugPrint('Error updating campaign: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
