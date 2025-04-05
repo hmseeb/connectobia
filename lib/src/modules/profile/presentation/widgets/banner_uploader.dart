@@ -124,8 +124,38 @@ class BannerUploader extends StatelessWidget {
       imageQuality: 85,
     );
 
-    if (image != null && onBannerSelected != null) {
-      onBannerSelected!(image);
+    if (image != null) {
+      // Check file size - maximum 5MB
+      final File file = File(image.path);
+      final int fileSizeInBytes = await file.length();
+      final double fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+
+      if (fileSizeInMB > 5) {
+        // Show error popup
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('File Too Large'),
+                content: const Text('Please select an image smaller than 5MB.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+        return;
+      }
+
+      // If size is valid, proceed with the callback
+      if (onBannerSelected != null) {
+        onBannerSelected!(image);
+      }
     }
   }
 }
