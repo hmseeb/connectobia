@@ -306,44 +306,50 @@ class ContractRepository {
 
       debugPrint('Updating post URLs for contract $id: $postUrlJson');
 
+      // Check for empty input
+      if (postUrlJson.trim().isEmpty) {
+        debugPrint('Empty postUrlJson provided, setting to empty array');
+        postUrlJson = "[]";
+      }
+
       // Add more debug info
       debugPrint(
           'POST URL FORMAT CHECK: Type: ${postUrlJson.runtimeType}, Length: ${postUrlJson.length}');
-      debugPrint('RAW JSON STRING: $postUrlJson');
 
-      // Validate and sanitize the JSON
-      String sanitizedJson = postUrlJson;
+      // Parse the JSON to ensure it's an array
+      List<String> urlList = [];
       try {
-        // Validate JSON format
-        final decodedUrls = jsonDecode(postUrlJson);
-        debugPrint('JSON VALID: $decodedUrls');
-
-        // If it's a list but not in JSON format, re-encode it
-        if (decodedUrls is List) {
-          sanitizedJson = jsonEncode(decodedUrls);
-          debugPrint('RE-ENCODED JSON: $sanitizedJson');
+        // Parse to get a proper list
+        final parsedJson = jsonDecode(postUrlJson);
+        if (parsedJson is List) {
+          // Convert all items to strings
+          urlList = parsedJson.map((item) => item.toString()).toList();
+        } else {
+          // If not a list, make it a single-item list
+          urlList = [parsedJson.toString()];
         }
       } catch (e) {
         debugPrint('JSON PARSING ERROR: $e');
-        // If invalid JSON, try to wrap it as a single item array
-        try {
-          sanitizedJson = jsonEncode([postUrlJson]);
-          debugPrint('FIXED JSON: $sanitizedJson');
-        } catch (e2) {
-          debugPrint('COULD NOT FIX JSON: $e2');
-          // Continue with original string as last resort
-        }
+        // If we can't parse it, try to use it as a single URL
+        urlList = [postUrlJson];
       }
 
-      // Use the sanitized JSON string for the update
+      debugPrint('Parsed URL list: $urlList');
+
+      // Send the list directly - NOT as a JSON string
+      // This is critical: PocketBase will handle serializing the list to JSON
       final record = await pb.collection(_collectionName).update(
         id,
-        body: {'postUrls': sanitizedJson},
+        body: {'postUrls': urlList},
       );
 
-      // Log response
+      // Log response for verification
       debugPrint('UPDATE RESPONSE: ${record.data}');
-      debugPrint('SAVED POST_URL: ${record.data['postUrls']}');
+      if (record.data['postUrls'] != null) {
+        debugPrint('SAVED POST_URLs: ${record.data['postUrls']}');
+        debugPrint(
+            'SAVED POST_URLs type: ${record.data['postUrls'].runtimeType}');
+      }
 
       // Create notification for the brand that content has been submitted
       final updatedContract = Contract.fromRecord(record);

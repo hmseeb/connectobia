@@ -53,24 +53,52 @@ class Contract {
       deliveryDate = DateTime.now().add(const Duration(days: 7));
     }
 
-    // Parse post_url
+    // Parse post_url - Fix to correctly use the 'postUrls' field from the database
     String? postUrl;
     var rawPostUrls = record.data['postUrls'];
 
-    // Handle different types for postUrls
+    // Handle different types for postUrls with improved logging
+    debugPrint(
+        'RECEIVED postUrls from DB: $rawPostUrls (${rawPostUrls?.runtimeType})');
+
     if (rawPostUrls != null) {
       if (rawPostUrls is List) {
         // If it's already a list, convert it to JSON string
-        postUrl = jsonEncode(rawPostUrls);
-        debugPrint('CONTRACT MODEL: Converted List to JSON string: $postUrl');
+        try {
+          postUrl = jsonEncode(rawPostUrls);
+          debugPrint('CONTRACT MODEL: Converted List to JSON string: $postUrl');
+        } catch (e) {
+          debugPrint('ERROR encoding list to JSON: $e');
+          // Fallback to comma-separated string
+          postUrl = rawPostUrls.join(', ');
+        }
       } else if (rawPostUrls is String) {
-        // If it's already a string, use it directly
-        postUrl = rawPostUrls;
-        debugPrint('CONTRACT MODEL: Using string directly: $postUrl');
+        // If it's already a string, check if it's a valid JSON string
+        try {
+          // Try to decode and re-encode to ensure valid JSON
+          final decoded = jsonDecode(rawPostUrls);
+          if (decoded is List) {
+            // It's already a valid JSON array string
+            postUrl = rawPostUrls;
+          } else {
+            // It's a JSON string but not an array, make it an array
+            postUrl = jsonEncode([decoded]);
+          }
+          debugPrint('CONTRACT MODEL: Validated JSON string: $postUrl');
+        } catch (e) {
+          // Not valid JSON, use as-is
+          debugPrint('CONTRACT MODEL: Using non-JSON string: $rawPostUrls');
+          postUrl = jsonEncode([rawPostUrls]);
+        }
       } else {
         // For any other type, try to convert to string
-        postUrl = rawPostUrls.toString();
-        debugPrint('CONTRACT MODEL: Converted to string: $postUrl');
+        try {
+          postUrl = jsonEncode([rawPostUrls.toString()]);
+          debugPrint('CONTRACT MODEL: Converted to JSON array: $postUrl');
+        } catch (e) {
+          postUrl = rawPostUrls.toString();
+          debugPrint('CONTRACT MODEL: Used toString fallback: $postUrl');
+        }
       }
     }
 
@@ -145,7 +173,7 @@ class Contract {
       'is_signed_by_brand': isSignedByBrand,
       'is_signed_by_influencer': isSignedByInfluencer,
       'status': status,
-      'postUrls': postUrl,
+      'postUrls': postUrl, // Fix to ensure consistent field naming
     };
   }
 }

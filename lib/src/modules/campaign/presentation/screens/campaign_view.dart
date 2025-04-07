@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
@@ -685,15 +686,38 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         try {
           // Check if it's a JSON string that needs to be parsed
           if (contract.postUrl!.startsWith('[')) {
-            urls = List<String>.from(jsonDecode(contract.postUrl!));
+            // It's a JSON array string
+            debugPrint('Parsing JSON array from postUrl: ${contract.postUrl}');
+            final parsed = jsonDecode(contract.postUrl!);
+            if (parsed is List) {
+              urls = parsed.map((url) => url.toString()).toList();
+            } else {
+              // Fallback if the parsed result is not a list
+              urls = [contract.postUrl!];
+            }
           } else {
-            // If it's just a single URL
-            urls = [contract.postUrl!];
+            // If it's not a JSON array, try to see if it's a JSON string
+            try {
+              final parsed = jsonDecode(contract.postUrl!);
+              if (parsed is List) {
+                urls = parsed.map((url) => url.toString()).toList();
+              } else {
+                // Single item, not in a list
+                urls = [parsed.toString()];
+              }
+            } catch (e) {
+              // Not valid JSON, treat as single URL
+              urls = [contract.postUrl!];
+            }
           }
         } catch (e) {
           // If parsing fails, just use it directly
+          debugPrint('Error parsing postUrl, using as-is: $e');
           urls = [contract.postUrl!];
         }
+
+        // Log the parsed URLs for debugging
+        debugPrint('Parsed URLs: $urls');
       }
 
       // Only show section if there are URLs or user is an influencer and contract is signed
@@ -702,6 +726,94 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
       if (!shouldShowSection) {
         return const SizedBox.shrink();
+      }
+
+      // Function to handle URL submission
+      void submitUrls() async {
+        if (urlControllers.isEmpty) {
+          _showErrorToast('Please add at least one URL');
+          return;
+        }
+
+        // Validate all URLs
+        bool allValid = true;
+        List<String> validUrls = [];
+
+        for (var controller in urlControllers) {
+          final url = controller.text.trim();
+          if (url.isNotEmpty) {
+            String formattedUrl = url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+              formattedUrl = 'https://$url';
+            }
+
+            try {
+              final uri = Uri.parse(formattedUrl);
+              if (uri.hasAuthority) {
+                validUrls.add(formattedUrl);
+              } else {
+                allValid = false;
+                break;
+              }
+            } catch (e) {
+              allValid = false;
+              break;
+            }
+          }
+        }
+
+        if (!allValid) {
+          _showErrorToast('Please enter valid URLs for all fields');
+          return;
+        }
+
+        if (validUrls.isEmpty) {
+          _showErrorToast('Please add at least one URL');
+          return;
+        }
+
+        // Set submitting state to show loading
+        setSectionState(() {
+          isSubmitting = true;
+        });
+
+        // Convert to JSON string for transport - this is what the repository expects
+        final postUrlsJson = jsonEncode(validUrls);
+
+        // Log what we're sending
+        debugPrint('SUBMITTING URLs: ${validUrls.length} items');
+        debugPrint('JSON to submit: $postUrlsJson');
+
+        // Show loading indicator
+        ShadToaster.of(context).show(
+          ShadToast(
+            title: const Text('Updating Content'),
+            description: const Text('Saving your changes...'),
+          ),
+        );
+
+        try {
+          // Call method to update URLs and wait for the result
+          await _updateContractPostUrlsAsync(contract.id, postUrlsJson);
+
+          // Update UI after successful submission
+          setSectionState(() {
+            isEditingMode = false;
+            isSubmitting = false;
+            urls = validUrls;
+          });
+
+          _showSuccessToast('Content URLs updated successfully');
+
+          // Refresh the contract to ensure we have the latest data
+          context.read<ContractBloc>().add(LoadCampaignContract(campaignId));
+        } catch (e) {
+          // Handle error
+          setSectionState(() {
+            isSubmitting = false;
+          });
+          _showErrorToast('Error updating URLs: $e');
+        }
       }
 
       return Padding(
@@ -843,77 +955,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: ShadButton(
-                          onPressed: isSubmitting
-                              ? null
-                              : () {
-                                  // Validate all URLs
-                                  bool allValid = true;
-                                  List<String> validUrls = [];
-
-                                  for (var controller in urlControllers) {
-                                    final url = controller.text.trim();
-                                    if (url.isNotEmpty) {
-                                      String formattedUrl = url;
-                                      if (!url.startsWith('http://') &&
-                                          !url.startsWith('https://')) {
-                                        formattedUrl = 'https://$url';
-                                      }
-
-                                      try {
-                                        final uri = Uri.parse(formattedUrl);
-                                        if (uri.hasAuthority) {
-                                          validUrls.add(formattedUrl);
-                                        } else {
-                                          allValid = false;
-                                          break;
-                                        }
-                                      } catch (e) {
-                                        allValid = false;
-                                        break;
-                                      }
-                                    }
-                                  }
-
-                                  if (!allValid) {
-                                    _showErrorToast(
-                                        'Please enter valid URLs for all fields');
-                                    return;
-                                  }
-
-                                  if (validUrls.isEmpty) {
-                                    _showErrorToast(
-                                        'Please add at least one URL');
-                                    return;
-                                  }
-
-                                  // Set submitting state to show loading
-                                  setSectionState(() {
-                                    isSubmitting = true;
-                                  });
-
-                                  // Submit all URLs
-                                  final postUrlsJson = jsonEncode(validUrls);
-
-                                  // Show loading indicator
-                                  ShadToaster.of(context).show(
-                                    ShadToast(
-                                      title: const Text('Updating Content'),
-                                      description:
-                                          const Text('Saving your changes...'),
-                                    ),
-                                  );
-
-                                  // Call method to update URLs
-                                  _updateContractPostUrls(
-                                      contract.id, postUrlsJson);
-
-                                  // Update UI
-                                  setSectionState(() {
-                                    isEditingMode = false;
-                                    isSubmitting = false;
-                                    urls = validUrls;
-                                  });
-                                },
+                          onPressed: isSubmitting ? null : submitUrls,
                           child: isSubmitting
                               ? const SizedBox(
                                   height: 16,
@@ -1424,13 +1466,25 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       return;
     }
 
-    // Add debugging
-    debugPrint('SUBMITTING URLS: $postUrlsJson');
+    // Add more detailed debugging
+    debugPrint('SUBMITTING URLS for contract $contractId: $postUrlsJson');
 
     try {
       // Verify JSON is valid
       final parsedUrls = jsonDecode(postUrlsJson);
-      debugPrint('URLS PARSED SUCCESSFULLY: $parsedUrls');
+      debugPrint(
+          'URLs PARSED SUCCESSFULLY: $parsedUrls (${parsedUrls.runtimeType})');
+
+      // Ensure we're always sending a properly formatted JSON array
+      if (parsedUrls is List) {
+        // Good, it's already a list
+        debugPrint(
+            'URLs are correctly formatted as a list with ${parsedUrls.length} items');
+      } else {
+        // If not a list, convert to a single-item list
+        debugPrint('URLs not formatted as a list, converting');
+        postUrlsJson = jsonEncode([parsedUrls.toString()]);
+      }
     } catch (e) {
       debugPrint('JSON PARSING ERROR IN VIEW: $e');
       _showErrorToast('Error with URL format: $e');
@@ -1448,5 +1502,91 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         contract = contract!.copyWith(postUrl: postUrlsJson);
       }
     });
+  }
+
+  // Method to update contract's postUrl field asynchronously
+  Future<void> _updateContractPostUrlsAsync(
+      String contractId, String postUrlsJson) async {
+    if (contractId.isEmpty) {
+      throw Exception('Contract ID is missing');
+    }
+
+    // Add more detailed debugging
+    debugPrint('SUBMITTING URLS for contract $contractId: $postUrlsJson');
+
+    try {
+      // Verify JSON is valid
+      final parsedUrls = jsonDecode(postUrlsJson);
+      debugPrint(
+          'URLs PARSED SUCCESSFULLY: $parsedUrls (${parsedUrls.runtimeType})');
+
+      // Ensure we're always sending a properly formatted JSON array
+      if (parsedUrls is List) {
+        // Good, it's already a list
+        debugPrint(
+            'URLs are correctly formatted as a list with ${parsedUrls.length} items');
+      } else {
+        // If not a list, convert to a single-item list
+        debugPrint('URLs not formatted as a list, converting');
+        postUrlsJson = jsonEncode([parsedUrls.toString()]);
+      }
+    } catch (e) {
+      debugPrint('JSON PARSING ERROR IN VIEW: $e');
+      throw Exception('Error with URL format: $e');
+    }
+
+    // Create a completer to transform the bloc event into a Future
+    final completer = Completer<void>();
+
+    // Store the current state for comparison
+    final currentState = context.read<ContractBloc>().state;
+
+    // Listen for state changes
+    final subscription = context.read<ContractBloc>().stream.listen((state) {
+      if (state is ContractUrlsUpdated) {
+        // Success case
+        debugPrint(
+            'Contract URLs updated successfully: ${state.contract.postUrl}');
+
+        // Update local contract from the state to ensure UI reflects the change
+        setState(() {
+          contract = state.contract;
+        });
+
+        if (!completer.isCompleted) completer.complete();
+      } else if (state is ContractError && state != currentState) {
+        // Error case - only complete with error if it's a new error
+        debugPrint('Error updating contract URLs: ${state.message}');
+        if (!completer.isCompleted) completer.completeError(state.message);
+      }
+    });
+
+    // Call the bloc to update the contract
+    context
+        .read<ContractBloc>()
+        .add(UpdateContractPostUrls(contractId, postUrlsJson));
+
+    try {
+      // Wait for the operation to complete (success or error)
+      await completer.future.timeout(
+        const Duration(seconds: 20), // Increase timeout to 20 seconds
+        onTimeout: () {
+          throw Exception(
+              'Request timed out. The update might still be processing.');
+        },
+      );
+
+      // Ensure the UI refreshes with the updated contract
+      if (!mounted) return;
+
+      // Small delay to allow the database to fully complete the transaction
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Refresh the contract data
+      context.read<ContractBloc>().add(LoadCampaignContract(campaignId));
+    } finally {
+      // Always cancel the subscription to avoid memory leaks
+      subscription.cancel();
+    }
   }
 }
