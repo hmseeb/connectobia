@@ -5,6 +5,7 @@ import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart'
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
+import 'package:connectobia/src/modules/campaign/data/contract_repository.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
@@ -35,6 +36,9 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   Campaign? campaign;
   Contract? contract;
   bool showSubmission = false;
+  bool _isUrlEditingMode = false;
+  bool _isUrlSubmitting = false;
+  List<TextEditingController> _urlControllers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -675,343 +679,207 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
   // Enhanced method to display URLs with better UI
   Widget _buildUrlDisplaySection(Contract contract) {
-    return StatefulBuilder(builder: (builderContext, setSectionState) {
-      List<String> urls = [];
-      List<TextEditingController> urlControllers = [];
-      bool isEditingMode = false;
-      bool isSubmitting = false;
+    // Parse URLs from the contract
+    List<String> urls = _parseUrlsFromContract(contract);
 
-      // Try to parse the postUrl field if it exists
-      if (contract.postUrl != null && contract.postUrl!.isNotEmpty) {
-        try {
-          // Check if it's a JSON string that needs to be parsed
-          if (contract.postUrl!.startsWith('[')) {
-            // It's a JSON array string
-            debugPrint('Parsing JSON array from postUrl: ${contract.postUrl}');
-            final parsed = jsonDecode(contract.postUrl!);
-            if (parsed is List) {
-              urls = parsed.map((url) => url.toString()).toList();
-            } else {
-              // Fallback if the parsed result is not a list
-              urls = [contract.postUrl!];
-            }
-          } else {
-            // If it's not a JSON array, try to see if it's a JSON string
-            try {
-              final parsed = jsonDecode(contract.postUrl!);
-              if (parsed is List) {
-                urls = parsed.map((url) => url.toString()).toList();
-              } else {
-                // Single item, not in a list
-                urls = [parsed.toString()];
-              }
-            } catch (e) {
-              // Not valid JSON, treat as single URL
-              urls = [contract.postUrl!];
-            }
-          }
-        } catch (e) {
-          // If parsing fails, just use it directly
-          debugPrint('Error parsing postUrl, using as-is: $e');
-          urls = [contract.postUrl!];
-        }
+    // Return empty widget if no URLs and user can't edit
+    if (urls.isEmpty &&
+        !(userType == 'influencer' && contract.status == 'signed')) {
+      return const SizedBox.shrink();
+    }
 
-        // Log the parsed URLs for debugging
-        debugPrint('Parsed URLs: $urls');
-      }
-
-      // Only show section if there are URLs or user is an influencer and contract is signed
-      bool shouldShowSection = urls.isNotEmpty ||
-          (userType == 'influencer' && contract.status == 'signed');
-
-      if (!shouldShowSection) {
-        return const SizedBox.shrink();
-      }
-
-      // Function to handle URL submission
-      void submitUrls() async {
-        if (urlControllers.isEmpty) {
-          _showErrorToast('Please add at least one URL');
-          return;
-        }
-
-        // Validate all URLs
-        bool allValid = true;
-        List<String> validUrls = [];
-
-        for (var controller in urlControllers) {
-          final url = controller.text.trim();
-          if (url.isNotEmpty) {
-            String formattedUrl = url;
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-              formattedUrl = 'https://$url';
-            }
-
-            try {
-              final uri = Uri.parse(formattedUrl);
-              if (uri.hasAuthority) {
-                validUrls.add(formattedUrl);
-              } else {
-                allValid = false;
-                break;
-              }
-            } catch (e) {
-              allValid = false;
-              break;
-            }
-          }
-        }
-
-        if (!allValid) {
-          _showErrorToast('Please enter valid URLs for all fields');
-          return;
-        }
-
-        if (validUrls.isEmpty) {
-          _showErrorToast('Please add at least one URL');
-          return;
-        }
-
-        // Set submitting state to show loading
-        setSectionState(() {
-          isSubmitting = true;
-        });
-
-        // Convert to JSON string for transport - this is what the repository expects
-        final postUrlsJson = jsonEncode(validUrls);
-
-        // Log what we're sending
-        debugPrint('SUBMITTING URLs: ${validUrls.length} items');
-        debugPrint('JSON to submit: $postUrlsJson');
-
-        // Show loading indicator
-        ShadToaster.of(context).show(
-          ShadToast(
-            title: const Text('Updating Content'),
-            description: const Text('Saving your changes...'),
-          ),
-        );
-
-        try {
-          // Call method to update URLs and wait for the result
-          await _updateContractPostUrlsAsync(contract.id, postUrlsJson);
-
-          // Update UI after successful submission
-          setSectionState(() {
-            isEditingMode = false;
-            isSubmitting = false;
-            urls = validUrls;
-          });
-
-          _showSuccessToast('Content URLs updated successfully');
-
-          // Refresh the contract to ensure we have the latest data
-          context.read<ContractBloc>().add(LoadCampaignContract(campaignId));
-        } catch (e) {
-          // Handle error
-          setSectionState(() {
-            isSubmitting = false;
-          });
-          _showErrorToast('Error updating URLs: $e');
-        }
-      }
-
-      return Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Divider(),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Submitted Content',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+    return Padding(
+      padding: const EdgeInsets.only(top: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Submitted Content',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              // Only show edit button to influencers for signed contracts
+              if (userType == 'influencer' &&
+                  contract.status == 'signed' &&
+                  !_isUrlEditingMode)
+                ShadButton.outline(
+                  onPressed: () {
+                    _initializeUrlControllers(urls);
+                    setState(() {
+                      _isUrlEditingMode = true;
+                    });
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.edit, size: 14),
+                      SizedBox(width: 4),
+                      Text('Edit URLs'),
+                    ],
                   ),
                 ),
-                // Only show edit button to influencers for signed contracts
-                if (userType == 'influencer' &&
-                    contract.status == 'signed' &&
-                    !isEditingMode)
-                  ShadButton.outline(
-                    onPressed: () {
-                      // Initialize controllers with existing URLs
-                      urlControllers = urls
-                          .map((url) => TextEditingController(text: url))
-                          .toList();
-                      if (urlControllers.isEmpty) {
-                        urlControllers.add(TextEditingController());
-                      }
-
-                      setSectionState(() {
-                        isEditingMode = true;
-                      });
-                    },
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.edit, size: 14),
-                        SizedBox(width: 4),
-                        Text('Edit URLs'),
-                      ],
-                    ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (_isUrlEditingMode)
+            // URL Editing UI
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Enter the URLs where your content for this campaign can be viewed.',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
                   ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (isEditingMode)
-              // URL Editing UI
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Enter the URLs where your content for this campaign can be viewed.',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
 
-                  // URL Input Fields
-                  ...List.generate(
-                    urlControllers.length,
-                    (index) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                // URL Input Fields
+                ..._buildUrlInputFields(),
+
+                // Add URL Button
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: ShadButton.outline(
+                      onPressed: () {
+                        setState(() {
+                          _urlControllers.add(TextEditingController());
+                        });
+                      },
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: urlControllers[index],
-                              decoration: InputDecoration(
-                                hintText: 'https://example.com/your-post',
-                                prefixIcon: const Icon(Icons.link, size: 16),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 12,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          if (urlControllers.length > 1)
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline,
-                                  size: 20, color: Colors.red),
-                              onPressed: () {
-                                setSectionState(() {
-                                  urlControllers.removeAt(index);
-                                });
-                              },
-                            ),
+                          Icon(Icons.add, size: 14),
+                          SizedBox(width: 4),
+                          Text('Add Another URL'),
                         ],
                       ),
                     ),
                   ),
+                ),
 
-                  // Add URL Button
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: ShadButton.outline(
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: ShadButton.secondary(
                         onPressed: () {
-                          setSectionState(() {
-                            urlControllers.add(TextEditingController());
+                          setState(() {
+                            _isUrlEditingMode = false;
+                            _urlControllers.clear();
                           });
                         },
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.add, size: 14),
-                            SizedBox(width: 4),
-                            Text('Add Another URL'),
-                          ],
-                        ),
+                        child: const Text('Cancel'),
                       ),
                     ),
-                  ),
-
-                  // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ShadButton.secondary(
-                          onPressed: () {
-                            setSectionState(() {
-                              isEditingMode = false;
-                            });
-                          },
-                          child: const Text('Cancel'),
-                        ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ShadButton(
+                        onPressed: _isUrlSubmitting ? null : _submitUrls,
+                        child: _isUrlSubmitting
+                            ? const SizedBox(
+                                height: 16,
+                                width: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2))
+                            : const Text('Save Changes'),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: ShadButton(
-                          onPressed: isSubmitting ? null : submitUrls,
-                          child: isSubmitting
-                              ? const SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2))
-                              : const Text('Save Changes'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            else if (urls.isNotEmpty)
-              // Display URL List
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade50,
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: urls.map((url) => _buildUrlItem(url)).toList(),
-                ),
-              )
-            else if (userType == 'influencer' && contract.status == 'signed')
-              // Show prompt for influencers with signed contracts but no URLs yet
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade200),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade50,
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'No content submitted yet',
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Click "Edit URLs" to add links to your content for this campaign.',
-                      style:
-                          TextStyle(color: Colors.grey.shade600, fontSize: 14),
                     ),
                   ],
                 ),
+              ],
+            )
+          else if (urls.isNotEmpty)
+            // Display URL List
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey.shade50,
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: urls.map((url) => _buildUrlItem(url)).toList(),
+              ),
+            )
+          else if (userType == 'influencer' && contract.status == 'signed')
+            // Show prompt for influencers with signed contracts but no URLs yet
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey.shade50,
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'No content submitted yet',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Click "Edit URLs" to add links to your content for this campaign.',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildUrlInputFields() {
+    return List.generate(
+      _urlControllers.length,
+      (index) => Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _urlControllers[index],
+                decoration: InputDecoration(
+                  hintText: 'https://example.com/your-post',
+                  prefixIcon: const Icon(Icons.link, size: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            if (_urlControllers.length > 1)
+              IconButton(
+                icon: const Icon(Icons.delete_outline,
+                    size: 20, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    _urlControllers.removeAt(index);
+                  });
+                },
               ),
           ],
         ),
-      );
-    });
+      ),
+    );
   }
 
   // Widget to display a single URL with a clickable link
@@ -1186,6 +1054,14 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     }
   }
 
+  void _initializeUrlControllers(List<String> urls) {
+    _urlControllers =
+        urls.map((url) => TextEditingController(text: url)).toList();
+    if (_urlControllers.isEmpty) {
+      _urlControllers.add(TextEditingController());
+    }
+  }
+
   void _launchUrl(String url) async {
     try {
       // Make sure URL has a scheme
@@ -1234,6 +1110,48 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       });
       _showErrorToast('Error loading data: $e');
     }
+  }
+
+  List<String> _parseUrlsFromContract(Contract contract) {
+    List<String> urls = [];
+    if (contract.postUrl != null && contract.postUrl!.isNotEmpty) {
+      try {
+        // Check if it's a JSON string that needs to be parsed
+        if (contract.postUrl!.startsWith('[')) {
+          // It's a JSON array string
+          debugPrint('Parsing JSON array from postUrl: ${contract.postUrl}');
+          final parsed = jsonDecode(contract.postUrl!);
+          if (parsed is List) {
+            urls = parsed.map((url) => url.toString()).toList();
+          } else {
+            // Fallback if the parsed result is not a list
+            urls = [contract.postUrl!];
+          }
+        } else {
+          // If it's not a JSON array, try to see if it's a JSON string
+          try {
+            final parsed = jsonDecode(contract.postUrl!);
+            if (parsed is List) {
+              urls = parsed.map((url) => url.toString()).toList();
+            } else {
+              // Single item, not in a list
+              urls = [parsed.toString()];
+            }
+          } catch (e) {
+            // Not valid JSON, treat as single URL
+            urls = [contract.postUrl!];
+          }
+        }
+      } catch (e) {
+        // If parsing fails, just use it directly
+        debugPrint('Error parsing postUrl, using as-is: $e');
+        urls = [contract.postUrl!];
+      }
+
+      // Log the parsed URLs for debugging
+      debugPrint('Parsed URLs: $urls');
+    }
+    return urls;
   }
 
   void _rejectContract(String contractId) {
@@ -1393,200 +1311,91 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     }
   }
 
-  // Method to submit a post URL - keeping this for backward compatibility
-  void _submitPostUrl(String contractId, String newUrl) {
-    if (newUrl.trim().isEmpty) {
-      _showErrorToast('Please enter a valid URL');
+  Future<void> _submitUrls() async {
+    if (_urlControllers.isEmpty) {
+      _showErrorToast('Please add at least one URL');
       return;
     }
 
-    // Validate URL format
-    String urlToValidate = newUrl.trim();
-    if (!urlToValidate.startsWith('http://') &&
-        !urlToValidate.startsWith('https://')) {
-      urlToValidate = 'https://$urlToValidate';
-    }
+    // Validate all URLs
+    bool allValid = true;
+    List<String> validUrls = [];
 
-    try {
-      final uri = Uri.parse(urlToValidate);
-      if (!uri.hasAuthority) {
-        _showErrorToast('Please enter a valid URL');
-        return;
+    for (var controller in _urlControllers) {
+      final url = controller.text.trim();
+      if (url.isNotEmpty) {
+        String formattedUrl = url;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          formattedUrl = 'https://$url';
+        }
+
+        try {
+          final uri = Uri.parse(formattedUrl);
+          if (uri.hasAuthority) {
+            validUrls.add(formattedUrl);
+          } else {
+            allValid = false;
+            break;
+          }
+        } catch (e) {
+          allValid = false;
+          break;
+        }
       }
-    } catch (e) {
-      _showErrorToast('Please enter a valid URL');
+    }
+
+    if (!allValid) {
+      _showErrorToast('Please enter valid URLs for all fields');
       return;
     }
+
+    if (validUrls.isEmpty) {
+      _showErrorToast('Please add at least one URL');
+      return;
+    }
+
+    // Set submitting state to show loading
+    setState(() {
+      _isUrlSubmitting = true;
+    });
+
+    // Convert to JSON string for transport - this is what the repository expects
+    final postUrlsJson = jsonEncode(validUrls);
+
+    // Log what we're sending
+    debugPrint('DIRECT SUBMISSION: ${validUrls.length} URLs');
+    debugPrint('JSON to submit: $postUrlsJson');
 
     // Show loading indicator
     ShadToaster.of(context).show(
       ShadToast(
-        title: const Text('Submitting URL'),
-        description: const Text('Please wait...'),
+        title: const Text('Updating Content'),
+        description: const Text('Saving your changes...'),
       ),
     );
 
     try {
-      // Process the new URL
-      List<String> existingUrls = [];
-
-      // Parse existing URLs if available
-      if (contract != null &&
-          contract!.postUrl != null &&
-          contract!.postUrl!.isNotEmpty) {
-        try {
-          if (contract!.postUrl!.startsWith('[')) {
-            existingUrls = List<String>.from(jsonDecode(contract!.postUrl!));
-          } else {
-            existingUrls = [contract!.postUrl!];
-          }
-        } catch (e) {
-          // If parsing fails, just use it directly
-          existingUrls = [contract!.postUrl!];
-        }
-      }
-
-      // Add the new URL to the list
-      existingUrls.add(urlToValidate);
-
-      // Convert to JSON string
-      final postUrlsJson = jsonEncode(existingUrls);
-
-      // Update the contract in the database
-      _updateContractPostUrls(contractId, postUrlsJson);
-    } catch (e) {
-      _showErrorToast('Error submitting URL: $e');
-    }
-  }
-
-  // Method to update contract's postUrl field
-  void _updateContractPostUrls(String contractId, String postUrlsJson) {
-    if (contractId.isEmpty) {
-      _showErrorToast('Contract ID is missing');
-      return;
-    }
-
-    // Add more detailed debugging
-    debugPrint('SUBMITTING URLS for contract $contractId: $postUrlsJson');
-
-    try {
-      // Verify JSON is valid
-      final parsedUrls = jsonDecode(postUrlsJson);
-      debugPrint(
-          'URLs PARSED SUCCESSFULLY: $parsedUrls (${parsedUrls.runtimeType})');
-
-      // Ensure we're always sending a properly formatted JSON array
-      if (parsedUrls is List) {
-        // Good, it's already a list
-        debugPrint(
-            'URLs are correctly formatted as a list with ${parsedUrls.length} items');
-      } else {
-        // If not a list, convert to a single-item list
-        debugPrint('URLs not formatted as a list, converting');
-        postUrlsJson = jsonEncode([parsedUrls.toString()]);
-      }
-    } catch (e) {
-      debugPrint('JSON PARSING ERROR IN VIEW: $e');
-      _showErrorToast('Error with URL format: $e');
-      return;
-    }
-
-    // Call the actual API to update the contract
-    context
-        .read<ContractBloc>()
-        .add(UpdateContractPostUrls(contractId, postUrlsJson));
-
-    // Update local state optimistically
-    setState(() {
+      // Directly call the repository method to ensure it works
       if (contract != null) {
-        contract = contract!.copyWith(postUrl: postUrlsJson);
-      }
-    });
-  }
+        final updatedContract =
+            await ContractRepository.updatePostUrls(contract!.id, postUrlsJson);
 
-  // Method to update contract's postUrl field asynchronously
-  Future<void> _updateContractPostUrlsAsync(
-      String contractId, String postUrlsJson) async {
-    if (contractId.isEmpty) {
-      throw Exception('Contract ID is missing');
-    }
-
-    // Add more detailed debugging
-    debugPrint('SUBMITTING URLS for contract $contractId: $postUrlsJson');
-
-    try {
-      // Verify JSON is valid
-      final parsedUrls = jsonDecode(postUrlsJson);
-      debugPrint(
-          'URLs PARSED SUCCESSFULLY: $parsedUrls (${parsedUrls.runtimeType})');
-
-      // Ensure we're always sending a properly formatted JSON array
-      if (parsedUrls is List) {
-        // Good, it's already a list
-        debugPrint(
-            'URLs are correctly formatted as a list with ${parsedUrls.length} items');
-      } else {
-        // If not a list, convert to a single-item list
-        debugPrint('URLs not formatted as a list, converting');
-        postUrlsJson = jsonEncode([parsedUrls.toString()]);
-      }
-    } catch (e) {
-      debugPrint('JSON PARSING ERROR IN VIEW: $e');
-      throw Exception('Error with URL format: $e');
-    }
-
-    // Create a completer to transform the bloc event into a Future
-    final completer = Completer<void>();
-
-    // Store the current state for comparison
-    final currentState = context.read<ContractBloc>().state;
-
-    // Listen for state changes
-    final subscription = context.read<ContractBloc>().stream.listen((state) {
-      if (state is ContractUrlsUpdated) {
-        // Success case
-        debugPrint(
-            'Contract URLs updated successfully: ${state.contract.postUrl}');
-
-        // Update local contract from the state to ensure UI reflects the change
+        // Update the contract in state directly
         setState(() {
-          contract = state.contract;
+          contract = updatedContract;
+          _isUrlEditingMode = false;
+          _isUrlSubmitting = false;
+          _urlControllers.clear();
         });
 
-        if (!completer.isCompleted) completer.complete();
-      } else if (state is ContractError && state != currentState) {
-        // Error case - only complete with error if it's a new error
-        debugPrint('Error updating contract URLs: ${state.message}');
-        if (!completer.isCompleted) completer.completeError(state.message);
+        _showSuccessToast('Content URLs updated successfully');
       }
-    });
-
-    // Call the bloc to update the contract
-    context
-        .read<ContractBloc>()
-        .add(UpdateContractPostUrls(contractId, postUrlsJson));
-
-    try {
-      // Wait for the operation to complete (success or error)
-      await completer.future.timeout(
-        const Duration(seconds: 20), // Increase timeout to 20 seconds
-        onTimeout: () {
-          throw Exception(
-              'Request timed out. The update might still be processing.');
-        },
-      );
-
-      // Ensure the UI refreshes with the updated contract
-      if (!mounted) return;
-
-      // Small delay to allow the database to fully complete the transaction
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Refresh the contract data
-      context.read<ContractBloc>().add(LoadCampaignContract(campaignId));
-    } finally {
-      // Always cancel the subscription to avoid memory leaks
-      subscription.cancel();
+    } catch (e) {
+      // Handle error
+      setState(() {
+        _isUrlSubmitting = false;
+      });
+      _showErrorToast('Error updating URLs: $e');
     }
   }
 }
