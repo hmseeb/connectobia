@@ -185,6 +185,8 @@ class ContractRepository {
       final pb = await PocketBaseSingleton.instance;
 
       // First, get the contract to ensure it exists and to get related data
+      final contract = await getContractById(id);
+      final campaignId = contract.campaign;
 
       // Update the contract status to completed
       final record = await pb.collection(_collectionName).update(
@@ -193,6 +195,15 @@ class ContractRepository {
       );
 
       final completedContract = Contract.fromRecord(record);
+
+      // Also update the campaign status to closed
+      try {
+        await CampaignRepository.updateCampaignStatus(campaignId, 'closed');
+        debugPrint('Updated campaign $campaignId status to closed');
+      } catch (e) {
+        debugPrint('Error updating campaign status to closed: $e');
+        // Don't fail the contract completion if campaign update fails
+      }
 
       // Send notifications to both parties that they can now leave reviews
       try {
