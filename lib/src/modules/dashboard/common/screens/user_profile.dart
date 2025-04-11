@@ -76,7 +76,7 @@ class _UserProfileState extends State<UserProfile> {
     // The critical issue: clarify exactly what type of ID we're working with
     debugPrint('IMPORTANT: Clarifying whether ID is a user ID or profile ID');
 
-    _loadProfile();
+    _loadUserInfo();
   }
 
   Widget _buildBrandProfile(BuildContext context) {
@@ -190,7 +190,7 @@ class _UserProfileState extends State<UserProfile> {
             ),
           const SizedBox(height: 24),
           ShadButton(
-            onPressed: _loadProfile,
+            onPressed: _loadUserInfo,
             child: const Text('Retry'),
           ),
         ],
@@ -552,121 +552,99 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-  Future<void> _loadProfile() async {
-    setState(() {
-      _isLoadingUser = true;
-      _loadingError = null;
-    });
+  Future<void> _loadUserInfo() async {
+    if (mounted) {
+      setState(() {
+        _isLoadingUser = true;
+        _loadingError = null;
+      });
+    }
 
     try {
       if (widget.profileType == 'influencers') {
-        // APPROACH 1: Try treating the ID as a user ID from the 'influencers' collection
+        // Get the current user type for debugging
+        try {
+          final user = await AuthRepository.getUser();
+          debugPrint('User is ${user.runtimeType}');
+        } catch (e) {
+          debugPrint('Error getting current user: $e');
+        }
+
+        // Directly load the influencer profile with ID
         try {
           debugPrint(
-              'Attempting to load influencer user with ID: ${widget.userId}');
+              'Attempting to load influencer profile directly with ID: ${widget.userId}');
           final pb = await PocketBaseSingleton.instance;
-          final userRecord =
-              await pb.collection('influencers').getOne(widget.userId);
 
-          // If this succeeds, we have an influencer user ID
-          final influencer = Influencer.fromRecord(userRecord);
+          // If this succeeds, we have a profile ID
           debugPrint(
-              '✅ Successfully loaded influencer: ${influencer.fullName}, profile ID: ${influencer.profile}');
+              '✅ Successfully found profile record with ID: ${widget.userId}');
 
-          if (influencer.profile.isNotEmpty) {
-            // Load the profile using the profile ID from the influencer record
-            if (mounted) {
-              BlocProvider.of<InfluencerProfileBloc>(context).add(
-                InfluencerProfileLoad(
-                  profileId: influencer.profile,
-                  influencer: influencer,
-                ),
-              );
-            }
-            return;
-          } else {
-            throw Exception('Influencer has no linked profile');
-          }
-        } catch (e) {
-          debugPrint('🔄 First approach failed: $e');
-
-          // APPROACH 2: Try treating the ID as a profile ID from 'influencerProfile' collection
+          // Now we need to find the associated influencer
           try {
             debugPrint(
-                'Attempting to load influencer profile directly with ID: ${widget.userId}');
-            final pb = await PocketBaseSingleton.instance;
+                'Searching for influencer with profile=${widget.userId}');
+            final influencerRecords =
+                await pb.collection('influencers').getList(
+                      filter: 'profile = "${widget.userId}"',
+                      page: 1,
+                      perPage: 1,
+                    );
 
-            // If this succeeds, we have a profile ID
-            debugPrint(
-                '✅ Successfully found profile record with ID: ${widget.userId}');
+            if (influencerRecords.items.isNotEmpty) {
+              final influencer =
+                  Influencer.fromRecord(influencerRecords.items.first);
+              debugPrint('✅ Found matching influencer: ${influencer.fullName}');
 
-            // Now we need to find the associated influencer
-            try {
-              debugPrint(
-                  'Searching for influencer with profile=${widget.userId}');
-              final influencerRecords =
-                  await pb.collection('influencers').getList(
-                        filter: 'profile = "${widget.userId}"',
-                        page: 1,
-                        perPage: 1,
-                      );
-
-              if (influencerRecords.items.isNotEmpty) {
-                final influencer =
-                    Influencer.fromRecord(influencerRecords.items.first);
-                debugPrint(
-                    '✅ Found matching influencer: ${influencer.fullName}');
-
-                if (mounted) {
-                  BlocProvider.of<InfluencerProfileBloc>(context).add(
-                    InfluencerProfileLoad(
-                      profileId: widget.userId,
-                      influencer: influencer,
-                    ),
-                  );
-                }
-                return;
-              } else {
-                debugPrint('⚠️ No influencer found with this profile ID');
-                // No matching influencer found, create a temporary one
-                final tempInfluencer = Influencer(
-                  id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
-                  collectionId: 'influencers',
-                  collectionName: 'influencers',
-                  fullName: 'Unknown Influencer',
-                  email: '',
-                  username: '',
-                  avatar: '',
-                  banner: '',
-                  emailVisibility: true,
-                  verified: true,
-                  connectedSocial: false,
-                  onboarded: true,
-                  industry: '',
-                  profile: widget.userId,
-                  created: DateTime.now(),
-                  updated: DateTime.now(),
+              if (mounted) {
+                BlocProvider.of<InfluencerProfileBloc>(context).add(
+                  InfluencerProfileLoad(
+                    profileId: widget.userId,
+                    influencer: influencer,
+                  ),
                 );
-
-                if (mounted) {
-                  BlocProvider.of<InfluencerProfileBloc>(context).add(
-                    InfluencerProfileLoad(
-                      profileId: widget.userId,
-                      influencer: tempInfluencer,
-                    ),
-                  );
-                }
-                return;
               }
-            } catch (e) {
-              debugPrint('Error finding influencer for profile: $e');
-              rethrow;
+              return;
+            } else {
+              debugPrint('⚠️ No influencer found with this profile ID');
+              // No matching influencer found, create a temporary one
+              final tempInfluencer = Influencer(
+                id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+                collectionId: 'influencers',
+                collectionName: 'influencers',
+                fullName: 'Unknown Influencer',
+                email: '',
+                username: '',
+                avatar: '',
+                banner: '',
+                emailVisibility: true,
+                verified: true,
+                connectedSocial: false,
+                onboarded: true,
+                industry: '',
+                profile: widget.userId,
+                created: DateTime.now(),
+                updated: DateTime.now(),
+              );
+
+              if (mounted) {
+                BlocProvider.of<InfluencerProfileBloc>(context).add(
+                  InfluencerProfileLoad(
+                    profileId: widget.userId,
+                    influencer: tempInfluencer,
+                  ),
+                );
+              }
+              return;
             }
           } catch (e) {
-            debugPrint('🔄 Second approach failed: $e');
-            throw Exception(
-                'Failed to load profile: ID is neither a valid influencer ID nor a valid profile ID');
+            debugPrint('Error finding influencer for profile: $e');
+            rethrow;
           }
+        } catch (e) {
+          debugPrint('Failed to load profile: $e');
+          throw Exception(
+              'Failed to load profile: ID is not a valid profile ID');
         }
       } else if (widget.profileType == 'brands') {
         // Get the current user type for debugging
@@ -677,111 +655,79 @@ class _UserProfileState extends State<UserProfile> {
           debugPrint('Error getting current user: $e');
         }
 
-        // APPROACH 1: Try treating the ID as a user ID from the 'brands' collection
+        // Directly load the brand profile with ID
         try {
-          debugPrint('Attempting to load brand user with ID: ${widget.userId}');
-          final pb = await PocketBaseSingleton.instance;
-          final userRecord =
-              await pb.collection('brands').getOne(widget.userId);
-
-          // If this succeeds, we have a brand user ID
-          final brand = Brand.fromRecord(userRecord);
           debugPrint(
-              '✅ Successfully loaded brand: ${brand.brandName}, profile ID: ${brand.profile}');
+              'Attempting to load brand profile directly with ID: ${widget.userId}');
+          final pb = await PocketBaseSingleton.instance;
 
-          if (brand.profile.isNotEmpty) {
-            // Load the profile using the profile ID from the brand record
-            if (mounted) {
-              BlocProvider.of<BrandProfileBloc>(context).add(
-                LoadBrandProfile(
-                  profileId: brand.profile,
-                  brand: brand,
-                ),
-              );
-            }
-            return;
-          } else {
-            throw Exception('Brand has no linked profile');
-          }
-        } catch (e) {
-          debugPrint('🔄 First approach failed: $e');
+          // First verify the profile exists
+          final profileRecord =
+              await pb.collection('brandProfile').getOne(widget.userId);
+          debugPrint(
+              '✅ Successfully found profile record: ${profileRecord.id}');
 
-          // Don't rethrow immediately, try the second approach
-
-          // APPROACH 2: Try treating the ID as a profile ID from 'brandProfile' collection
+          // Now we need to find the associated brand
           try {
-            debugPrint(
-                'Attempting to load brand profile directly with ID: ${widget.userId}');
-            final pb = await PocketBaseSingleton.instance;
-
-            // First verify the profile exists
-            final profileRecord =
-                await pb.collection('brandProfile').getOne(widget.userId);
-            debugPrint(
-                '✅ Successfully found profile record: ${profileRecord.id}');
-
-            // Now we need to find the associated brand
-            try {
-              debugPrint('Searching for brand with profile=${widget.userId}');
-              final brandRecords = await pb.collection('brands').getList(
-                    filter: 'profile = "${widget.userId}"',
-                    page: 1,
-                    perPage: 1,
-                  );
-
-              if (brandRecords.items.isNotEmpty) {
-                final brand = Brand.fromRecord(brandRecords.items.first);
-                debugPrint('✅ Found matching brand: ${brand.brandName}');
-
-                if (mounted) {
-                  BlocProvider.of<BrandProfileBloc>(context).add(
-                    LoadBrandProfile(
-                      profileId: widget.userId,
-                      brand: brand,
-                    ),
-                  );
-                }
-                return;
-              } else {
-                debugPrint('⚠️ No brand found with this profile ID');
-                // No matching brand found, create a temporary one with better fallback data
-                final tempBrand = Brand(
-                  id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
-                  collectionId: 'brands',
-                  collectionName: 'brands',
-                  brandName: 'Unknown Brand',
-                  email: '',
-                  avatar: '',
-                  banner: '',
-                  emailVisibility: true,
-                  verified: true,
-                  onboarded: true,
-                  industry: '',
-                  profile: widget.userId,
-                  created: DateTime.now(),
-                  updated: DateTime.now(),
+            debugPrint('Searching for brand with profile=${widget.userId}');
+            final brandRecords = await pb.collection('brands').getList(
+                  filter: 'profile = "${widget.userId}"',
+                  page: 1,
+                  perPage: 1,
                 );
 
-                if (mounted) {
-                  BlocProvider.of<BrandProfileBloc>(context).add(
-                    LoadBrandProfile(
-                      profileId: widget.userId,
-                      brand: tempBrand,
-                    ),
-                  );
-                }
-                return;
+            if (brandRecords.items.isNotEmpty) {
+              final brand = Brand.fromRecord(brandRecords.items.first);
+              debugPrint('✅ Found matching brand: ${brand.brandName}');
+
+              if (mounted) {
+                BlocProvider.of<BrandProfileBloc>(context).add(
+                  LoadBrandProfile(
+                    profileId: widget.userId,
+                    brand: brand,
+                  ),
+                );
               }
-            } catch (e) {
-              debugPrint('Error finding brand for profile: $e');
-              throw Exception(
-                  'Failed to find brand for profile ID: ${widget.userId}');
+              return;
+            } else {
+              debugPrint('⚠️ No brand found with this profile ID');
+              // No matching brand found, create a temporary one with better fallback data
+              final tempBrand = Brand(
+                id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+                collectionId: 'brands',
+                collectionName: 'brands',
+                brandName: 'Unknown Brand',
+                email: '',
+                avatar: '',
+                banner: '',
+                emailVisibility: true,
+                verified: true,
+                onboarded: true,
+                industry: '',
+                profile: widget.userId,
+                created: DateTime.now(),
+                updated: DateTime.now(),
+              );
+
+              if (mounted) {
+                BlocProvider.of<BrandProfileBloc>(context).add(
+                  LoadBrandProfile(
+                    profileId: widget.userId,
+                    brand: tempBrand,
+                  ),
+                );
+              }
+              return;
             }
           } catch (e) {
-            debugPrint('🔄 Second approach failed: $e');
+            debugPrint('Error finding brand for profile: $e');
             throw Exception(
-                'Failed to load profile: ID is neither a valid brand ID nor a valid profile ID');
+                'Failed to find brand for profile ID: ${widget.userId}');
           }
+        } catch (e) {
+          debugPrint('Failed to load profile: $e');
+          throw Exception(
+              'Failed to load profile: ID is not a valid profile ID');
         }
       }
     } catch (e) {

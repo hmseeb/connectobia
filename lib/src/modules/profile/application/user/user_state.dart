@@ -12,8 +12,9 @@ class UserInitial extends UserState {}
 
 class UserLoaded extends UserState {
   final dynamic user;
+  final bool forceRefresh;
 
-  UserLoaded(this.user);
+  UserLoaded(this.user, {this.forceRefresh = false});
 }
 
 class UserLoading extends UserState {}
