@@ -47,31 +47,50 @@ class CustomShadSelectState extends State<CustomShadSelect> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    return ShadSelect<String>(
-      enabled: true,
-      focusNode: widget.focusNode, // Use the provided focus node
-      minWidth: 350,
-      maxHeight: 220,
-      placeholder: Text(widget.placeholder),
-      options: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
-          child: Text(
-            'Select industry',
-            style: theme.textTheme.muted.copyWith(
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.popoverForeground,
+    return SizedBox(
+      width: 350, // Fixed width for the dropdown
+      child: ShadSelect<String>(
+        enabled: true,
+        focusNode: widget.focusNode, // Use the provided focus node
+        minWidth: 350,
+        maxHeight: 220,
+        placeholder: Text(widget.placeholder),
+        options: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
+            child: Text(
+              'Select industry',
+              style: theme.textTheme.muted.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.popoverForeground,
+              ),
+              textAlign: TextAlign.start,
             ),
-            textAlign: TextAlign.start,
           ),
-        ),
-        ...sortedItems.entries
-            .map((e) => ShadOption(value: e.key, child: Text(e.value))),
-      ],
-      selectedOptionBuilder: (context, value) {
-        widget.onSelected(value);
-        return Text(widget.items[value] ?? '');
-      },
+          ...sortedItems.entries.map(
+            (e) => ShadOption(
+              value: e.key,
+              child: SizedBox(
+                width: 300, // Constrain the width of the option text
+                child: Text(
+                  e.value,
+                  overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+                ),
+              ),
+            ),
+          ),
+        ],
+        selectedOptionBuilder: (context, value) {
+          widget.onSelected(value);
+          return SizedBox(
+            width: 300, // Constrain the width of the selected text
+            child: Text(
+              widget.items[value] ?? '',
+              overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -10,7 +10,6 @@ import 'modules/auth/application/login/login_bloc.dart';
 import 'modules/auth/application/signup/signup_bloc.dart';
 import 'modules/auth/application/verification/email_verification_bloc.dart';
 import 'modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
-import 'modules/dashboard/brand/application/edit_profile/edit_profile_bloc.dart';
 import 'modules/dashboard/brand/application/profile_settings/profile_settings.dart';
 import 'modules/dashboard/common/application/brand_profile/brand_profile_bloc.dart';
 import 'modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
@@ -44,7 +43,6 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(
             create: (context) => InfluencerDashboardBloc()
               ..add(InfluencerDashboardLoadBrands())),
-        BlocProvider(create: (context) => EditProfileBloc()),
         BlocProvider(create: (context) => BrandProfileBloc()),
         BlocProvider(create: (context) => ProfileSettingsBloc()),
         BlocProvider(create: (context) => AuthBloc()..add(CheckAuth())),

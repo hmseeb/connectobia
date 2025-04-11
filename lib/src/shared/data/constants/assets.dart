@@ -14,4 +14,6 @@ class AssetsPath {
       'assets/illustrations/onboard_influencer.svg';
   static const String splash = 'assets/animations/splash.riv';
   static const String instagram = 'assets/icons/instagram.png';
+  static const String campaign = 'assets/illustrations/campaign.svg';
+  static const String campaignGoals = 'assets/illustrations/campaign_goals.svg';
 }
