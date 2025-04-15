@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
@@ -59,11 +61,18 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   // References to form widgets for validation
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  // Add a processing flag to prevent multiple clicks
+  bool _isProcessingValidation = false;
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CampaignBloc, CampaignState>(
       listener: (context, state) {
+        debugPrint(
+            '=== BlocConsumer listener called with state: ${state.runtimeType} ===');
+
         if (state is CampaignCreated) {
+          debugPrint('Campaign created/updated successfully');
           // Show success message
           ShadToaster.of(context).show(
             ShadToast(
@@ -77,15 +86,34 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           // Navigate to campaigns list
           Navigator.pushReplacementNamed(context, campaignsScreen);
         } else if (state is CampaignCreationError) {
+          debugPrint('Campaign creation error: ${state.errorMessage}');
           // Show error message
           setState(() {
             _validationErrors = [state.errorMessage];
           });
+        } else if (state is CampaignFormState) {
+          debugPrint('Received updated CampaignFormState');
+          if (state.stepValidations.containsKey(_currentStep)) {
+            debugPrint(
+                'Contains validation for current step $_currentStep: ${state.isStepValid(_currentStep)}');
+            if (!state.isStepValid(_currentStep)) {
+              debugPrint(
+                  'Step is NOT valid. Errors: ${state.getErrorsForStep(_currentStep)}');
+            } else {
+              debugPrint('Step is valid according to bloc');
+            }
+          } else {
+            debugPrint('No validation info for current step $_currentStep');
+          }
         }
       },
       builder: (context, state) {
+        debugPrint(
+            '=== BlocConsumer builder called with state: ${state.runtimeType} ===');
+
         // Handle loading states
         if (state is CampaignCreating) {
+          debugPrint('Showing loading indicator for campaign creation');
           return Scaffold(
             appBar: transparentAppBar(
                 _isEditing ? 'Edit Campaign' : 'Create Campaign',
@@ -96,6 +124,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
         // Only use the campaign form state if available
         final campaignForm = state is CampaignFormState ? state : null;
+        debugPrint(
+            'Current step: $_currentStep, Have campaign form: ${campaignForm != null}');
 
         // Only update the text controllers with form data if they're empty
         // This prevents overwriting user edits with state data
@@ -188,6 +218,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                     onNext: () => _validateAndGoToNextStep(campaignForm),
                     submitLabel:
                         _isEditing ? 'Update Campaign' : 'Create Campaign',
+                    isLoading: _isProcessingValidation,
                   ),
 
                   const SizedBox(height: 10),
@@ -632,8 +663,18 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     }
   }
 
-  void _validateAndGoToNextStep(CampaignFormState formState) {
-    // Prevent multiple rapid validations (debounce)
+  // Make this async to properly wait for validation
+  Future<void> _validateAndGoToNextStep(CampaignFormState formState) async {
+    debugPrint(
+        '=== START _validateAndGoToNextStep for step: $_currentStep ===');
+
+    // Prevent multiple clicks or validations in progress
+    if (_isProcessingValidation) {
+      debugPrint('Validation already in progress, ignoring this click');
+      return;
+    }
+    _isProcessingValidation = true;
+
     // Clear previous validation errors
     setState(() {
       _validationErrors = [];
@@ -641,6 +682,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
     // For step 1, validate form fields directly
     if (_currentStep == 1) {
+      debugPrint('Validating Step 1 (Basic Details)');
       List<String> errors = [];
 
       // Check required fields
@@ -676,19 +718,33 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         setState(() {
           _validationErrors = errors;
         });
+        _isProcessingValidation = false;
+        debugPrint('=== END _validateAndGoToNextStep - validation failed ===');
         return;
       }
 
       // Budget must be non-null here because we checked above
       if (budget != null) {
-        // Validate if brand has sufficient funds
-        _validateFundsAndProceed(budget);
+        try {
+          // Validate if brand has sufficient funds - use async/await pattern
+          await _validateFundsAndProceed(budget);
+        } catch (e) {
+          debugPrint('Error validating funds: $e');
+          setState(() {
+            _validationErrors = ['Error validating funds: ${e.toString()}'];
+          });
+        } finally {
+          _isProcessingValidation = false;
+        }
+      } else {
+        _isProcessingValidation = false;
       }
       return;
     }
 
     // For final step, create the campaign directly
     if (_currentStep == 4) {
+      debugPrint('Validating Step 4 (Contract Details)');
       // This is the final step, create the campaign
       context.read<CampaignBloc>().add(ValidateCurrentStep(_currentStep));
 
@@ -709,102 +765,182 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           _validationErrors = formState.getErrorsForStep(_currentStep);
         });
       }
+      _isProcessingValidation = false;
       return;
     }
 
     // For steps 2-3, validate current step through the bloc
+    debugPrint(
+        'Sending ValidateCurrentStep event to bloc for step: $_currentStep');
+
+    // Create a completer to handle the async validation
+    final completer = Completer<void>();
+
+    // Save the current state of the bloc to compare later
+    final beforeState = context.read<CampaignBloc>().state;
+
+    // Add a listener to detect state changes
+    final blocSubscription =
+        context.read<CampaignBloc>().stream.listen((state) {
+      if (state is CampaignFormState && !completer.isCompleted) {
+        debugPrint('State changed in bloc, completing validation wait');
+        completer.complete();
+      }
+    });
+
+    // Send the validation event
     context.read<CampaignBloc>().add(ValidateCurrentStep(_currentStep));
 
-    // Force immediate validation for all steps before proceeding
+    // Wait for the state to update (max 2 seconds to avoid hangs)
+    await completer.future.timeout(const Duration(seconds: 2), onTimeout: () {
+      debugPrint('Validation timed out after 2 seconds');
+      if (!completer.isCompleted) completer.complete();
+    });
+
+    // Clean up the subscription
+    await blocSubscription.cancel();
+
+    // Get the updated form state
+    final currentBlocState = context.read<CampaignBloc>().state;
+    if (currentBlocState is! CampaignFormState) {
+      debugPrint('Error: State is not a form state after validation');
+      _isProcessingValidation = false;
+      return;
+    }
+
+    final updatedFormState = currentBlocState;
+    debugPrint('Updated form state received, checking validation result');
+
+    // Force immediate validation for steps 2 and 3
     final validationRequired = _currentStep == 2 || _currentStep == 3;
+    debugPrint(
+        'validationRequired: $validationRequired for step: $_currentStep');
 
     if (validationRequired) {
       // For Step 2 (Goals)
-      if (_currentStep == 2 && formState.selectedGoals.isEmpty) {
+      if (_currentStep == 2 && updatedFormState.selectedGoals.isEmpty) {
+        debugPrint('Step 2 validation failed: no goals selected');
         setState(() {
           _validationErrors = ['At least one campaign goal must be selected'];
         });
+        _isProcessingValidation = false;
+        debugPrint('=== END _validateAndGoToNextStep - validation failed ===');
         return;
       }
 
       // For Step 3 (Influencer selection)
-      if (_currentStep == 3 && formState.selectedInfluencer == null) {
+      if (_currentStep == 3 && updatedFormState.selectedInfluencer == null) {
+        debugPrint('Step 3 validation failed: no influencer selected');
         setState(() {
           _validationErrors = ['Please select an influencer for your campaign'];
         });
+        _isProcessingValidation = false;
+        debugPrint('=== END _validateAndGoToNextStep - validation failed ===');
         return;
       }
     }
 
     // Check if the step is valid after bloc validation
-    if (!formState.isStepValid(_currentStep)) {
+    debugPrint(
+        'Checking if step is valid in updated form state: ${updatedFormState.isStepValid(_currentStep)}');
+    if (!updatedFormState.isStepValid(_currentStep)) {
       // Show validation errors
+      debugPrint(
+          'Step $_currentStep not valid according to updated form state validation');
       setState(() {
-        _validationErrors = formState.getErrorsForStep(_currentStep);
+        _validationErrors = updatedFormState.getErrorsForStep(_currentStep);
       });
+      debugPrint('Validation errors: $_validationErrors');
+      _isProcessingValidation = false;
+      debugPrint('=== END _validateAndGoToNextStep - validation failed ===');
       return;
     }
 
-    // Use a microtask to ensure state updates are processed before moving to next step
-    Future.microtask(() {
-      if (mounted) {
-        // Always reset influencer selection state when navigating away from step 3
-        // This ensures consistency with the UI state in SelectInfluencerStep
-        if (_currentStep == 3) {
-          if (_selectedInfluencer == null) {
-            // If nothing selected, ensure the bloc state is also cleared
-            context.read<CampaignBloc>().add(ResetSelectedInfluencer());
-          } else {
-            // Make sure the bloc state matches our local state
-            context
-                .read<CampaignBloc>()
-                .add(UpdateSelectedInfluencer(_selectedInfluencer));
-          }
-        }
-
-        setState(() {
-          _currentStep++;
-        });
+    // Handle step 3 (influencer selection) special case
+    if (_currentStep == 3) {
+      debugPrint(
+          'Special handling for step 3, selectedInfluencer: $_selectedInfluencer');
+      if (_selectedInfluencer == null) {
+        // If nothing selected, ensure the bloc state is also cleared
+        debugPrint('Resetting selected influencer in bloc');
+        context.read<CampaignBloc>().add(ResetSelectedInfluencer());
+      } else {
+        // Make sure the bloc state matches our local state
+        debugPrint(
+            'Updating selected influencer in bloc: $_selectedInfluencer');
+        context
+            .read<CampaignBloc>()
+            .add(UpdateSelectedInfluencer(_selectedInfluencer));
       }
+    }
+
+    // No need for microtask, directly update the step counter
+    debugPrint(
+        'All validations passed! Advancing from step $_currentStep to ${_currentStep + 1}');
+
+    setState(() {
+      debugPrint(
+          'Inside setState, changing step from $_currentStep to ${_currentStep + 1}');
+      _currentStep++;
+      debugPrint('After increment, _currentStep is now: $_currentStep');
     });
+
+    _isProcessingValidation = false;
+    debugPrint('After setState, _currentStep is: $_currentStep');
+    debugPrint('=== END _validateAndGoToNextStep - step advanced ===');
   }
 
-  void _validateFundsAndProceed(int budget) {
+  // Convert to async method for better flow control
+  Future<void> _validateFundsAndProceed(int budget) async {
+    // Show loading indicator while checking funds
     setState(() {
       _validationErrors = [];
     });
 
-    // Get the current user ID first, then get the funds
-    AuthRepository.getUserId().then((userId) {
+    try {
+      // Show a loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Get the current user ID
+      final userId = await AuthRepository.getUserId();
+
       // Get the brand's current funds
-      FundsRepository.getFundsForUser(userId).then((funds) {
-        // Compare budget with available balance, converting to int for clean comparison
-        if (funds.availableBalance.toInt() < budget) {
-          // Show insufficient funds UI with a button to add funds
-          _showInsufficientFundsDialog(funds.availableBalance, budget, userId);
-          return;
-        }
+      final funds = await FundsRepository.getFundsForUser(userId);
 
-        // Update the data before proceeding - IMPORTANT to do this before changing step
-        _updateBasicDetails();
+      // Close the loading dialog
+      Navigator.of(context).pop();
 
-        // Use a microtask to ensure state updates are processed before moving to next step
-        Future.microtask(() {
-          if (mounted) {
-            setState(() {
-              _currentStep++;
-            });
-          }
-        });
-      }).catchError((error) {
+      // Compare budget with available balance, converting to int for clean comparison
+      if (funds.availableBalance.toInt() < budget) {
+        // Show insufficient funds UI with a button to add funds
+        _showInsufficientFundsDialog(funds.availableBalance, budget, userId);
+        return;
+      }
+
+      // Update the data before proceeding
+      _updateBasicDetails();
+
+      // No need for microtask anymore, we can directly update the state
+      if (mounted) {
         setState(() {
-          _validationErrors = ['Error validating funds: ${error.toString()}'];
+          _currentStep++;
         });
-      });
-    }).catchError((error) {
+      }
+    } catch (error) {
+      // Close the loading dialog if it's still open
+      if (Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
+
       setState(() {
-        _validationErrors = ['Error getting user ID: ${error.toString()}'];
+        _validationErrors = ['Error validating funds: ${error.toString()}'];
       });
-    });
+    }
   }
 }

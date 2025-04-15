@@ -173,16 +173,35 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
 
     // Validate current step
     on<ValidateCurrentStep>((event, emit) {
+      debugPrint('=== ValidateCurrentStep called for step: ${event.step} ===');
+
       if (state is CampaignFormState) {
         final currentState = state as CampaignFormState;
+        debugPrint('Current form state before validation: '
+            'step: ${event.step}, '
+            'goals: ${currentState.selectedGoals.length}, '
+            'influencer: ${currentState.selectedInfluencer != null}, '
+            'postTypes: ${currentState.selectedPostTypes.length}, '
+            'contentGuidelines: ${currentState.contentGuidelines.isNotEmpty}');
+
         final validationResult = _validateStep(event.step, currentState);
+
+        debugPrint('Validation result for step ${event.step}: '
+            'isValid: ${validationResult.isValid}, '
+            'errors: ${validationResult.errors}');
+
         final updatedValidations =
             Map<int, StepValidationResult>.from(currentState.stepValidations);
         updatedValidations[event.step] = validationResult;
 
+        debugPrint('Emitting updated form state with validation result');
         emit(currentState.copyWith(
           stepValidations: updatedValidations,
         ));
+        debugPrint('=== ValidateCurrentStep completed ===');
+      } else {
+        debugPrint(
+            'Error: State is not CampaignFormState, current state type: ${state.runtimeType}');
       }
     });
 
@@ -309,10 +328,12 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
 
   // Helper method to validate each step
   StepValidationResult _validateStep(int step, CampaignFormState state) {
+    debugPrint('Validating step $step in _validateStep method');
     List<String> errors = [];
 
     switch (step) {
       case 1: // Basic campaign details
+        debugPrint('Validating basic details (step 1)');
         if (state.title.isEmpty) {
           errors.add('Campaign name is required');
         }
@@ -326,12 +347,16 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         break;
 
       case 2: // Campaign goals
+        debugPrint(
+            'Validating campaign goals (step 2), selected goals: ${state.selectedGoals}');
         if (state.selectedGoals.isEmpty) {
           errors.add('At least one campaign goal must be selected');
         }
         break;
 
       case 3: // Influencer selection
+        debugPrint(
+            'Validating influencer selection (step 3), selected influencer: ${state.selectedInfluencer}');
         // Make influencer selection required for direct campaigns
         if (state.selectedInfluencer == null) {
           errors.add('Please select an influencer for your campaign');
@@ -339,6 +364,13 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         break;
 
       case 4: // Contract details
+        debugPrint('Validating contract details (step 4)');
+        debugPrint('Post types: ${state.selectedPostTypes}');
+        debugPrint(
+            'Content guidelines: ${state.contentGuidelines.isNotEmpty ? 'provided' : 'missing'}');
+        debugPrint('Confirm details: ${state.confirmDetails}');
+        debugPrint('Accept terms: ${state.acceptTerms}');
+
         if (state.selectedPostTypes.isEmpty) {
           errors.add('Please select at least one post type');
         }
@@ -354,9 +386,13 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         break;
     }
 
-    return StepValidationResult(
+    final result = StepValidationResult(
       isValid: errors.isEmpty,
       errors: errors,
     );
+
+    debugPrint(
+        'Validation result for step $step: valid=${result.isValid}, errors=${result.errors}');
+    return result;
   }
 }

@@ -9,6 +9,7 @@ class NavigationButtons extends StatefulWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
   final String? submitLabel;
+  final bool isLoading;
 
   const NavigationButtons({
     super.key,
@@ -16,6 +17,7 @@ class NavigationButtons extends StatefulWidget {
     required this.onPrevious,
     required this.onNext,
     this.submitLabel,
+    this.isLoading = false,
   });
 
   @override
@@ -31,41 +33,53 @@ class _NavigationButtonsState extends State<NavigationButtons> {
     final isFirstStep = widget.currentStep == 1;
     final isLastStep = widget.currentStep == 4;
 
+    // Button is disabled if loading or we've disabled it locally
+    final buttonEnabled = _isNextButtonEnabled && !widget.isLoading;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Back button
+        // Back button - disable when loading
         isFirstStep
             ? ShadButton.outline(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed:
+                    widget.isLoading ? null : () => Navigator.of(context).pop(),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.arrow_back, size: 16, color: AppColors.error),
+                    Icon(Icons.arrow_back,
+                        size: 16,
+                        color:
+                            widget.isLoading ? Colors.grey : AppColors.error),
                     const SizedBox(width: 8),
                     Text(
                       'Cancel',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: AppColors.error,
+                        color: widget.isLoading ? Colors.grey : AppColors.error,
                       ),
                     ),
                   ],
                 ),
               )
             : ShadButton.outline(
-                onPressed: widget.onPrevious,
+                onPressed: widget.isLoading ? null : widget.onPrevious,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.arrow_back,
-                        size: 16, color: AppColors.textSecondary),
+                        size: 16,
+                        color: widget.isLoading
+                            ? Colors.grey
+                            : AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
                       'Back',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
+                        color: widget.isLoading
+                            ? Colors.grey
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -78,8 +92,8 @@ class _NavigationButtonsState extends State<NavigationButtons> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: ShadButton(
-            onPressed: _isNextButtonEnabled ? _handleNextPress : null,
-            backgroundColor: _isNextButtonEnabled
+            onPressed: buttonEnabled ? _handleNextPress : null,
+            backgroundColor: buttonEnabled
                 ? AppColors.primary
                 : AppColors.primary.withOpacity(0.6),
             foregroundColor: AppColors.textLight,
@@ -88,21 +102,40 @@ class _NavigationButtonsState extends State<NavigationButtons> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    isLastStep
-                        ? (widget.submitLabel ?? 'Submit Campaign')
-                        : 'Next',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
+                  if (widget.isLoading) ...[
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Processing...',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textLight,
+                      ),
+                    ),
+                  ] else ...[
+                    Text(
+                      isLastStep
+                          ? (widget.submitLabel ?? 'Submit Campaign')
+                          : 'Next',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textLight,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      isLastStep ? Icons.check_circle : Icons.arrow_forward,
+                      size: 16,
                       color: AppColors.textLight,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    isLastStep ? Icons.check_circle : Icons.arrow_forward,
-                    size: 16,
-                    color: AppColors.textLight,
-                  ),
+                  ],
                 ],
               ),
             ),
