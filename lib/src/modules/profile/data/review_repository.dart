@@ -73,12 +73,40 @@ class ReviewRepository {
         'submitted_at': DateTime.now().toIso8601String(),
       };
 
-      debugPrint('Creating brand-to-influencer review');
+      debugPrint('Creating brand-to-influencer review with data:');
+      debugPrint('  Campaign ID: $campaignId');
+      debugPrint('  Brand ID: $brandId');
+      debugPrint('  Influencer ID: $influencerId');
+      debugPrint('  Rating: $rating');
+      debugPrint('  Comment length: ${comment.length}');
+      debugPrint('  Role: brand');
 
+      // Validate that the related records exist first
+      try {
+        debugPrint('Verifying campaign exists...');
+        final campaignRecord =
+            await pb.collection('campaigns').getOne(campaignId);
+        debugPrint('✅ Campaign exists: ${campaignRecord.id}');
+
+        debugPrint('Verifying brand exists...');
+        final brandRecord = await pb.collection('brands').getOne(brandId);
+        debugPrint('✅ Brand exists: ${brandRecord.id}');
+
+        debugPrint('Verifying influencer exists...');
+        final influencerRecord =
+            await pb.collection('influencers').getOne(influencerId);
+        debugPrint('✅ Influencer exists: ${influencerRecord.id}');
+      } catch (e) {
+        debugPrint('❌ ERROR VALIDATING RELATIONS: $e');
+        rethrow;
+      }
+
+      debugPrint('All relations verified, creating review...');
       final record = await pb.collection(_collectionName).create(body: body);
+      debugPrint('✅ Review created successfully with ID: ${record.id}');
       return Review.fromRecord(record);
     } catch (e) {
-      debugPrint('Error creating brand-to-influencer review: $e');
+      debugPrint('❌ ERROR creating brand-to-influencer review: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
@@ -106,12 +134,40 @@ class ReviewRepository {
         'submitted_at': DateTime.now().toIso8601String(),
       };
 
-      debugPrint('Creating influencer-to-brand review');
+      debugPrint('Creating influencer-to-brand review with data:');
+      debugPrint('  Campaign ID: $campaignId');
+      debugPrint('  Influencer ID: $influencerId');
+      debugPrint('  Brand ID: $brandId');
+      debugPrint('  Rating: $rating');
+      debugPrint('  Comment length: ${comment.length}');
+      debugPrint('  Role: influencer');
 
+      // Validate that the related records exist first
+      try {
+        debugPrint('Verifying campaign exists...');
+        final campaignRecord =
+            await pb.collection('campaigns').getOne(campaignId);
+        debugPrint('✅ Campaign exists: ${campaignRecord.id}');
+
+        debugPrint('Verifying influencer exists...');
+        final influencerRecord =
+            await pb.collection('influencers').getOne(influencerId);
+        debugPrint('✅ Influencer exists: ${influencerRecord.id}');
+
+        debugPrint('Verifying brand exists...');
+        final brandRecord = await pb.collection('brands').getOne(brandId);
+        debugPrint('✅ Brand exists: ${brandRecord.id}');
+      } catch (e) {
+        debugPrint('❌ ERROR VALIDATING RELATIONS: $e');
+        rethrow;
+      }
+
+      debugPrint('All relations verified, creating review...');
       final record = await pb.collection(_collectionName).create(body: body);
+      debugPrint('✅ Review created successfully with ID: ${record.id}');
       return Review.fromRecord(record);
     } catch (e) {
-      debugPrint('Error creating influencer-to-brand review: $e');
+      debugPrint('❌ ERROR creating influencer-to-brand review: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

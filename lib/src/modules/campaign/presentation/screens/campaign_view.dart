@@ -6,6 +6,7 @@ import 'package:connectobia/src/modules/campaign/application/campaign_event.dart
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
 import 'package:connectobia/src/modules/campaign/data/contract_repository.dart';
+import 'package:connectobia/src/modules/profile/data/review_repository.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
@@ -617,24 +618,57 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
             // Review option for completed contracts
             if (contract.status == 'completed')
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: ShadButton.secondary(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(
-                      '/review',
-                      arguments: {'contractId': contract.id},
+              FutureBuilder<bool>(
+                future: _checkIfReviewExists(contract.id),
+                builder: (context, snapshot) {
+                  // Only show the button if the user hasn't reviewed yet
+                  if (snapshot.hasData && !snapshot.data!) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: ShadButton.secondary(
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(
+                            '/review',
+                            arguments: {'contractId': contract.id},
+                          ).then((_) {
+                            // Refresh the review status when returning from review screen
+                            setState(() {});
+                          });
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.star, size: 18),
+                            SizedBox(width: 8),
+                            Text('Leave a Review'),
+                          ],
+                        ),
+                      ),
                     );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.star, size: 18),
-                      SizedBox(width: 8),
-                      Text('Leave a Review'),
-                    ],
-                  ),
-                ),
+                  } else if (snapshot.hasData && snapshot.data!) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        'Thanks for your review!',
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }
+                  // Show loading indicator while checking
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 16.0),
+                    child: SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  );
+                },
               ),
           ],
         ),
@@ -889,10 +923,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
           const Icon(Icons.link, size: 16, color: Colors.grey),
           const SizedBox(width: 8),
           Expanded(
-            child: InkWell(
-              onTap: () {
-                _launchUrl(url);
-              },
+            child: GestureDetector(
+              onTap: () => _launchUrl(url),
               child: Text(
                 url,
                 style: TextStyle(
@@ -904,9 +936,44 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
               ),
             ),
           ),
+          IconButton(
+            icon: const Icon(Icons.open_in_new, size: 16),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () => _launchUrl(url),
+            tooltip: 'Open link',
+          ),
         ],
       ),
     );
+  }
+
+  Future<bool> _checkIfReviewExists(String contractId) async {
+    try {
+      if (contract == null) return false;
+
+      final pb = await PocketBaseSingleton.instance;
+      final userId = pb.authStore.model.id;
+      final userCollection = pb.authStore.model.collectionId;
+      final isBrand = userCollection == 'brands';
+
+      if (isBrand) {
+        return await ReviewRepository.brandReviewExists(
+          campaignId: campaign!.id,
+          brandId: userId,
+          influencerId: contract!.influencer,
+        );
+      } else {
+        return await ReviewRepository.influencerReviewExists(
+          campaignId: campaign!.id,
+          influencerId: userId,
+          brandId: contract!.brand,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error checking review existence: $e');
+      return false;
+    }
   }
 
   void _completeContract(String contractId) {
@@ -1062,21 +1129,47 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
   void _launchUrl(String url) async {
     try {
+      debugPrint('Attempting to launch URL: $url');
+
       // Make sure URL has a scheme
-      String urlToLaunch = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        urlToLaunch = 'https://$url';
+      String urlToLaunch = url.trim();
+      if (!urlToLaunch.startsWith('http://') &&
+          !urlToLaunch.startsWith('https://')) {
+        urlToLaunch = 'https://$urlToLaunch';
+        debugPrint('Added https:// prefix: $urlToLaunch');
       }
 
+      // Show loading toast
+      ShadToaster.of(context).show(
+        ShadToast(
+          title: const Text('Opening Link'),
+          description: const Text('Opening in external browser...'),
+        ),
+      );
+
       final Uri uri = Uri.parse(urlToLaunch);
+      debugPrint('Parsed URI: $uri');
+
       if (await url_launcher.canLaunchUrl(uri)) {
-        await url_launcher.launchUrl(uri,
-            mode: url_launcher.LaunchMode.externalApplication);
+        debugPrint('URI can be launched, attempting launch...');
+        final bool launched = await url_launcher.launchUrl(
+          uri,
+          mode: url_launcher.LaunchMode.externalApplication,
+        );
+
+        if (!launched) {
+          debugPrint('Launch returned false');
+          _showErrorToast('Failed to open link: $urlToLaunch');
+        } else {
+          debugPrint('URL launched successfully');
+        }
       } else {
-        _showErrorToast('Could not launch URL: $url');
+        debugPrint('canLaunchUrl returned false');
+        _showErrorToast('Could not open link: $urlToLaunch');
       }
     } catch (e) {
-      _showErrorToast('Error launching URL: $e');
+      debugPrint('Error launching URL: $e');
+      _showErrorToast('Error opening link: ${e.toString()}');
     }
   }
 
