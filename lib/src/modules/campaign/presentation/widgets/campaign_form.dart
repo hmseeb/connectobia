@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../shared/data/constants/date_and_time.dart';
 import '../../../../shared/presentation/theme/app_colors.dart';
 
 class CampaignFormCard extends StatefulWidget {
@@ -11,12 +10,8 @@ class CampaignFormCard extends StatefulWidget {
   final TextEditingController campaignDescriptionController;
   final Function(int) onBudgetChanged;
   final Function(String) onCategoryChanged;
-  final Function(DateTime) onStartDateChanged;
-  final Function(DateTime) onEndDateChanged;
   final int? budgetValue;
   final String? categoryValue;
-  final DateTime? startDateValue;
-  final DateTime? endDateValue;
 
   const CampaignFormCard({
     super.key,
@@ -24,12 +19,8 @@ class CampaignFormCard extends StatefulWidget {
     required this.campaignDescriptionController,
     required this.onBudgetChanged,
     required this.onCategoryChanged,
-    required this.onStartDateChanged,
-    required this.onEndDateChanged,
     this.budgetValue,
     this.categoryValue,
-    this.startDateValue,
-    this.endDateValue,
   });
 
   @override
@@ -60,8 +51,6 @@ class DigitsOnlyFormatter extends TextInputFormatter {
 class _CampaignFormCardState extends State<CampaignFormCard>
     with SingleTickerProviderStateMixin {
   final TextEditingController _budgetController = TextEditingController();
-  late DateTime _startDate;
-  late DateTime _endDate;
   late String _selectedCategory;
   Map<String, String> _categories = {'fashion': 'Fashion'};
   bool _isLoadingCategories = true;
@@ -267,64 +256,9 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
               const SizedBox(height: 20),
 
-              // Campaign Dates
-              ShadCard(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Campaign Dates',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        // Start Date
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectStartDate(context),
-                            child: AbsorbPointer(
-                              child: ShadInputFormField(
-                                controller: TextEditingController(
-                                  text: DateAndTime.formatDate(
-                                      _startDate, 'MMM dd, yyyy'),
-                                ),
-                                placeholder: const Text('Start date'),
-                                suffix:
-                                    const Icon(Icons.calendar_today, size: 18),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        // End Date
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _selectEndDate(context),
-                            child: AbsorbPointer(
-                              child: ShadInputFormField(
-                                controller: TextEditingController(
-                                  text: DateAndTime.formatDate(
-                                      _endDate, 'MMM dd, yyyy'),
-                                ),
-                                placeholder: const Text('End date'),
-                                suffix:
-                                    const Icon(Icons.calendar_today, size: 18),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 30),
+              // Campaign Dates section removed as dates will be set automatically:
+              // Start date - when influencer signs the contract
+              // End date - will be the delivery date
 
               // Tips section
               ShadCard(
@@ -392,23 +326,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
         debugPrint('Updated category in didUpdateWidget: $_selectedCategory');
       });
     }
-
-    // Update dates if they changed
-    if (widget.startDateValue != null &&
-        widget.startDateValue != oldWidget.startDateValue) {
-      setState(() {
-        _startDate = widget.startDateValue!;
-        debugPrint('Updated start date in didUpdateWidget: $_startDate');
-      });
-    }
-
-    if (widget.endDateValue != null &&
-        widget.endDateValue != oldWidget.endDateValue) {
-      setState(() {
-        _endDate = widget.endDateValue!;
-        debugPrint('Updated end date in didUpdateWidget: $_endDate');
-      });
-    }
   }
 
   @override
@@ -441,9 +358,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
     // Initialize other fields with proper default values
     _selectedCategory = widget.categoryValue ?? 'fashion';
-    _startDate = widget.startDateValue ?? DateTime.now();
-    _endDate =
-        widget.endDateValue ?? DateTime.now().add(const Duration(days: 7));
 
     // Setup animations
     _animationController = AnimationController(
@@ -467,13 +381,15 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     bool isValid = true;
 
     // Validate campaign name
-    if (widget.campaignNameController.text.isEmpty || widget.campaignNameController.text.length > 40) {
+    if (widget.campaignNameController.text.isEmpty ||
+        widget.campaignNameController.text.length > 40) {
       setState(() => _showNameError = true);
       isValid = false;
     }
 
     // Validate campaign description
-    if (widget.campaignDescriptionController.text.isEmpty || widget.campaignDescriptionController.text.length > 4000) {
+    if (widget.campaignDescriptionController.text.isEmpty ||
+        widget.campaignDescriptionController.text.length > 4000) {
       setState(() => _showDescriptionError = true);
       isValid = false;
     }
@@ -570,64 +486,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
       setState(() {
         _isLoadingCategories = false;
       });
-    }
-  }
-
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _endDate,
-      firstDate: _startDate,
-      lastDate: DateTime(2101),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _endDate) {
-      setState(() {
-        _endDate = picked;
-      });
-      widget.onEndDateChanged(_endDate);
-    }
-  }
-
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _startDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _startDate) {
-      setState(() {
-        // Ensure end date is after start date
-        if (_endDate.isBefore(picked)) {
-          _endDate = picked.add(const Duration(days: 7));
-          widget.onEndDateChanged(_endDate);
-        }
-      });
-      widget.onStartDateChanged(picked);
     }
   }
 

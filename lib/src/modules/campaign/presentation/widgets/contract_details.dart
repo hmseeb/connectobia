@@ -326,8 +326,9 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                           'Budget',
                           currencyFormat
                               .format(widget.campaignFormState?.budget ?? 0)),
-                      _buildSummaryRow('Timeline',
-                          '${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.startDate ?? DateTime.now())} - ${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.endDate ?? DateTime.now().add(const Duration(days: 30)))}'),
+                      // Timeline removed as dates are now set automatically:
+                      // Start date: When influencer signs the contract
+                      // End date: Will be the delivery date
                     ],
                   ),
                 ),
@@ -388,7 +389,7 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        "Select the date when content should be delivered:",
+                        "Select the date when the influencer should deliver the content:",
                         style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 12),
@@ -405,7 +406,8 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                DateFormat('MMM dd, yyyy').format(_deliveryDate),
+                                DateFormat('MMM dd, yyyy')
+                                    .format(_deliveryDate),
                                 style: const TextStyle(fontSize: 16),
                               ),
                               const Icon(Icons.calendar_today, size: 20),
@@ -417,7 +419,7 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                         Padding(
                           padding: const EdgeInsets.only(top: 4.0, left: 8.0),
                           child: Text(
-                            'Delivery date must be between campaign start and end date',
+                            'Delivery date must be in the future',
                             style: TextStyle(
                               color: Colors.red[700],
                               fontSize: 12,
@@ -550,7 +552,8 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
       if (widget.campaignFormState!.deliveryDate != null) {
         _deliveryDate = widget.campaignFormState!.deliveryDate!;
       } else {
-        _deliveryDate = widget.campaignFormState!.endDate;
+        // Use a default delivery date since endDate is no longer available
+        _deliveryDate = DateTime.now().add(const Duration(days: 14));
       }
     }
   }
@@ -609,6 +612,24 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
         widget.initialAcceptTerms != null) {
       _updateContractDetails();
     }
+  }
+
+  bool validateContractDetails() {
+    bool isValid = true;
+    _showDeliveryDateError = false;
+    _showGuidelinesError = false;
+
+    // Only validate that delivery date is in the future
+    if (_deliveryDate.isBefore(DateTime.now())) {
+      setState(() => _showDeliveryDateError = true);
+      isValid = false;
+    }
+
+    if (_guidelinesController.text.trim().isEmpty) {
+      setState(() => _showGuidelinesError = true);
+      isValid = false;
+    }
+    return isValid;
   }
 
   Widget _buildSummaryRow(String label, String value) {
@@ -675,25 +696,5 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
       _confirmDetails,
       _acceptTerms,
     );
-  }
-
-  bool validateContractDetails() {
-    bool isValid = true;
-    final startDate = widget.campaignFormState?.startDate;
-    final endDate = widget.campaignFormState?.endDate;
-    _showDeliveryDateError = false;
-    _showGuidelinesError = false;
-
-    if (startDate != null && endDate != null) {
-      if (_deliveryDate.isBefore(startDate) || _deliveryDate.isAfter(endDate)) {
-        setState(() => _showDeliveryDateError = true);
-        isValid = false;
-      }
-    }
-    if (_guidelinesController.text.trim().isEmpty) {
-      setState(() => _showGuidelinesError = true);
-      isValid = false;
-    }
-    return isValid;
   }
 }

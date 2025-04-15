@@ -37,8 +37,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   final TextEditingController _budgetController = TextEditingController();
   int _currentStep = 1;
   String _category = 'fashion';
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now().add(const Duration(days: 30));
   bool _isEditing = false;
   Campaign? _campaignToEdit;
 
@@ -127,8 +125,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
           // Also update local state
           _category = campaignForm.category;
-          _startDate = campaignForm.startDate;
-          _endDate = campaignForm.endDate;
           _goals = campaignForm.selectedGoals;
           _selectedInfluencer = campaignForm.selectedInfluencer;
           _postTypes = campaignForm.selectedPostTypes;
@@ -148,8 +144,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                       description: '',
                       category: 'fashion',
                       budget: 0,
-                      startDate: DateTime.now(),
-                      endDate: DateTime.now().add(const Duration(days: 30)),
                       goals: [],
                     ),
                   );
@@ -243,8 +237,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                   'Set text controllers - Name: ${_campaignNameController.text}, Desc: ${_campaignDescriptionController.text}');
 
               _category = _campaignToEdit!.category;
-              _startDate = _campaignToEdit!.startDate;
-              _endDate = _campaignToEdit!.endDate;
               _goals = List.from(_campaignToEdit!.goals);
               _selectedInfluencer = _campaignToEdit!.selectedInfluencer;
 
@@ -255,8 +247,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                       description: _campaignToEdit!.description,
                       category: _campaignToEdit!.category,
                       budget: _campaignToEdit!.budget,
-                      startDate: _campaignToEdit!.startDate,
-                      endDate: _campaignToEdit!.endDate,
                       goals: _campaignToEdit!.goals,
                       selectedInfluencer: _campaignToEdit!.selectedInfluencer,
                     ),
@@ -312,8 +302,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           'Set text controllers from widget - Name: ${_campaignNameController.text}, Desc: ${_campaignDescriptionController.text}');
 
       _category = _campaignToEdit!.category;
-      _startDate = _campaignToEdit!.startDate;
-      _endDate = _campaignToEdit!.endDate;
       _goals = List.from(_campaignToEdit!.goals);
       _selectedInfluencer = _campaignToEdit!.selectedInfluencer;
 
@@ -325,8 +313,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                 description: _campaignToEdit!.description,
                 category: _campaignToEdit!.category,
                 budget: _campaignToEdit!.budget,
-                startDate: _campaignToEdit!.startDate,
-                endDate: _campaignToEdit!.endDate,
                 goals: _campaignToEdit!.goals,
                 selectedInfluencer: _campaignToEdit!.selectedInfluencer,
               ),
@@ -364,8 +350,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                   description: '',
                   category: 'fashion',
                   budget: 0,
-                  startDate: DateTime.now(),
-                  endDate: DateTime.now().add(const Duration(days: 30)),
                   goals: [],
                 ),
               );
@@ -406,9 +390,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           campaignDescriptionController: _campaignDescriptionController,
           budgetValue: budgetValue > 0 ? budgetValue : null,
           categoryValue: (formState != null) ? formState.category : _category,
-          startDateValue:
-              (formState != null) ? formState.startDate : _startDate,
-          endDateValue: (formState != null) ? formState.endDate : _endDate,
           onBudgetChanged: (value) {
             debugPrint('Budget updated to: $value');
             _budgetController.text = value.toString();
@@ -416,14 +397,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           },
           onCategoryChanged: (value) {
             _category = value;
-            _updateBasicDetails();
-          },
-          onStartDateChanged: (value) {
-            _startDate = value;
-            _updateBasicDetails();
-          },
-          onEndDateChanged: (value) {
-            _endDate = value;
             _updateBasicDetails();
           },
         );
@@ -631,9 +604,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       if (currentState.title != _campaignNameController.text ||
           currentState.description != _campaignDescriptionController.text ||
           currentState.category != _category ||
-          currentState.budget != budget.toDouble() ||
-          currentState.startDate != _startDate ||
-          currentState.endDate != _endDate) {
+          currentState.budget != budget.toDouble()) {
         debugPrint('Updating basic details - budget: $budget');
 
         context.read<CampaignBloc>().add(
@@ -642,8 +613,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                 description: _campaignDescriptionController.text,
                 category: _category,
                 budget: budget.toDouble(),
-                startDate: _startDate,
-                endDate: _endDate,
               ),
             );
       }
@@ -658,8 +627,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
               description: _campaignDescriptionController.text,
               category: _category,
               budget: budget.toDouble(),
-              startDate: _startDate,
-              endDate: _endDate,
             ),
           );
     }

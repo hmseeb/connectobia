@@ -100,8 +100,9 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         description: event.description ?? '',
         category: event.category ?? 'fashion',
         budget: event.budget ?? 0,
-        startDate: event.startDate,
-        endDate: event.endDate,
+        // Dates will be set automatically:
+        // - Start date: when influencer signs
+        // - End date: will be the delivery date
         selectedGoals: event.goals ?? [],
         selectedInfluencer: event.selectedInfluencer,
       ));
@@ -119,8 +120,7 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
           description: event.description,
           category: event.category,
           budget: event.budget,
-          startDate: event.startDate,
-          endDate: event.endDate,
+          // Dates are now handled automatically
         ));
       }
     });
@@ -224,8 +224,6 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
               'goals': formState.selectedGoals,
               'category': formState.category,
               'budget': formState.budget,
-              'start_date': formState.startDate.toIso8601String(),
-              'end_date': formState.endDate.toIso8601String(),
               'selected_influencer': formState.selectedInfluencer,
             };
 
@@ -261,8 +259,12 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
               goals: formState.selectedGoals,
               category: formState.category,
               budget: formState.budget,
-              startDate: formState.startDate,
-              endDate: formState.endDate,
+              startDate: DateTime
+                  .now(), // Default start date - will be updated when influencer signs
+              endDate: formState.deliveryDate ??
+                  DateTime.now().add(const Duration(
+                      days:
+                          30)), // Default to delivery date or 30 days from now
               status: 'draft', // Always set initial status to draft
               brand: '', // Will be set by repository
               selectedInfluencer: formState.selectedInfluencer,
@@ -320,9 +322,7 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         if (state.budget <= 0) {
           errors.add('Budget must be greater than 0');
         }
-        if (state.startDate.isAfter(state.endDate)) {
-          errors.add('Start date cannot be after end date');
-        }
+        // Remove date validation since dates are now set automatically
         break;
 
       case 2: // Campaign goals

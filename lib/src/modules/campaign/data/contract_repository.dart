@@ -196,12 +196,17 @@ class ContractRepository {
 
       final completedContract = Contract.fromRecord(record);
 
-      // Also update the campaign status to closed
+      // Also update the campaign status to closed and set end date to today
       try {
-        await CampaignRepository.updateCampaignStatus(campaignId, 'closed');
-        debugPrint('Updated campaign $campaignId status to closed');
+        final now = DateTime.now();
+        await CampaignRepository.updateCampaign(campaignId, {
+          'status': 'closed',
+          'end_date': now.toIso8601String(),
+        });
+        debugPrint(
+            'Updated campaign $campaignId status to closed and set end date to today');
       } catch (e) {
-        debugPrint('Error updating campaign status to closed: $e');
+        debugPrint('Error updating campaign status to closed and end date: $e');
         // Don't fail the contract completion if campaign update fails
       }
 
@@ -342,17 +347,20 @@ class ContractRepository {
 
       final signedContract = Contract.fromRecord(record);
 
-      // Also update the campaign status to active
+      // Also update the campaign status to active and set start date to today
       try {
+        final now = DateTime.now();
         await pb.collection('campaigns').update(
           campaignId,
           body: {
             'status': 'active',
+            'start_date': now.toIso8601String(),
           },
         );
-        debugPrint('Updated campaign $campaignId status to active');
+        debugPrint(
+            'Updated campaign $campaignId status to active and set start date to today');
       } catch (e) {
-        debugPrint('Error updating campaign status: $e');
+        debugPrint('Error updating campaign status and start date: $e');
         // Don't fail the contract signing if campaign update fails
       }
 

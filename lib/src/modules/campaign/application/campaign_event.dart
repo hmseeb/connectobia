@@ -20,8 +20,6 @@ class InitCampaignForm extends CampaignEvent {
   final String? description;
   final String? category;
   final double? budget;
-  final DateTime? startDate;
-  final DateTime? endDate;
   final List<String>? goals;
   final String? selectedInfluencer;
 
@@ -30,8 +28,6 @@ class InitCampaignForm extends CampaignEvent {
     this.description,
     this.category,
     this.budget,
-    this.startDate,
-    this.endDate,
     this.goals,
     this.selectedInfluencer,
   });
@@ -61,16 +57,12 @@ class UpdateCampaignBasicDetails extends CampaignEvent {
   final String description;
   final String category;
   final double budget;
-  final DateTime startDate;
-  final DateTime endDate;
 
   UpdateCampaignBasicDetails({
     required this.title,
     required this.description,
     required this.category,
     required this.budget,
-    required this.startDate,
-    required this.endDate,
   });
 }
 

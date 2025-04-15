@@ -41,8 +41,6 @@ class CampaignFormState extends CampaignState {
   final String description;
   final String category;
   final double budget;
-  final DateTime startDate;
-  final DateTime endDate;
   final List<String> selectedGoals;
   final String? selectedInfluencer;
   final List<String> selectedPostTypes;
@@ -57,8 +55,6 @@ class CampaignFormState extends CampaignState {
     this.description = '',
     this.category = 'fashion',
     this.budget = 0,
-    DateTime? startDate,
-    DateTime? endDate,
     this.selectedGoals = const [],
     this.selectedInfluencer,
     this.selectedPostTypes = const [],
@@ -67,17 +63,13 @@ class CampaignFormState extends CampaignState {
     this.confirmDetails = false,
     this.acceptTerms = false,
     Map<int, StepValidationResult>? stepValidations,
-  })  : startDate = startDate ?? DateTime.now(),
-        endDate = endDate ?? DateTime.now().add(const Duration(days: 30)),
-        stepValidations = stepValidations ?? {};
+  }) : stepValidations = stepValidations ?? {};
 
   CampaignFormState copyWith({
     String? title,
     String? description,
     String? category,
     double? budget,
-    DateTime? startDate,
-    DateTime? endDate,
     List<String>? selectedGoals,
     String? selectedInfluencer,
     List<String>? selectedPostTypes,
@@ -92,8 +84,6 @@ class CampaignFormState extends CampaignState {
       description: description ?? this.description,
       category: category ?? this.category,
       budget: budget ?? this.budget,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
       selectedGoals: selectedGoals ?? this.selectedGoals,
       selectedInfluencer: selectedInfluencer ?? this.selectedInfluencer,
       selectedPostTypes: selectedPostTypes ?? this.selectedPostTypes,
