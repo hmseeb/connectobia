@@ -354,10 +354,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             });
 
             try {
-              final result = await Navigator.pushNamed(
-                  context, editProfileScreen,
-                  arguments: {'user': currentUser});
-
               if (!mounted) return;
 
               // Instead of replacing the screen, let's force a complete data refresh from the backend
@@ -905,7 +901,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           '📥 Attempting to load ${isBrand ? "brand" : "influencer"} profile directly with ID: $profileId');
 
       // Add a cache-busting parameter to force a fresh fetch from the database
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final profileRecord =
           await pb.collection(profileCollectionName).getOne(profileId);
 
