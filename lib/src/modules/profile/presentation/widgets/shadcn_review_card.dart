@@ -69,7 +69,7 @@ class ShadcnReviewCard extends StatelessWidget {
             ),
           ),
 
-          // Main content
+          // Main content with optimized layout
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -78,33 +78,33 @@ class ShadcnReviewCard extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Avatar with nice shadow and border
+                      // Avatar with nice shadow and border - slightly smaller
                       Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
+                              blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: avatarUrl != null && avatarUrl.isNotEmpty
                             ? CircleAvatar(
-                                radius: 26,
+                                radius: 22, // Smaller radius
                                 backgroundImage: NetworkImage(avatarUrl),
                                 backgroundColor: Colors.grey.shade200,
                               )
                             : CircleAvatar(
-                                radius: 26,
+                                radius: 22, // Smaller radius
                                 child: Text(
                                   reviewerName.isNotEmpty
                                       ? reviewerName[0].toUpperCase()
@@ -112,21 +112,23 @@ class ShadcnReviewCard extends StatelessWidget {
                                   style: TextStyle(
                                     color: Theme.of(context).primaryColor,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                    fontSize: 16, // Smaller font
                                   ),
                                 ),
                               ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10), // Slightly smaller gap
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Name and options row
+                            // Name and options row with better spacing
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
+                                // Limit the name to available space
+                                Flexible(
                                   child: Text(
                                     reviewerName.isNotEmpty
                                         ? reviewerName
@@ -140,44 +142,53 @@ class ShadcnReviewCard extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                if (canDelete && onDelete != null)
+                                // Keep some space between name and icon
+                                if (canDelete && onDelete != null) ...[
+                                  const SizedBox(width: 4),
                                   SizedBox(
-                                    height: 32,
-                                    width: 32,
+                                    height: 28,
+                                    width: 28,
                                     child: Material(
                                       color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(14),
                                       child: InkWell(
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(14),
                                         onTap: () {
                                           _showOptionsBottomSheet(context);
                                         },
                                         child: const Icon(
                                           Icons.more_horiz,
-                                          size: 20,
+                                          size: 18,
                                           color: Colors.black54,
                                         ),
                                       ),
                                     ),
                                   ),
+                                ],
                               ],
                             ),
 
                             const SizedBox(height: 6),
 
-                            // Stars and date on same row
+                            // Stars and date on same row - now with better overflow handling
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Rating stars
-                                _buildAnimatedRatingStars(context),
+                                // Rating stars (fixed width to prevent squeezing)
+                                SizedBox(
+                                  child: _buildAnimatedRatingStars(context),
+                                ),
 
-                                // Date with subtle style
-                                Text(
-                                  " · $formattedDate",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
+                                // Date with subtle style and overflow handling
+                                Flexible(
+                                  child: Text(
+                                    " · $formattedDate",
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -199,8 +210,14 @@ class ShadcnReviewCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Review content
-                  _buildReviewContent(context),
+                  // Review content with responsive spacing
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width -
+                          64, // Account for container padding and margins
+                    ),
+                    child: _buildReviewContent(context),
+                  ),
 
                   // Campaign info if available
                   if (review.campaignRecord != null) ...[
@@ -218,16 +235,14 @@ class ShadcnReviewCard extends StatelessWidget {
 
   Widget _buildAnimatedRatingStars(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         bool filled = index < review.rating;
 
-        return Padding(
-          padding: const EdgeInsets.only(right: 3.0),
-          child: Icon(
-            filled ? Icons.star : Icons.star_border,
-            color: filled ? Colors.amber.shade600 : Colors.grey.shade300,
-            size: 16,
-          ),
+        return Icon(
+          filled ? Icons.star : Icons.star_border,
+          color: filled ? Colors.amber.shade600 : Colors.grey.shade300,
+          size: 14,
         );
       }),
     );
@@ -274,6 +289,8 @@ class ShadcnReviewCard extends StatelessWidget {
 
   Widget _buildReviewContent(BuildContext context) {
     final reviewText = _stripHtmlTags(review.comment);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360; // Adjust based on your needs
 
     return GestureDetector(
       onTap: () {
@@ -283,29 +300,31 @@ class ShadcnReviewCard extends StatelessWidget {
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             reviewText,
             style: TextStyle(
-              fontSize: 15,
-              height: 1.5,
+              fontSize: isSmallScreen ? 14 : 15,
+              height: 1.4,
               letterSpacing: -0.2,
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
           if (reviewText.length > 150) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              margin: const EdgeInsets.only(top: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 'Read more',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w500,
                 ),
