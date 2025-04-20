@@ -447,6 +447,7 @@ class CampaignCard extends StatelessWidget {
         String userId = '';
         String collectionId = '';
         bool hasConnectedSocial = false;
+        String industry = '';
 
         if (isBrand && userData is Influencer) {
           name = userData.fullName;
@@ -454,12 +455,14 @@ class CampaignCard extends StatelessWidget {
           userId = userData.id;
           collectionId = 'influencers';
           hasConnectedSocial = userData.connectedSocial;
+          industry = userData.industry;
         } else if (!isBrand && userData is Brand) {
           name = userData.brandName;
           avatar = userData.avatar;
           userId = userData.id;
           collectionId = 'brands';
           hasConnectedSocial = userData.verified;
+          industry = userData.industry;
         }
 
         return Row(
@@ -514,7 +517,9 @@ class CampaignCard extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          isBrand ? 'Influencer' : 'Brand',
+                          industry.isNotEmpty
+                              ? industry
+                              : (isBrand ? 'Influencer' : 'Brand'),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,

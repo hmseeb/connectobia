@@ -520,6 +520,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 String userId = '';
                 String collectionId = '';
                 bool hasConnectedSocial = false;
+                String industry = '';
 
                 if (isBrand && userData is Influencer) {
                   name = userData.fullName;
@@ -527,12 +528,14 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                   userId = userData.id;
                   collectionId = 'influencers';
                   hasConnectedSocial = userData.connectedSocial;
+                  industry = userData.industry;
                 } else if (!isBrand && userData is Brand) {
                   name = userData.brandName;
                   avatar = userData.avatar;
                   userId = userData.id;
                   collectionId = 'brands';
                   hasConnectedSocial = userData.verified;
+                  industry = userData.industry;
                 }
 
                 return Row(
@@ -584,7 +587,9 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                             ],
                           ),
                           Text(
-                            isBrand ? 'Influencer' : 'Brand',
+                            industry.isNotEmpty
+                                ? industry
+                                : (isBrand ? 'Influencer' : 'Brand'),
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade600,
@@ -1331,26 +1336,29 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       final Uri uri = Uri.parse(urlToLaunch);
       debugPrint('Parsed URI: $uri');
 
-      if (await url_launcher.canLaunchUrl(uri)) {
-        debugPrint('URI can be launched, attempting launch...');
-        final bool launched = await url_launcher.launchUrl(
+      // Try to launch in external application first
+      final bool launched = await url_launcher.launchUrl(
+        uri,
+        mode: url_launcher.LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        debugPrint('External launch failed, trying with universal links');
+        // If external launch fails, try with platform default browser
+        final bool universalLaunched = await url_launcher.launchUrl(
           uri,
-          mode: url_launcher.LaunchMode.externalApplication,
+          mode: url_launcher.LaunchMode.platformDefault,
         );
 
-        if (!launched) {
-          debugPrint('Launch returned false');
-          _showErrorToast('Failed to open link: $urlToLaunch');
-        } else {
-          debugPrint('URL launched successfully');
+        if (!universalLaunched) {
+          _showErrorToast('Could not open link. Check your browser settings.');
+          debugPrint('Both launch methods failed for URL: $urlToLaunch');
         }
-      } else {
-        debugPrint('canLaunchUrl returned false');
-        _showErrorToast('Could not open link: $urlToLaunch');
       }
     } catch (e) {
       debugPrint('Error launching URL: $e');
-      _showErrorToast('Error opening link: ${e.toString()}');
+      _showErrorToast(
+          'Error opening link: Check URL format or internet connection');
     }
   }
 

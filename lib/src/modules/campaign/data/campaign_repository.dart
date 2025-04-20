@@ -350,6 +350,8 @@ class CampaignRepository {
             page: 1,
             perPage: 50,
             filter: 'selected_influencer = "$userId"',
+            sort:
+                '-created', // Sort by creation time, descending (newest first)
           );
 
       debugPrint(
@@ -395,6 +397,8 @@ class CampaignRepository {
             perPage: 50,
             filter:
                 'status = "active" && (selected_influencer = "" || selected_influencer = null || selected_influencer != "$userId")',
+            sort:
+                '-created', // Sort by creation time, descending (newest first)
           );
 
       debugPrint(
@@ -466,6 +470,8 @@ class CampaignRepository {
               page: 1,
               perPage: 50,
               filter: 'selected_influencer = "$userId"',
+              sort:
+                  '-created', // Sort by creation time, descending (newest first)
             );
 
         debugPrint(
@@ -488,6 +494,8 @@ class CampaignRepository {
               page: 1,
               perPage: 50,
               filter: 'brand = "$userId"',
+              sort:
+                  '-created', // Sort by creation time, descending (newest first)
             );
 
         debugPrint(
