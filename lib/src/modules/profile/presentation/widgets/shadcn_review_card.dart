@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/presentation/widgets/fullscreen_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -98,10 +99,17 @@ class ShadcnReviewCard extends StatelessWidget {
                           ],
                         ),
                         child: avatarUrl != null && avatarUrl.isNotEmpty
-                            ? CircleAvatar(
-                                radius: 22, // Smaller radius
-                                backgroundImage: NetworkImage(avatarUrl),
-                                backgroundColor: Colors.grey.shade200,
+                            ? GestureDetector(
+                                onTap: () {
+                                  if (avatarUrl != null) {
+                                    _openFullScreenAvatar(context, avatarUrl);
+                                  }
+                                },
+                                child: CircleAvatar(
+                                  radius: 22, // Smaller radius
+                                  backgroundImage: NetworkImage(avatarUrl),
+                                  backgroundColor: Colors.grey.shade200,
+                                ),
                               )
                             : CircleAvatar(
                                 radius: 22, // Smaller radius
@@ -380,6 +388,21 @@ class ShadcnReviewCard extends StatelessWidget {
       debugPrint('Error getting reviewer name: $e');
       return '';
     }
+  }
+
+  void _openFullScreenAvatar(BuildContext context, String imageUrl) {
+    // Get reviewer name first
+    String reviewerName = _getReviewerName();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FullscreenImage(
+          imageUrl: imageUrl,
+          title: 'Profile Photo',
+          heroTag:
+              'reviewer_avatar_${reviewerName.isEmpty ? "anonymous" : reviewerName}',
+        ),
+      ),
+    );
   }
 
   void _showDeleteConfirmation(BuildContext context) {
