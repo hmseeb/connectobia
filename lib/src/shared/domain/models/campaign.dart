@@ -8,9 +8,14 @@ class Campaign {
   final String id;
   final String title;
   final String description;
-  final double rating;
-  final String distance;
-  final String price;
+  final List<String> goals;
+  final String category;
+  final double budget;
+  final DateTime startDate;
+  final DateTime endDate;
+  final String status;
+  final String brand;
+  final String? selectedInfluencer;
   final DateTime created;
   final DateTime updated;
 
@@ -20,25 +25,47 @@ class Campaign {
     required this.id,
     required this.title,
     required this.description,
-    required this.rating,
-    required this.distance,
-    required this.price,
+    required this.goals,
+    required this.category,
+    required this.budget,
+    required this.startDate,
+    required this.endDate,
+    required this.status,
+    required this.brand,
+    this.selectedInfluencer,
     required this.created,
     required this.updated,
   });
 
-  factory Campaign.fromJson(Map<String, dynamic> json) => Campaign(
-        collectionId: json["collectionId"],
-        collectionName: json["collectionName"],
-        id: json["id"],
-        title: json["title"],
-        description: json["description"] ?? "",
-        rating: (json["rating"] as num).toDouble(),
-        distance: json["distance"] ?? "",
-        price: json["price"] ?? "",
-        created: DateTime.parse(json["created"]),
-        updated: DateTime.parse(json["updated"]),
-      );
+  factory Campaign.fromJson(Map<String, dynamic> json) {
+    return Campaign(
+      collectionId: json["collectionId"],
+      collectionName: json["collectionName"],
+      id: json["id"],
+      title: json["title"],
+      description: json["description"] ?? "",
+      goals: json["goals"] != null
+          ? List<String>.from(json["goals"])
+          : ["awareness"],
+      category: json["category"] ?? "fashion",
+      budget: json["budget"] != null
+          ? (json["budget"] is int
+              ? (json["budget"] as int).toDouble()
+              : json["budget"] as double)
+          : 0.0,
+      startDate: json["start_date"] != null
+          ? DateTime.parse(json["start_date"])
+          : DateTime.now(),
+      endDate: json["end_date"] != null
+          ? DateTime.parse(json["end_date"])
+          : DateTime.now().add(const Duration(days: 30)),
+      status: json["status"] ?? "draft",
+      brand: json["brand"] ?? "",
+      selectedInfluencer: json["selected_influencer"],
+      created: DateTime.parse(json["created"]),
+      updated: DateTime.parse(json["updated"]),
+    );
+  }
 
   factory Campaign.fromRawJson(String str) =>
       Campaign.fromJson(json.decode(str));
@@ -52,9 +79,14 @@ class Campaign {
     String? id,
     String? title,
     String? description,
-    double? rating,
-    String? distance,
-    String? price,
+    List<String>? goals,
+    String? category,
+    double? budget,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? status,
+    String? brand,
+    String? selectedInfluencer,
     DateTime? created,
     DateTime? updated,
   }) =>
@@ -64,12 +96,31 @@ class Campaign {
         id: id ?? this.id,
         title: title ?? this.title,
         description: description ?? this.description,
-        rating: rating ?? this.rating,
-        distance: distance ?? this.distance,
-        price: price ?? this.price,
+        goals: goals ?? this.goals,
+        category: category ?? this.category,
+        budget: budget ?? this.budget,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        status: status ?? this.status,
+        brand: brand ?? this.brand,
+        selectedInfluencer: selectedInfluencer ?? this.selectedInfluencer,
         created: created ?? this.created,
         updated: updated ?? this.updated,
       );
+
+  // Helper method to create a new campaign for submission to PocketBase
+  Map<String, dynamic> toCreateJson() => {
+        "title": title,
+        "description": description,
+        "goals": goals,
+        "category": category,
+        "budget": budget,
+        "start_date": startDate.toIso8601String(),
+        "end_date": endDate.toIso8601String(),
+        "status": status,
+        "brand": brand,
+        "selected_influencer": selectedInfluencer,
+      };
 
   Map<String, dynamic> toJson() => {
         "collectionId": collectionId,
@@ -77,9 +128,14 @@ class Campaign {
         "id": id,
         "title": title,
         "description": description,
-        "rating": rating,
-        "distance": distance,
-        "price": price,
+        "goals": goals,
+        "category": category,
+        "budget": budget,
+        "start_date": startDate.toIso8601String(),
+        "end_date": endDate.toIso8601String(),
+        "status": status,
+        "brand": brand,
+        "selected_influencer": selectedInfluencer,
         "created": created.toIso8601String(),
         "updated": updated.toIso8601String(),
       };

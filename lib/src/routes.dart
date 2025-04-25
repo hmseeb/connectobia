@@ -104,16 +104,15 @@ class GenerateRoutes {
 
       case campaignsScreen:
         return _buildRoute(const CampaignScreen());
-        
+
       case createCampaign:
-  return _buildRoute(const CreateCampaign());
+        return _buildRoute(const CreateCampaignScreen());
 
       case campaignDetails:
-  return _buildRoute(const CampaignDetailsPage());
-  
-       case '/editProfile':
-  return _buildRoute(EditProfileScreen());
+        return _buildRoute(const CampaignDetailsPage());
 
+      case '/editProfile':
+        return _buildRoute(EditProfileScreen());
 
       default:
         return _buildRoute(WelcomeScreen());

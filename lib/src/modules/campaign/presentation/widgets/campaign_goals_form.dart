@@ -5,21 +5,27 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CampaignGoals extends StatefulWidget {
   final Function(bool) onValidationChanged;
+  final Function(List<String>) onGoalsSelected;
 
-  const CampaignGoals({super.key, required this.onValidationChanged});
+  const CampaignGoals({
+    super.key,
+    required this.onValidationChanged,
+    required this.onGoalsSelected,
+  });
 
   @override
   State<CampaignGoals> createState() => _CampaignGoalsState();
 }
 
 class _CampaignGoalsState extends State<CampaignGoals> {
-  final List<bool> _selectedGoals = [false, false, false, false, false];
+  // Updated to match PocketBase schema goals
+  final Map<String, bool> _selectedGoals = {
+    'awareness': false,
+    'sales': false,
+    'engagement': false,
+  };
 
-  bool get isAtLeastOneGoalSelected => _selectedGoals.contains(true);
-
-  void _updateValidation() {
-    widget.onValidationChanged(isAtLeastOneGoalSelected);
-  }
+  bool get isAtLeastOneGoalSelected => _selectedGoals.values.contains(true);
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +34,16 @@ class _CampaignGoalsState extends State<CampaignGoals> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // SVG Image (Above the Card)
+          // SVG Image
           SvgPicture.asset(
-            AssetsPath.campaignGoals, // Replace with your actual SVG asset path
+            AssetsPath.campaignGoals,
             height: 150,
             width: 150,
           ),
-          const SizedBox(height: 10), // Adds space between image and card
+          const SizedBox(height: 10),
           // The ShadCard containing goals
           ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 400), // Keeps it responsive
+            constraints: const BoxConstraints(maxWidth: 400),
             child: ShadCard(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -50,65 +56,42 @@ class _CampaignGoalsState extends State<CampaignGoals> {
                   ),
                   const SizedBox(height: 20),
                   CampaignGoalCheckbox(
-                    id: 'goal1',
+                    id: 'awareness',
                     label: 'Increase Brand Awareness',
-                    sublabel: 'Expand your reach and brand awareness',
-                    initialValue: _selectedGoals[0],
+                    sublabel:
+                        'Expand your reach and make more people familiar with your brand',
+                    initialValue: _selectedGoals['awareness']!,
                     onChanged: (value) {
                       setState(() {
-                        _selectedGoals[0] = value;
+                        _selectedGoals['awareness'] = value;
                         _updateValidation();
                       });
                     },
                   ),
                   const SizedBox(height: 16),
                   CampaignGoalCheckbox(
-                    id: 'goal2',
+                    id: 'sales',
                     label: 'Drive Sales',
-                    sublabel: 'Attract Potential Customers and Enhance Sales Performance',
-                    initialValue: _selectedGoals[1],
+                    sublabel:
+                        'Attract potential customers and boost conversion rates',
+                    initialValue: _selectedGoals['sales']!,
                     onChanged: (value) {
                       setState(() {
-                        _selectedGoals[1] = value;
+                        _selectedGoals['sales'] = value;
                         _updateValidation();
                       });
                     },
                   ),
                   const SizedBox(height: 16),
                   CampaignGoalCheckbox(
-                    id: 'goal3',
+                    id: 'engagement',
                     label: 'Boost Engagement',
-                    sublabel: 'Increase audience interaction and participation',
-                    initialValue: _selectedGoals[2],
+                    sublabel:
+                        'Increase audience interaction and participation with your brand',
+                    initialValue: _selectedGoals['engagement']!,
                     onChanged: (value) {
                       setState(() {
-                        _selectedGoals[2] = value;
-                        _updateValidation();
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  CampaignGoalCheckbox(
-                    id: 'goal4',
-                    label: 'More Website Visits',
-                    sublabel: 'Use influencers to bring users to your site',
-                    initialValue: _selectedGoals[3],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGoals[3] = value;
-                        _updateValidation();
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  CampaignGoalCheckbox(
-                    id: 'goal5',
-                    label: 'Improve Brand Recognition',
-                    sublabel: 'Ensure users remember and recognize the brand.',
-                    initialValue: _selectedGoals[4],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGoals[4] = value;
+                        _selectedGoals['engagement'] = value;
                         _updateValidation();
                       });
                     },
@@ -120,5 +103,17 @@ class _CampaignGoalsState extends State<CampaignGoals> {
         ],
       ),
     );
+  }
+
+  void _updateValidation() {
+    widget.onValidationChanged(isAtLeastOneGoalSelected);
+
+    // Collect all selected goals
+    List<String> selectedGoals = _selectedGoals.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    widget.onGoalsSelected(selectedGoals);
   }
 }

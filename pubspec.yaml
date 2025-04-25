@@ -38,8 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.3.4
   pocketbase: ^0.20.0
-  bloc: ^8.1.4
-  flutter_bloc: ^8.1.6
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.0
   rive_splash_screen: ^0.1.1
   rive: ^0.13.15
   flutter_launcher_icons: ^0.14.2
@@ -59,7 +59,7 @@ dependencies:
   meta: ^1.15.0
   get_ip_address: ^0.0.7
   device_info_plus: ^11.2.0
-  external_app_launcher: ^4.0.1
+  external_app_launcher: ^4.0.3
   delightful_toast: ^1.1.0
   chat_bubbles: ^1.6.0
   swipe_to: ^1.0.6

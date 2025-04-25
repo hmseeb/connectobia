@@ -23,12 +23,20 @@ class CustomShadSelect extends StatefulWidget {
   /// [focusNode] is used to control the focus of the dropdown
   final FocusNode focusNode;
 
+  /// [headerText] is the text shown in the dropdown header
+  final String headerText;
+
+  /// [width] is the width of the dropdown. If null, it will adapt to its parent
+  final double? width;
+
   const CustomShadSelect({
     super.key,
     required this.items,
     required this.placeholder,
     required this.onSelected,
     required this.focusNode,
+    this.headerText = 'Select an option',
+    this.width,
   });
 
   @override
@@ -46,51 +54,77 @@ class CustomShadSelectState extends State<CustomShadSelect> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    return SizedBox(
-      width: 350, // Fixed width for the dropdown
-      child: ShadSelect<String>(
-        enabled: true,
-        focusNode: widget.focusNode, // Use the provided focus node
-        minWidth: 350,
-        maxHeight: 220,
-        placeholder: Text(widget.placeholder),
-        options: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
-            child: Text(
-              'Select industry',
-              style: theme.textTheme.muted.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.popoverForeground,
+    try {
+      final theme = ShadTheme.of(context);
+      return SizedBox(
+        width: widget.width, // Width can be null to adapt to parent
+        child: ShadSelect<String>(
+          enabled: true,
+          focusNode: widget.focusNode, // Use the provided focus node
+          minWidth: widget.width,
+          maxHeight: 220,
+          placeholder: Text(widget.placeholder),
+          options: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
+              child: Text(
+                widget.headerText,
+                style: theme.textTheme.muted.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.popoverForeground,
+                ),
+                textAlign: TextAlign.start,
               ),
-              textAlign: TextAlign.start,
             ),
-          ),
-          ...sortedItems.entries.map(
-            (e) => ShadOption(
-              value: e.key,
-              child: SizedBox(
-                width: 300, // Constrain the width of the option text
-                child: Text(
-                  e.value,
-                  overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+            ...sortedItems.entries.map(
+              (e) => ShadOption(
+                value: e.key,
+                child: SizedBox(
+                  width: 300, // Constrain the width of the option text
+                  child: Text(
+                    e.value,
+                    overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+                  ),
                 ),
               ),
             ),
+          ],
+          selectedOptionBuilder: (context, value) {
+            widget.onSelected(value);
+            return SizedBox(
+              width: 300, // Constrain the width of the selected text
+              child: Text(
+                widget.items[value] ?? '',
+                overflow: TextOverflow.ellipsis, // Truncate with ellipsis
+              ),
+            );
+          },
+        ),
+      );
+    } catch (e) {
+      // Handle any errors that might occur during building
+      debugPrint('Error in CustomShadSelect: $e');
+
+      // Show an error toast on the next frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ShadToaster.of(context).show(
+          ShadToast.destructive(
+            title: const Text('Error'),
+            description: const Text(
+                'There was a problem with the dropdown. Please try again.'),
           ),
-        ],
-        selectedOptionBuilder: (context, value) {
-          widget.onSelected(value);
-          return SizedBox(
-            width: 300, // Constrain the width of the selected text
-            child: Text(
-              widget.items[value] ?? '',
-              overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-            ),
-          );
-        },
-      ),
-    );
+        );
+      });
+
+      // Return a fallback widget
+      return SizedBox(
+        width: widget.width,
+        child: ShadInputFormField(
+          placeholder: Text('${widget.placeholder} (Error loading options)'),
+          readOnly: true,
+          suffix: const Icon(Icons.error_outline, color: Colors.red),
+        ),
+      );
+    }
   }
 }

@@ -1,176 +1,320 @@
+import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
+import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ContractDetailsStep extends StatefulWidget {
+  final CampaignFormState? campaignFormState;
+  final Function(List<String>, DateTime?, String, bool, bool)
+      onContractDetailsChanged;
+
+  const ContractDetailsStep({
+    super.key,
+    this.campaignFormState,
+    required this.onContractDetailsChanged,
+  });
+
   @override
-  _ContractDetailsStepState createState() => _ContractDetailsStepState();
+  ContractDetailsStepState createState() => ContractDetailsStepState();
 }
 
-class _ContractDetailsStepState extends State<ContractDetailsStep> {
+class ContractDetailsStepState extends State<ContractDetailsStep> {
   DateTime? _selectedDate;
-  String _currency = 'USD';
-
-  final List<String> _postTypes = ['Reel', 'Carousel', 'Post'];
-  final List<String> _selectedPostTypes = [];
+  final List<String> _postTypes = ['Reel', 'Carousel', 'Post', 'Story'];
+  List<String> _selectedPostTypes = [];
   bool _confirmDetails = false;
   bool _acceptTerms = false;
+  late TextEditingController _guidelinesController;
 
-  void _pickDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
+  @override
+  Widget build(BuildContext context) {
+    // Get campaign info from campaign form state
+    final campaignName = widget.campaignFormState?.title ?? "Campaign";
+    final campaignCategory = widget.campaignFormState?.category ?? "Category";
+    final campaignBudget =
+        "\$${widget.campaignFormState?.budget.toString() ?? "0"}";
+    final startDate = DateFormat('MMM dd, yyyy').format(
+      widget.campaignFormState?.startDate ?? DateTime.now(),
     );
-    if (pickedDate != null) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
+    final endDate = DateFormat('MMM dd, yyyy').format(
+      widget.campaignFormState?.endDate ??
+          DateTime.now().add(const Duration(days: 30)),
+    );
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          const Text(
+            'Contract Details',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+
+          // Campaign Summary
+          ShadCard(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Campaign Summary',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                _buildSummaryRow('Name', campaignName),
+                _buildSummaryRow('Category', campaignCategory),
+                _buildSummaryRow('Budget', campaignBudget),
+                _buildSummaryRow('Timeline', '$startDate - $endDate'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Post Type Section
+          const Text(
+            'Content Format',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          ShadCard(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Select the type of content you want:',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  children: _postTypes.map((type) {
+                    return ShadCheckbox(
+                      value: _selectedPostTypes.contains(type),
+                      onChanged: (bool value) {
+                        setState(() {
+                          if (value) {
+                            _selectedPostTypes.add(type);
+                          } else {
+                            _selectedPostTypes.remove(type);
+                          }
+                          _notifyChanges();
+                        });
+                      },
+                      label: Text(type),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Delivery Date Section
+          const Text(
+            'Content Delivery Date',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          ShadCard(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'When do you need the content delivered?',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () => _pickDate(context),
+                  child: AbsorbPointer(
+                    child: ShadInputFormField(
+                      placeholder: Text(
+                        _selectedDate == null
+                            ? 'Select a delivery date'
+                            : DateFormat('EEEE, MMM dd, yyyy')
+                                .format(_selectedDate!),
+                      ),
+                      suffix: const Icon(Icons.calendar_today),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Content Guidelines Section
+          const Text(
+            'Content Guidelines',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          ShadCard(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Provide any specific requirements or instructions:',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 12),
+                ShadInputFormField(
+                  controller: _guidelinesController,
+                  placeholder: const Text(
+                      'Examples: specific colors, messaging, hashtags, etc.'),
+                  maxLines: 5,
+                  onChanged: (value) {
+                    _notifyChanges();
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Terms and Agreement
+          ShadCard(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Agreement',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                ShadCheckbox(
+                  value: _confirmDetails,
+                  onChanged: (value) {
+                    setState(() {
+                      _confirmDetails = value;
+                      _notifyChanges();
+                    });
+                  },
+                  label: const Text('I confirm all details are correct'),
+                ),
+                const SizedBox(height: 8),
+                ShadCheckbox(
+                  value: _acceptTerms,
+                  onChanged: (value) {
+                    setState(() {
+                      _acceptTerms = value;
+                      _notifyChanges();
+                    });
+                  },
+                  label: const Text('I accept all terms and conditions'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(ContractDetailsStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Update if the form state changes
+    if (widget.campaignFormState != oldWidget.campaignFormState &&
+        widget.campaignFormState != null) {
+      _selectedPostTypes =
+          List.from(widget.campaignFormState!.selectedPostTypes);
+      _selectedDate = widget.campaignFormState!.deliveryDate;
+
+      if (_guidelinesController.text !=
+          widget.campaignFormState!.contentGuidelines) {
+        _guidelinesController.text =
+            widget.campaignFormState!.contentGuidelines;
+      }
+
+      _confirmDetails = widget.campaignFormState!.confirmDetails;
+      _acceptTerms = widget.campaignFormState!.acceptTerms;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Contract Details',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 15),
+  void dispose() {
+    _guidelinesController.dispose();
+    super.dispose();
+  }
 
-        // Post Type Row
-        const Text(
-          'Post Type',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        Wrap(
-          spacing: 10,
-          children: _postTypes.map((type) {
-            return FilterChip(
-              label: Text(type),
-              selected: _selectedPostTypes.contains(type),
-              onSelected: (bool selected) {
-                setState(() {
-                  if (selected) {
-                    _selectedPostTypes.add(type);
-                  } else {
-                    _selectedPostTypes.remove(type);
-                  }
-                });
-              },
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 15),
+  @override
+  void initState() {
+    super.initState();
+    _guidelinesController = TextEditingController();
 
-        // Delivery Date Picker
-        const Text(
-          'Delivery Date',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        GestureDetector(
-          onTap: () => _pickDate(context),
-          child: AbsorbPointer(
-            child: ShadInputFormField(
-              placeholder: Text(
-                _selectedDate == null
-                    ? 'DD / MM / YYYY'
-                    : '${_selectedDate!.day} / ${_selectedDate!.month} / ${_selectedDate!.year}',
-              ),
+    // Initialize from form state if available
+    if (widget.campaignFormState != null) {
+      _selectedPostTypes =
+          List.from(widget.campaignFormState!.selectedPostTypes);
+      _selectedDate = widget.campaignFormState!.deliveryDate;
+      _guidelinesController.text = widget.campaignFormState!.contentGuidelines;
+      _confirmDetails = widget.campaignFormState!.confirmDetails;
+      _acceptTerms = widget.campaignFormState!.acceptTerms;
+    }
+  }
+
+  Widget _buildSummaryRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(value),
+        ],
+      ),
+    );
+  }
+
+  void _notifyChanges() {
+    widget.onContractDetailsChanged(
+      _selectedPostTypes,
+      _selectedDate,
+      _guidelinesController.text,
+      _confirmDetails,
+      _acceptTerms,
+    );
+  }
+
+  void _pickDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 7)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
             ),
           ),
-        ),
-        const SizedBox(height: 15),
-
-        // Budget Input with Currency Selection
-        const Text(
-          'Budget',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        Row(
-          children: [
-            Expanded(
-              child: ShadInputFormField(
-                placeholder: const Text('Enter amount'),
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  setState(() {
-                  });
-                },
-              ),
-            ),
-            const SizedBox(width: 10),
-            DropdownButton<String>(
-              value: _currency,
-              underline: Container(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _currency = newValue!;
-                });
-              },
-              items: <String>['USD', 'EUR', 'GBP', 'INR']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-
-        // Additional Requirements Input
-        const Text(
-          'Content Guidelines',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        ShadInputFormField(
-          placeholder: const Text('Enter any additional requirements'),
-          maxLines: 3,
-        ),
-        const SizedBox(height: 15),
-
-        // Terms and Conditions
-        const Text(
-          'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
-          style: TextStyle(color: Colors.grey, fontSize: 14),
-        ),
-        const SizedBox(height: 8),
-
-        // Confirmation Checkboxes using ShadCheckbox
-        const SizedBox(height: 5),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ShadCheckbox(
-              value: _confirmDetails,
-              onChanged: (value) {
-                setState(() {
-                  _confirmDetails = value;
-                });
-              },
-              label: const Text('I confirm all details are correct'),
-            ),
-            const SizedBox(height: 5),
-            ShadCheckbox(
-              value: _acceptTerms,
-              onChanged: (value) {
-                setState(() {
-                  _acceptTerms = value;
-                });
-              },
-              label: const Text('I accept all terms and conditions'),
-            ),
-          ],
-        ),
-      ],
+          child: child!,
+        );
+      },
     );
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+        _notifyChanges();
+      });
+    }
   }
 }

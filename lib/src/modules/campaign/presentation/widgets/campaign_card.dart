@@ -1,45 +1,95 @@
-
+import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/delete_confirmation_dialog.dart';
-import 'package:connectobia/src/modules/campaign/presentation/widgets/profile_avatar.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/status_badge.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:connectobia/src/shared/data/constants/screens.dart';
 
 class CampaignCard extends StatelessWidget {
-  const CampaignCard({super.key});
+  final Campaign? campaign;
+  final VoidCallback onDeleted;
+
+  const CampaignCard({
+    super.key,
+    required this.campaign,
+    required this.onDeleted,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // If campaign is null, show placeholder for skeleton loading
+    final title = campaign?.title ?? 'Campaign Title';
+    final description = campaign?.description ??
+        'Campaign description goes here with more details about the campaign.';
+    final status = campaign?.status ?? 'draft';
+    final budget = campaign?.budget ?? 0.0;
+    final startDate = campaign?.startDate ?? DateTime.now();
+    final endDate =
+        campaign?.endDate ?? DateTime.now().add(const Duration(days: 30));
+
+    // Format currency
+    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final formattedBudget = currencyFormat.format(budget);
+
+    // Format date
+    final dateFormat = DateFormat('MMM dd, yyyy');
+
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed(campaignDetails);
+        if (campaign != null) {
+          Navigator.of(context).pushNamed(
+            campaignDetails,
+            arguments: {'campaignId': campaign!.id},
+          );
+        }
       },
       child: ShadCard(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ Header (Campaign Title, Status & Menu)
+            // Header (Campaign Title, Status & Menu)
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Clean Pakistan',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    title,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                 ),
-                const StatusBadge(text: 'In Progress', color: Colors.blue),
+                StatusBadge(
+                  text: status.capitalizeFirst(),
+                  color: _getStatusColor(status),
+                ),
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, color: Colors.grey),
-                  onSelected: (value) {
+                  onSelected: (value) async {
                     if (value == 'edit') {
-                      Navigator.of(context).pushNamed(createCampaign);
-                    } else if (value == 'delete') {
-                      showDeleteConfirmationDialog(context, () {
-                      });
+                      Navigator.of(context).pushNamed(
+                        createCampaign,
+                        arguments: {'campaign': campaign},
+                      );
+                    } else if (value == 'delete' && campaign != null) {
+                      showDeleteConfirmationDialog(
+                        context,
+                        () async {
+                          try {
+                            await CampaignRepository.deleteCampaign(
+                                campaign!.id);
+                            onDeleted();
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error: $e')),
+                              );
+                            }
+                          }
+                        },
+                      );
                     }
                   },
                   itemBuilder: (BuildContext context) => [
@@ -56,44 +106,71 @@ class CampaignCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Design a clean and professional landing page for a finance app.',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              description,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
               overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            const SizedBox(height: 12),
-            const Row(
-              children: [
-                Text(
-                  'Price: ',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '2000 Rs',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
-                ),
-              ],
+              maxLines: 2,
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                const ProfileAvatar(imageUrl: 'https://via.placeholder.com/40'),
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: Text(
-                    'LifeBuoy',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                const Text(
+                  'Budget: ',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  formattedBudget,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Text(
+                  'Timeline: ',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '${dateFormat.format(startDate)} - ${dateFormat.format(endDate)}',
+                  style: const TextStyle(fontSize: 14),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  // Helper function to map status to color
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'draft':
+        return Colors.grey;
+      case 'active':
+        return Colors.green;
+      case 'assigned':
+        return Colors.blue;
+      case 'completed':
+        return Colors.purple;
+      case 'closed':
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
+    }
+  }
+}
+
+// Extension to capitalize first letter
+extension StringExtension on String {
+  String capitalizeFirst() {
+    if (isEmpty) return this;
+    return '${this[0].toUpperCase()}${substring(1)}';
   }
 }
