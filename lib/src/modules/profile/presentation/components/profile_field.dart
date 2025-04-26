@@ -238,6 +238,18 @@ class ProfileField extends StatelessWidget {
         _buildInfoCard(
           context,
           text: value,
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconBgColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: iconBgColor,
+              size: 20,
+            ),
+          ),
         ),
       ],
     );
