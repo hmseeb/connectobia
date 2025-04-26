@@ -112,41 +112,6 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
           ),
           const SizedBox(height: 20),
 
-          // Delivery Date Section
-          const Text(
-            'Content Delivery Date',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          ShadCard(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'When do you need the content delivered?',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () => _pickDate(context),
-                  child: AbsorbPointer(
-                    child: ShadInputFormField(
-                      placeholder: Text(
-                        _selectedDate == null
-                            ? 'Select a delivery date'
-                            : DateFormat('EEEE, MMM dd, yyyy')
-                                .format(_selectedDate!),
-                      ),
-                      suffix: const Icon(Icons.calendar_today),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-
           // Content Guidelines Section
           const Text(
             'Content Guidelines',
@@ -282,9 +247,13 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
   }
 
   void _notifyChanges() {
+    // Get the campaign end date to use as delivery date
+    final DateTime campaignEndDate = widget.campaignFormState?.endDate ??
+        DateTime.now().add(const Duration(days: 30));
+
     widget.onContractDetailsChanged(
       _selectedPostTypes,
-      _selectedDate,
+      campaignEndDate, // Use campaign end date instead of selectedDate
       _guidelinesController.text,
       _confirmDetails,
       _acceptTerms,

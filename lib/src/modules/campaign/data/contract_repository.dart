@@ -107,14 +107,18 @@ class ContractRepository {
           );
 
       if (resultList.items.isEmpty) {
+        debugPrint('No contract found for campaign: $campaignId');
         return null;
       }
 
-      return Contract.fromRecord(resultList.items.first);
+      final contract = Contract.fromRecord(resultList.items.first);
+      debugPrint(
+          'Found contract: ${contract.id} with status: ${contract.status}');
+      return contract;
     } catch (e) {
       debugPrint('Error fetching campaign contract: $e');
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
+      // Return null instead of throwing to prevent cascading errors
+      return null;
     }
   }
 

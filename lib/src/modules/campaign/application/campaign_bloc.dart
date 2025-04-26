@@ -224,9 +224,6 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         if (state.selectedPostTypes.isEmpty) {
           errors.add('Please select at least one post type');
         }
-        if (state.deliveryDate == null) {
-          errors.add('Please select a delivery date');
-        }
         if (!state.confirmDetails) {
           errors.add('You must confirm that all details are correct');
         }

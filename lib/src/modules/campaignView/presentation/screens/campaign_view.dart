@@ -78,6 +78,9 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 setState(() {
                   contract = state.contract;
                 });
+                if (contract == null) {
+                  debugPrint('No contract available for this campaign');
+                }
               } else if (state is ContractCreated) {
                 setState(() {
                   contract = state.contract;
