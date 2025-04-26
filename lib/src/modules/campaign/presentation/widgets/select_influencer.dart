@@ -390,15 +390,17 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+        color: isSelected
+            ? AppColors.primary.withOpacity(0.1)
+            : AppColors.background,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isSelected ? AppColors.primary : Colors.grey.shade300,
+          color: isSelected ? AppColors.primary : AppColors.border,
           width: isSelected ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: AppColors.textPrimary.withOpacity(0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -448,9 +450,10 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                           Expanded(
                             child: Text(
                               influencer.fullName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
+                                color: AppColors.textPrimary,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -469,8 +472,8 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                         children: [
                           Text(
                             '@${influencer.username}',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
                               fontSize: 14,
                             ),
                           ),
@@ -482,9 +485,9 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                               color: AppColors.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
+                            child: const Text(
                               '100k+ followers',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.primary,
@@ -499,14 +502,14 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
+                          color: AppColors.lightBackground,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           influencer.industry.capitalize(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade800,
+                            color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

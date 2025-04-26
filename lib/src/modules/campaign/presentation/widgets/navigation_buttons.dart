@@ -1,3 +1,4 @@
+import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -28,12 +29,14 @@ class NavigationButtons extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.arrow_back, size: 16),
+                    Icon(Icons.arrow_back,
+                        size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'Cancel',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -44,12 +47,14 @@ class NavigationButtons extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.arrow_back, size: 16),
+                    Icon(Icons.arrow_back,
+                        size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'Back',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -63,6 +68,8 @@ class NavigationButtons extends StatelessWidget {
           ),
           child: ShadButton(
             onPressed: onNext,
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.textLight,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
@@ -72,14 +79,14 @@ class NavigationButtons extends StatelessWidget {
                     isLastStep ? 'Submit Campaign' : 'Next',
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: AppColors.textLight,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
                     isLastStep ? Icons.check_circle : Icons.arrow_forward,
                     size: 16,
-                    color: Colors.white,
+                    color: AppColors.textLight,
                   ),
                 ],
               ),

@@ -13,7 +13,8 @@ AppBar transparentAppBar(
   String? title, {
   List<Widget>? actions,
   Widget? leading,
-  centerTitle = true,
+  bool centerTitle = true,
+  bool showBackButton = true,
   required BuildContext context,
 }) {
   ShadThemeData theme = ShadTheme.of(context);
@@ -25,5 +26,6 @@ AppBar transparentAppBar(
     title: Text(title ?? ''),
     actions: actions,
     leading: leading,
+    automaticallyImplyLeading: showBackButton,
   );
 }

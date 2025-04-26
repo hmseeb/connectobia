@@ -96,7 +96,11 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          appBar: transparentAppBar('Create Campaign', context: context),
+          appBar: transparentAppBar(
+            'Create Campaign',
+            context: context,
+            showBackButton: false,
+          ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -306,6 +310,27 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
     // For steps 2-3, validate current step through the bloc
     context.read<CampaignBloc>().add(ValidateCurrentStep(_currentStep));
+
+    // Force immediate validation for all steps before proceeding
+    final validationRequired = _currentStep == 2 || _currentStep == 3;
+
+    if (validationRequired) {
+      // For Step 2 (Goals)
+      if (_currentStep == 2 && formState.selectedGoals.isEmpty) {
+        setState(() {
+          _validationErrors = ['At least one campaign goal must be selected'];
+        });
+        return;
+      }
+
+      // For Step 3 (Influencer selection)
+      if (_currentStep == 3 && formState.selectedInfluencer == null) {
+        setState(() {
+          _validationErrors = ['Please select an influencer for your campaign'];
+        });
+        return;
+      }
+    }
 
     // Check if the step is valid after bloc validation
     if (!formState.isStepValid(_currentStep)) {

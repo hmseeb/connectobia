@@ -73,7 +73,8 @@ class _CampaignGoalsState extends State<CampaignGoals>
                     const Divider(height: 24),
                     const Text(
                       'Select the primary goals for your campaign:',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      style: TextStyle(
+                          fontSize: 14, color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 16),
 
@@ -119,18 +120,24 @@ class _CampaignGoalsState extends State<CampaignGoals>
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.lightbulb, color: Colors.amber),
+                        const Icon(Icons.lightbulb, color: AppColors.warning),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Tip',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Selecting clear goals helps us match you with the right influencers and measure your campaign success effectively.',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -180,13 +187,13 @@ class _CampaignGoalsState extends State<CampaignGoals>
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: _selectedGoals[id]! ? AppColors.primary : Colors.grey.shade300,
+          color: _selectedGoals[id]! ? AppColors.primary : AppColors.border,
           width: _selectedGoals[id]! ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(12),
         color: _selectedGoals[id]!
             ? AppColors.primary.withOpacity(0.1)
-            : Colors.white,
+            : AppColors.background,
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -224,7 +231,7 @@ class _CampaignGoalsState extends State<CampaignGoals>
                             size: 16,
                             color: _selectedGoals[id]!
                                 ? AppColors.primary
-                                : Colors.grey),
+                                : AppColors.textSecondary),
                         const SizedBox(width: 8),
                         Text(
                           label,
@@ -235,7 +242,7 @@ class _CampaignGoalsState extends State<CampaignGoals>
                                 : FontWeight.normal,
                             color: _selectedGoals[id]!
                                 ? AppColors.primary
-                                : Colors.black,
+                                : AppColors.textPrimary,
                           ),
                         ),
                       ],
@@ -247,7 +254,7 @@ class _CampaignGoalsState extends State<CampaignGoals>
                         sublabel,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey.shade600,
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ),

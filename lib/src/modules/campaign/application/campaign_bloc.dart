@@ -214,10 +214,10 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         break;
 
       case 3: // Influencer selection
-        // Make influencer selection optional - the brand can launch a public campaign without specific influencer
-        // if (state.selectedInfluencer == null) {
-        //   errors.add('Please select an influencer for your campaign');
-        // }
+        // Make influencer selection required for direct campaigns
+        if (state.selectedInfluencer == null) {
+          errors.add('Please select an influencer for your campaign');
+        }
         break;
 
       case 4: // Contract details

@@ -36,10 +36,10 @@ class CustomProgressIndicator extends StatelessWidget {
                             colors: [
                               isCompleted || isActive
                                   ? AppColors.primary
-                                  : const Color(0xFFE5E5E5),
+                                  : AppColors.divider,
                               isCompleted
                                   ? AppColors.primary
-                                  : const Color(0xFFE5E5E5),
+                                  : AppColors.divider,
                             ],
                           ),
                         ),
@@ -55,12 +55,12 @@ class CustomProgressIndicator extends StatelessWidget {
                       color: isActive
                           ? AppColors.primary
                           : (isCompleted
-                              ? Colors.white
-                              : const Color(0xFFE5E5E5)),
+                              ? AppColors.background
+                              : AppColors.divider),
                       border: Border.all(
                         color: isCompleted || isActive
                             ? AppColors.primary
-                            : Colors.transparent,
+                            : AppColors.divider,
                         width: 2,
                       ),
                       boxShadow: isActive
@@ -83,7 +83,9 @@ class CustomProgressIndicator extends StatelessWidget {
                           : Text(
                               '${index + 1}',
                               style: TextStyle(
-                                color: isActive ? Colors.white : Colors.grey,
+                                color: isActive
+                                    ? AppColors.background
+                                    : AppColors.textSecondary,
                                 fontWeight: isActive
                                     ? FontWeight.bold
                                     : FontWeight.normal,
@@ -102,10 +104,10 @@ class CustomProgressIndicator extends StatelessWidget {
                             colors: [
                               isCompleted
                                   ? AppColors.primary
-                                  : const Color(0xFFE5E5E5),
+                                  : AppColors.divider,
                               isCompleted && currentStep > index + 2
                                   ? AppColors.primary
-                                  : const Color(0xFFE5E5E5),
+                                  : AppColors.divider,
                             ],
                           ),
                         ),
@@ -133,7 +135,8 @@ class CustomProgressIndicator extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                    color: isActive ? AppColors.primary : Colors.grey,
+                    color:
+                        isActive ? AppColors.primary : AppColors.textSecondary,
                   ),
                 ),
               ),
