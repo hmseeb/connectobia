@@ -248,7 +248,7 @@ class ContractDetailsStep extends StatefulWidget {
 }
 
 class ContractDetailsStepState extends State<ContractDetailsStep> {
-  final List<String> _postTypes = ['Reel', 'Carousel', 'Post', 'Story'];
+  final List<String> _postTypes = ['reel', 'carousel', 'post', 'story'];
   List<String> _selectedPostTypes = [];
   bool _confirmDetails = false;
   bool _acceptTerms = false;
@@ -331,7 +331,8 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
                           _notifyChanges();
                         });
                       },
-                      label: Text(type),
+                      label:
+                          Text('${type[0].toUpperCase()}${type.substring(1)}'),
                     );
                   }).toList(),
                 ),
