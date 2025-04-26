@@ -5,6 +5,7 @@ import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProfileImage extends StatelessWidget {
   final String userId;
@@ -12,6 +13,7 @@ class ProfileImage extends StatelessWidget {
   final String banner;
   final String collectionId;
   final Function() onBackButtonPressed;
+  final Function()? onRefreshPressed; // Add refresh button callback
   final String? name; // Add optional name parameter
 
   const ProfileImage({
@@ -21,6 +23,7 @@ class ProfileImage extends StatelessWidget {
     required this.banner,
     required this.collectionId,
     required this.onBackButtonPressed,
+    this.onRefreshPressed,
     this.name,
   });
 
@@ -51,10 +54,13 @@ class ProfileImage extends StatelessWidget {
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
                 color: Colors.grey[200],
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: ShadColors.primary,
+                child: Skeletonizer(
+                  enabled: true,
+                  containersColor: Colors.grey[300],
+                  child: Container(
+                    width: double.infinity,
+                    height: 150,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -95,12 +101,15 @@ class ProfileImage extends StatelessWidget {
                           placeholder: (context, url) => CircleAvatar(
                             radius: 48,
                             backgroundColor: Colors.grey[200],
-                            child: Text(
-                              initials,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: ShadColors.primary,
+                            child: Skeletonizer(
+                              enabled: true,
+                              child: Container(
+                                width: 80,
+                                height: 80,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
                           ),
@@ -134,21 +143,50 @@ class ProfileImage extends StatelessWidget {
             ),
           ),
 
-          // Back button
+          // Back and refresh buttons
           BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, state) {
-              return Positioned(
-                top: 40,
-                left: 10,
-                child: Center(
-                  child: IconButton(
-                    onPressed: onBackButtonPressed,
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: ShadColors.disabled,
+              return Stack(
+                children: [
+                  // Back button
+                  Positioned(
+                    top: 40,
+                    left: 10,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                      child: IconButton(
+                        onPressed: onBackButtonPressed,
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+
+                  // Refresh button (only if callback provided)
+                  if (onRefreshPressed != null)
+                    Positioned(
+                      top: 40,
+                      right: 10,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                        child: IconButton(
+                          onPressed: onRefreshPressed,
+                          icon: const Icon(
+                            Icons.refresh,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
           ),

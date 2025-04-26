@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../modules/profile/data/favorites_repository.dart';
 import '../../../../../services/storage/pb.dart';
@@ -27,6 +28,7 @@ class FeatureHeartIcon extends StatefulWidget {
 class _FeatureHeartIconState extends State<FeatureHeartIcon> {
   bool _isFavorite = false;
   bool _isLoading = false;
+  double _iconScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -62,17 +64,39 @@ class _FeatureHeartIconState extends State<FeatureHeartIcon> {
                       ? SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: isDark ? ShadColors.light : ShadColors.dark,
+                          child: Skeletonizer(
+                            enabled: true,
+                            child: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
                           ),
                         )
-                      : Icon(
-                          _isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: _isFavorite
-                              ? Colors.red
-                              : (isDark ? ShadColors.light : ShadColors.dark),
-                          size: 24,
+                      : AnimatedScale(
+                          scale: _iconScale,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.elasticOut,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            transitionBuilder: (child, animation) =>
+                                ScaleTransition(scale: animation, child: child),
+                            child: Icon(
+                              _isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              key: ValueKey(_isFavorite),
+                              color: _isFavorite
+                                  ? Colors.red
+                                  : (isDark
+                                      ? ShadColors.light
+                                      : ShadColors.dark),
+                              size: 24,
+                            ),
+                          ),
                         ),
                 ),
               ),
@@ -141,6 +165,19 @@ class _FeatureHeartIconState extends State<FeatureHeartIcon> {
         setState(() {
           _isFavorite = isFavorite;
           _isLoading = false;
+        });
+
+        // Run animation
+        setState(() {
+          _iconScale = 1.4;
+        });
+
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            setState(() {
+              _iconScale = 1.0;
+            });
+          }
         });
 
         if (widget.onToggle != null) {

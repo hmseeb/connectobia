@@ -355,30 +355,22 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
         email?.isNotEmpty == true ? email! : "No email set";
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: !isLoading ? () => Navigator.pop(context) : () {},
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: _loadUserInfo,
-            tooltip: 'Refresh Profile',
-          ),
-        ],
-      ),
       floatingActionButton: widget.self
           ? FloatingActionButton.extended(
               onPressed: () {
                 // Show loading indicator
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Preparing to edit profile...'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
+                if (context.mounted) {
+                  try {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Preparing to edit profile...'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  } catch (e) {
+                    debugPrint('Error showing snackbar: $e');
+                  }
+                }
 
                 debugPrint('Edit Profile button pressed');
                 Object? user;
@@ -467,12 +459,18 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                   });
                 } catch (e) {
                   debugPrint('Error navigating to edit profile: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error opening profile editor: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  if (context.mounted) {
+                    try {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error opening profile editor: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    } catch (e) {
+                      debugPrint('Error showing error snackbar: $e');
+                    }
+                  }
                 }
               },
               icon: const Icon(Icons.edit),
@@ -569,6 +567,7 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                       name: displayName,
                       onBackButtonPressed:
                           !isLoading ? () => Navigator.pop(context) : () {},
+                      onRefreshPressed: !isLoading ? _loadUserInfo : null,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -581,26 +580,6 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                             username: displayUsername,
                             isVerified: isVerified,
                             hasConnectedInstagram: connectedSocial,
-                          ),
-
-                          // Add email display
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 4.0),
-                            child: Row(
-                              children: [
-                                Icon(Icons.email,
-                                    size: 18, color: Colors.grey.shade600),
-                                const SizedBox(width: 8),
-                                Text(
-                                  displayEmail,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade700,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
 
                           // Show Connect Instagram button for influencers viewing their own profile
@@ -687,22 +666,32 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                                               );
                                             }
 
-                                            ShadToaster.of(context).show(
-                                              ShadToast(
-                                                title: const Text(
-                                                    'Instagram connected successfully'),
-                                              ),
-                                            );
+                                            try {
+                                              ShadToaster.of(context).show(
+                                                ShadToast(
+                                                  title: const Text(
+                                                      'Instagram connected successfully'),
+                                                ),
+                                              );
+                                            } catch (e) {
+                                              debugPrint(
+                                                  'Error showing toaster: $e');
+                                            }
                                           } else if (state
                                               is ConnectingInstagramFailure) {
-                                            ShadToaster.of(context).show(
-                                              ShadToast.destructive(
-                                                title: const Text(
-                                                    'Failed to connect Instagram'),
-                                                description:
-                                                    Text(state.message),
-                                              ),
-                                            );
+                                            try {
+                                              ShadToaster.of(context).show(
+                                                ShadToast.destructive(
+                                                  title: const Text(
+                                                      'Failed to connect Instagram'),
+                                                  description:
+                                                      Text(state.message),
+                                                ),
+                                              );
+                                            } catch (e) {
+                                              debugPrint(
+                                                  'Error showing error toaster: $e');
+                                            }
                                           }
                                         },
                                         builder: (context, state) {
