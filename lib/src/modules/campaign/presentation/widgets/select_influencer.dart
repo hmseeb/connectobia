@@ -57,209 +57,227 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
 
           // Search Bar with Card
           ShadCard(
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: ShadInputFormField(
-                controller: searchController,
-                placeholder:
-                    const Text('Search influencers by name or username...'),
-                prefix: const Icon(Icons.search, color: AppColors.primary),
-                onChanged: (query) {
-                  setState(() {
-                    searchQuery = query;
-                  });
-                },
-                suffix: searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear,
-                            color: AppColors.textSecondary),
-                        onPressed: () {
-                          searchController.clear();
-                          setState(() {
-                            searchQuery = '';
-                          });
-                        },
-                      )
-                    : null,
-              ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Search Influencers',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ShadInputFormField(
+                  controller: searchController,
+                  placeholder:
+                      const Text('Search influencers by name or username...'),
+                  prefix: const Icon(Icons.search, color: AppColors.primary),
+                  onChanged: (query) {
+                    setState(() {
+                      searchQuery = query;
+                    });
+                  },
+                  suffix: searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear,
+                              color: AppColors.textSecondary),
+                          onPressed: () {
+                            searchController.clear();
+                            setState(() {
+                              searchQuery = '';
+                            });
+                          },
+                        )
+                      : null,
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
 
-          // Available Influencers Header
-          Row(
-            children: [
-              const Icon(Icons.people, color: AppColors.primary),
-              const SizedBox(width: 8),
-              const Text(
-                'Available Influencers',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 10),
-              if (!_isLoading && _errorMessage == null)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${filteredInfluencers.length} found',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              const Spacer(),
-              if (!_isLoading && filteredInfluencers.isNotEmpty)
-                ShadButton.secondary(
-                  onPressed: _loadInfluencers,
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.refresh, size: 16),
-                      SizedBox(width: 4),
-                      Text('Refresh'),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // Available Influencers List
+          // Available Influencers Header and List
           ShadCard(
-            child: Container(
-              height: 280,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: _isLoading
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator(color: AppColors.primary))
-                  : _errorMessage != null
-                      ? _buildErrorState()
-                      : filteredInfluencers.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.builder(
-                              itemCount: filteredInfluencers.length,
-                              shrinkWrap: false,
-                              itemBuilder: (context, index) {
-                                final influencer = filteredInfluencers[index];
-                                final isSelected = _selectedInfluencers
-                                    .contains(influencer.id);
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.people, color: AppColors.primary),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Available Influencers',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 10),
+                    if (!_isLoading && _errorMessage == null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${filteredInfluencers.length} found',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    const Spacer(),
+                    if (!_isLoading && filteredInfluencers.isNotEmpty)
+                      IconButton(
+                        icon:
+                            const Icon(Icons.refresh, color: AppColors.primary),
+                        tooltip: 'Refresh',
+                        onPressed: _loadInfluencers,
+                      ),
+                  ],
+                ),
+                Container(
+                  height: 250,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                              color: AppColors.primary))
+                      : _errorMessage != null
+                          ? _buildErrorState()
+                          : filteredInfluencers.isEmpty
+                              ? _buildEmptyState()
+                              : ListView.builder(
+                                  itemCount: filteredInfluencers.length,
+                                  shrinkWrap: false,
+                                  itemBuilder: (context, index) {
+                                    final influencer =
+                                        filteredInfluencers[index];
+                                    final isSelected = _selectedInfluencers
+                                        .contains(influencer.id);
 
-                                return _buildInfluencerCard(
-                                    influencer, isSelected);
-                              },
-                            ),
+                                    return _buildInfluencerCard(
+                                        influencer, isSelected);
+                                  },
+                                ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // Selected Influencers Header
-          Row(
-            children: [
-              const Icon(Icons.check_circle, color: AppColors.success),
-              const SizedBox(width: 8),
-              const Text(
-                'Selected Influencer',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // Selected Influencers Card
+          // Selected Influencer Card
           ShadCard(
-            child: Container(
-              height: 83,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: _selectedInfluencers.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.person_add_alt_1,
-                              color: AppColors.textSecondary.withOpacity(0.5),
-                              size: 28),
-                          const SizedBox(height: 4),
-                          Text(
-                            'No influencer selected',
-                            style: TextStyle(
-                              color: AppColors.textSecondary.withOpacity(0.7),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: _selectedInfluencers.length,
-                      itemBuilder: (context, index) {
-                        final influencerId = _selectedInfluencers[index];
-                        final influencer = _influencers.firstWhere(
-                          (inf) => inf.id == influencerId,
-                          orElse: () => Influencer(
-                            collectionId: '',
-                            collectionName: '',
-                            id: '',
-                            email: '',
-                            avatar: '',
-                            banner: '',
-                            emailVisibility: false,
-                            verified: false,
-                            fullName: 'Unknown',
-                            username: 'unknown',
-                            connectedSocial: false,
-                            onboarded: false,
-                            industry: '',
-                            profile: '',
-                            created: DateTime.now(),
-                            updated: DateTime.now(),
-                          ),
-                        );
-
-                        return ListTile(
-                          leading: Hero(
-                            tag: 'influencer-${influencer.id}',
-                            child: CircleAvatar(
-                              backgroundColor:
-                                  AppColors.primary.withOpacity(0.1),
-                              backgroundImage: CachedNetworkImageProvider(
-                                Avatar.getUserImage(
-                                  collectionId: influencer.collectionId,
-                                  image: '',
-                                  recordId: influencer.id,
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: AppColors.success),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Selected Influencer',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Container(
+                  height: 83,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: _selectedInfluencers.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.person_add_alt_1,
+                                  color:
+                                      AppColors.textSecondary.withOpacity(0.5),
+                                  size: 28),
+                              const SizedBox(height: 4),
+                              Text(
+                                'No influencer selected',
+                                style: TextStyle(
+                                  color:
+                                      AppColors.textSecondary.withOpacity(0.7),
+                                  fontSize: 14,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          title: Text(
-                            influencer.fullName,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            '@${influencer.username} | ${influencer.industry} | 100k+ followers',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 12,
-                            ),
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.remove_circle,
-                                color: AppColors.error),
-                            onPressed: () =>
-                                _toggleInfluencerSelection(influencerId),
-                          ),
-                        );
-                      },
-                    ),
+                        )
+                      : ListView.builder(
+                          itemCount: _selectedInfluencers.length,
+                          itemBuilder: (context, index) {
+                            final influencerId = _selectedInfluencers[index];
+                            final influencer = _influencers.firstWhere(
+                              (inf) => inf.id == influencerId,
+                              orElse: () => Influencer(
+                                collectionId: '',
+                                collectionName: '',
+                                id: '',
+                                email: '',
+                                avatar: '',
+                                banner: '',
+                                emailVisibility: false,
+                                verified: false,
+                                fullName: 'Unknown',
+                                username: 'unknown',
+                                connectedSocial: false,
+                                onboarded: false,
+                                industry: '',
+                                profile: '',
+                                created: DateTime.now(),
+                                updated: DateTime.now(),
+                              ),
+                            );
+
+                            return ListTile(
+                              leading: Hero(
+                                tag: 'influencer-${influencer.id}',
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      AppColors.primary.withOpacity(0.1),
+                                  backgroundImage: CachedNetworkImageProvider(
+                                    Avatar.getUserImage(
+                                      collectionId: influencer.collectionId,
+                                      image: '',
+                                      recordId: influencer.id,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                influencer.fullName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                '@${influencer.username} | ${influencer.industry} | 100k+ followers',
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.remove_circle,
+                                    color: AppColors.error),
+                                onPressed: () =>
+                                    _toggleInfluencerSelection(influencerId),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
           ),
         ],

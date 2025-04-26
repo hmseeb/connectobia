@@ -1,45 +1,146 @@
+import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomProgressIndicator extends StatelessWidget {
   final int currentStep;
+  final int totalSteps;
+  final List<String> stepTitles;
 
-  const CustomProgressIndicator({super.key, required this.currentStep});
+  const CustomProgressIndicator({
+    super.key,
+    required this.currentStep,
+    this.totalSteps = 4,
+    this.stepTitles = const ['Campaign', 'Goals', 'Influencer', 'Contract'],
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (index) {
-        return Row(
-          children: [
-            // Step Circle
-            Container(
-              width: 30,
-              height: 25,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: currentStep > index ? Colors.deepOrange : Colors.grey[300],
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(totalSteps, (index) {
+            final isCompleted = currentStep > index + 1;
+            final isActive = currentStep == index + 1;
+
+            return Expanded(
+              child: Row(
+                children: [
+                  // First item doesn't need a line before it
+                  if (index > 0)
+                    Expanded(
+                      child: Container(
+                        height: 3,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              isCompleted || isActive
+                                  ? AppColors.primary
+                                  : const Color(0xFFE5E5E5),
+                              isCompleted
+                                  ? AppColors.primary
+                                  : const Color(0xFFE5E5E5),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  // Step Circle
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isActive
+                          ? AppColors.primary
+                          : (isCompleted
+                              ? Colors.white
+                              : const Color(0xFFE5E5E5)),
+                      border: Border.all(
+                        color: isCompleted || isActive
+                            ? AppColors.primary
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      boxShadow: isActive
+                          ? [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.3),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              )
+                            ]
+                          : null,
+                    ),
+                    child: Center(
+                      child: isCompleted
+                          ? const Icon(
+                              Icons.check,
+                              color: AppColors.primary,
+                              size: 18,
+                            )
+                          : Text(
+                              '${index + 1}',
+                              style: TextStyle(
+                                color: isActive ? Colors.white : Colors.grey,
+                                fontWeight: isActive
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                    ),
+                  ),
+
+                  // Line after the last item
+                  if (index < totalSteps - 1)
+                    Expanded(
+                      child: Container(
+                        height: 3,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              isCompleted
+                                  ? AppColors.primary
+                                  : const Color(0xFFE5E5E5),
+                              isCompleted && currentStep > index + 2
+                                  ? AppColors.primary
+                                  : const Color(0xFFE5E5E5),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              child: Center(
+            );
+          }),
+        ),
+
+        // Step titles
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(totalSteps, (index) {
+            final isActive = currentStep == index + 1;
+
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: Text(
-                  '${index + 1}',
+                  stepTitles[index],
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: currentStep > index ? Colors.white : Colors.grey,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                    color: isActive ? AppColors.primary : Colors.grey,
                   ),
                 ),
               ),
-            ),
-            // Line between steps (except for the last step)
-            if (index < 3)
-              Container(
-                width: 50,
-                height: 2,
-                color: currentStep > index + 1 ? Colors.deepOrange : Colors.grey[300],
-              ),
-          ],
-        );
-      }),
+            );
+          }),
+        ),
+      ],
     );
   }
 }

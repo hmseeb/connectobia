@@ -5,62 +5,87 @@ class NavigationButtons extends StatelessWidget {
   final int currentStep;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
-  final int totalSteps;
 
   const NavigationButtons({
     super.key,
     required this.currentStep,
     required this.onPrevious,
     required this.onNext,
-    this.totalSteps = 4, // Default to 4 steps for the campaign creation flow
   });
 
   @override
   Widget build(BuildContext context) {
-    final isFinalStep = currentStep == totalSteps;
+    final isFirstStep = currentStep == 1;
+    final isLastStep = currentStep == 4;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Keep space for Back button even when it's hidden
-        if (currentStep > 1)
-          ShadButton.secondary(
-            onPressed: onPrevious,
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.arrow_back, size: 16),
-                SizedBox(width: 4),
-                Text('Back'),
-              ],
-            ),
-          )
-        else
-          const SizedBox(width: 80), // Maintain space for hidden Back button
-
-        isFinalStep
-            ? ShadButton(
-                onPressed: onNext,
-                child: const Row(
+        // Back button
+        isFirstStep
+            ? ShadButton.outline(
+                onPressed: onPrevious,
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Create Campaign'),
-                    SizedBox(width: 4),
-                    Icon(Icons.check_circle_outline, size: 16),
+                    const Icon(Icons.arrow_back, size: 16),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
               )
-            : ShadButton.secondary(
-                onPressed: onNext,
-                child: const Row(
+            : ShadButton.outline(
+                onPressed: onPrevious,
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Next'),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 16),
+                    const Icon(Icons.arrow_back, size: 16),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Back',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
               ),
+
+        // Next/Submit button
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ShadButton(
+            onPressed: onNext,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    isLastStep ? 'Submit Campaign' : 'Next',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    isLastStep ? Icons.check_circle : Icons.arrow_forward,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

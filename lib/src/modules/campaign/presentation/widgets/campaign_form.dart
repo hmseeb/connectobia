@@ -58,182 +58,206 @@ class _CampaignFormCardState extends State<CampaignFormCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Campaign Name
-              _buildSectionHeader('Campaign Name'),
-              const SizedBox(height: 8),
               ShadCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ShadInputFormField(
-                        controller: widget.campaignNameController,
-                        placeholder: const Text('Enter campaign name'),
-                        onChanged: (_) =>
-                            setState(() => _showNameError = false),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Campaign Name',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
                       ),
-                      if (_showNameError)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0, left: 8.0),
-                          child: Text(
-                            'Campaign name is required',
-                            style: TextStyle(
-                              color: Colors.red[700],
-                              fontSize: 12,
-                            ),
+                    ),
+                    const SizedBox(height: 4),
+                    ShadInputFormField(
+                      controller: widget.campaignNameController,
+                      placeholder: const Text('Enter campaign name'),
+                      onChanged: (_) => setState(() => _showNameError = false),
+                    ),
+                    if (_showNameError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                        child: Text(
+                          'Campaign name is required',
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 12,
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(height: 20),
 
               // Campaign Category
-              _buildSectionHeader('Category'),
-              const SizedBox(height: 8),
               ShadCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: _isLoadingCategories
-                      ? const Center(
-                          child: CircularProgressIndicator(
-                              color: AppColors.primary))
-                      : _buildCategorySelector(),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Category',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    _isLoadingCategories
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                                color: AppColors.primary))
+                        : _buildCategorySelector(),
+                  ],
                 ),
               ),
               const SizedBox(height: 20),
 
               // Campaign Description
-              _buildSectionHeader('Campaign Description'),
-              const SizedBox(height: 8),
               ShadCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ShadInputFormField(
-                        controller: widget.campaignDescriptionController,
-                        placeholder:
-                            const Text('Describe what your campaign is about'),
-                        maxLines: 3,
-                        onChanged: (_) =>
-                            setState(() => _showDescriptionError = false),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Campaign Description',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
                       ),
-                      if (_showDescriptionError)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0, left: 8.0),
-                          child: Text(
-                            'Campaign description is required',
-                            style: TextStyle(
-                              color: Colors.red[700],
-                              fontSize: 12,
-                            ),
+                    ),
+                    const SizedBox(height: 4),
+                    ShadInputFormField(
+                      controller: widget.campaignDescriptionController,
+                      placeholder:
+                          const Text('Describe what your campaign is about'),
+                      maxLines: 3,
+                      onChanged: (_) =>
+                          setState(() => _showDescriptionError = false),
+                    ),
+                    if (_showDescriptionError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                        child: Text(
+                          'Campaign description is required',
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 12,
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
 
               const SizedBox(height: 20),
 
               // Budget
-              _buildSectionHeader('Budget'),
-              const SizedBox(height: 8),
               ShadCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ShadInputFormField(
-                        controller: _budgetController,
-                        placeholder: const Text('Enter campaign budget'),
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        prefix: const Text('\$',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        onChanged: (value) {
-                          setState(() => _showBudgetError = false);
-                          double? budget = double.tryParse(value);
-                          debugPrint(
-                              'Budget input changed: $value, parsed to: $budget');
-                          if (budget != null) {
-                            widget.onBudgetChanged(budget);
-                          }
-                        },
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Budget',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
                       ),
-                      if (_showBudgetError)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4.0, left: 8.0),
-                          child: Text(
-                            'Budget must be a number greater than 0',
-                            style: TextStyle(
-                              color: Colors.red[700],
-                              fontSize: 12,
-                            ),
+                    ),
+                    const SizedBox(height: 4),
+                    ShadInputFormField(
+                      controller: _budgetController,
+                      placeholder: const Text('Enter campaign budget'),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      prefix: const Text('\$',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      onChanged: (value) {
+                        setState(() => _showBudgetError = false);
+                        double? budget = double.tryParse(value);
+                        debugPrint(
+                            'Budget input changed: $value, parsed to: $budget');
+                        if (budget != null) {
+                          widget.onBudgetChanged(budget);
+                        }
+                      },
+                    ),
+                    if (_showBudgetError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                        child: Text(
+                          'Budget must be a number greater than 0',
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 12,
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
 
               const SizedBox(height: 20),
 
-              // Delivery dates
-              _buildSectionHeader('Campaign Dates'),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  // Start Date
-                  Expanded(
-                    child: ShadCard(
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: GestureDetector(
-                          onTap: () => _selectStartDate(context),
-                          child: AbsorbPointer(
-                            child: ShadInputFormField(
-                              controller: TextEditingController(
-                                text: DateAndTime.formatDate(
-                                    _startDate, 'MMM dd, yyyy'),
+              // Campaign Dates
+              ShadCard(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Campaign Dates',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        // Start Date
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectStartDate(context),
+                            child: AbsorbPointer(
+                              child: ShadInputFormField(
+                                controller: TextEditingController(
+                                  text: DateAndTime.formatDate(
+                                      _startDate, 'MMM dd, yyyy'),
+                                ),
+                                placeholder: const Text('Start date'),
+                                suffix:
+                                    const Icon(Icons.calendar_today, size: 18),
                               ),
-                              placeholder: const Text('Start date'),
-                              suffix:
-                                  const Icon(Icons.calendar_today, size: 18),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  // End Date
-                  Expanded(
-                    child: ShadCard(
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: GestureDetector(
-                          onTap: () => _selectEndDate(context),
-                          child: AbsorbPointer(
-                            child: ShadInputFormField(
-                              controller: TextEditingController(
-                                text: DateAndTime.formatDate(
-                                    _endDate, 'MMM dd, yyyy'),
+                        const SizedBox(width: 16),
+                        // End Date
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectEndDate(context),
+                            child: AbsorbPointer(
+                              child: ShadInputFormField(
+                                controller: TextEditingController(
+                                  text: DateAndTime.formatDate(
+                                      _endDate, 'MMM dd, yyyy'),
+                                ),
+                                placeholder: const Text('End date'),
+                                suffix:
+                                    const Icon(Icons.calendar_today, size: 18),
                               ),
-                              placeholder: const Text('End date'),
-                              suffix:
-                                  const Icon(Icons.calendar_today, size: 18),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -241,31 +265,29 @@ class _CampaignFormCardState extends State<CampaignFormCard>
               // Tips section
               ShadCard(
                 backgroundColor: AppColors.lightBackground.withOpacity(0.5),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.lightbulb, color: Colors.amber),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Campaign Tips',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                          '• Clear campaign goals help influencers understand your expectations'),
-                      const Text(
-                          '• Provide a reasonable budget for better proposals'),
-                      const Text(
-                          '• Give enough time for content creation and review'),
-                    ],
-                  ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.lightbulb, color: Colors.amber),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Campaign Tips',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                        '• Clear campaign goals help influencers understand your expectations'),
+                    const Text(
+                        '• Provide a reasonable budget for better proposals'),
+                    const Text(
+                        '• Give enough time for content creation and review'),
+                  ],
                 ),
               ),
 
@@ -385,13 +407,6 @@ class _CampaignFormCardState extends State<CampaignFormCard>
           ),
         );
       },
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
     );
   }
 

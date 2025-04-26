@@ -52,7 +52,7 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
 
           // Campaign Summary
           ShadCard(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,16 +71,16 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
           const SizedBox(height: 20),
 
           // Post Type Section
-          const Text(
-            'Content Format',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
           ShadCard(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  'Content Format',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
                 const Text(
                   'Select the type of content you want:',
                   style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -111,16 +111,16 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
           const SizedBox(height: 20),
 
           // Content Guidelines Section
-          const Text(
-            'Content Guidelines',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
           ShadCard(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  'Content Guidelines',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
                 const Text(
                   'Provide any specific requirements or instructions:',
                   style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -142,7 +142,7 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
 
           // Terms and Agreement
           ShadCard(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
