@@ -29,14 +29,13 @@ class NavigationButtons extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.arrow_back,
-                        size: 16, color: AppColors.textSecondary),
+                    Icon(Icons.arrow_back, size: 16, color: AppColors.error),
                     const SizedBox(width: 8),
                     Text(
                       'Cancel',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary,
+                        color: AppColors.error,
                       ),
                     ),
                   ],

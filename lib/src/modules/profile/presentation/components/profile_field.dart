@@ -63,47 +63,65 @@ class ProfileBioField extends StatelessWidget {
     );
   }
 
-  Widget _buildReadOnlyBioField(BuildContext context) {
-    // Clean HTML tags from the text and add debugging
-    debugPrint('Original bio value: "$value"');
-
-    String cleanText = value;
-    if (value.contains('<p>') || value.contains('</p>')) {
-      debugPrint('Removing HTML tags from bio');
-      cleanText = value.replaceAll('<p>', '').replaceAll('</p>', '');
-    }
-
-    debugPrint('Cleaned bio text: "$cleanText"');
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInfoCard(
+    BuildContext context, {
+    required String text,
+    Widget? leading,
+    bool isMultiline = false,
+  }) {
+    return ShadCard(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        crossAxisAlignment:
+            isMultiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? ShadColors.disabled
-                  : Colors.grey,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            cleanText.isEmpty ? 'No bio added yet' : cleanText,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: cleanText.isEmpty
-                  ? (Theme.of(context).brightness == Brightness.dark
-                      ? ShadColors.disabled
-                      : Colors.grey)
-                  : null,
+          if (leading != null) ...[
+            leading,
+            const SizedBox(width: 16),
+          ],
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+                color: text.isEmpty || text == 'No bio added yet'
+                    ? Colors.grey.shade400
+                    : Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildReadOnlyBioField(BuildContext context) {
+    // Clean HTML tags from the text
+    String cleanText = value;
+    if (value.contains('<p>') || value.contains('</p>')) {
+      cleanText = value.replaceAll('<p>', '').replaceAll('</p>', '');
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle(label),
+        const SizedBox(height: 8),
+        _buildInfoCard(
+          context,
+          text: cleanText.isEmpty ? 'No bio added yet' : cleanText,
+          isMultiline: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
     );
   }
 }
@@ -178,45 +196,71 @@ class ProfileField extends StatelessWidget {
     );
   }
 
-  Widget _buildReadOnlyField(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildInfoCard(
+    BuildContext context, {
+    required String text,
+    Widget? leading,
+    bool isMultiline = false,
+  }) {
+    return ShadCard(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        crossAxisAlignment:
+            isMultiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? ShadColors.disabled
-                  : Colors.grey,
-              fontSize: 14,
+          if (leading != null) ...[
+            leading,
+            const SizedBox(width: 16),
+          ],
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(
-                icon,
-                size: 18,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? ShadColors.disabled
-                    : Colors.grey,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildReadOnlyField(BuildContext context) {
+    // Get icon background color based on icon type
+    Color iconBgColor = _getIconBackgroundColor(icon);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle(label),
+        const SizedBox(height: 8),
+        _buildInfoCard(
+          context,
+          text: value,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+    );
+  }
+
+  Color _getIconBackgroundColor(IconData icon) {
+    if (icon == Icons.business) {
+      return Colors.red.shade400; // Brand name
+    } else if (icon == Icons.email) {
+      return Colors.red.shade400; // Email
+    } else if (icon == Icons.alternate_email) {
+      return Colors.purple.shade400; // Username
+    } else if (icon == Icons.category) {
+      return Colors.red.shade400; // Industry
+    } else {
+      return ShadColors.primary.withOpacity(0.8); // Default
+    }
   }
 }

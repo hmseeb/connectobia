@@ -174,9 +174,13 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
             updated: DateTime.now(),
           );
 
-          // Save the campaign to the backend
-          final createdCampaign =
-              await CampaignRepository.createCampaign(campaign);
+          // Save the campaign to the backend with contract details
+          final createdCampaign = await CampaignRepository.createCampaign(
+            campaign,
+            postTypes: formState.selectedPostTypes,
+            deliveryDate: formState.deliveryDate,
+            guidelines: formState.contentGuidelines,
+          );
           emit(CampaignCreated(createdCampaign));
         } catch (e) {
           debugPrint('Error creating campaign: $e');

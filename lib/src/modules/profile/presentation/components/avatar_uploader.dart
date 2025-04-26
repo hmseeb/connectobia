@@ -40,8 +40,8 @@ class AvatarUploader extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: ShadColors.primary,
-                  width: 2,
+                  color: Colors.red.shade400,
+                  width: 3,
                 ),
               ),
               child: CircleAvatar(
@@ -73,7 +73,7 @@ class AvatarUploader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: ShadColors.primary,
+                    color: Colors.red.shade400,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -131,8 +131,8 @@ class TemporaryAvatarUploader extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: ShadColors.primary,
-                width: 2,
+                color: Colors.red.shade400,
+                width: 3,
               ),
               image: image != null
                   ? DecorationImage(
@@ -157,7 +157,7 @@ class TemporaryAvatarUploader extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: ShadColors.primary,
+                  color: Colors.red.shade400,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

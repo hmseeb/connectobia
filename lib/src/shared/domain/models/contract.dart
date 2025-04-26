@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:pocketbase/pocketbase.dart';
 
 class Contract {
   final String id;
-  final String collectionId;
-  final String collectionName;
   final String campaign;
   final String brand;
   final String influencer;
@@ -13,16 +9,18 @@ class Contract {
   final DateTime deliveryDate;
   final double payout;
   final String terms;
+  final String guidelines;
   final bool isSignedByBrand;
   final bool isSignedByInfluencer;
-  final String status;
-  final DateTime created;
-  final DateTime updated;
+  final String status; // pending, signed, rejected, completed
+
+  // Optional expanded records
+  final dynamic campaignRecord;
+  final dynamic brandRecord;
+  final dynamic influencerRecord;
 
   Contract({
     required this.id,
-    required this.collectionId,
-    required this.collectionName,
     required this.campaign,
     required this.brand,
     required this.influencer,
@@ -30,51 +28,47 @@ class Contract {
     required this.deliveryDate,
     required this.payout,
     required this.terms,
+    this.guidelines = '',
     required this.isSignedByBrand,
     required this.isSignedByInfluencer,
     required this.status,
-    required this.created,
-    required this.updated,
+    this.campaignRecord,
+    this.brandRecord,
+    this.influencerRecord,
   });
 
-  factory Contract.fromJson(Map<String, dynamic> json) {
+  factory Contract.fromRecord(RecordModel record) {
+    final List<dynamic> postTypeList = record.data['post_type'] ?? [];
+
+    // Parse date safely
+    DateTime deliveryDate;
+    try {
+      deliveryDate = DateTime.parse(record.data['delivery_date']);
+    } catch (e) {
+      deliveryDate = DateTime.now().add(const Duration(days: 7));
+    }
+
     return Contract(
-      id: json["id"],
-      collectionId: json["collectionId"],
-      collectionName: json["collectionName"],
-      campaign: json["campaign"],
-      brand: json["brand"],
-      influencer: json["influencer"],
-      postType: json["post_type"] != null
-          ? List<String>.from(json["post_type"])
-          : ["post"],
-      deliveryDate: json["delivery_date"] != null
-          ? DateTime.parse(json["delivery_date"])
-          : DateTime.now().add(const Duration(days: 14)),
-      payout: json["payout"] != null
-          ? (json["payout"] is int
-              ? (json["payout"] as int).toDouble()
-              : json["payout"] as double)
-          : 0.0,
-      terms: json["terms"] ?? "",
-      isSignedByBrand: json["is_signed_by_brand"] ?? false,
-      isSignedByInfluencer: json["is_signed_by_influencer"] ?? false,
-      status: json["status"] ?? "pending",
-      created: DateTime.parse(json["created"]),
-      updated: DateTime.parse(json["updated"]),
+      id: record.id,
+      campaign: record.data['campaign'] ?? '',
+      brand: record.data['brand'] ?? '',
+      influencer: record.data['influencer'] ?? '',
+      postType: postTypeList.map((item) => item.toString()).toList(),
+      deliveryDate: deliveryDate,
+      payout: (record.data['payout'] ?? 0).toDouble(),
+      terms: record.data['terms'] ?? '',
+      guidelines: record.data['guidelines'] ?? '',
+      isSignedByBrand: record.data['is_signed_by_brand'] ?? false,
+      isSignedByInfluencer: record.data['is_signed_by_influencer'] ?? false,
+      status: record.data['status'] ?? 'pending',
+      campaignRecord: record.expand['campaign'],
+      brandRecord: record.expand['brand'],
+      influencerRecord: record.expand['influencer'],
     );
   }
 
-  factory Contract.fromRawJson(String str) =>
-      Contract.fromJson(json.decode(str));
-
-  factory Contract.fromRecord(RecordModel record) =>
-      Contract.fromJson(record.toJson());
-
   Contract copyWith({
     String? id,
-    String? collectionId,
-    String? collectionName,
     String? campaign,
     String? brand,
     String? influencer,
@@ -82,60 +76,46 @@ class Contract {
     DateTime? deliveryDate,
     double? payout,
     String? terms,
+    String? guidelines,
     bool? isSignedByBrand,
     bool? isSignedByInfluencer,
     String? status,
-    DateTime? created,
-    DateTime? updated,
-  }) =>
-      Contract(
-        id: id ?? this.id,
-        collectionId: collectionId ?? this.collectionId,
-        collectionName: collectionName ?? this.collectionName,
-        campaign: campaign ?? this.campaign,
-        brand: brand ?? this.brand,
-        influencer: influencer ?? this.influencer,
-        postType: postType ?? this.postType,
-        deliveryDate: deliveryDate ?? this.deliveryDate,
-        payout: payout ?? this.payout,
-        terms: terms ?? this.terms,
-        isSignedByBrand: isSignedByBrand ?? this.isSignedByBrand,
-        isSignedByInfluencer: isSignedByInfluencer ?? this.isSignedByInfluencer,
-        status: status ?? this.status,
-        created: created ?? this.created,
-        updated: updated ?? this.updated,
-      );
+    dynamic campaignRecord,
+    dynamic brandRecord,
+    dynamic influencerRecord,
+  }) {
+    return Contract(
+      id: id ?? this.id,
+      campaign: campaign ?? this.campaign,
+      brand: brand ?? this.brand,
+      influencer: influencer ?? this.influencer,
+      postType: postType ?? this.postType,
+      deliveryDate: deliveryDate ?? this.deliveryDate,
+      payout: payout ?? this.payout,
+      terms: terms ?? this.terms,
+      guidelines: guidelines ?? this.guidelines,
+      isSignedByBrand: isSignedByBrand ?? this.isSignedByBrand,
+      isSignedByInfluencer: isSignedByInfluencer ?? this.isSignedByInfluencer,
+      status: status ?? this.status,
+      campaignRecord: campaignRecord ?? this.campaignRecord,
+      brandRecord: brandRecord ?? this.brandRecord,
+      influencerRecord: influencerRecord ?? this.influencerRecord,
+    );
+  }
 
-  Map<String, dynamic> toCreateJson() => {
-        "campaign": campaign,
-        "brand": brand,
-        "influencer": influencer,
-        "post_type": postType,
-        "delivery_date": deliveryDate.toIso8601String(),
-        "payout": payout,
-        "terms": terms,
-        "is_signed_by_brand": isSignedByBrand,
-        "is_signed_by_influencer": isSignedByInfluencer,
-        "status": status,
-      };
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "collectionId": collectionId,
-        "collectionName": collectionName,
-        "campaign": campaign,
-        "brand": brand,
-        "influencer": influencer,
-        "post_type": postType,
-        "delivery_date": deliveryDate.toIso8601String(),
-        "payout": payout,
-        "terms": terms,
-        "is_signed_by_brand": isSignedByBrand,
-        "is_signed_by_influencer": isSignedByInfluencer,
-        "status": status,
-        "created": created.toIso8601String(),
-        "updated": updated.toIso8601String(),
-      };
-
-  String toRawJson() => json.encode(toJson());
+  Map<String, dynamic> toJson() {
+    return {
+      'campaign': campaign,
+      'brand': brand,
+      'influencer': influencer,
+      'post_type': postType,
+      'delivery_date': deliveryDate.toIso8601String(),
+      'payout': payout,
+      'terms': terms,
+      'guidelines': guidelines,
+      'is_signed_by_brand': isSignedByBrand,
+      'is_signed_by_influencer': isSignedByInfluencer,
+      'status': status,
+    };
+  }
 }

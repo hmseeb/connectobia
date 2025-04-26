@@ -53,7 +53,7 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
       emit(ContractsLoading());
       try {
         final contract =
-            await ContractRepository.getContractForCampaign(event.campaignId);
+            await ContractRepository.getContractByCampaignId(event.campaignId);
         emit(CampaignContractLoaded(contract));
       } catch (e) {
         debugPrint('Error loading campaign contract: $e');
@@ -66,15 +66,24 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
     on<CreateContract>((event, emit) async {
       emit(ContractsLoading());
       try {
-        final contract = await ContractRepository.createContract(
-          event.campaignId,
-          event.influencerId,
-          event.postTypes,
-          event.deliveryDate,
-          event.payout,
-          event.terms,
+        // Create a Contract object from the event data
+        final contract = Contract(
+          id: '', // Will be set by database
+          campaign: event.campaignId,
+          brand: event.brandId,
+          influencer: event.influencerId,
+          postType: event.postTypes,
+          deliveryDate: event.deliveryDate,
+          payout: event.payout,
+          terms: event.terms,
+          isSignedByBrand: true,
+          isSignedByInfluencer: false,
+          status: 'pending',
         );
-        emit(ContractCreated(contract));
+
+        final createdContract =
+            await ContractRepository.createContract(contract);
+        emit(ContractCreated(createdContract));
       } catch (e) {
         debugPrint('Error creating contract: $e');
         final errorRepo = ErrorRepository();
@@ -87,7 +96,7 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
       emit(ContractsLoading());
       try {
         final contract =
-            await ContractRepository.signContractByInfluencer(event.contractId);
+            await ContractRepository.signByInfluencer(event.contractId);
         emit(ContractSigned(contract));
       } catch (e) {
         debugPrint('Error signing contract: $e');
@@ -101,7 +110,7 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
       emit(ContractsLoading());
       try {
         final contract =
-            await ContractRepository.rejectContract(event.contractId);
+            await ContractRepository.rejectByInfluencer(event.contractId);
         emit(ContractRejected(contract));
       } catch (e) {
         debugPrint('Error rejecting contract: $e');
@@ -114,8 +123,8 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
     on<CompleteContract>((event, emit) async {
       emit(ContractsLoading());
       try {
-        final contract =
-            await ContractRepository.completeContract(event.contractId);
+        final contract = await ContractRepository.updateStatus(
+            event.contractId, 'completed');
         emit(ContractCompleted(contract));
       } catch (e) {
         debugPrint('Error completing contract: $e');
@@ -163,6 +172,7 @@ abstract class ContractState {}
 
 class CreateContract extends ContractEvent {
   final String campaignId;
+  final String brandId;
   final String influencerId;
   final List<String> postTypes;
   final DateTime deliveryDate;
@@ -171,6 +181,7 @@ class CreateContract extends ContractEvent {
 
   CreateContract({
     required this.campaignId,
+    required this.brandId,
     required this.influencerId,
     required this.postTypes,
     required this.deliveryDate,

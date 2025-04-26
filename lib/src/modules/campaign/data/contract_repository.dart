@@ -6,60 +6,95 @@ import 'package:flutter/material.dart';
 class ContractRepository {
   static const String _collectionName = 'contracts';
 
-  /// Mark contract as completed (by brand)
-  static Future<Contract> completeContract(String contractId) async {
+  /// Create a new contract associated with a campaign
+  static Future<Contract> createContract(Contract contract) async {
     try {
       final pb = await PocketBaseSingleton.instance;
 
-      final record = await pb.collection(_collectionName).update(
-        contractId,
-        body: {"status": "completed"},
+      debugPrint(
+          'ContractRepository: Creating contract for campaign ${contract.campaign}');
+
+      // Create the contract with brand signature already set to true
+      final body = contract
+          .copyWith(
+            isSignedByBrand: true,
+            isSignedByInfluencer: false,
+            status: 'pending',
+          )
+          .toJson();
+
+      debugPrint('ContractRepository: Contract request body: $body');
+
+      try {
+        final record = await pb.collection(_collectionName).create(body: body);
+        debugPrint(
+            'ContractRepository: Contract created with ID: ${record.id}');
+        return Contract.fromRecord(record);
+      } catch (e) {
+        debugPrint(
+            'ContractRepository: PocketBase error creating contract: $e');
+        if (e.toString().contains('Failed to convert')) {
+          debugPrint(
+              'ContractRepository: This may be a data type mismatch. Check the field types.');
+        }
+        rethrow;
+      }
+    } catch (e) {
+      debugPrint('ContractRepository: Error creating contract: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Test function to create a contract with explicit values
+  static Future<Contract?> createTestContract(
+    String campaignId,
+    String brandId,
+    String influencerId, {
+    String? guidelines,
+  }) async {
+    try {
+      debugPrint('Creating TEST contract for debugging purposes');
+      debugPrint('Campaign ID: $campaignId');
+      debugPrint('Brand ID: $brandId');
+      debugPrint('Influencer ID: $influencerId');
+
+      // Create a test contract with predefined values
+      final testContract = Contract(
+        id: '', // Will be set by the database
+        campaign: campaignId,
+        brand: brandId,
+        influencer: influencerId,
+        postType: ['post', 'story'],
+        deliveryDate: DateTime.now().add(const Duration(days: 14)),
+        payout: 500.0,
+        terms: 'Test terms for debugging purposes',
+        guidelines: guidelines ?? 'Test content guidelines for debugging',
+        isSignedByBrand: true,
+        isSignedByInfluencer: false,
+        status: 'pending',
       );
 
-      return Contract.fromRecord(record);
+      // Log the test contract JSON for debugging
+      debugPrint('TEST Contract JSON: ${testContract.toJson()}');
+
+      // Create the contract
+      try {
+        final createdContract = await createContract(testContract);
+        debugPrint(
+            'TEST Contract created successfully! ID: ${createdContract.id}');
+        return createdContract;
+      } catch (e) {
+        debugPrint('Error creating TEST contract: $e');
+        return null;
+      }
     } catch (e) {
-      debugPrint('Error completing contract: $e');
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
+      debugPrint('Unexpected error in createTestContract: $e');
+      return null;
     }
   }
 
-  /// Create a new contract after a collaboration is accepted
-  static Future<Contract> createContract(
-    String campaignId,
-    String influencerId,
-    List<String> postTypes,
-    DateTime deliveryDate,
-    double payout,
-    String terms,
-  ) async {
-    try {
-      final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.record!.id;
-
-      final body = {
-        "campaign": campaignId,
-        "brand": userId,
-        "influencer": influencerId,
-        "post_type": postTypes,
-        "delivery_date": deliveryDate.toIso8601String(),
-        "payout": payout,
-        "terms": terms,
-        "is_signed_by_brand": true, // Brand creates and signs initially
-        "is_signed_by_influencer": false,
-        "status": "pending", // Pending until influencer signs
-      };
-
-      final record = await pb.collection(_collectionName).create(body: body);
-      return Contract.fromRecord(record);
-    } catch (e) {
-      debugPrint('Error creating contract: $e');
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
-    }
-  }
-
-  /// Get contracts for brand
+  /// Get all contracts for a brand
   static Future<List<Contract>> getBrandContracts() async {
     try {
       final pb = await PocketBaseSingleton.instance;
@@ -68,35 +103,21 @@ class ContractRepository {
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 50,
+            expand: 'campaign,influencer,brand',
             filter: 'brand = "$userId"',
-            expand: 'campaign,influencer', // Expand related records
           );
 
-      return resultList.items
-          .map((record) => Contract.fromRecord(record))
-          .toList();
+      return resultList.items.map((record) {
+        return Contract.fromRecord(record);
+      }).toList();
     } catch (e) {
-      debugPrint('Error fetching brand contracts: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
   }
 
-  /// Get a contract by ID
-  static Future<Contract> getContractById(String contractId) async {
-    try {
-      final pb = await PocketBaseSingleton.instance;
-      final record = await pb.collection(_collectionName).getOne(contractId);
-      return Contract.fromRecord(record);
-    } catch (e) {
-      debugPrint('Error fetching contract: $e');
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
-    }
-  }
-
-  /// Get contract for a specific campaign
-  static Future<Contract?> getContractForCampaign(String campaignId) async {
+  /// Get contract by campaign ID
+  static Future<Contract?> getContractByCampaignId(String campaignId) async {
     try {
       final pb = await PocketBaseSingleton.instance;
 
@@ -107,22 +128,30 @@ class ContractRepository {
           );
 
       if (resultList.items.isEmpty) {
-        debugPrint('No contract found for campaign: $campaignId');
         return null;
       }
 
-      final contract = Contract.fromRecord(resultList.items.first);
-      debugPrint(
-          'Found contract: ${contract.id} with status: ${contract.status}');
-      return contract;
+      return Contract.fromRecord(resultList.items.first);
     } catch (e) {
-      debugPrint('Error fetching campaign contract: $e');
-      // Return null instead of throwing to prevent cascading errors
-      return null;
+      debugPrint('Error getting contract by campaign ID: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
     }
   }
 
-  /// Get contracts for influencer
+  /// Get contract by ID
+  static Future<Contract> getContractById(String id) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final record = await pb.collection(_collectionName).getOne(id);
+      return Contract.fromRecord(record);
+    } catch (e) {
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Get all contracts for an influencer
   static Future<List<Contract>> getInfluencerContracts() async {
     try {
       final pb = await PocketBaseSingleton.instance;
@@ -131,55 +160,64 @@ class ContractRepository {
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 50,
+            expand: 'campaign,influencer,brand',
             filter: 'influencer = "$userId"',
-            expand: 'campaign,brand', // Expand related records
           );
 
-      return resultList.items
-          .map((record) => Contract.fromRecord(record))
-          .toList();
+      return resultList.items.map((record) {
+        return Contract.fromRecord(record);
+      }).toList();
     } catch (e) {
-      debugPrint('Error fetching influencer contracts: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
   }
 
-  /// Reject contract (by influencer)
-  static Future<Contract> rejectContract(String contractId) async {
+  /// Reject contract by influencer
+  static Future<Contract> rejectByInfluencer(String id) async {
     try {
       final pb = await PocketBaseSingleton.instance;
-
       final record = await pb.collection(_collectionName).update(
-        contractId,
-        body: {"status": "rejected"},
-      );
-
-      return Contract.fromRecord(record);
-    } catch (e) {
-      debugPrint('Error rejecting contract: $e');
-      ErrorRepository errorRepo = ErrorRepository();
-      throw errorRepo.handleError(e);
-    }
-  }
-
-  /// Sign contract (by influencer)
-  static Future<Contract> signContractByInfluencer(String contractId) async {
-    try {
-      final pb = await PocketBaseSingleton.instance;
-
-      final record = await pb.collection(_collectionName).update(
-        contractId,
+        id,
         body: {
-          "is_signed_by_influencer": true,
-          "status":
-              "signed", // Update status to signed when both parties have signed
+          'status': 'rejected',
         },
       );
-
       return Contract.fromRecord(record);
     } catch (e) {
-      debugPrint('Error signing contract by influencer: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Sign contract by influencer
+  static Future<Contract> signByInfluencer(String id) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final record = await pb.collection(_collectionName).update(
+        id,
+        body: {
+          'is_signed_by_influencer': true,
+          'status': 'signed',
+        },
+      );
+      return Contract.fromRecord(record);
+    } catch (e) {
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Update contract status
+  static Future<Contract> updateStatus(String id, String status) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final record = await pb.collection(_collectionName).update(
+        id,
+        body: {'status': status},
+      );
+      return Contract.fromRecord(record);
+    } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

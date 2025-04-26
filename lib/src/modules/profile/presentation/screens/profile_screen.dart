@@ -8,7 +8,6 @@ import '../../../../shared/domain/models/brand_profile.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
-import '../../../../theme/colors.dart';
 import '../../application/user/user_bloc.dart';
 import '../components/avatar_uploader.dart';
 import '../components/profile_field.dart';
@@ -67,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           });
           context.read<UserBloc>().add(FetchUser()); // Refresh user data
         },
-        backgroundColor: ShadColors.primary,
+        backgroundColor: Colors.red.shade400,
         foregroundColor: Colors.white,
         child: const Icon(Icons.edit),
       ),
@@ -161,86 +160,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
               size: 120,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
-          // Main user info section
-          _buildSection(
-            title: 'Personal Information',
-            children: [
-              ProfileField(
-                label: isBrand ? 'Brand Name' : 'Full Name',
-                value: name,
-                icon: Icons.business,
-                isEditable: false,
-              ),
-              ProfileField(
-                label: 'Email',
-                value: email,
-                icon: Icons.email,
-                isEditable: false,
-              ),
-              if (!isBrand)
-                ProfileField(
-                  label: 'Username',
-                  value: username,
-                  icon: Icons.alternate_email,
-                  isEditable: false,
-                ),
-              ProfileField(
-                label: 'Industry',
-                value: industry,
-                icon: Icons.category,
-                isEditable: false,
-              ),
-            ],
+          // Individual profile fields
+          ProfileField(
+            label: isBrand ? 'Brand Name' : 'Full Name',
+            value: name,
+            icon: Icons.business,
+            isEditable: false,
           ),
-
           const SizedBox(height: 16),
 
-          // Bio and additional info
-          _buildSection(
-            title: 'Bio',
-            children: [
-              Builder(builder: (context) {
-                String bioText = '';
-
-                // Get description directly from the profile data
-                if (_profileData != null) {
-                  if (_profileData is BrandProfile) {
-                    bioText = (_profileData as BrandProfile).description;
-                  } else if (_profileData is InfluencerProfile) {
-                    bioText = (_profileData as InfluencerProfile).description;
-                  }
-                }
-
-                return ProfileBioField(
-                  label: 'About',
-                  value: bioText,
-                  isEditable: false,
-                );
-              }),
-            ],
+          ProfileField(
+            label: 'Email',
+            value: email,
+            icon: Icons.email,
+            isEditable: false,
           ),
+          const SizedBox(height: 16),
+
+          if (!isBrand) ...[
+            ProfileField(
+              label: 'Username',
+              value: username,
+              icon: Icons.alternate_email,
+              isEditable: false,
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          ProfileField(
+            label: 'Industry',
+            value: industry,
+            icon: Icons.category,
+            isEditable: false,
+          ),
+          const SizedBox(height: 24),
+
+          // Bio field
+          Builder(builder: (context) {
+            String bioText = '';
+
+            // Get description directly from the profile data
+            if (_profileData != null) {
+              if (_profileData is BrandProfile) {
+                bioText = (_profileData as BrandProfile).description;
+              } else if (_profileData is InfluencerProfile) {
+                bioText = (_profileData as InfluencerProfile).description;
+              }
+            }
+
+            return ProfileBioField(
+              label: 'About',
+              value: bioText,
+              isEditable: false,
+            );
+          }),
         ],
       ),
-    );
-  }
-
-  Widget _buildSection(
-      {required String title, required List<Widget> children}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ...children,
-      ],
     );
   }
 
