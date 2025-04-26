@@ -14,6 +14,7 @@
 library;
 
 import 'package:connectobia/src/app.dart';
+import 'package:connectobia/src/modules/admin/presentation/screens/admin_dispute_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/brand_signup_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/influencer_signup_screen.dart';
 import 'package:connectobia/src/modules/auth/presentation/screens/login_screen.dart';
@@ -114,6 +115,8 @@ class GenerateRoutes {
        case '/editProfile':
   return _buildRoute(EditProfileScreen());
 
+  case '/adminDisputePanel':
+  return _buildRoute(const AdminDisputePanel());
 
       default:
         return _buildRoute(WelcomeScreen());
