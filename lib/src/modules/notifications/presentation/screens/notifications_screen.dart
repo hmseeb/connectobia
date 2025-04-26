@@ -135,8 +135,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     Color iconColor;
 
     switch (notification.type) {
-      case 'message':
-        icon = Icons.message;
+      case 'system':
+        icon = Icons.notifications;
         iconColor = Colors.blue;
         break;
       case 'campaign':
@@ -147,12 +147,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         icon = Icons.description;
         iconColor = Colors.orange;
         break;
-      case 'contract_signed':
-        icon = Icons.fact_check;
+      case 'content':
+        icon = Icons.content_paste;
         iconColor = Colors.purple;
         break;
-      case 'contract_completed':
-        icon = Icons.check_circle;
+      case 'payment':
+        icon = Icons.payment;
         iconColor = Colors.teal;
         break;
       default:

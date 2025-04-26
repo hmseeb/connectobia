@@ -41,10 +41,9 @@ class CampaignCard extends StatelessWidget {
     final endDate =
         campaign?.endDate ?? DateTime.now().add(const Duration(days: 30));
 
-    // Format currency with dynamic locale
-    final locale = Localizations.localeOf(context).toString();
+    // Format currency with PKR
     final formattedBudget =
-        NumberFormat.currency(locale: locale, symbol: '\$').format(budget);
+        NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0).format(budget);
     final dateFormat = DateFormat('MMM d, yyyy');
 
     // For skeleton loading, just return the card without Slidable

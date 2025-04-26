@@ -106,7 +106,7 @@ class ShadcnReviewCard extends StatelessWidget {
                             ? GestureDetector(
                                 onTap: () {
                                   if (avatarUrl != null) {
-                                    _openFullScreenAvatar(context, avatarUrl);
+                                    openFullScreenAvatar(context, avatarUrl);
                                   }
                                 },
                                 child: CircleAvatar(
@@ -168,7 +168,7 @@ class ShadcnReviewCard extends StatelessWidget {
                                       child: InkWell(
                                         borderRadius: BorderRadius.circular(14),
                                         onTap: () {
-                                          _showOptionsBottomSheet(context);
+                                          showOptionsBottomSheet(context);
                                         },
                                         child: const Icon(
                                           Icons.more_horiz,
@@ -241,6 +241,141 @@ class ShadcnReviewCard extends StatelessWidget {
     );
   }
 
+  void openFullScreenAvatar(BuildContext context, String imageUrl) {
+    // Get reviewer name first
+    String reviewerName = _getReviewerName();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FullscreenImage(
+          imageUrl: imageUrl,
+          title: 'Profile Photo',
+          heroTag:
+              'reviewer_avatar_${reviewerName.isEmpty ? "anonymous" : reviewerName}',
+        ),
+      ),
+    );
+  }
+
+  void showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Review'),
+        content: const Text(
+            'Are you sure you want to delete this review? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (onDelete != null) {
+                onDelete!(review);
+              }
+            },
+            child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showFullReview(BuildContext context) {
+    String reviewerName = _getReviewerName();
+    final formattedDate = DateFormat('MMMM d, yyyy').format(review.submittedAt);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+            'Review from ${reviewerName.isNotEmpty ? reviewerName : 'Anonymous'}'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildAnimatedRatingStars(context),
+              const SizedBox(height: 8),
+              Text('Submitted on $formattedDate'),
+              const SizedBox(height: 16),
+              _buildReviewContent(context),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('CLOSE'),
+          ),
+          if (canDelete && onDelete != null)
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showDeleteConfirmation(context);
+              },
+              child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void showOptionsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.visibility_outlined),
+                title: const Text('View full review'),
+                onTap: () {
+                  Navigator.pop(context);
+                  showFullReview(context);
+                },
+              ),
+              if (canDelete)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  title: const Text('Delete review',
+                      style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDeleteConfirmation(context);
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String stripHtmlTags(String htmlText) {
+    // Remove HTML tags
+    final RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+    String strippedText = htmlText.replaceAll(exp, '');
+
+    // Decode common HTML entities
+    strippedText = strippedText
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&apos;', "'")
+        .replaceAll('&nbsp;', ' ');
+
+    return strippedText;
+  }
+
   Widget _buildAnimatedRatingStars(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -257,14 +392,14 @@ class ShadcnReviewCard extends StatelessWidget {
   }
 
   Widget _buildReviewContent(BuildContext context) {
-    final reviewText = _stripHtmlTags(review.comment);
+    final reviewText = stripHtmlTags(review.comment);
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360; // Adjust based on your needs
 
     return GestureDetector(
       onTap: () {
         if (reviewText.length > 150) {
-          _showFullReview(context);
+          showFullReview(context);
         }
       },
       child: Column(
@@ -333,11 +468,11 @@ class ShadcnReviewCard extends StatelessWidget {
       if (review.isBrandReviewer) {
         if (review.brandRecord != null) {
           if (review.brandRecord is Map) {
-            return review.brandRecord['brandName']?.toString() ?? 'Brand';
+            return review.brandRecord['brandName']?.toString() ?? 'Anonymous';
           }
-          return 'Brand';
+          return 'Anonymous';
         }
-        return 'Brand';
+        return 'Anonymous';
       }
       // Influencer gave the review
       else if (review.isInfluencerReviewer) {
@@ -355,141 +490,6 @@ class ShadcnReviewCard extends StatelessWidget {
       debugPrint('Error getting reviewer name: $e');
       return '';
     }
-  }
-
-  void _openFullScreenAvatar(BuildContext context, String imageUrl) {
-    // Get reviewer name first
-    String reviewerName = _getReviewerName();
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => FullscreenImage(
-          imageUrl: imageUrl,
-          title: 'Profile Photo',
-          heroTag:
-              'reviewer_avatar_${reviewerName.isEmpty ? "anonymous" : reviewerName}',
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Review'),
-        content: const Text(
-            'Are you sure you want to delete this review? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              if (onDelete != null) {
-                onDelete!(review);
-              }
-            },
-            child: const Text('DELETE', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showFullReview(BuildContext context) {
-    String reviewerName = _getReviewerName();
-    final formattedDate = DateFormat('MMMM d, yyyy').format(review.submittedAt);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-            'Review from ${reviewerName.isNotEmpty ? reviewerName : 'Anonymous'}'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildAnimatedRatingStars(context),
-              const SizedBox(height: 8),
-              Text('Submitted on $formattedDate'),
-              const SizedBox(height: 16),
-              _buildReviewContent(context),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('CLOSE'),
-          ),
-          if (canDelete && onDelete != null)
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showDeleteConfirmation(context);
-              },
-              child: const Text('DELETE', style: TextStyle(color: Colors.red)),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showOptionsBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.visibility_outlined),
-                title: const Text('View full review'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showFullReview(context);
-                },
-              ),
-              if (canDelete)
-                ListTile(
-                  leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: const Text('Delete review',
-                      style: TextStyle(color: Colors.red)),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showDeleteConfirmation(context);
-                  },
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _stripHtmlTags(String htmlText) {
-    // Remove HTML tags
-    final RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
-    String strippedText = htmlText.replaceAll(exp, '');
-
-    // Decode common HTML entities
-    strippedText = strippedText
-        .replaceAll('&amp;', '&')
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&apos;', "'")
-        .replaceAll('&nbsp;', ' ');
-
-    return strippedText;
   }
 }
 

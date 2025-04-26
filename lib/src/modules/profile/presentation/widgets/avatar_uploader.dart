@@ -14,6 +14,7 @@ class AvatarUploader extends StatelessWidget {
   final bool isEditable;
   final Function(XFile)? onAvatarSelected;
   final double size;
+  final String? displayName;
 
   const AvatarUploader({
     super.key,
@@ -23,11 +24,23 @@ class AvatarUploader extends StatelessWidget {
     this.isEditable = false,
     this.onAvatarSelected,
     this.size = 120,
+    this.displayName,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Extract initials for placeholder
+    final String initials = displayName != null && displayName!.isNotEmpty
+        ? displayName!
+            .split(' ')
+            .map((e) => e.isNotEmpty ? e[0] : '')
+            .take(2)
+            .join()
+            .toUpperCase()
+        : 'U';
+
     return Center(
       child: Stack(
         clipBehavior: Clip.none,
@@ -44,23 +57,21 @@ class AvatarUploader extends StatelessWidget {
                   width: 3,
                 ),
               ),
-              child: CircleAvatar(
-                backgroundImage: avatarUrl.isNotEmpty
-                    ? CachedNetworkImageProvider(
-                        Avatar.getUserImage(
+              child: ClipOval(
+                child: avatarUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: Avatar.getUserImage(
                           recordId: userId,
                           image: avatarUrl,
                           collectionId: collectionId,
                         ),
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            _buildPlaceholderAvatar(context, initials, isDark),
+                        errorWidget: (context, url, error) =>
+                            _buildPlaceholderAvatar(context, initials, isDark),
                       )
-                    : null,
-                child: avatarUrl.isEmpty
-                    ? Icon(
-                        Icons.person,
-                        size: size / 2.5,
-                        color: isDark ? ShadColors.light : ShadColors.dark,
-                      )
-                    : null,
+                    : _buildPlaceholderAvatar(context, initials, isDark),
               ),
             ),
           ),
@@ -86,6 +97,29 @@ class AvatarUploader extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPlaceholderAvatar(
+      BuildContext context, String initials, bool isDark) {
+    return Container(
+      color: Colors.grey[200],
+      child: initials.isNotEmpty
+          ? Center(
+              child: Text(
+                initials,
+                style: TextStyle(
+                  fontSize: size / 3,
+                  fontWeight: FontWeight.bold,
+                  color: ShadColors.primary,
+                ),
+              ),
+            )
+          : Icon(
+              Icons.person,
+              size: size / 2.5,
+              color: isDark ? ShadColors.light : ShadColors.dark,
+            ),
     );
   }
 
@@ -140,17 +174,30 @@ class TemporaryAvatarUploader extends StatelessWidget {
   final XFile? image;
   final Function() onPressed;
   final double size;
+  final String? displayName;
 
   const TemporaryAvatarUploader({
     super.key,
     required this.image,
     required this.onPressed,
     this.size = 120,
+    this.displayName,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Extract initials for placeholder
+    final String initials = displayName != null && displayName!.isNotEmpty
+        ? displayName!
+            .split(' ')
+            .map((e) => e.isNotEmpty ? e[0] : '')
+            .take(2)
+            .join()
+            .toUpperCase()
+        : 'U';
+
     return Center(
       child: Stack(
         clipBehavior: Clip.none,
@@ -164,20 +211,17 @@ class TemporaryAvatarUploader extends StatelessWidget {
                 color: Colors.red.shade400,
                 width: 3,
               ),
-              image: image != null
-                  ? DecorationImage(
-                      image: FileImage(File(image!.path)),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
             ),
-            child: image == null
-                ? Icon(
-                    Icons.person,
-                    size: size / 2.5,
-                    color: isDark ? ShadColors.light : ShadColors.dark,
-                  )
-                : null,
+            child: ClipOval(
+              child: image != null
+                  ? Image.file(
+                      File(image!.path),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildPlaceholderAvatar(context, initials, isDark),
+                    )
+                  : _buildPlaceholderAvatar(context, initials, isDark),
+            ),
           ),
           Positioned(
             bottom: 0,
@@ -200,6 +244,29 @@ class TemporaryAvatarUploader extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPlaceholderAvatar(
+      BuildContext context, String initials, bool isDark) {
+    return Container(
+      color: Colors.grey[200],
+      child: initials.isNotEmpty
+          ? Center(
+              child: Text(
+                initials,
+                style: TextStyle(
+                  fontSize: size / 3,
+                  fontWeight: FontWeight.bold,
+                  color: ShadColors.primary,
+                ),
+              ),
+            )
+          : Icon(
+              Icons.person,
+              size: size / 2.5,
+              color: isDark ? ShadColors.light : ShadColors.dark,
+            ),
     );
   }
 }

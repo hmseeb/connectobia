@@ -144,7 +144,7 @@ class CampaignRepository {
               title: 'Campaign Cancelled',
               body:
                   'A campaign you were assigned to has been cancelled by the brand.',
-              type: 'campaign_cancelled',
+              type: 'campaign',
               redirectUrl: '',
             );
           }

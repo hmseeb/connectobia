@@ -41,14 +41,35 @@ class InfluencerProfile {
     required this.updated,
   });
 
+  // Create a factory for generating empty profiles with default values
+  factory InfluencerProfile.empty({required String id}) => InfluencerProfile(
+        id: id,
+        collectionId: "influencerProfile",
+        collectionName: "influencerProfile",
+        description: "",
+        mediaCount: 0,
+        followers: 0,
+        engRate: 0,
+        avgInteractions: 0,
+        avgLikes: 0,
+        avgComments: 0,
+        avgVideoLikes: 0,
+        avgVideoComments: 0,
+        avgVideoViews: 0,
+        country: '',
+        gender: '',
+        created: DateTime.now(),
+        updated: DateTime.now(),
+      );
+
   factory InfluencerProfile.fromJson(Map<String, dynamic> json) =>
       InfluencerProfile(
-        collectionId: json["collectionId"],
-        collectionName: json["collectionName"],
-        id: json["id"],
-        mediaCount: json["mediaCount"],
-        description: json["description"],
-        followers: json["followers"],
+        collectionId: json["collectionId"] ?? "",
+        collectionName: json["collectionName"] ?? "",
+        id: json["id"] ?? "",
+        mediaCount: json["mediaCount"] ?? 0,
+        description: json["description"] ?? "",
+        followers: json["followers"] ?? 0,
         engRate: json["engRate"] ?? 0,
         avgInteractions: json["avgInteractions"] ?? 0,
         avgLikes: json["avgLikes"] ?? 0,
@@ -58,8 +79,12 @@ class InfluencerProfile {
         avgVideoViews: json["avgVideoViews"] ?? 0,
         country: json["country"] ?? '',
         gender: json["gender"] ?? '',
-        created: DateTime.parse(json["created"]),
-        updated: DateTime.parse(json["updated"]),
+        created: json["created"] != null
+            ? DateTime.parse(json["created"])
+            : DateTime.now(),
+        updated: json["updated"] != null
+            ? DateTime.parse(json["updated"])
+            : DateTime.now(),
       );
 
   factory InfluencerProfile.fromRawJson(String str) =>
@@ -72,11 +97,10 @@ class InfluencerProfile {
     String? collectionId,
     String? collectionName,
     String? id,
-    String? title,
+    int? mediaCount,
     String? description,
     int? followers,
     int? engRate,
-    int? mediaCount,
     int? avgInteractions,
     int? avgLikes,
     int? avgComments,
@@ -85,8 +109,6 @@ class InfluencerProfile {
     int? avgVideoViews,
     String? country,
     String? gender,
-    String? avatar,
-    String? banner,
     DateTime? created,
     DateTime? updated,
   }) =>
@@ -94,10 +116,10 @@ class InfluencerProfile {
         collectionId: collectionId ?? this.collectionId,
         collectionName: collectionName ?? this.collectionName,
         id: id ?? this.id,
+        mediaCount: mediaCount ?? this.mediaCount,
         description: description ?? this.description,
         followers: followers ?? this.followers,
         engRate: engRate ?? this.engRate,
-        mediaCount: mediaCount ?? this.mediaCount,
         avgInteractions: avgInteractions ?? this.avgInteractions,
         avgLikes: avgLikes ?? this.avgLikes,
         avgComments: avgComments ?? this.avgComments,
@@ -114,9 +136,9 @@ class InfluencerProfile {
         "collectionId": collectionId,
         "collectionName": collectionName,
         "id": id,
+        "mediaCount": mediaCount,
         "description": description,
         "followers": followers,
-        "mediaCount": mediaCount,
         "engRate": engRate,
         "avgInteractions": avgInteractions,
         "avgLikes": avgLikes,

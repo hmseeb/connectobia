@@ -11,7 +11,6 @@ import '../../../../shared/data/constants/screen_size.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
 import '../../../../theme/buttons.dart';
 import '../../../../theme/colors.dart';
-import '../../../onboarding/application/bloc/influencer_onboard_bloc.dart';
 import '../../application/login/login_bloc.dart';
 import '../widgets/auth_flow.dart';
 import '../widgets/forget_password_sheet.dart';
@@ -55,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
               width: 350,
               child: BlocConsumer<LoginBloc, LoginBlocState>(
                 listener: (context, state) {
+                  debugPrint('Login state: $state');
                   if (state is LoginFailure) {
                     ShadToaster.of(context).show(
                       ShadToast.destructive(
@@ -62,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
                   } else if (state is BrandLoginSuccess) {
+                    debugPrint('Brand login success - navigating to dashboard');
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       brandDashboard,
@@ -69,6 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       arguments: {'user': state.user},
                     );
                   } else if (state is InfluencerLoginSuccess) {
+                    debugPrint(
+                        'Influencer login success - navigating to dashboard');
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       influencerDashboard,
@@ -81,13 +84,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       verifyEmailScreen,
                       arguments: {'email': emailController.text},
                     );
-                  } else if (state is ConnectingInstagramFailure) {
+                  } else if (state is InstagramFailure) {
+                    debugPrint('Instagram login failure: ${state.error}');
                     ShadToaster.of(context).show(
                       ShadToast.destructive(
-                        title: Text(
-                            'An error occurred while connecting Instagram'),
+                        title: Text('Instagram login failed'),
+                        description: Text(state.error),
                       ),
                     );
+                  } else if (state is InstagramLoading) {
+                    debugPrint('Instagram login in progress...');
                   }
                 },
                 builder: (context, state) {

@@ -48,6 +48,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   bool _isUrlEditingMode = false;
   bool _isUrlSubmitting = false;
   List<TextEditingController> _urlControllers = [];
+  final TextEditingController _disputeController = TextEditingController();
+  final Map<String, bool> _localReviewSubmissions = {};
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,14 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
           fontWeight: FontWeight.bold,
         ),
       ),
+      floatingActionButton:
+          campaign != null && campaign!.status.toLowerCase() == 'active'
+              ? FloatingActionButton(
+                  onPressed: () => _createDispute(),
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: const Icon(Icons.flag_outlined),
+                )
+              : null,
       body: MultiBlocListener(
         listeners: [
           BlocListener<CampaignBloc, CampaignState>(
@@ -778,6 +788,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                       () => _completeContract(contract.id),
                     );
                   },
+                  width: double.infinity,
                   child: const Text('Mark as Completed'),
                 ),
               ),
@@ -785,10 +796,39 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             // Review option for completed contracts
             if (contract.status == 'completed')
               FutureBuilder<bool>(
+                key: Key('review_check_${contract.id}'),
                 future: _checkIfReviewExists(contract.id),
                 builder: (context, snapshot) {
+                  // Handle errors or invalid configuration
+                  if (snapshot.hasError) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        'Unable to check review status: ${snapshot.error}',
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontSize: 12,
+                        ),
+                      ),
+                    );
+                  }
+
                   // Only show the button if the user hasn't reviewed yet
                   if (snapshot.hasData && !snapshot.data!) {
+                    // Check if the contract has the same ID for brand and influencer
+                    if (contract.brand == contract.influencer) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          'Reviews unavailable for this contract configuration',
+                          style: TextStyle(
+                            color: Colors.orange.shade700,
+                            fontSize: 12,
+                          ),
+                        ),
+                      );
+                    }
+
                     return Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: ShadButton(
@@ -1111,25 +1151,94 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
   Future<bool> _checkIfReviewExists(String contractId) async {
     try {
-      if (contract == null) return false;
+      if (contract == null) {
+        debugPrint('Cannot check if review exists - contract is null');
+        return false;
+      }
+      if (campaign == null) {
+        debugPrint('Cannot check if review exists - campaign is null');
+        return false;
+      }
+
+      // Check local cache first
+      final cacheKey = '${campaign!.id}_${contract!.id}';
+      if (_localReviewSubmissions.containsKey(cacheKey) &&
+          _localReviewSubmissions[cacheKey] == true) {
+        debugPrint('Found review in local cache: $cacheKey');
+        return true;
+      }
 
       final pb = await PocketBaseSingleton.instance;
       final userId = pb.authStore.model.id;
       final userCollection = pb.authStore.model.collectionId;
       final isBrand = userCollection == 'brands';
 
+      debugPrint('Checking if review exists for:');
+      debugPrint('  User ID: $userId');
+      debugPrint('  Is Brand: $isBrand');
+      debugPrint('  Campaign ID: ${campaign!.id}');
+      debugPrint('  Contract ID: $contractId');
+      debugPrint('  Brand ID (from contract): ${contract!.brand}');
+      debugPrint('  Influencer ID (from contract): ${contract!.influencer}');
+
+      // Validate the contract data
+      if (contract!.brand == contract!.influencer) {
+        debugPrint('⚠️ Error: Contract has same ID for brand and influencer!');
+        return false;
+      }
+
+      // Validate user belongs to this contract
+      final userIsPartOfContract = (isBrand && userId == contract!.brand) ||
+          (!isBrand && userId == contract!.influencer);
+
+      if (!userIsPartOfContract) {
+        debugPrint(
+            '⚠️ Warning: User ID does not match any participant in this contract!');
+        return false;
+      }
+
       if (isBrand) {
-        return await ReviewRepository.brandReviewExists(
+        // If user is a brand, check if they've already reviewed this influencer for this campaign
+        if (userId != contract!.brand) {
+          debugPrint(
+              '⚠️ Warning: User ID does not match brand ID in contract!');
+          return false;
+        }
+
+        final exists = await ReviewRepository.brandReviewExists(
           campaignId: campaign!.id,
           brandId: userId,
           influencerId: contract!.influencer,
         );
+        debugPrint('Brand review exists: $exists');
+
+        // Cache the result if it exists
+        if (exists) {
+          _localReviewSubmissions[cacheKey] = true;
+        }
+
+        return exists;
       } else {
-        return await ReviewRepository.influencerReviewExists(
+        // If user is an influencer, check if they've already reviewed this brand for this campaign
+        if (userId != contract!.influencer) {
+          debugPrint(
+              '⚠️ Warning: User ID does not match influencer ID in contract!');
+          return false;
+        }
+
+        final exists = await ReviewRepository.influencerReviewExists(
           campaignId: campaign!.id,
           influencerId: userId,
           brandId: contract!.brand,
         );
+        debugPrint('Influencer review exists: $exists');
+
+        // Cache the result if it exists
+        if (exists) {
+          _localReviewSubmissions[cacheKey] = true;
+        }
+
+        return exists;
       }
     } catch (e) {
       debugPrint('Error checking review existence: $e');
@@ -1162,6 +1271,113 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     } catch (e) {
       _showErrorToast('Error completing contract: $e');
     }
+  }
+
+  // Create dispute for active campaign
+  void _createDispute() {
+    if (campaign == null || campaign!.status.toLowerCase() != 'active') {
+      _showErrorToast('Disputes can only be created for active campaigns');
+      return;
+    }
+
+    // Reset controller when opening dialog
+    _disputeController.clear();
+
+    // Create dispute title controller
+    final TextEditingController titleController = TextEditingController();
+
+    // Show dialog to collect dispute details
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Create Dispute'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Please provide details about the issue you\'re experiencing with this campaign.',
+              style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+
+            // Title input using ShadCN
+            ShadInputFormField(
+              controller: titleController,
+              placeholder: const Text('Dispute title'),
+              label: const Text('Title'),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Description input using ShadCN
+            ShadInputFormField(
+              controller: _disputeController,
+              placeholder: const Text('Describe the issue...'),
+              label: const Text('Description'),
+              maxLines: 5,
+            ),
+          ],
+        ),
+        actions: [
+          ShadButton.ghost(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ShadButton(
+            onPressed: () async {
+              // Submit dispute if fields are not empty
+              if (_disputeController.text.trim().isEmpty) {
+                _showErrorToast('Please provide details about the dispute');
+                return;
+              }
+
+              if (titleController.text.trim().isEmpty) {
+                _showErrorToast('Please provide a title for the dispute');
+                return;
+              }
+
+              Navigator.pop(context);
+
+              // Create dispute object
+              try {
+                final pb = await PocketBaseSingleton.instance;
+
+                // Get current user ID
+                final userId = pb.authStore.model.id;
+
+                // Determine against_user based on user type
+                String againstUserId;
+                if (userType == 'brand') {
+                  againstUserId = campaign!.selectedInfluencer ?? '';
+                } else {
+                  againstUserId = campaign!.brand;
+                }
+
+                // Create dispute data object
+                final Map<String, dynamic> disputeData = {
+                  'raised_by': userId,
+                  'against_user': againstUserId,
+                  'contract': contract?.id ?? '',
+                  'title': titleController.text.trim(),
+                  'description': _disputeController.text.trim(),
+                  'status': 'under review', // Default status
+                };
+
+                // Create record in disputes collection
+                await pb.collection('disputes').create(body: disputeData);
+
+                // Show success message
+                _showSuccessToast(
+                    'Dispute submitted successfully. Our team will review it shortly.');
+              } catch (e) {
+                _showErrorToast('Error submitting dispute: $e');
+              }
+            },
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatDate(DateTime date) {
@@ -1680,6 +1896,12 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                                   debugPrint(
                                       '  Contract Influencer ID: ${contract!.influencer}');
 
+                                  // Validate brand and influencer are not the same
+                                  if (contract!.brand == contract!.influencer) {
+                                    throw Exception(
+                                        'Invalid contract: Brand and influencer IDs are the same');
+                                  }
+
                                   // Determine the actual role based on contract data
                                   final actualUserIsBrand =
                                       contract!.brand == userId;
@@ -1729,10 +1951,17 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
                                   // Show success message
                                   if (mounted) {
+                                    // Mark this review as submitted in our local cache
+                                    final cacheKey =
+                                        '${campaign!.id}_${contract!.id}';
+                                    _localReviewSubmissions[cacheKey] = true;
+
                                     _showSuccessToast(
                                         'Review submitted successfully!');
                                     // Force rebuild to update the UI
-                                    setState(() {});
+                                    setState(() {
+                                      // This will force the FutureBuilder to re-run the check
+                                    });
                                   }
                                 } catch (e) {
                                   // Show error and reset submission state

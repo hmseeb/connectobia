@@ -19,13 +19,27 @@ class BrandProfile {
     required this.updated,
   });
 
+  // Create a factory for generating empty profiles with default values
+  factory BrandProfile.empty({required String id}) => BrandProfile(
+        id: id,
+        collectionId: "brandProfile",
+        collectionName: "brandProfile",
+        description: "",
+        created: DateTime.now(),
+        updated: DateTime.now(),
+      );
+
   factory BrandProfile.fromJson(Map<String, dynamic> json) => BrandProfile(
-        collectionId: json["collectionId"],
-        collectionName: json["collectionName"],
-        id: json["id"],
+        collectionId: json["collectionId"] ?? "",
+        collectionName: json["collectionName"] ?? "",
+        id: json["id"] ?? "",
         description: json["description"] ?? "",
-        created: DateTime.parse(json["created"]),
-        updated: DateTime.parse(json["updated"]),
+        created: json["created"] != null
+            ? DateTime.parse(json["created"])
+            : DateTime.now(),
+        updated: json["updated"] != null
+            ? DateTime.parse(json["updated"])
+            : DateTime.now(),
       );
 
   factory BrandProfile.fromRawJson(String str) =>

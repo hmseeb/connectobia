@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -322,7 +323,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             }
             return _buildProfileContent(context, state.user);
           }
-          return const Center(child: Text('Something went wrong'));
+          // Fallback to a more helpful placeholder instead of error
+          return _buildPlaceholderContent(context);
         },
       ),
       floatingActionButton: _buildFloatingActionButtons(context),
@@ -543,6 +545,181 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Add new method to build placeholder content for new users
+  Widget _buildPlaceholderContent(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        // Try refreshing the data
+        _forceCompleteRefresh();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Information card about new account
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ShadCard(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.blue.shade400,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Welcome to Connectobia!',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'As a new user, your profile is being set up. Complete your profile to get started.',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 16),
+                      ShadButton(
+                        onPressed: () {
+                          // Navigate to edit profile screen
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const EditProfileScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('Edit Profile'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Placeholder profile info
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.grey.shade200,
+                    child: const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Your Name',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'New Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Placeholder fields
+              _buildPlaceholderField('Email', Icons.email),
+              const SizedBox(height: 16),
+              _buildPlaceholderField('Username', Icons.alternate_email),
+              const SizedBox(height: 16),
+              _buildPlaceholderField('Industry', Icons.category),
+              const SizedBox(height: 24),
+
+              // Bio placeholder
+              const Text(
+                'About',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    'Add a bio to tell others about yourself',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper for placeholder fields
+  Widget _buildPlaceholderField(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.grey.shade400),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const Text(
+                'Not set',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildProfileContent(BuildContext context, dynamic user) {
     // Clear profile data if the new user doesn't match current profile data's user
     if (_profileData != null) {
@@ -570,10 +747,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Determine if user is a brand and extract appropriate data
     if (user is Brand) {
       isBrand = true;
-      name = user.brandName;
+      name = user.brandName.isNotEmpty ? user.brandName : 'Your Brand';
       debugPrint('📋 Building profile content with brand name: $name');
       email = user.email;
-      industry = user.industry;
+      industry = user.industry.isNotEmpty ? user.industry : 'Not specified';
       avatar = user.avatar;
       profileId = user.profile;
       // Brands don't have Instagram connection
@@ -591,11 +768,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } else if (user is Influencer) {
-      name = user.fullName;
+      name = user.fullName.isNotEmpty ? user.fullName : 'Your Name';
       debugPrint('📋 Building profile content with influencer name: $name');
-      username = user.username;
+      username = user.username.isNotEmpty ? user.username : 'username';
       email = user.email;
-      industry = user.industry;
+      industry = user.industry.isNotEmpty ? user.industry : 'Not specified';
       avatar = user.avatar;
       profileId = user.profile;
       hasConnectedInstagram = user.connectedSocial;
@@ -709,6 +886,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     collectionId: user.collectionId,
                     isEditable: false,
                     size: 80,
+                    displayName: name,
                     onAvatarSelected: (file) {
                       // Not editable in profile view
                     },

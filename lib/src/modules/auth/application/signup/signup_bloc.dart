@@ -128,12 +128,23 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     on<InstagramSignup>((event, emit) async {
       emit(InstagramLoading());
       try {
-        // First, unsubscribe from any existing realtime connections
+        debugPrint('Instagram signup initiated');
+        // Unsubscribe from any existing realtime connections
         await PocketBaseSingleton.unsubscribeAll();
 
         final Influencer influencer = await AuthRepository.instagramAuth(
             collectionName: event.accountType);
-        emit(InstagramSignupSuccess(influencer: influencer));
+
+        // Verify the auth store is valid after Instagram auth
+        final pb = await PocketBaseSingleton.instance;
+        if (pb.authStore.isValid) {
+          debugPrint('Instagram signup successful - Auth store is valid');
+          emit(InstagramSignupSuccess(influencer: influencer));
+        } else {
+          debugPrint('Instagram signup failed - Auth store is not valid');
+          emit(InstagramFailure(
+              'Instagram authentication failed. Please try again.'));
+        }
       } catch (e) {
         debugPrint('Error during Instagram signup: $e');
         ErrorRepository errorRepo = ErrorRepository();

@@ -16,14 +16,28 @@ class ReviewRepository {
     try {
       final pb = await PocketBaseSingleton.instance;
 
+      debugPrint('Checking if brand review exists with:');
+      debugPrint('  Campaign ID: $campaignId');
+      debugPrint('  Brand ID: $brandId');
+      debugPrint('  Influencer ID: $influencerId');
+
+      // Validate that brand and influencer IDs are not the same
+      if (brandId == influencerId) {
+        debugPrint(
+            '⚠️ Warning: Brand and influencer IDs are the same. This is invalid.');
+        return false;
+      }
+
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 1,
             filter:
-                'campaign = "$campaignId" && brand = "$brandId" && influencer = "$influencerId" && role = "brand"',
+                'campaign = "$campaignId" AND brand = "$brandId" AND influencer = "$influencerId" AND role = "brand"',
           );
 
-      return resultList.items.isNotEmpty;
+      final exists = resultList.items.isNotEmpty;
+      debugPrint('Brand review exists: $exists');
+      return exists;
     } catch (e) {
       debugPrint('Error checking if brand review exists: $e');
       return false;
@@ -631,14 +645,28 @@ class ReviewRepository {
     try {
       final pb = await PocketBaseSingleton.instance;
 
+      debugPrint('Checking if influencer review exists with:');
+      debugPrint('  Campaign ID: $campaignId');
+      debugPrint('  Influencer ID: $influencerId');
+      debugPrint('  Brand ID: $brandId');
+
+      // Validate that brand and influencer IDs are not the same
+      if (brandId == influencerId) {
+        debugPrint(
+            '⚠️ Warning: Brand and influencer IDs are the same. This is invalid.');
+        return false;
+      }
+
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 1,
             filter:
-                'campaign = "$campaignId" && influencer = "$influencerId" && brand = "$brandId" && role = "influencer"',
+                'campaign = "$campaignId" AND influencer = "$influencerId" AND brand = "$brandId" AND role = "influencer"',
           );
 
-      return resultList.items.isNotEmpty;
+      final exists = resultList.items.isNotEmpty;
+      debugPrint('Influencer review exists: $exists');
+      return exists;
     } catch (e) {
       debugPrint('Error checking if influencer review exists: $e');
       return false;

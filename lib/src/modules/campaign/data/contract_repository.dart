@@ -218,7 +218,7 @@ class ContractRepository {
           title: 'Contract Completed',
           body:
               'The contract has been marked as completed. You can now leave a review for the influencer.',
-          type: 'contract_completed',
+          type: 'contract',
           redirectUrl: '$reviewScreen?contractId=${completedContract.id}',
         );
 
@@ -228,7 +228,7 @@ class ContractRepository {
           title: 'Contract Completed',
           body:
               'The contract has been marked as completed. You can now leave a review for the brand.',
-          type: 'contract_completed',
+          type: 'contract',
           redirectUrl: '$reviewScreen?contractId=${completedContract.id}',
         );
       } catch (e) {
@@ -310,7 +310,7 @@ class ContractRepository {
           title: 'Contract Rejected',
           body:
               'An influencer has rejected your campaign contract. Your funds have been released.',
-          type: 'contract_rejected',
+          type: 'contract',
           redirectUrl: '$campaignDetails?campaignId=$campaignId&userType=brand',
         );
         debugPrint('Notification sent to brand successfully');

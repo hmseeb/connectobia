@@ -133,9 +133,9 @@ class ReviewCard extends StatelessWidget {
       if (review.isBrandReviewer) {
         // Brand gave the review
         if (review.brandRecord != null) {
-          return review.brandRecord['brandName'] ?? 'Brand';
+          return review.brandRecord['brandName'] ?? 'Anonymous';
         }
-        return 'Brand';
+        return 'Anonymous';
       }
       // Influencer gave the review
       else if (review.isInfluencerReviewer) {

@@ -4,23 +4,29 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileHeader extends StatelessWidget {
-  final String name;
-  final String industry;
-  final String username;
+  final String? name;
+  final String? industry;
+  final String? username;
   final bool isVerified;
   final bool hasConnectedInstagram;
 
   const ProfileHeader({
     super.key,
-    required this.name,
-    required this.industry,
-    required this.username,
+    this.name,
+    this.industry,
+    this.username,
     required this.isVerified,
     required this.hasConnectedInstagram,
   });
 
   @override
   Widget build(BuildContext context) {
+    final String displayName = name?.isNotEmpty == true ? name! : "New User";
+    final String displayIndustry =
+        industry?.isNotEmpty == true ? industry! : "No industry selected";
+    final String displayUsername =
+        username?.isNotEmpty == true ? username! : "username";
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,14 +34,14 @@ class ProfileHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              name,
+              displayName,
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              industry,
+              displayIndustry,
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
@@ -54,7 +60,7 @@ class ProfileHeader extends StatelessWidget {
         if (hasConnectedInstagram)
           GestureDetector(
             onTap: () async {
-              final url = 'https://instagram.com/$username';
+              final url = 'https://instagram.com/$displayUsername';
               await launchUrl(Uri.parse(url));
             },
             child: Container(

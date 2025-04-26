@@ -1,18 +1,21 @@
 // Profile body (about section, description, and analytics)
+import 'dart:async';
+
 import 'package:connectobia/src/modules/dashboard/common/widgets/profile_analytics.dart';
-import 'package:connectobia/src/shared/data/extensions/string_extention.dart';
 import 'package:connectobia/src/shared/domain/models/influencer_profile.dart';
 import 'package:connectobia/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class ProfileBody extends StatelessWidget {
+class ProfileBody extends StatefulWidget {
   final String description;
   final int? followers;
   final int? mediaCount;
   final bool hasConnectedInstagram;
   final InfluencerProfile? profile;
   final bool isInfluencer;
+  final bool isLoading;
 
   const ProfileBody({
     super.key,
@@ -22,44 +25,135 @@ class ProfileBody extends StatelessWidget {
     required this.hasConnectedInstagram,
     this.profile,
     this.isInfluencer = false,
+    this.isLoading = false,
   });
 
   @override
+  State<ProfileBody> createState() => _ProfileBodyState();
+}
+
+class _ProfileBodyState extends State<ProfileBody> {
+  bool _showLoadingIndicator = true;
+  Timer? _loadingTimer;
+
+  @override
   Widget build(BuildContext context) {
+    // Safe handling of description text with null and empty checks
+    final String displayDescription = widget.description.isNotEmpty == true
+        ? widget.description
+        : widget.isInfluencer
+            ? "This user hasn't added a bio yet. Bio information helps brands learn more about you."
+            : "This brand hasn't added a description yet.";
+
+    // Safely access numeric values with null checks and defaults
+    final int displayFollowers = widget.followers ?? 0;
+    final int displayMediaCount = widget.mediaCount ?? 0;
+    final bool haveValidProfile = widget.profile != null;
+
+    // Additional safety checks for profile data
+    final String displayCountry =
+        haveValidProfile && widget.profile!.country.isNotEmpty
+            ? widget.profile!.country
+            : '';
+    final String displayGender =
+        haveValidProfile && widget.profile!.gender.isNotEmpty
+            ? widget.profile!.gender
+            : '';
+    final int displayEngRate = haveValidProfile ? widget.profile!.engRate : 0;
+    final int displayAvgInteractions =
+        haveValidProfile ? widget.profile!.avgInteractions : 0;
+    final int displayAvgLikes = haveValidProfile ? widget.profile!.avgLikes : 0;
+    final int displayAvgComments =
+        haveValidProfile ? widget.profile!.avgComments : 0;
+    final int displayAvgVideoLikes =
+        haveValidProfile ? widget.profile!.avgVideoLikes : 0;
+    final int displayAvgVideoComments =
+        haveValidProfile ? widget.profile!.avgVideoComments : 0;
+    final int displayAvgVideoViews =
+        haveValidProfile ? widget.profile!.avgVideoViews : 0;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // About Section Card
-            if (description.isNotEmpty) ...[
-              _buildSectionCard(
-                context,
-                title: 'About',
-                helpText: 'Personal information and bio',
-                icon: Icons.person_rounded,
-                content: ReadMoreText(
-                  description.removeAllHtmlTags(),
-                  trimMode: TrimMode.Line,
-                  trimLines: 2,
-                  trimCollapsedText: 'Read more',
-                  trimExpandedText: ' Show less',
-                  moreStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: ShadColors.primary,
-                  ),
-                  lessStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: ShadColors.primary,
+            // About Section Card - Show always, regardless of whether description is empty or not
+            _buildSectionCard(
+              context,
+              title: 'About',
+              helpText: 'Personal information and bio',
+              icon: Icons.person_rounded,
+              content: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey.shade800
+                      : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade700
+                        : Colors.grey.shade300,
+                    width: 1,
                   ),
                 ),
+                child: widget.isLoading && _showLoadingIndicator
+                    ? Skeletonizer(
+                        enabled: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 16,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              height: 16,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              height: 16,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      )
+                    : ReadMoreText(
+                        displayDescription,
+                        trimLines: 3,
+                        trimMode: TrimMode.Line,
+                        trimCollapsedText: 'Read more',
+                        trimExpandedText: 'Show less',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: widget.description.isEmpty
+                                  ? Colors.grey.shade500
+                                  : null,
+                              fontStyle: widget.description.isEmpty
+                                  ? FontStyle.italic
+                                  : null,
+                            ),
+                        moreStyle: TextStyle(
+                          color: ShadColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        lessStyle: TextStyle(
+                          color: ShadColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
-              const SizedBox(height: 16),
-            ],
+            ),
+            const SizedBox(height: 16),
 
             // Show Instagram connection message ONLY for influencers who are not connected
-            if (isInfluencer && !hasConnectedInstagram) ...[
+            if (widget.isInfluencer && !widget.hasConnectedInstagram) ...[
               _buildSectionCard(
                 context,
                 title: 'Instagram Connection',
@@ -89,7 +183,7 @@ class ProfileBody extends StatelessWidget {
             ],
 
             // Basic Analytics Card - only for influencers with connected Instagram
-            if (isInfluencer && hasConnectedInstagram) ...[
+            if (widget.isInfluencer && widget.hasConnectedInstagram) ...[
               _buildSectionCard(
                 context,
                 title: 'Basic Analytics',
@@ -102,7 +196,7 @@ class ProfileBody extends StatelessWidget {
                         Expanded(
                           child: ProfileAnalyticsCard(
                             title: 'FOLLOWERS',
-                            value: followers.toString(),
+                            value: displayFollowers.toString(),
                           ),
                         ),
                       ],
@@ -113,16 +207,15 @@ class ProfileBody extends StatelessWidget {
                         Expanded(
                           child: ProfileAnalyticsCard(
                             title: 'MEDIA COUNT',
-                            value: mediaCount.toString(),
+                            value: displayMediaCount.toString(),
                           ),
                         ),
                       ],
                     ),
 
-                    // Demographic data
-                    if (profile != null &&
-                        (profile!.country.isNotEmpty ||
-                            profile!.gender.isNotEmpty)) ...[
+                    // Demographic data - ensure we check for null values at each level
+                    if (displayCountry.isNotEmpty ||
+                        displayGender.isNotEmpty) ...[
                       const SizedBox(height: 16),
                       const Divider(),
                       const SizedBox(height: 8),
@@ -135,25 +228,25 @@ class ProfileBody extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          if (profile!.country.isNotEmpty)
+                      if (displayCountry.isNotEmpty)
+                        Row(
+                          children: [
                             Expanded(
                               child: ProfileAnalyticsCard(
                                 title: 'COUNTRY',
-                                value: profile!.country,
+                                value: displayCountry,
                               ),
                             ),
-                        ],
-                      ),
-                      if (profile!.gender.isNotEmpty) ...[
+                          ],
+                        ),
+                      if (displayGender.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
                               child: ProfileAnalyticsCard(
                                 title: 'GENDER',
-                                value: profile!.gender,
+                                value: displayGender,
                               ),
                             ),
                           ],
@@ -164,8 +257,8 @@ class ProfileBody extends StatelessWidget {
                 ),
               ),
 
-              // Engagement Analytics
-              if (profile != null) ...[
+              // Engagement Analytics - only show if we have valid profile data
+              if (haveValidProfile) ...[
                 const SizedBox(height: 16),
                 _buildSectionCard(
                   context,
@@ -179,7 +272,7 @@ class ProfileBody extends StatelessWidget {
                           Expanded(
                             child: ProfileAnalyticsCard(
                               title: 'AVG INTERACTIONS',
-                              value: profile!.avgInteractions.toString(),
+                              value: displayAvgInteractions.toString(),
                             ),
                           ),
                         ],
@@ -190,7 +283,7 @@ class ProfileBody extends StatelessWidget {
                           Expanded(
                             child: ProfileAnalyticsCard(
                               title: 'AVG LIKES',
-                              value: profile!.avgLikes.toString(),
+                              value: displayAvgLikes.toString(),
                             ),
                           ),
                         ],
@@ -201,7 +294,7 @@ class ProfileBody extends StatelessWidget {
                           Expanded(
                             child: ProfileAnalyticsCard(
                               title: 'AVG COMMENTS',
-                              value: profile!.avgComments.toString(),
+                              value: displayAvgComments.toString(),
                             ),
                           ),
                         ],
@@ -212,7 +305,7 @@ class ProfileBody extends StatelessWidget {
                           Expanded(
                             child: ProfileAnalyticsCard(
                               title: 'ENG RATE',
-                              value: profile!.engRate.toString(),
+                              value: displayEngRate.toString(),
                             ),
                           ),
                         ],
@@ -221,10 +314,10 @@ class ProfileBody extends StatelessWidget {
                   ),
                 ),
 
-                // Video Analytics
-                if (profile!.avgVideoViews > 0 ||
-                    profile!.avgVideoLikes > 0 ||
-                    profile!.avgVideoComments > 0) ...[
+                // Video Analytics - only show if we have valid metrics
+                if (displayAvgVideoViews > 0 ||
+                    displayAvgVideoLikes > 0 ||
+                    displayAvgVideoComments > 0) ...[
                   const SizedBox(height: 16),
                   _buildSectionCard(
                     context,
@@ -238,7 +331,7 @@ class ProfileBody extends StatelessWidget {
                             Expanded(
                               child: ProfileAnalyticsCard(
                                 title: 'AVG VIDEO VIEWS',
-                                value: profile!.avgVideoViews.toString(),
+                                value: displayAvgVideoViews.toString(),
                               ),
                             ),
                           ],
@@ -249,19 +342,19 @@ class ProfileBody extends StatelessWidget {
                             Expanded(
                               child: ProfileAnalyticsCard(
                                 title: 'AVG VIDEO LIKES',
-                                value: profile!.avgVideoLikes.toString(),
+                                value: displayAvgVideoLikes.toString(),
                               ),
                             ),
                           ],
                         ),
-                        if (profile!.avgVideoComments > 0) ...[
+                        if (displayAvgVideoComments > 0) ...[
                           const SizedBox(height: 12),
                           Row(
                             children: [
                               Expanded(
                                 child: ProfileAnalyticsCard(
                                   title: 'AVG VIDEO COMMENTS',
-                                  value: profile!.avgVideoComments.toString(),
+                                  value: displayAvgVideoComments.toString(),
                                 ),
                               ),
                             ],
@@ -277,6 +370,48 @@ class ProfileBody extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void didUpdateWidget(ProfileBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset timer if loading state changes
+    if (widget.isLoading != oldWidget.isLoading) {
+      _loadingTimer?.cancel();
+      if (widget.isLoading) {
+        setState(() {
+          _showLoadingIndicator = true;
+        });
+        _loadingTimer = Timer(const Duration(seconds: 3), () {
+          if (mounted) {
+            setState(() {
+              _showLoadingIndicator = false;
+            });
+          }
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _loadingTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Set a timer to hide loading indicator after 3 seconds
+    if (widget.isLoading) {
+      _loadingTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted) {
+          setState(() {
+            _showLoadingIndicator = false;
+          });
+        }
+      });
+    }
   }
 
   Widget _buildSectionCard(BuildContext context,

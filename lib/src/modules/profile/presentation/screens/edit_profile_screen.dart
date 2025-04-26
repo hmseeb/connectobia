@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -687,60 +689,116 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _originalUser = user;
       _isBrand = user is Brand;
 
+      // Set default values initially for ALL fields (will be overridden if data exists)
+      _nameController.text = _isBrand
+          ? (user as Brand).brandName.isNotEmpty
+              ? (user).brandName
+              : 'New Brand'
+          : (user as Influencer).fullName.isNotEmpty
+              ? (user).fullName
+              : 'New User';
+
+      _emailController.text = _isBrand
+          ? (user as Brand).email.isNotEmpty
+              ? (user).email
+              : ''
+          : (user as Influencer).email.isNotEmpty
+              ? (user).email
+              : '';
+
+      _usernameController.text =
+          !_isBrand && (user as Influencer).username.isNotEmpty
+              ? (user).username
+              : '';
+
+      _bioController.text = '';
+
+      _selectedIndustry = _isBrand
+          ? (user as Brand).industry.isNotEmpty
+              ? (user).industry
+              : null
+          : (user as Influencer).industry.isNotEmpty
+              ? (user).industry
+              : null;
+
       // Get the profile ID from the user
       final String profileId =
           _isBrand ? (user as Brand).profile : (user as Influencer).profile;
 
-      // Fetch the profile data
-      final pb = await PocketBaseSingleton.instance;
-      final profileCollectionName =
-          _isBrand ? 'brandProfile' : 'influencerProfile';
-      final profileRecord =
-          await pb.collection(profileCollectionName).getOne(profileId);
-
-      if (!mounted) return;
-
-      setState(() {
-        if (_isBrand) {
-          final Brand brand = user;
-          _profileData = BrandProfile.fromRecord(profileRecord);
-
-          _nameController.text = brand.brandName;
-          _emailController.text = brand.email;
-          _usernameController.text = '';
-
-          // Clean description text before showing in editor
-          String description = (_profileData as BrandProfile).description;
-          if (description.contains('<p>') || description.contains('</p>')) {
-            description =
-                description.replaceAll('<p>', '').replaceAll('</p>', '');
-          }
-          _bioController.text = description;
-
-          // Find the industry key by matching its value
-          _selectedIndustry = _findIndustryKeyByValue(brand.industry);
-        } else {
-          final Influencer influencer = user;
-          _profileData = InfluencerProfile.fromRecord(profileRecord);
-
-          _nameController.text = influencer.fullName;
-          _emailController.text = influencer.email;
-          _usernameController.text = influencer.username;
-
-          // Clean description text before showing in editor
-          String description = (_profileData as InfluencerProfile).description;
-          if (description.contains('<p>') || description.contains('</p>')) {
-            description =
-                description.replaceAll('<p>', '').replaceAll('</p>', '');
-          }
-          _bioController.text = description;
-
-          // Find the industry key by matching its value
-          _selectedIndustry = _findIndustryKeyByValue(influencer.industry);
+      // Set a timeout to prevent hanging on profile loading
+      bool timedOut = false;
+      Timer timeoutTimer = Timer(const Duration(seconds: 5), () {
+        timedOut = true;
+        if (mounted) {
+          debugPrint('Profile loading timed out, continuing with basic data');
+          setState(() {
+            _isLoading = false;
+          });
         }
-
-        _isLoading = false;
       });
+
+      // If profile ID is empty (new user without profile) use the defaults we already set
+      if (profileId.isEmpty) {
+        debugPrint('Profile ID is empty. Using default values for a new user.');
+        timeoutTimer.cancel();
+        setState(() {
+          _isLoading = false;
+        });
+        // Setup listeners for dirty state
+        _nameController.addListener(_updateFormState);
+        _emailController.addListener(_updateFormState);
+        _usernameController.addListener(_updateFormState);
+        _bioController.addListener(_updateFormState);
+        return;
+      }
+
+      // Fetch the profile data
+      try {
+        final pb = await PocketBaseSingleton.instance;
+        final profileCollectionName =
+            _isBrand ? 'brandProfile' : 'influencerProfile';
+        final profileRecord =
+            await pb.collection(profileCollectionName).getOne(profileId);
+
+        if (!mounted || timedOut) return;
+        timeoutTimer.cancel();
+
+        setState(() {
+          if (_isBrand) {
+            _profileData = BrandProfile.fromRecord(profileRecord);
+
+            // Clean description text before showing in editor
+            String description = (_profileData as BrandProfile).description;
+            if (description.contains('<p>') || description.contains('</p>')) {
+              description =
+                  description.replaceAll('<p>', '').replaceAll('</p>', '');
+            }
+            _bioController.text = description;
+          } else {
+            _profileData = InfluencerProfile.fromRecord(profileRecord);
+
+            // Clean description text before showing in editor
+            String description =
+                (_profileData as InfluencerProfile).description;
+            if (description.contains('<p>') || description.contains('</p>')) {
+              description =
+                  description.replaceAll('<p>', '').replaceAll('</p>', '');
+            }
+            _bioController.text = description;
+          }
+
+          _isLoading = false;
+        });
+      } catch (e) {
+        if (timedOut) return;
+        timeoutTimer.cancel();
+
+        debugPrint('Error fetching profile data: $e');
+        // Handle profile not found gracefully - no changes needed as defaults are already set
+        setState(() {
+          _isLoading = false;
+        });
+      }
 
       // Setup listeners for dirty state
       _nameController.addListener(_updateFormState);

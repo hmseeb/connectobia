@@ -50,7 +50,7 @@ class NotificationRepository {
       title: 'Contract Signed',
       body:
           '$influencerName has signed the contract for campaign: $campaignTitle',
-      type: 'contract_signed',
+      type: 'contract',
       redirectUrl: contractId,
     );
   }
@@ -66,7 +66,7 @@ class NotificationRepository {
       userId: userId,
       title: 'New Message from $senderName',
       body: message,
-      type: 'message',
+      type: 'system',
       redirectUrl: '/messages/$chatId',
     );
   }

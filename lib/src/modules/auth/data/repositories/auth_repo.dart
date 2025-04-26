@@ -181,25 +181,41 @@ class AuthRepository {
   static Future<Influencer> instagramAuth(
       {required String collectionName}) async {
     try {
+      debugPrint('Starting Instagram auth process');
       final pb = await PocketBaseSingleton.instance;
+      debugPrint('PocketBase instance obtained');
 
+      // Ensure the URL is properly handled
       final recordAuth = await pb
           .collection('influencers')
           .authWithOAuth2('instagram2', (url) async {
-        await launchUrl(url);
+        debugPrint('Opening Instagram OAuth URL: $url');
+        final result = await launchUrl(url, mode: LaunchMode.inAppWebView);
+        debugPrint('URL launch result: $result');
       });
 
+      debugPrint('OAuth2 authentication completed');
+      debugPrint(
+          'Auth token received: ${pb.authStore.token.substring(0, 15)}...');
+
+      // Verify auth token is still valid
+      final isValid = pb.authStore.isValid;
+      debugPrint('Auth token valid: $isValid');
+
       final Influencer influencer = Influencer.fromRecord(recordAuth.record);
+      debugPrint('Influencer record created: ${influencer.id}');
 
       final Meta meta = Meta.fromJson(recordAuth.meta);
       final RawUser rawUser = RawUser.fromJson(recordAuth.meta['rawUser']);
       final String influencerId = influencer.id;
+      debugPrint('Instagram username: ${rawUser.username}');
 
       if (influencer.profile.isEmpty) {
+        debugPrint('Creating influencer profile for new Instagram user');
         final influencerProfileId = await createInfluencerProfileByInstagram(
             meta: meta, rawUser: rawUser);
 
-        debugPrint('Created influencer profile');
+        debugPrint('Created influencer profile with ID: $influencerProfileId');
         await linkProfileWithAccount(
           userId: influencerId,
           profileId: influencerProfileId,
@@ -207,10 +223,12 @@ class AuthRepository {
           collectionName: 'influencers',
         );
         debugPrint('Linked profile with account');
+      } else {
+        debugPrint('User already has a profile: ${influencer.profile}');
       }
       return influencer;
     } catch (e) {
-      debugPrint('$e');
+      debugPrint('Instagram auth error: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

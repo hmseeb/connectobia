@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../services/storage/pb.dart';
 import '../../../../shared/domain/models/brand.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../data/helpers/validation/input_validation.dart';
@@ -70,14 +71,39 @@ class LoginBloc extends Bloc<LoginBlocEvent, LoginBlocState> {
     on<InstagramAuth>((event, emit) async {
       emit(InstagramLoading());
       try {
-        debugPrint('Logging in with Instagram');
+        debugPrint('Logging in with Instagram - start');
+
+        // Reset PocketBase singleton first to ensure a clean auth state
+        debugPrint('Resetting PocketBase singleton before Instagram auth');
+        await PocketBaseSingleton.reset();
+
+        // Clear any existing PocketBase auth state
+        await PocketBaseSingleton.unsubscribeAll();
+
         final influencer = await AuthRepository.instagramAuth(
           collectionName: event.accountType,
         );
 
-        emit(InfluencerLoginSuccess(influencer));
-        debugPrint('Logged in with Instagram');
+        // Verify the auth store is valid after Instagram auth
+        final pb = await PocketBaseSingleton.instance;
+        debugPrint(
+            'Auth store token after Instagram auth: ${pb.authStore.token}');
+
+        if (pb.authStore.isValid) {
+          debugPrint('Instagram auth successful - Auth store is valid');
+          debugPrint('User authenticated as: ${influencer.email}');
+
+          // Force a small delay to ensure token is saved
+          await Future.delayed(Duration(milliseconds: 500));
+
+          emit(InfluencerLoginSuccess(influencer));
+        } else {
+          debugPrint('Instagram auth failed - Auth store is not valid');
+          emit(InstagramFailure(
+              'Instagram authentication failed. Please try again.'));
+        }
       } catch (e) {
+        debugPrint('Instagram auth error: $e');
         emit(InstagramFailure(e.toString()));
       }
     });
