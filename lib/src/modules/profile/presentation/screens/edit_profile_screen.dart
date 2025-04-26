@@ -209,17 +209,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         placeholder: const Text('Email address'),
                         prefix: const Icon(LucideIcons.mail),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (val) {
-                          if (val.isEmpty) {
-                            return 'Email is required';
-                          }
-                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                              .hasMatch(val)) {
-                            return 'Enter a valid email';
-                          }
-                          return null;
-                        },
-                        onChanged: (_) => _updateFormState(),
+                        readOnly: true,
+                        enabled: false,
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Email cannot be changed. Please contact support if you need to update your email address.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ],
                   ),
@@ -422,7 +422,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_isBrand) {
       final Brand brand = _originalUser;
       if (_nameController.text != brand.brandName) return true;
-      if (_emailController.text != brand.email) return true;
       if (_selectedIndustry != brand.industry) return true;
 
       if (_profileData != null) {
@@ -432,7 +431,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } else {
       final Influencer influencer = _originalUser;
       if (_nameController.text != influencer.fullName) return true;
-      if (_emailController.text != influencer.email) return true;
       if (_usernameController.text != influencer.username) return true;
       if (_selectedIndustry != influencer.industry) return true;
       if (_socialController.text != (influencer.socialHandle ?? ''))
@@ -477,7 +475,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           UpdateUser(
             fullName: _isBrand ? null : _nameController.text,
             brandName: _isBrand ? _nameController.text : null,
-            email: _emailController.text,
             username: _isBrand ? null : _usernameController.text,
             industry: _selectedIndustry,
             description:
