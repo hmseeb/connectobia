@@ -1,5 +1,4 @@
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
-import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -19,7 +18,6 @@ class ContractDetailsStep extends StatefulWidget {
 }
 
 class ContractDetailsStepState extends State<ContractDetailsStep> {
-  DateTime? _selectedDate;
   final List<String> _postTypes = ['Reel', 'Carousel', 'Post', 'Story'];
   List<String> _selectedPostTypes = [];
   bool _confirmDetails = false;
@@ -196,7 +194,6 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
         widget.campaignFormState != null) {
       _selectedPostTypes =
           List.from(widget.campaignFormState!.selectedPostTypes);
-      _selectedDate = widget.campaignFormState!.deliveryDate;
 
       if (_guidelinesController.text !=
           widget.campaignFormState!.contentGuidelines) {
@@ -224,7 +221,6 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
     if (widget.campaignFormState != null) {
       _selectedPostTypes =
           List.from(widget.campaignFormState!.selectedPostTypes);
-      _selectedDate = widget.campaignFormState!.deliveryDate;
       _guidelinesController.text = widget.campaignFormState!.contentGuidelines;
       _confirmDetails = widget.campaignFormState!.confirmDetails;
       _acceptTerms = widget.campaignFormState!.acceptTerms;
@@ -258,32 +254,5 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
       _confirmDetails,
       _acceptTerms,
     );
-  }
-
-  void _pickDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 7)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (pickedDate != null) {
-      setState(() {
-        _selectedDate = pickedDate;
-        _notifyChanges();
-      });
-    }
   }
 }
