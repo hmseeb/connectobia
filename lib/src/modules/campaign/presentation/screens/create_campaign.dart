@@ -17,7 +17,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CreateCampaignScreen extends StatefulWidget {
-  const CreateCampaignScreen({super.key});
+  final Campaign? campaignToEdit;
+
+  const CreateCampaignScreen({
+    super.key,
+    this.campaignToEdit,
+  });
 
   @override
   State<CreateCampaignScreen> createState() => _CreateCampaignScreenState();
@@ -272,17 +277,66 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // We're not initializing the form state here unconditionally anymore
-      // as we'll initialize it in didChangeDependencies for editing
-      // or later during the normal form usage flow for creation
+    // Check if we have a campaign passed directly to the widget
+    if (widget.campaignToEdit != null && !_isEditing) {
+      _campaignToEdit = widget.campaignToEdit;
+      _isEditing = true;
 
-      if (mounted && _campaignToEdit != null && _isEditing) {
-        // This is a double-check to make sure edit mode data is loaded
-        debugPrint('Post-frame callback: ensuring edit data is loaded');
+      // Initialize form with campaign data
+      _campaignNameController.text = _campaignToEdit!.title;
+      _campaignDescriptionController.text = _campaignToEdit!.description;
+      _budgetController.text = _campaignToEdit!.budget.toString();
+
+      debugPrint(
+          'Set text controllers from widget - Name: ${_campaignNameController.text}, Desc: ${_campaignDescriptionController.text}');
+
+      _category = _campaignToEdit!.category;
+      _startDate = _campaignToEdit!.startDate;
+      _endDate = _campaignToEdit!.endDate;
+      _goals = List.from(_campaignToEdit!.goals);
+      _selectedInfluencer = _campaignToEdit!.selectedInfluencer;
+
+      // Initialize the form state in the bloc with existing data (do this only once)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<CampaignBloc>().add(
+              InitCampaignForm(
+                title: _campaignToEdit!.title,
+                description: _campaignToEdit!.description,
+                category: _campaignToEdit!.category,
+                budget: _campaignToEdit!.budget,
+                startDate: _campaignToEdit!.startDate,
+                endDate: _campaignToEdit!.endDate,
+                goals: _campaignToEdit!.goals,
+                selectedInfluencer: _campaignToEdit!.selectedInfluencer,
+              ),
+            );
+
+        // Update the form with existing data immediately
         _updateBasicDetails();
-      }
-    });
+
+        // Update goals
+        context.read<CampaignBloc>().add(UpdateCampaignGoals(_goals));
+
+        // Update selected influencer
+        if (_selectedInfluencer != null) {
+          context
+              .read<CampaignBloc>()
+              .add(UpdateSelectedInfluencer(_selectedInfluencer));
+        }
+
+        // Fetch contract details for this campaign
+        _fetchContractDetails();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Default initialization for new campaign
+        if (mounted && _campaignToEdit != null && _isEditing) {
+          // This is a double-check to make sure edit mode data is loaded
+          debugPrint('Post-frame callback: ensuring edit data is loaded');
+          _updateBasicDetails();
+        }
+      });
+    }
   }
 
   Widget _buildStepContent(CampaignFormState? formState) {

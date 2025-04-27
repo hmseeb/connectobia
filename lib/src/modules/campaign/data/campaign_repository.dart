@@ -326,11 +326,38 @@ class CampaignRepository {
   static Future<Map<String, String>> getCategories() async {
     try {
       // For now, we'll use the industries as categories
-      // In a production app, you might want to fetch these from the backend
-      return IndustryList.industries;
+      // But we need to ensure consistent formatting between app and database
+      Map<String, String> normalizedCategories = {};
+
+      // Convert keys to ensure they match database format
+      IndustryList.industries.forEach((key, value) {
+        // Add both formats to support database inconsistencies
+        normalizedCategories[key] = value; // Original (with underscores)
+        normalizedCategories[key.replaceAll('_', ' ')] = value; // With spaces
+      });
+
+      return normalizedCategories;
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Normalize a category key to ensure it matches database format
+  static String normalizeCategoryKey(String category) {
+    // Support both formats when comparing or storing
+    if (category.contains('_')) {
+      return category; // Already has underscores
+    } else if (IndustryList.industries.containsKey(category)) {
+      return category; // It's a valid industry key
+    } else {
+      // Try to match by converting spaces to underscores
+      String withUnderscores = category.replaceAll(' ', '_');
+      if (IndustryList.industries.containsKey(withUnderscores)) {
+        return withUnderscores;
+      }
+      // Otherwise keep original
+      return category;
     }
   }
 

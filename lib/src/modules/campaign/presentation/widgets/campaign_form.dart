@@ -423,11 +423,16 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
   // Separate method to build category selector to avoid setState during build
   Widget _buildCategorySelector() {
+    // Convert keys to normalized form for matching
+    String normalizedSelectedCategory =
+        CampaignRepository.normalizeCategoryKey(_selectedCategory);
+
     return ShadSelect<String>(
       placeholder: Text('Select a category'),
       focusNode: _categoryFocusNode,
       minWidth: 450,
       maxHeight: 220,
+      initialValue: normalizedSelectedCategory,
       options: [
         Padding(
           padding: const EdgeInsets.fromLTRB(32, 6, 6, 6),
@@ -456,18 +461,20 @@ class _CampaignFormCardState extends State<CampaignFormCard>
       selectedOptionBuilder: (context, value) {
         // Using Future.microtask to avoid setState during build
         Future.microtask(() {
-          if (_selectedCategory != value) {
+          String normalizedValue =
+              CampaignRepository.normalizeCategoryKey(value);
+          if (_selectedCategory != normalizedValue) {
             setState(() {
-              _selectedCategory = value;
+              _selectedCategory = normalizedValue;
             });
-            widget.onCategoryChanged(value);
+            widget.onCategoryChanged(normalizedValue);
           }
         });
 
         return SizedBox(
           width: 300,
           child: Text(
-            _categories[value] ?? '',
+            _categories[value] ?? value,
             overflow: TextOverflow.ellipsis,
           ),
         );

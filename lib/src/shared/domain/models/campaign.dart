@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:pocketbase/pocketbase.dart';
 
+import '../../../modules/campaign/data/campaign_repository.dart';
+
 class Campaign {
   final String collectionId;
   final String collectionName;
@@ -50,7 +52,9 @@ class Campaign {
       goals: json["goals"] != null
           ? List<String>.from(json["goals"])
           : ["awareness"],
-      category: json["category"] ?? "fashion",
+      category: json["category"] != null
+          ? CampaignRepository.normalizeCategoryKey(json["category"])
+          : "fashion",
       budget: json["budget"] != null
           ? (json["budget"] is int
               ? (json["budget"] as int).toDouble()
@@ -120,7 +124,7 @@ class Campaign {
         "title": title,
         "description": description,
         "goals": goals,
-        "category": category,
+        "category": CampaignRepository.normalizeCategoryKey(category),
         "budget": budget,
         "start_date": startDate.toIso8601String(),
         "end_date": endDate.toIso8601String(),
@@ -136,7 +140,7 @@ class Campaign {
         "title": title,
         "description": description,
         "goals": goals,
-        "category": category,
+        "category": CampaignRepository.normalizeCategoryKey(category),
         "budget": budget,
         "start_date": startDate.toIso8601String(),
         "end_date": endDate.toIso8601String(),
