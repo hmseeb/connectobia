@@ -12,6 +12,10 @@ class CampaignFormCard extends StatefulWidget {
   final Function(String) onCategoryChanged;
   final Function(DateTime) onStartDateChanged;
   final Function(DateTime) onEndDateChanged;
+  final double? budgetValue;
+  final String? categoryValue;
+  final DateTime? startDateValue;
+  final DateTime? endDateValue;
 
   const CampaignFormCard({
     super.key,
@@ -21,6 +25,10 @@ class CampaignFormCard extends StatefulWidget {
     required this.onCategoryChanged,
     required this.onStartDateChanged,
     required this.onEndDateChanged,
+    this.budgetValue,
+    this.categoryValue,
+    this.startDateValue,
+    this.endDateValue,
   });
 
   @override
@@ -30,9 +38,9 @@ class CampaignFormCard extends StatefulWidget {
 class _CampaignFormCardState extends State<CampaignFormCard>
     with SingleTickerProviderStateMixin {
   final TextEditingController _budgetController = TextEditingController();
-  final DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now().add(const Duration(days: 7));
-  String _selectedCategory = 'fashion';
+  late DateTime _startDate;
+  late DateTime _endDate;
+  late String _selectedCategory;
   Map<String, String> _categories = {'fashion': 'Fashion'};
   bool _isLoadingCategories = true;
   late AnimationController _animationController;
@@ -300,6 +308,43 @@ class _CampaignFormCardState extends State<CampaignFormCard>
   }
 
   @override
+  void didUpdateWidget(CampaignFormCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Update budget controller if the value has changed from parent
+    if (widget.budgetValue != null &&
+        widget.budgetValue.toString() != _budgetController.text) {
+      _budgetController.text = widget.budgetValue.toString();
+      debugPrint(
+          'Updated budget field in didUpdateWidget: ${_budgetController.text}');
+    }
+
+    // Update category if it changed
+    if (widget.categoryValue != null &&
+        widget.categoryValue != _selectedCategory) {
+      setState(() {
+        _selectedCategory = widget.categoryValue!;
+        debugPrint('Updated category in didUpdateWidget: $_selectedCategory');
+      });
+    }
+
+    // Update dates if they changed
+    if (widget.startDateValue != null && widget.startDateValue != _startDate) {
+      setState(() {
+        _startDate = widget.startDateValue!;
+        debugPrint('Updated start date in didUpdateWidget: $_startDate');
+      });
+    }
+
+    if (widget.endDateValue != null && widget.endDateValue != _endDate) {
+      setState(() {
+        _endDate = widget.endDateValue!;
+        debugPrint('Updated end date in didUpdateWidget: $_endDate');
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _budgetController.dispose();
     _animationController.dispose();
@@ -310,23 +355,43 @@ class _CampaignFormCardState extends State<CampaignFormCard>
   @override
   void initState() {
     super.initState();
+
+    // Debug logs to trace initialization
+    debugPrint(
+        'CampaignFormCard initState - budgetValue: ${widget.budgetValue}, categoryValue: ${widget.categoryValue}');
+    debugPrint(
+        'Controller values - name: ${widget.campaignNameController.text}, description: ${widget.campaignDescriptionController.text}');
+
     _loadCategories();
-    _budgetController.text = '';
+
+    // Initialize budget controller
+    if (widget.budgetValue != null && widget.budgetValue! > 0) {
+      _budgetController.text = widget.budgetValue.toString();
+      debugPrint('Set budget field in initState: ${_budgetController.text}');
+    } else {
+      _budgetController.text = '';
+    }
+
+    _selectedCategory = widget.categoryValue ?? 'fashion';
+    _startDate = widget.startDateValue ?? DateTime.now();
+    _endDate =
+        widget.endDateValue ?? DateTime.now().add(const Duration(days: 7));
 
     // Setup animations
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
       vsync: this,
+      duration: const Duration(milliseconds: 500),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeIn,
-      ),
-    );
+        CurvedAnimation(parent: _animationController, curve: Curves.easeIn));
 
     _animationController.forward();
+
+    // Updates for form validations
+    widget.campaignNameController.addListener(_validateName);
+    widget.campaignDescriptionController.addListener(_validateDescription);
+    _budgetController.addListener(_validateBudget);
   }
 
   // Validate all form fields and show errors as needed
@@ -485,6 +550,30 @@ class _CampaignFormCardState extends State<CampaignFormCard>
       });
       widget.onStartDateChanged(picked);
     }
+  }
+
+  void _validateBudget() {
+    final budgetText = _budgetController.text.trim();
+    final budget = double.tryParse(budgetText);
+    setState(() {
+      _showBudgetError = budget == null || budget <= 0;
+    });
+
+    if (budget != null && budget > 0) {
+      widget.onBudgetChanged(budget);
+    }
+  }
+
+  void _validateDescription() {
+    setState(() {
+      _showDescriptionError = widget.campaignDescriptionController.text.isEmpty;
+    });
+  }
+
+  void _validateName() {
+    setState(() {
+      _showNameError = widget.campaignNameController.text.isEmpty;
+    });
   }
 }
 

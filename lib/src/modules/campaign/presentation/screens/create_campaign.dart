@@ -1,6 +1,7 @@
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
+import 'package:connectobia/src/modules/campaign/data/contract_repository.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_goals_form.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/contract_details.dart';
@@ -8,6 +9,7 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/custom_pro
 import 'package:connectobia/src/modules/campaign/presentation/widgets/navigation_buttons.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/select_influencer.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/presentation/widgets/error_box.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,21 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   String _category = 'fashion';
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(days: 30));
+  bool _isEditing = false;
+  Campaign? _campaignToEdit;
+
+  // For contract details
+  List<String> _postTypes = [];
+  DateTime? _deliveryDate;
+  String _contentGuidelines = '';
+  bool _confirmDetails = false;
+  bool _acceptTerms = false;
+
+  // For campaign goals
+  List<String> _goals = [];
+
+  // For influencer selection
+  String? _selectedInfluencer;
 
   // List of validation errors for the current step
   List<String> _validationErrors = [];
@@ -44,9 +61,11 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         if (state is CampaignCreated) {
           // Show success message
           ShadToaster.of(context).show(
-            const ShadToast(
-              title: Text('Campaign Created'),
-              description: Text('Your campaign has been created successfully'),
+            ShadToast(
+              title: Text(_isEditing ? 'Campaign Updated' : 'Campaign Created'),
+              description: Text(_isEditing
+                  ? 'Your campaign has been updated successfully'
+                  : 'Your campaign has been created successfully'),
             ),
           );
 
@@ -63,7 +82,9 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         // Handle loading states
         if (state is CampaignCreating) {
           return Scaffold(
-            appBar: transparentAppBar('Create Campaign', context: context),
+            appBar: transparentAppBar(
+                _isEditing ? 'Edit Campaign' : 'Create Campaign',
+                context: context),
             body: const Center(child: CircularProgressIndicator()),
           );
         }
@@ -71,21 +92,43 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         // Only use the campaign form state if available
         final campaignForm = state is CampaignFormState ? state : null;
 
-        // Update the text controllers when we get new form data
-        if (campaignForm != null &&
-            (_campaignNameController.text != campaignForm.title ||
-                _campaignDescriptionController.text !=
-                    campaignForm.description)) {
-          _campaignNameController.text = campaignForm.title;
-          _campaignDescriptionController.text = campaignForm.description;
-          if (_budgetController.text == '0' && campaignForm.budget > 0) {
+        // Only update the text controllers with form data if they're empty
+        // This prevents overwriting user edits with state data
+        if (campaignForm != null) {
+          debugPrint(
+              'Form state update - title: ${campaignForm.title}, description: ${campaignForm.description}');
+
+          // Only update if text controllers are empty (initial load)
+          // or if we're in edit mode and we need to load existing data
+          if (_campaignNameController.text.isEmpty) {
+            _campaignNameController.text = campaignForm.title;
+            debugPrint(
+                'Updated name controller to: ${_campaignNameController.text}');
+          }
+
+          if (_campaignDescriptionController.text.isEmpty) {
+            _campaignDescriptionController.text = campaignForm.description;
+            debugPrint(
+                'Updated description controller to: ${_campaignDescriptionController.text}');
+          }
+
+          if (_budgetController.text.isEmpty && campaignForm.budget > 0) {
             _budgetController.text = campaignForm.budget.toString();
+            debugPrint(
+                'Updated budget controller to: ${_budgetController.text}');
           }
 
           // Also update local state
           _category = campaignForm.category;
           _startDate = campaignForm.startDate;
           _endDate = campaignForm.endDate;
+          _goals = campaignForm.selectedGoals;
+          _selectedInfluencer = campaignForm.selectedInfluencer;
+          _postTypes = campaignForm.selectedPostTypes;
+          _deliveryDate = campaignForm.deliveryDate;
+          _contentGuidelines = campaignForm.contentGuidelines;
+          _confirmDetails = campaignForm.confirmDetails;
+          _acceptTerms = campaignForm.acceptTerms;
         }
 
         // Update validation errors from form state
@@ -97,7 +140,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         return Scaffold(
           resizeToAvoidBottomInset: true,
           appBar: transparentAppBar(
-            'Create Campaign',
+            _isEditing ? 'Edit Campaign' : 'Create Campaign',
             context: context,
             showBackButton: false,
           ),
@@ -123,6 +166,8 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
                     currentStep: _currentStep,
                     onPrevious: _goToPreviousStep,
                     onNext: () => _validateAndGoToNextStep(campaignForm),
+                    submitLabel:
+                        _isEditing ? 'Update Campaign' : 'Create Campaign',
                   ),
 
                   const SizedBox(height: 10),
@@ -141,6 +186,81 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Check if we're editing an existing campaign
+    final routeSettings = ModalRoute.of(context)?.settings;
+    debugPrint('RouteSettings: ${routeSettings?.arguments}');
+
+    if (routeSettings?.arguments != null && !_isEditing) {
+      try {
+        final args = routeSettings!.arguments as Map<String, dynamic>?;
+        debugPrint('Args: $args');
+
+        if (args != null && args.containsKey('campaign')) {
+          _campaignToEdit = args['campaign'] as Campaign?;
+          debugPrint(
+              'Campaign to edit: ${_campaignToEdit?.title}, ${_campaignToEdit?.description}');
+
+          if (_campaignToEdit != null) {
+            setState(() {
+              _isEditing = true;
+
+              // Initialize form with campaign data
+              _campaignNameController.text = _campaignToEdit!.title;
+              _campaignDescriptionController.text =
+                  _campaignToEdit!.description;
+              _budgetController.text = _campaignToEdit!.budget.toString();
+
+              debugPrint(
+                  'Set text controllers - Name: ${_campaignNameController.text}, Desc: ${_campaignDescriptionController.text}');
+
+              _category = _campaignToEdit!.category;
+              _startDate = _campaignToEdit!.startDate;
+              _endDate = _campaignToEdit!.endDate;
+              _goals = List.from(_campaignToEdit!.goals);
+              _selectedInfluencer = _campaignToEdit!.selectedInfluencer;
+
+              // Initialize the form state in the bloc with existing data
+              context.read<CampaignBloc>().add(
+                    InitCampaignForm(
+                      title: _campaignToEdit!.title,
+                      description: _campaignToEdit!.description,
+                      category: _campaignToEdit!.category,
+                      budget: _campaignToEdit!.budget,
+                      startDate: _campaignToEdit!.startDate,
+                      endDate: _campaignToEdit!.endDate,
+                      goals: _campaignToEdit!.goals,
+                      selectedInfluencer: _campaignToEdit!.selectedInfluencer,
+                    ),
+                  );
+
+              // Update the form with existing data immediately
+              _updateBasicDetails();
+
+              // Update goals
+              context.read<CampaignBloc>().add(UpdateCampaignGoals(_goals));
+
+              // Update selected influencer
+              if (_selectedInfluencer != null) {
+                context
+                    .read<CampaignBloc>()
+                    .add(UpdateSelectedInfluencer(_selectedInfluencer));
+              }
+
+              // Fetch contract details for this campaign
+              _fetchContractDetails();
+            });
+          }
+        }
+      } catch (e) {
+        debugPrint('Error loading campaign for editing: $e');
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _campaignNameController.dispose();
     _campaignDescriptionController.dispose();
@@ -151,9 +271,18 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize the campaign form
-    context.read<CampaignBloc>().add(InitCampaignForm());
-    _budgetController.text = '';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // We're not initializing the form state here unconditionally anymore
+      // as we'll initialize it in didChangeDependencies for editing
+      // or later during the normal form usage flow for creation
+
+      if (mounted && _campaignToEdit != null && _isEditing) {
+        // This is a double-check to make sure edit mode data is loaded
+        debugPrint('Post-frame callback: ensuring edit data is loaded');
+        _updateBasicDetails();
+      }
+    });
   }
 
   Widget _buildStepContent(CampaignFormState? formState) {
@@ -163,6 +292,12 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
           key: _formKey,
           campaignNameController: _campaignNameController,
           campaignDescriptionController: _campaignDescriptionController,
+          budgetValue: _budgetController.text.isNotEmpty
+              ? double.tryParse(_budgetController.text) ?? 0.0
+              : null,
+          categoryValue: _category,
+          startDateValue: _startDate,
+          endDateValue: _endDate,
           onBudgetChanged: (value) {
             debugPrint('Budget updated to: $value');
             _budgetController.text = value.toString();
@@ -183,17 +318,21 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         );
       case 2:
         return CampaignGoals(
+          initialGoals: _goals,
           onValidationChanged: (isValid) {
             // Validation is now handled by the bloc
           },
           onGoalsSelected: (goals) {
+            _goals = goals;
             context.read<CampaignBloc>().add(UpdateCampaignGoals(goals));
           },
         );
       case 3:
         return SelectInfluencerStep(
+          initialSelectedInfluencer: _selectedInfluencer,
           onSelectedInfluencersChanged: (selected) {
             final selectedId = selected.isNotEmpty ? selected.first : null;
+            _selectedInfluencer = selectedId;
             context
                 .read<CampaignBloc>()
                 .add(UpdateSelectedInfluencer(selectedId));
@@ -202,8 +341,19 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       case 4:
         return ContractDetailsStep(
           campaignFormState: formState,
+          initialPostTypes: _postTypes,
+          initialDeliveryDate: _deliveryDate,
+          initialGuidelines: _contentGuidelines,
+          initialConfirmDetails: _confirmDetails,
+          initialAcceptTerms: _acceptTerms,
           onContractDetailsChanged: (postTypes, deliveryDate, guidelines,
               confirmDetails, acceptTerms) {
+            _postTypes = postTypes;
+            _deliveryDate = deliveryDate;
+            _contentGuidelines = guidelines;
+            _confirmDetails = confirmDetails;
+            _acceptTerms = acceptTerms;
+
             context.read<CampaignBloc>().add(
                   UpdateContractDetails(
                     postTypes: postTypes,
@@ -217,6 +367,43 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         );
       default:
         return const Center(child: Text('Invalid Step'));
+    }
+  }
+
+  // Fetch contract details for the campaign being edited
+  Future<void> _fetchContractDetails() async {
+    if (_campaignToEdit != null) {
+      try {
+        // Fetch the contract for this campaign
+        final contract = await ContractRepository.getContractByCampaignId(
+            _campaignToEdit!.id);
+
+        if (contract != null) {
+          setState(() {
+            _postTypes = contract.postType;
+            _deliveryDate = contract.deliveryDate;
+            _contentGuidelines = contract.guidelines;
+
+            // Update contract details in the bloc
+            context.read<CampaignBloc>().add(
+                  UpdateContractDetails(
+                    postTypes: _postTypes,
+                    deliveryDate: _deliveryDate,
+                    contentGuidelines: _contentGuidelines,
+                    confirmDetails: true,
+                    acceptTerms: true,
+                  ),
+                );
+          });
+
+          debugPrint(
+              'Contract details loaded: post types: ${_postTypes.join(', ')}, delivery date: $_deliveryDate');
+        } else {
+          debugPrint('No contract found for campaign ${_campaignToEdit!.id}');
+        }
+      } catch (e) {
+        debugPrint('Error loading contract details: $e');
+      }
     }
   }
 
@@ -298,7 +485,15 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
 
       // Only create if valid
       if (formState.isStepValid(_currentStep)) {
-        context.read<CampaignBloc>().add(CreateCampaign());
+        if (_isEditing && _campaignToEdit != null) {
+          // Pass the campaign ID when updating existing campaign
+          context.read<CampaignBloc>().add(
+                CreateCampaign(campaignId: _campaignToEdit!.id),
+              );
+        } else {
+          // Create new campaign
+          context.read<CampaignBloc>().add(CreateCampaign());
+        }
       } else {
         // Show validation errors
         setState(() {

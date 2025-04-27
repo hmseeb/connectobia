@@ -113,7 +113,15 @@ class GenerateRoutes {
         return _buildRoute(const CreateCampaignScreen());
 
       case campaignDetails:
-        return _buildRoute(const CampaignDetailsPage());
+        Map<String, dynamic> args = {};
+        if (settings.arguments != null) {
+          args = settings.arguments as Map<String, dynamic>;
+        }
+        return _buildRoute(CampaignDetailsPage(
+          key: args['key'],
+          campaignId: args['campaignId'],
+          userType: args['userType'],
+        ));
 
       case profileScreen:
         return _buildRoute(const ProfileScreen());

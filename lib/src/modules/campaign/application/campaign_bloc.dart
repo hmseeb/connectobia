@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
 import 'package:connectobia/src/modules/campaign/data/campaign_repository.dart';
+import 'package:connectobia/src/modules/campaign/data/contract_repository.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,22 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
     on<LoadCampaigns>((event, emit) async {
       emit(CampaignsLoading());
       try {
+        debugPrint('Loading campaigns from repository');
         List<Campaign> campaigns = await CampaignRepository.getCampaigns();
+        debugPrint('Successfully loaded ${campaigns.length} campaigns');
         emit(CampaignsLoaded(campaigns));
       } catch (e) {
+        debugPrint('Error loading campaigns: $e');
         ErrorRepository errorRepo = ErrorRepository();
-        emit(CampaignsLoadingError(errorRepo.handleError(e)));
+        String errorMessage = errorRepo.handleError(e);
+        // If there's a connectivity issue, make it more user-friendly
+        if (errorMessage.contains('network') ||
+            errorMessage.contains('connection') ||
+            errorMessage.contains('timeout')) {
+          errorMessage =
+              'Network connection issue. Please check your internet and try again.';
+        }
+        emit(CampaignsLoadingError(errorMessage));
       }
     });
 
@@ -24,12 +36,25 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
     on<LoadCampaign>((event, emit) async {
       emit(CampaignsLoading());
       try {
+        debugPrint('Loading campaign with ID: ${event.campaignId}');
         Campaign campaign =
             await CampaignRepository.getCampaignById(event.campaignId);
+        debugPrint(
+            'Campaign loaded successfully: ${campaign.id}, ${campaign.title}');
         emit(CampaignLoaded(campaign));
       } catch (e) {
+        debugPrint('Error loading campaign: $e');
         ErrorRepository errorRepo = ErrorRepository();
-        emit(CampaignError(errorRepo.handleError(e)));
+        String errorMessage = errorRepo.handleError(e);
+
+        // Provide a more user-friendly message for resource not found
+        if (errorMessage.contains('not found') ||
+            errorMessage.contains('404')) {
+          errorMessage =
+              'Campaign not found. It may have been deleted or you do not have access to it.';
+        }
+
+        emit(CampaignError(errorMessage));
       }
     });
 
@@ -65,7 +90,24 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
 
     // Initialize a new campaign form
     on<InitCampaignForm>((event, emit) {
-      emit(CampaignFormState());
+      debugPrint(
+          'InitCampaignForm event received: title=${event.title}, description=${event.description}, budget=${event.budget}');
+
+      // Create a new form state with initial values for editing if provided
+      emit(CampaignFormState(
+        // Use provided values or defaults
+        title: event.title ?? '',
+        description: event.description ?? '',
+        category: event.category ?? 'fashion',
+        budget: event.budget ?? 0,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        selectedGoals: event.goals ?? [],
+        selectedInfluencer: event.selectedInfluencer,
+      ));
+
+      debugPrint(
+          'Emitted CampaignFormState with title=${event.title}, description=${event.description}, budget=${event.budget}');
     });
 
     // Update campaign basic details (Step 1)
@@ -155,35 +197,78 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         emit(CampaignCreating());
 
         try {
-          // Create the campaign object
-          final campaign = Campaign(
-            collectionId: 'campaigns',
-            collectionName: 'campaigns',
-            id: '',
-            title: formState.title,
-            description: formState.description,
-            goals: formState.selectedGoals,
-            category: formState.category,
-            budget: formState.budget,
-            startDate: formState.startDate,
-            endDate: formState.endDate,
-            status: 'active',
-            brand: '', // Will be set by repository
-            selectedInfluencer: formState.selectedInfluencer,
-            created: DateTime.now(),
-            updated: DateTime.now(),
-          );
+          // Check if this is an update or a new campaign
+          final isUpdate =
+              event.campaignId != null && event.campaignId!.isNotEmpty;
 
-          // Save the campaign to the backend with contract details
-          final createdCampaign = await CampaignRepository.createCampaign(
-            campaign,
-            postTypes: formState.selectedPostTypes,
-            deliveryDate: formState.deliveryDate,
-            guidelines: formState.contentGuidelines,
-          );
-          emit(CampaignCreated(createdCampaign));
+          if (isUpdate) {
+            // Update existing campaign
+            debugPrint(
+                'Updating existing campaign with ID: ${event.campaignId}');
+
+            final updateData = {
+              'title': formState.title,
+              'description': formState.description,
+              'goals': formState.selectedGoals,
+              'category': formState.category,
+              'budget': formState.budget,
+              'start_date': formState.startDate.toIso8601String(),
+              'end_date': formState.endDate.toIso8601String(),
+              'selected_influencer': formState.selectedInfluencer,
+            };
+
+            final updatedCampaign = await CampaignRepository.updateCampaign(
+              event.campaignId!,
+              updateData,
+            );
+
+            // Update associated contract if needed
+            try {
+              final contract = await ContractRepository.getContractByCampaignId(
+                  event.campaignId!);
+              if (contract != null) {
+                await ContractRepository.updateStatus(
+                  contract.id,
+                  'pending', // Reset to pending if changed
+                );
+              }
+            } catch (e) {
+              debugPrint('Error updating contract: $e');
+              // Don't fail the campaign update if contract update fails
+            }
+
+            emit(CampaignCreated(updatedCampaign));
+          } else {
+            // Create new campaign
+            final campaign = Campaign(
+              collectionId: 'campaigns',
+              collectionName: 'campaigns',
+              id: '',
+              title: formState.title,
+              description: formState.description,
+              goals: formState.selectedGoals,
+              category: formState.category,
+              budget: formState.budget,
+              startDate: formState.startDate,
+              endDate: formState.endDate,
+              status: 'active',
+              brand: '', // Will be set by repository
+              selectedInfluencer: formState.selectedInfluencer,
+              created: DateTime.now(),
+              updated: DateTime.now(),
+            );
+
+            // Save the campaign to the backend with contract details
+            final createdCampaign = await CampaignRepository.createCampaign(
+              campaign,
+              postTypes: formState.selectedPostTypes,
+              deliveryDate: formState.deliveryDate,
+              guidelines: formState.contentGuidelines,
+            );
+            emit(CampaignCreated(createdCampaign));
+          }
         } catch (e) {
-          debugPrint('Error creating campaign: $e');
+          debugPrint('Error creating/updating campaign: $e');
           ErrorRepository errorRepo = ErrorRepository();
           emit(CampaignCreationError(errorRepo.handleError(e)));
         }

@@ -9,9 +9,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SelectInfluencerStep extends StatefulWidget {
   final Function(List<String>) onSelectedInfluencersChanged;
+  final String? initialSelectedInfluencer;
 
-  const SelectInfluencerStep(
-      {super.key, required this.onSelectedInfluencersChanged});
+  const SelectInfluencerStep({
+    super.key,
+    required this.onSelectedInfluencersChanged,
+    this.initialSelectedInfluencer,
+  });
 
   @override
   State<SelectInfluencerStep> createState() => _SelectInfluencerStepState();
@@ -295,7 +299,12 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
   @override
   void initState() {
     super.initState();
-    _loadInfluencers();
+
+    // Initialize with the influencer if provided
+    if (widget.initialSelectedInfluencer != null &&
+        widget.initialSelectedInfluencer!.isNotEmpty) {
+      _selectedInfluencers.add(widget.initialSelectedInfluencer!);
+    }
 
     // Setup animations
     _animationController = AnimationController(
@@ -311,6 +320,9 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
     );
 
     _animationController.forward();
+
+    // Load influencers data
+    _loadInfluencers();
   }
 
   Widget _buildEmptyState() {

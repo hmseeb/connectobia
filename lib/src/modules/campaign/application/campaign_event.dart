@@ -1,10 +1,35 @@
 abstract class CampaignEvent {}
 
 /// Event to create the campaign with all collected data
-class CreateCampaign extends CampaignEvent {}
+class CreateCampaign extends CampaignEvent {
+  final String? campaignId; // If provided, this is an update operation
+
+  CreateCampaign({this.campaignId});
+}
 
 /// Event to initialize a new campaign form
-class InitCampaignForm extends CampaignEvent {}
+class InitCampaignForm extends CampaignEvent {
+  // Optional fields for editing existing campaign
+  final String? title;
+  final String? description;
+  final String? category;
+  final double? budget;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final List<String>? goals;
+  final String? selectedInfluencer;
+
+  InitCampaignForm({
+    this.title,
+    this.description,
+    this.category,
+    this.budget,
+    this.startDate,
+    this.endDate,
+    this.goals,
+    this.selectedInfluencer,
+  });
+}
 
 /// Event to load a specific campaign by ID
 class LoadCampaign extends CampaignEvent {

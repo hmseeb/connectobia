@@ -1,7 +1,7 @@
 const String brandDashboard = "/brandDashboard";
 const String brandOnboarding = "/brandOnboarding";
 const String brandSignupScreen = "/brandSignupScreen";
-const String campaignDetails = "/capmaigndetails";
+const String campaignDetails = "/campaigndetails";
 const String campaignsScreen = "/CampaignsScreen";
 const String createCampaign = "/createcapmaign";
 const String editProfileScreen = "/editProfileScreen";

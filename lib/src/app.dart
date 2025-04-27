@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/theme/shad_themedata.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,9 @@ class ConnectobiaState extends State<Connectobia> {
                 GenerateRoutes.onGenerateRoute(settings),
             themeMode: state is DarkTheme ? ThemeMode.dark : ThemeMode.light,
             theme: shadThemeData(state),
+            navigatorObservers: [
+              CampaignScreen.routeObserver,
+            ],
             home: BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is BrandAuthenticated ||
@@ -158,5 +162,18 @@ class ConnectobiaState extends State<Connectobia> {
         context.read<AnimationCubit>().animationStopped();
       }
     });
+
+    // Add global error handler for rendering errors
+    FlutterError.onError = (FlutterErrorDetails details) {
+      if (details.exception.toString().contains('hasSize') ||
+          details.exception.toString().contains('RenderBox') ||
+          details.exception.toString().contains('Render')) {
+        debugPrint('Caught rendering error: ${details.exception}');
+        // Let the app continue despite the error
+        return;
+      }
+      // For other errors, use the default error handler
+      FlutterError.presentError(details);
+    };
   }
 }

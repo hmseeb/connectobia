@@ -6,12 +6,14 @@ class NavigationButtons extends StatelessWidget {
   final int currentStep;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
+  final String? submitLabel;
 
   const NavigationButtons({
     super.key,
     required this.currentStep,
     required this.onPrevious,
     required this.onNext,
+    this.submitLabel,
   });
 
   @override
@@ -75,7 +77,7 @@ class NavigationButtons extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    isLastStep ? 'Submit Campaign' : 'Next',
+                    isLastStep ? (submitLabel ?? 'Submit Campaign') : 'Next',
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       color: AppColors.textLight,

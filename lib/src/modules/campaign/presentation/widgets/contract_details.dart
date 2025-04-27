@@ -236,182 +236,201 @@ class ContractDetailsStep extends StatefulWidget {
   final CampaignFormState? campaignFormState;
   final Function(List<String>, DateTime?, String, bool, bool)
       onContractDetailsChanged;
+  final List<String>? initialPostTypes;
+  final DateTime? initialDeliveryDate;
+  final String? initialGuidelines;
+  final bool? initialConfirmDetails;
+  final bool? initialAcceptTerms;
 
   const ContractDetailsStep({
     super.key,
     this.campaignFormState,
     required this.onContractDetailsChanged,
+    this.initialPostTypes,
+    this.initialDeliveryDate,
+    this.initialGuidelines,
+    this.initialConfirmDetails,
+    this.initialAcceptTerms,
   });
 
   @override
   ContractDetailsStepState createState() => ContractDetailsStepState();
 }
 
-class ContractDetailsStepState extends State<ContractDetailsStep> {
-  final List<String> _postTypes = ['reel', 'carousel', 'post', 'story'];
-  List<String> _selectedPostTypes = [];
+class ContractDetailsStepState extends State<ContractDetailsStep>
+    with SingleTickerProviderStateMixin {
+  // Default selections
+  final Map<String, bool> _selectedPostTypes = {
+    'post': false,
+    'story': false,
+    'reel': false,
+    'carousel': false,
+  };
+  late DateTime _deliveryDate;
+  final TextEditingController _guidelinesController = TextEditingController();
   bool _confirmDetails = false;
   bool _acceptTerms = false;
-  late TextEditingController _guidelinesController;
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  // Helper to get list of selected post types
+  List<String> get selectedPostTypesList => _selectedPostTypes.entries
+      .where((e) => e.value)
+      .map((e) => e.key)
+      .toList();
 
   @override
   Widget build(BuildContext context) {
-    // Get campaign info from campaign form state
-    final campaignName = widget.campaignFormState?.title ?? "Campaign";
-    final campaignCategory = widget.campaignFormState?.category ?? "Category";
-    final campaignBudget =
-        "\$${widget.campaignFormState?.budget.toString() ?? "0"}";
-    final startDate = DateFormat('MMM dd, yyyy').format(
-      widget.campaignFormState?.startDate ?? DateTime.now(),
-    );
-    final endDate = DateFormat('MMM dd, yyyy').format(
-      widget.campaignFormState?.endDate ??
-          DateTime.now().add(const Duration(days: 30)),
-    );
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          const Text(
-            'Contract Details',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-
-          // Campaign Summary
-          ShadCard(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Campaign Summary',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                _buildSummaryRow('Name', campaignName),
-                _buildSummaryRow('Category', campaignCategory),
-                _buildSummaryRow('Budget', campaignBudget),
-                _buildSummaryRow('Timeline', '$startDate - $endDate'),
-              ],
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            const Text(
+              'Contract Details',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // Post Type Section
-          ShadCard(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Content Format',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Select the type of content you want:',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  children: _postTypes.map((type) {
-                    return ShadCheckbox(
-                      value: _selectedPostTypes.contains(type),
-                      onChanged: (bool value) {
-                        setState(() {
-                          if (value) {
-                            _selectedPostTypes.add(type);
-                          } else {
-                            _selectedPostTypes.remove(type);
-                          }
-                          _notifyChanges();
-                        });
-                      },
-                      label:
-                          Text('${type[0].toUpperCase()}${type.substring(1)}'),
-                    );
-                  }).toList(),
-                ),
-              ],
+            // Campaign Summary
+            ShadCard(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Campaign Summary',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildSummaryRow(
+                      'Name', widget.campaignFormState?.title ?? "Campaign"),
+                  _buildSummaryRow('Category',
+                      widget.campaignFormState?.category ?? "Category"),
+                  _buildSummaryRow('Budget',
+                      "\$${widget.campaignFormState?.budget.toString() ?? "0"}"),
+                  _buildSummaryRow('Timeline',
+                      '${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.startDate ?? DateTime.now())} - ${DateFormat('MMM dd, yyyy').format(widget.campaignFormState?.endDate ?? DateTime.now().add(const Duration(days: 30)))}'),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // Content Guidelines Section
-          ShadCard(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Content Guidelines',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Provide any specific requirements or instructions:',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 12),
-                ShadInputFormField(
-                  controller: _guidelinesController,
-                  placeholder: const Text(
-                      'Examples: specific colors, messaging, hashtags, etc.'),
-                  maxLines: 5,
-                  onChanged: (value) {
-                    _notifyChanges();
-                  },
-                ),
-              ],
+            // Post Type Section
+            ShadCard(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Content Types",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Select the types of content you need from the influencer:",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    children: _selectedPostTypes.entries.map((entry) {
+                      return ShadCheckbox(
+                        value: entry.value,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _selectedPostTypes[entry.key] = value;
+                            _notifyChanges();
+                          });
+                        },
+                        label: Text(
+                            '${entry.key[0].toUpperCase()}${entry.key.substring(1)}'),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // Terms and Agreement
-          ShadCard(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Agreement',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                ShadCheckbox(
-                  value: _confirmDetails,
-                  onChanged: (value) {
-                    setState(() {
-                      _confirmDetails = value;
+            // Content Guidelines Section
+            ShadCard(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Content Guidelines',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Provide any specific requirements or instructions:',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 12),
+                  ShadInputFormField(
+                    controller: _guidelinesController,
+                    placeholder: const Text(
+                        'Examples: specific colors, messaging, hashtags, etc.'),
+                    maxLines: 5,
+                    onChanged: (value) {
                       _notifyChanges();
-                    });
-                  },
-                  label: const Text('I confirm all details are correct'),
-                ),
-                const SizedBox(height: 8),
-                ShadCheckbox(
-                  value: _acceptTerms,
-                  onChanged: (value) {
-                    setState(() {
-                      _acceptTerms = value;
-                      _notifyChanges();
-                    });
-                  },
-                  label: const Text('I accept all terms and conditions'),
-                ),
-              ],
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+
+            // Terms and Agreement
+            ShadCard(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Agreement',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Please review the contract details carefully before sending. Make sure all information is correct and that you are comfortable with the terms and conditions.',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  ShadCheckbox(
+                    value: _confirmDetails,
+                    onChanged: (value) {
+                      setState(() {
+                        _confirmDetails = value;
+                        _notifyChanges();
+                      });
+                    },
+                    label: const Text('I confirm all details are correct'),
+                  ),
+                  const SizedBox(height: 8),
+                  ShadCheckbox(
+                    value: _acceptTerms,
+                    onChanged: (value) {
+                      setState(() {
+                        _acceptTerms = value;
+                        _notifyChanges();
+                      });
+                    },
+                    label: const Text('I accept all terms and conditions'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -420,67 +439,150 @@ class ContractDetailsStepState extends State<ContractDetailsStep> {
   void didUpdateWidget(ContractDetailsStep oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Update if the form state changes
+    // Handle updates from the form state if needed
     if (widget.campaignFormState != oldWidget.campaignFormState &&
         widget.campaignFormState != null) {
-      _selectedPostTypes =
-          List.from(widget.campaignFormState!.selectedPostTypes);
+      // Update post types from form state
+      for (final postType in widget.campaignFormState!.selectedPostTypes) {
+        if (_selectedPostTypes.containsKey(postType)) {
+          _selectedPostTypes[postType] = true;
+        }
+      }
 
+      // Update guidelines
       if (_guidelinesController.text !=
           widget.campaignFormState!.contentGuidelines) {
         _guidelinesController.text =
             widget.campaignFormState!.contentGuidelines;
       }
 
+      // Update checkboxes
       _confirmDetails = widget.campaignFormState!.confirmDetails;
       _acceptTerms = widget.campaignFormState!.acceptTerms;
+
+      // Update delivery date
+      if (widget.campaignFormState!.deliveryDate != null) {
+        _deliveryDate = widget.campaignFormState!.deliveryDate!;
+      } else {
+        _deliveryDate = widget.campaignFormState!.endDate;
+      }
     }
   }
 
   @override
   void dispose() {
     _guidelinesController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _guidelinesController = TextEditingController();
 
-    // Initialize from form state if available
-    if (widget.campaignFormState != null) {
-      _selectedPostTypes =
-          List.from(widget.campaignFormState!.selectedPostTypes);
-      _guidelinesController.text = widget.campaignFormState!.contentGuidelines;
-      _confirmDetails = widget.campaignFormState!.confirmDetails;
-      _acceptTerms = widget.campaignFormState!.acceptTerms;
+    // Initialize with values if provided
+    if (widget.initialPostTypes != null &&
+        widget.initialPostTypes!.isNotEmpty) {
+      for (var postType in widget.initialPostTypes!) {
+        if (_selectedPostTypes.containsKey(postType)) {
+          _selectedPostTypes[postType] = true;
+        }
+      }
+    }
+
+    _deliveryDate = widget.initialDeliveryDate ??
+        DateTime.now().add(const Duration(days: 14));
+
+    if (widget.initialGuidelines != null) {
+      _guidelinesController.text = widget.initialGuidelines!;
+    }
+
+    _confirmDetails = widget.initialConfirmDetails ?? false;
+    _acceptTerms = widget.initialAcceptTerms ?? false;
+
+    // Setup animations
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    _animationController.forward();
+
+    // Update parent with initial values if any were provided
+    if (widget.initialPostTypes != null ||
+        widget.initialDeliveryDate != null ||
+        widget.initialGuidelines != null ||
+        widget.initialConfirmDetails != null ||
+        widget.initialAcceptTerms != null) {
+      _updateContractDetails();
     }
   }
 
   Widget _buildSummaryRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$label: ',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
-          Text(value),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   void _notifyChanges() {
-    // Get the campaign end date to use as delivery date
-    final DateTime campaignEndDate = widget.campaignFormState?.endDate ??
-        DateTime.now().add(const Duration(days: 30));
-
     widget.onContractDetailsChanged(
-      _selectedPostTypes,
-      campaignEndDate, // Use campaign end date instead of selectedDate
+      selectedPostTypesList,
+      _deliveryDate,
+      _guidelinesController.text,
+      _confirmDetails,
+      _acceptTerms,
+    );
+  }
+
+  void _selectDeliveryDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _deliveryDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && picked != _deliveryDate) {
+      setState(() {
+        _deliveryDate = picked;
+        _notifyChanges();
+      });
+    }
+  }
+
+  void _updateContractDetails() {
+    widget.onContractDetailsChanged(
+      selectedPostTypesList,
+      _deliveryDate,
       _guidelinesController.text,
       _confirmDetails,
       _acceptTerms,

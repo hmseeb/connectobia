@@ -275,10 +275,25 @@ class CampaignRepository {
   /// Get a campaign by ID
   static Future<Campaign> getCampaignById(String id) async {
     try {
+      debugPrint('Fetching campaign with ID: $id');
       final pb = await PocketBaseSingleton.instance;
+
+      // Check if the ID is valid
+      if (id.isEmpty) {
+        throw Exception('Campaign ID is empty');
+      }
+
       final record = await pb.collection(_collectionName).getOne(id);
+      debugPrint('Campaign found: ${record.id}');
       return Campaign.fromRecord(record);
     } catch (e) {
+      debugPrint('Error fetching campaign by ID: $e');
+
+      // Check for specific error types and provide more context
+      if (e.toString().contains('404') || e.toString().contains('not found')) {
+        debugPrint('Campaign with ID: $id not found');
+      }
+
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

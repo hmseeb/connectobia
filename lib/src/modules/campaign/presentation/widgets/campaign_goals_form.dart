@@ -6,11 +6,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 class CampaignGoals extends StatefulWidget {
   final Function(bool) onValidationChanged;
   final Function(List<String>) onGoalsSelected;
+  final List<String>? initialGoals;
 
   const CampaignGoals({
     super.key,
     required this.onValidationChanged,
     required this.onGoalsSelected,
+    this.initialGoals,
   });
 
   @override
@@ -20,7 +22,7 @@ class CampaignGoals extends StatefulWidget {
 class _CampaignGoalsState extends State<CampaignGoals>
     with SingleTickerProviderStateMixin {
   // Updated to match PocketBase schema goals
-  final Map<String, bool> _selectedGoals = {
+  late final Map<String, bool> _selectedGoals = {
     'awareness': false,
     'sales': false,
     'engagement': false,
@@ -160,6 +162,17 @@ class _CampaignGoalsState extends State<CampaignGoals>
   @override
   void initState() {
     super.initState();
+
+    // Initialize selected goals from props if provided
+    if (widget.initialGoals != null && widget.initialGoals!.isNotEmpty) {
+      for (var goal in widget.initialGoals!) {
+        if (_selectedGoals.containsKey(goal)) {
+          _selectedGoals[goal] = true;
+        }
+      }
+      // Update parent component
+      _updateValidation();
+    }
 
     // Setup animations
     _animationController = AnimationController(
