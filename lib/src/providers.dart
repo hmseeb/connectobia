@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart'
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/notifications/application/notification_bloc.dart';
 import 'package:connectobia/src/modules/profile/application/favorites/favorites_bloc.dart';
 import 'package:connectobia/src/modules/profile/application/user/user_bloc.dart';
 import 'package:connectobia/src/modules/wallet/application/wallet/wallet_bloc.dart';
@@ -62,6 +63,10 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),
+        BlocProvider(
+            create: (context) => NotificationBloc()
+              ..add(InitializeNotificationService())
+              ..add(SubscribeToNotifications())),
       ],
       child: Connectobia(
         isDarkMode: isDarkMode,

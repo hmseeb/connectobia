@@ -3,6 +3,9 @@ part of 'notification_bloc.dart';
 /// Event to fetch all notifications for a user
 final class FetchNotifications extends NotificationEvent {}
 
+/// Event to initialize the notification service
+final class InitializeNotificationService extends NotificationEvent {}
+
 /// Event to mark all notifications as read
 final class MarkAllNotificationsAsRead extends NotificationEvent {}
 

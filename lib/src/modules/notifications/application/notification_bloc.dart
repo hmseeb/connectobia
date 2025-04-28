@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:connectobia/src/shared/data/models/notification.dart';
 import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
+import 'package:connectobia/src/shared/data/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
@@ -33,6 +34,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     // Handle new notification
     on<NotificationArrived>(_onNotificationArrived);
+
+    // Initialize notification service
+    on<InitializeNotificationService>(_onInitializeNotificationService);
   }
 
   @override
@@ -65,6 +69,54 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         unreadCount: unreadCount,
       ));
     } catch (e) {
+      emit(NotificationError(e.toString()));
+    }
+  }
+
+  /// Handles initializing the notification service
+  Future<void> _onInitializeNotificationService(
+    InitializeNotificationService event,
+    Emitter<NotificationState> emit,
+  ) async {
+    try {
+      // Initialize the notification service
+      await NotificationService.initialize();
+
+      // Set up the notification action listeners
+      await NotificationService.setListeners(
+        onNotificationCreated: (receivedNotification) {
+          debugPrint('Notification created: ${receivedNotification.title}');
+        },
+        onNotificationDisplayed: (receivedNotification) {
+          debugPrint('Notification displayed: ${receivedNotification.title}');
+        },
+        onActionReceived: (receivedAction) async {
+          debugPrint(
+              'Notification action received: ${receivedAction.buttonKeyPressed}');
+          // Handle notification action
+          await NotificationService.handleNotificationAction(
+            receivedAction,
+            markAsRead: (notificationId) async {
+              add(MarkNotificationAsRead(notificationId));
+            },
+          );
+          // Handle navigation if needed based on payload
+          if (receivedAction.payload != null &&
+              receivedAction.payload!.containsKey('redirectUrl') &&
+              receivedAction.payload!['redirectUrl']!.isNotEmpty) {
+            debugPrint(
+                'Should navigate to: ${receivedAction.payload!['redirectUrl']}');
+            // Navigation logic would go here
+          }
+        },
+        onDismissActionReceived: (receivedAction) {
+          debugPrint('Notification dismissed: ${receivedAction.title}');
+        },
+      );
+
+      debugPrint('Notification service initialized successfully');
+    } catch (e) {
+      debugPrint('Error initializing notification service: $e');
       emit(NotificationError(e.toString()));
     }
   }
@@ -107,7 +159,14 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   void _onNotificationArrived(
     NotificationArrived event,
     Emitter<NotificationState> emit,
-  ) {
+  ) async {
+    // Show in-app notification using the notification service
+    try {
+      await NotificationService.showNotification(event.notification);
+    } catch (e) {
+      debugPrint('Error showing in-app notification: $e');
+    }
+
     emit(NotificationReceived(notification: event.notification));
 
     // Refresh the notifications list

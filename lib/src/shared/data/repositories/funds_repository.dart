@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../services/storage/pb.dart';
 import '../../../shared/data/repositories/error_repo.dart';
+import '../../../shared/data/repositories/notification_repository.dart';
 import '../../../shared/domain/models/funds.dart';
 
 class FundsRepository {
@@ -23,6 +24,7 @@ class FundsRepository {
             filter: 'user = "$userId"',
           );
 
+      Funds funds;
       if (resultList.items.isEmpty) {
         // Create new funds record if none exists
         final record = await pb.collection(_collectionName).create(body: {
@@ -31,7 +33,7 @@ class FundsRepository {
           'locked': 0,
         });
 
-        return Funds.fromRecord(record);
+        funds = Funds.fromRecord(record);
       } else {
         // Update existing record
         final existing = Funds.fromRecord(resultList.items.first);
@@ -44,8 +46,23 @@ class FundsRepository {
           },
         );
 
-        return Funds.fromRecord(record);
+        funds = Funds.fromRecord(record);
       }
+
+      // Send a payment notification
+      try {
+        await NotificationRepository.createPaymentNotification(
+          userId: userId,
+          title: 'Funds Added',
+          body:
+              'Your account has been credited with \$${amount.toStringAsFixed(2)}. New balance: \$${funds.balance.toStringAsFixed(2)}',
+          redirectUrl: '/wallet',
+        );
+      } catch (e) {
+        debugPrint('Error creating funds notification: $e');
+      }
+
+      return funds;
     } catch (e) {
       debugPrint('Error in addFunds: $e');
       ErrorRepository errorRepo = ErrorRepository();
@@ -125,6 +142,19 @@ class FundsRepository {
         },
       );
 
+      // Send a payment notification
+      try {
+        await NotificationRepository.createPaymentNotification(
+          userId: userId,
+          title: 'Funds Locked',
+          body:
+              'Your account has locked \$${amount.toStringAsFixed(2)} for a campaign. Available balance: \$${(existing.balance - newLocked).toStringAsFixed(2)}',
+          redirectUrl: '/wallet',
+        );
+      } catch (e) {
+        debugPrint('Error creating funds lock notification: $e');
+      }
+
       return true;
     } catch (e) {
       debugPrint('Error in lockFunds: $e');
@@ -165,6 +195,19 @@ class FundsRepository {
           'locked': newLocked,
         },
       );
+
+      // Send a payment notification
+      try {
+        await NotificationRepository.createPaymentNotification(
+          userId: userId,
+          title: 'Funds Released',
+          body:
+              'Your locked funds of \$${releaseAmount.toStringAsFixed(2)} have been released. Available balance: \$${(existing.balance - newLocked).toStringAsFixed(2)}',
+          redirectUrl: '/wallet',
+        );
+      } catch (e) {
+        debugPrint('Error creating funds release notification: $e');
+      }
 
       return true;
     } catch (e) {
@@ -212,6 +255,19 @@ class FundsRepository {
           'locked': newLocked,
         },
       );
+
+      // Send a payment notification
+      try {
+        await NotificationRepository.createPaymentNotification(
+          userId: userId,
+          title: 'Payment Sent',
+          body:
+              'You have sent a payment of \$${amount.toStringAsFixed(2)}. New balance: \$${newBalance.toStringAsFixed(2)}',
+          redirectUrl: '/wallet',
+        );
+      } catch (e) {
+        debugPrint('Error creating payment sent notification: $e');
+      }
 
       return true;
     } catch (e) {

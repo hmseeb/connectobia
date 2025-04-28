@@ -8,6 +8,15 @@ import 'package:pocketbase/pocketbase.dart';
 class NotificationRepository {
   static const String _collectionName = 'notifications';
 
+  /// Allowed notification types
+  static const List<String> allowedTypes = [
+    'campaign',
+    'contract',
+    'content',
+    'payment',
+    'system'
+  ];
+
   /// Create a campaign notification
   static Future<void> createCampaignNotification({
     required String userId,
@@ -20,6 +29,22 @@ class NotificationRepository {
       body: 'You have received a new contract for the campaign: $campaignTitle',
       type: 'campaign',
       redirectUrl: '/campaign/$campaignId',
+    );
+  }
+
+  /// Create a content notification
+  static Future<void> createContentNotification({
+    required String userId,
+    required String title,
+    required String body,
+    String? redirectUrl,
+  }) async {
+    await createNotification(
+      userId: userId,
+      title: title,
+      body: body,
+      type: 'content',
+      redirectUrl: redirectUrl,
     );
   }
 
@@ -80,6 +105,13 @@ class NotificationRepository {
     String? redirectUrl,
   }) async {
     try {
+      // Validate notification type
+      if (!allowedTypes.contains(type)) {
+        debugPrint(
+            'Invalid notification type: $type. Using system type instead.');
+        type = 'system';
+      }
+
       final pb = await PocketBaseSingleton.instance;
 
       debugPrint('Creating notification for user $userId: $title');
@@ -101,6 +133,22 @@ class NotificationRepository {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
+  }
+
+  /// Create a payment notification
+  static Future<void> createPaymentNotification({
+    required String userId,
+    required String title,
+    required String body,
+    String? redirectUrl,
+  }) async {
+    await createNotification(
+      userId: userId,
+      title: title,
+      body: body,
+      type: 'payment',
+      redirectUrl: redirectUrl,
+    );
   }
 
   /// Get all notifications for a user

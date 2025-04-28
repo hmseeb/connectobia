@@ -24,5 +24,7 @@ void main() async {
 
   /// Initialize Rive
   await RiveFile.initialize();
+
+  /// Run the app with providers
   runApp(BlocProviders(isDarkMode: isDarkMode));
 }

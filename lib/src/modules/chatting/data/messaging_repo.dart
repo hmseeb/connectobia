@@ -25,7 +25,7 @@ class MessagesRepository {
       return messages;
     } catch (e) {
       debugPrint('$e');
-      throw ClientException();
+      throw Exception("Error getting messages by chat ID: $e");
     }
   }
 
@@ -48,7 +48,7 @@ class MessagesRepository {
       return messages;
     } catch (e) {
       debugPrint('$e');
-      throw ClientException();
+      throw Exception("Error getting messages by user ID: $e");
     }
   }
 
@@ -96,7 +96,7 @@ class MessagesRepository {
       return message;
     } catch (e) {
       debugPrint('$e');
-      throw ClientException();
+      throw Exception("Error sending media: $e");
     }
   }
 
@@ -131,7 +131,7 @@ class MessagesRepository {
       return Message.fromRecord(record);
     } catch (e) {
       debugPrint("📝 ERROR in sendTextMessage: $e");
-      throw ClientException();
+      throw Exception("Error sending text message: $e");
     }
   }
 

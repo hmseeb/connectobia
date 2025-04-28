@@ -5,7 +5,6 @@ import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// [ChatsRepository] is a class that handles all the chat related operations.
@@ -57,7 +56,7 @@ class ChatsRepository {
       return messageRecord;
     } catch (e) {
       debugPrint("🔄 ERROR in createChat: $e");
-      throw ClientException;
+      throw Exception("Error creating chat: $e");
     }
   }
 
@@ -76,7 +75,7 @@ class ChatsRepository {
       }
       return chatId;
     } catch (e) {
-      throw ClientException;
+      throw Exception("Error getting chat ID: $e");
     }
   }
 
@@ -96,7 +95,7 @@ class ChatsRepository {
 
       return chatId;
     } catch (e) {
-      throw ClientException;
+      throw Exception("Error getting chat ID by user ID: $e");
     }
   }
 
@@ -128,7 +127,7 @@ class ChatsRepository {
       return chats;
     } catch (e) {
       debugPrint('$e');
-      throw ClientException;
+      throw Exception("Error getting chats: $e");
     }
   }
 
@@ -166,7 +165,7 @@ class ChatsRepository {
       return message;
     } catch (e) {
       debugPrint('$e');
-      throw ClientException;
+      throw Exception("Error sending media: $e");
     }
   }
 }

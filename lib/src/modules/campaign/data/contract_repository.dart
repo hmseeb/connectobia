@@ -443,11 +443,10 @@ class ContractRepository {
 
       try {
         // Create notification for brand
-        await NotificationRepository.createNotification(
+        await NotificationRepository.createContentNotification(
           userId: updatedContract.brand,
           title: 'Content Submitted',
           body: 'The influencer has submitted content for review.',
-          type: 'content',
           redirectUrl:
               '$campaignDetails?campaignId=${updatedContract.campaign}&userType=brand',
         );
