@@ -431,14 +431,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        TextField(
+                        ShadInputFormField(
                           controller: _bioController,
-                          decoration: const InputDecoration(
-                            hintText:
-                                'Write something about yourself or your brand...',
-                            border: OutlineInputBorder(),
-                            counterText: '',
-                          ),
+                          placeholder: const Text(
+                              'Write something about yourself or your brand...'),
                           minLines: 3,
                           maxLines: 5,
                           maxLength: 4000,

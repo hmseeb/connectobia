@@ -50,12 +50,8 @@ class AvatarUploader extends StatelessWidget {
             child: Container(
               width: size,
               height: size,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.red.shade400,
-                  width: 3,
-                ),
               ),
               child: ClipOval(
                 child: avatarUrl.isNotEmpty
@@ -205,12 +201,8 @@ class TemporaryAvatarUploader extends StatelessWidget {
           Container(
             width: size,
             height: size,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.red.shade400,
-                width: 3,
-              ),
             ),
             child: ClipOval(
               child: image != null

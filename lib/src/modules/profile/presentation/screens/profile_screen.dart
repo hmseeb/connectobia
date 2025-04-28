@@ -1092,7 +1092,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Remove HTML paragraphs
     String cleaned = text;
     if (cleaned.contains('<p>') || cleaned.contains('</p>')) {
-      cleaned = cleaned.replaceAll('<p>', '').replaceAll('</p>', '');
+      cleaned = cleaned.replaceAll('<p>', '').replaceAll('</p>', '\n\n');
     }
 
     // Remove other common HTML tags
