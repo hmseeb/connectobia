@@ -33,6 +33,7 @@ import 'package:connectobia/src/modules/profile/presentation/screens/edit_profil
     as new_profile;
 import 'package:connectobia/src/modules/profile/presentation/screens/profile_screen.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 
 /// A class responsible for generating routes for the application.
@@ -110,6 +111,12 @@ class GenerateRoutes {
         return _buildRoute(const CampaignScreen());
 
       case createCampaign:
+        // Only brands can create campaigns
+        final accountType = CollectionNameSingleton.instance;
+        if (accountType == 'influencers') {
+          // Redirect to campaigns screen if user is an influencer
+          return _buildRoute(const CampaignScreen());
+        }
         return _buildRoute(const CreateCampaignScreen());
 
       case campaignDetails:

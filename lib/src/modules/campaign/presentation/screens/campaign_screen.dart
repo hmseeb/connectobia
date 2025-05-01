@@ -6,6 +6,7 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_e
 import 'package:connectobia/src/modules/campaign/presentation/widgets/search_field.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/swipe_hint.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,7 @@ class _CampaignScreenState extends State<CampaignScreen>
     with WidgetsBindingObserver, RouteAware {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _screenFocusNode = FocusNode();
+  bool get _isBrand => CollectionNameSingleton.instance == 'brands';
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +85,14 @@ class _CampaignScreenState extends State<CampaignScreen>
             );
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed(createCampaign);
-          },
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton: _isBrand
+            ? FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(createCampaign);
+                },
+                child: const Icon(Icons.add),
+              )
+            : null,
       ),
     );
   }
