@@ -272,8 +272,6 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
   };
   late DateTime _deliveryDate;
   final TextEditingController _guidelinesController = TextEditingController();
-  final TextEditingController _paymentDetailsController =
-      TextEditingController();
   bool _confirmDetails = false;
   bool _acceptTerms = false;
 
@@ -288,13 +286,9 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMM dd, yyyy');
-
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
-        final formattedBudget =
-            currencyFormat.format(widget.campaignFormState?.budget ?? 0);
         return FadeTransition(
           opacity: _fadeAnimation,
           child: SingleChildScrollView(

@@ -327,8 +327,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   Widget _buildCampaignHeader(Campaign campaign) {
-    final bool isOwner = campaign.brand == userId;
-
     return RepaintBoundary(
       child: ShadCard(
         padding: const EdgeInsets.all(16.0),
