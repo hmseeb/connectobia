@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
 
-// The Dispute class
 class Dispute {
   final String campaignName;
   final String brandName;
@@ -20,7 +18,6 @@ class Dispute {
   });
 }
 
-// DisputeDetailsPage for viewing individual dispute details
 class DisputeDetailsPage extends StatelessWidget {
   final Dispute dispute;
 
@@ -29,46 +26,135 @@ class DisputeDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: transparentAppBar('Dispute Details', context: context),
-      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('Dispute Details'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Campaign Name: ${dispute.campaignName}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Brand Name: ${dispute.brandName}', style: const TextStyle(fontSize: 16)),
-            Text('Influencer Name: ${dispute.influencerName}', style: const TextStyle(fontSize: 16)),
-            Text('Reported By: ${dispute.reportedBy}', style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 12),
-            const Text('Report Text:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 8),
-            Text(dispute.reportText, style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Logic for viewing campaign, or any other action
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Viewing Campaign ID: ${dispute.campaignId}')),
-                  );
-                },
-                child: const Text('View Campaign'),
-              ),
-            ),
+            _buildSectionHeader('Campaign Information'),
+            _buildDetailItem('📢 Campaign Name', dispute.campaignName),
+            _buildDetailItem('🏢 Brand', dispute.brandName),
+            _buildDetailItem('👤 Influencer', dispute.influencerName),
+            _buildDetailItem('🧾 Reported By', dispute.reportedBy),
+            const Divider(height: 40),
+            _buildSectionHeader('Report Details'),
+            Text(dispute.reportText,
+                style: const TextStyle(fontSize: 16, height: 1.5)),
+            const Spacer(),
+            _buildActionButtons(context),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              side: const BorderSide(color: Colors.blue),
+            ),
+            child: const Text('Back'),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () => _showActionDialog(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: const Text('Take Action'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showActionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Action'),
+        content: const Text('Are you sure you want to take this action?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Action completed successfully')),
+              );
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-// AdminDisputePanel to show the list of disputes
 class AdminDisputePanel extends StatefulWidget {
   const AdminDisputePanel({super.key});
 
@@ -94,17 +180,9 @@ class _AdminDisputePanelState extends State<AdminDisputePanel> {
       reportText: 'Wrong product tagging.',
       campaignId: 'CAMP002',
     ),
-    Dispute(
-      campaignName: 'Fashion Fiesta',
-      brandName: 'GlamWorld',
-      influencerName: 'StyleIcon',
-      reportedBy: 'Admin3',
-      reportText: 'Low engagement issue.',
-      campaignId: 'CAMP003',
-    ),
   ];
 
-  List<Dispute> filteredDisputes = [];
+  late List<Dispute> filteredDisputes;
   String searchQuery = '';
   String selectedBrandFilter = 'All';
 
@@ -129,65 +207,47 @@ class _AdminDisputePanelState extends State<AdminDisputePanel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: transparentAppBar('Dispute Management', context: context),
-      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text('Dispute Management'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             _buildSearchAndFilter(),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: filteredDisputes.length,
+                separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
                   final dispute = filteredDisputes[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    elevation: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildDetailRow('Campaign Name', dispute.campaignName),
-                          _buildDetailRow('Brand Name', dispute.brandName),
-                          _buildDetailRow('Influencer Name', dispute.influencerName),
-                          _buildDetailRow('Reported By', dispute.reportedBy),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Report Text:',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            dispute.reportText,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Navigate to DisputeDetailsPage when a card is tapped
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DisputeDetailsPage(dispute: dispute),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                              ),
-                              child: const Text('View Campaign'),
-                            ),
-                          ),
-                        ],
+                  return ListTile(
+                    title: Text(
+                      dispute.campaignName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Brand: ${dispute.brandName}'),
+                        Text('Influencer: ${dispute.influencerName}'),
+                        Text('Reported by: ${dispute.reportedBy}'),
+                      ],
+                    ),
+                    trailing: ElevatedButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DisputeDetailsPage(dispute: dispute),
+                        ),
+                      ),
+                      child: const Text('View Details'),
                     ),
                   );
                 },
@@ -203,15 +263,15 @@ class _AdminDisputePanelState extends State<AdminDisputePanel> {
     return Row(
       children: [
         Expanded(
-          flex: 3,
           child: TextField(
             decoration: InputDecoration(
-              labelText: 'Search...',
-              hintText: 'Campaign, Influencer, Reporter',
+              hintText: 'Search disputes...',
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Colors.grey[100],
             ),
             onChanged: (value) {
               searchQuery = value;
@@ -219,54 +279,30 @@ class _AdminDisputePanelState extends State<AdminDisputePanel> {
             },
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          flex: 2,
-          child: DropdownButtonFormField<String>(
-            value: selectedBrandFilter,
-            decoration: InputDecoration(
-              labelText: 'Filter Brand',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              filled: true,
-              fillColor: Colors.white,
+        const SizedBox(width: 16),
+        DropdownButton<String>(
+          value: selectedBrandFilter,
+          items: [
+            const DropdownMenuItem(
+              value: 'All',
+              child: Text('All Brands'),
             ),
-            items: [
-              const DropdownMenuItem(value: 'All', child: Text('All Brands')),
-              ...allDisputes.map((d) => d.brandName).toSet().map(
-                    (brand) => DropdownMenuItem(
+            ...allDisputes
+                .map((d) => d.brandName)
+                .toSet()
+                .map((brand) => DropdownMenuItem(
                       value: brand,
                       child: Text(brand),
-                    ),
-                  ),
-            ],
-            onChanged: (value) {
+                    )),
+          ],
+          onChanged: (value) {
+            setState(() {
               selectedBrandFilter = value!;
               _filterDisputes();
-            },
-          ),
+            });
+          },
         ),
       ],
-    );
-  }
-
-  Widget _buildDetailRow(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '$title: ',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

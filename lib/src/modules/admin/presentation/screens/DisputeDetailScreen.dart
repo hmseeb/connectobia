@@ -20,156 +20,143 @@ class Dispute {
   });
 }
 
-class DisputeDetailsPage extends StatefulWidget {
+class DisputeDetailsPage extends StatelessWidget {
   final Dispute dispute;
 
   const DisputeDetailsPage({super.key, required this.dispute});
 
   @override
-  State<DisputeDetailsPage> createState() => _DisputeDetailsPageState();
-}
-
-class _DisputeDetailsPageState extends State<DisputeDetailsPage> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: transparentAppBar('Dispute Details', context: context),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDisputeInfoCard(),
-            const SizedBox(height: 16),
-            _buildReportTextCard(),
-            const SizedBox(height: 16),
-            _buildActionsCard(),
-            const Spacer(),
-            _buildNavigationButtons(),
-          ],
+      backgroundColor: Colors.grey[100],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildDisputeInfoCard(),
+              const SizedBox(height: 16),
+              _buildReportTextCard(),
+              const SizedBox(height: 16),
+              _buildActionsCard(context),
+              const SizedBox(height: 24),
+              _buildNavigationButtons(context),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Dispute Information Card
   Widget _buildDisputeInfoCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDetailRow('Campaign Name', widget.dispute.campaignName),
-            _buildDetailRow('Brand Name', widget.dispute.brandName),
-            _buildDetailRow('Influencer Name', widget.dispute.influencerName),
-            _buildDetailRow('Reported By', widget.dispute.reportedBy),
-          ],
-        ),
+    return ShadCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDetailRow('📢 Campaign', dispute.campaignName),
+          _buildDetailRow('🏢 Brand', dispute.brandName),
+          _buildDetailRow('👤 Influencer', dispute.influencerName),
+          _buildDetailRow('🧾 Reported By', dispute.reportedBy),
+        ],
       ),
     );
   }
 
-  // Report Text Card
   Widget _buildReportTextCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Report Text:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.dispute.reportText,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
+    return ShadCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '📝 Report Text',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(dispute.reportText),
+        ],
       ),
     );
   }
 
-  // Actions Card
-  Widget _buildActionsCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Viewing Campaign ID: ${widget.dispute.campaignId}')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              child: const Text('View Campaign'),
-            ),
-          ],
-        ),
+  Widget _buildActionsCard(BuildContext context) {
+    return ShadCard(
+      child: Column(
+        children: [
+          ShadButton(
+            child: const Text('🔍 View Campaign'),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Viewing Campaign ID: ${dispute.campaignId}')),
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          ShadButton(
+            child: const Text('⚖️ Take Action'),
+            onPressed: () => _showActionDialog(context),
+          ),
+        ],
       ),
     );
   }
 
-  // Navigation Buttons
-  Widget _buildNavigationButtons() {
+  Widget _buildNavigationButtons(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: ShadButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Back'),
+            child: const Text('⬅️ Back'),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12),
         Expanded(
           child: ShadButton(
+            child: const Text('➡️ Next'),
             onPressed: () {
-              // Handle Next button press
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Next clicked')),
+              );
             },
-            child: const Text('Next'),
           ),
         ),
       ],
     );
   }
 
-  // Helper Method for displaying label-value pairs
-  Widget _buildDetailRow(String title, String value) {
+  Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$title: ',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          Text('$label: ',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 15))),
+        ],
+      ),
+    );
+  }
+
+  void _showActionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Take Action'),
+        content: const Text('What action would you like to take?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 16),
-            ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Action taken successfully')),
+              );
+            },
+            child: const Text('Confirm'),
           ),
         ],
       ),
