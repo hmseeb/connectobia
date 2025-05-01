@@ -163,6 +163,64 @@ class FundsRepository {
     }
   }
 
+  /// Process payment from brand to influencer when a contract is completed
+  static Future<bool> processCampaignPayment(
+      String brandId, String influencerId, double amount) async {
+    try {
+      if (amount <= 0) {
+        throw Exception('Payment amount must be greater than zero');
+      }
+
+      debugPrint(
+          'Processing payment: Brand $brandId, Influencer $influencerId, Amount $amount');
+
+      // 1. Deduct from brand's locked funds
+      final brandSuccess = await transferFunds(brandId, amount);
+      if (!brandSuccess) {
+        debugPrint('Failed to deduct funds from brand account');
+        return false;
+      }
+
+      // 2. Add to influencer's balance
+      try {
+        await addFunds(influencerId, amount);
+
+        // 3. Send a payment received notification to the influencer
+        try {
+          await NotificationRepository.createPaymentNotification(
+            userId: influencerId,
+            title: 'Payment Received',
+            body:
+                'You have received a payment of \$${amount.toStringAsFixed(2)} for completing a campaign.',
+            redirectUrl: '/wallet',
+          );
+        } catch (e) {
+          debugPrint('Error creating payment received notification: $e');
+          // Continue even if notification fails
+        }
+
+        return true;
+      } catch (e) {
+        debugPrint('Error adding funds to influencer: $e');
+
+        // If adding funds to influencer fails, try to refund the brand
+        try {
+          await addFunds(brandId, amount);
+          debugPrint('Refunded brand after influencer payment failure');
+        } catch (refundError) {
+          debugPrint(
+              'CRITICAL ERROR: Could not refund brand after influencer payment failure: $refundError');
+        }
+
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error in processCampaignPayment: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
   /// Release locked funds
   static Future<bool> releaseFunds(String userId, double amount) async {
     try {

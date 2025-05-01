@@ -187,6 +187,9 @@ class ContractRepository {
       // First, get the contract to ensure it exists and to get related data
       final contract = await getContractById(id);
       final campaignId = contract.campaign;
+      final brandId = contract.brand;
+      final influencerId = contract.influencer;
+      final amount = contract.payout;
 
       // Update the contract status to completed
       final record = await pb.collection(_collectionName).update(
@@ -195,6 +198,25 @@ class ContractRepository {
       );
 
       final completedContract = Contract.fromRecord(record);
+
+      // Process payment from brand to influencer
+      try {
+        debugPrint(
+            'Processing payment of $amount from brand $brandId to influencer $influencerId');
+        final paymentSuccess = await FundsRepository.processCampaignPayment(
+            brandId, influencerId, amount);
+
+        if (!paymentSuccess) {
+          debugPrint(
+              '⚠️ Payment processing failed but continuing with contract completion');
+        } else {
+          debugPrint('✅ Payment successfully processed');
+        }
+      } catch (e) {
+        debugPrint('Error processing payment: $e');
+        // Don't fail the contract completion if payment processing fails
+        // This will need manual intervention from support
+      }
 
       // Also update the campaign status to closed and set end date to today
       try {
