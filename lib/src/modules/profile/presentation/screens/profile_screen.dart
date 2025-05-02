@@ -13,7 +13,7 @@ import '../../../profile/data/review_repository.dart';
 import '../../application/user/user_bloc.dart';
 import '../components/avatar_uploader.dart';
 import '../components/profile_field.dart';
-import '../components/review_list.dart';
+import '../components/profile_review_list.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -231,53 +231,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           // Reviews Section
           const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Reviews',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '${_reviews.length} ${_reviews.length == 1 ? 'review' : 'reviews'}',
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
 
-          if (_isLoadingReviews)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else if (_reviews.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'No reviews yet',
-                  style: TextStyle(
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ),
-            )
-          else
-            ReviewList(
-              reviews: _reviews,
-              averageRating: _averageRating,
-              isLoading: false,
-            ),
+          // Replace the reviews section with our new component
+          ProfileReviewList(
+            reviews: _reviews,
+            userId: userId,
+            userType: isBrand ? 'brand' : 'influencer',
+            isLoading: _isLoadingReviews,
+            onRefresh: () => _loadReviews(user),
+            averageRating: _averageRating,
+          ),
         ],
       ),
     );

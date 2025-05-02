@@ -92,6 +92,45 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
+    on<FetchUserReviews>((event, emit) async {
+      try {
+        if (state is! UserLoaded && state is! UserProfileLoaded) {
+          emit(UserError('User data not loaded'));
+          return;
+        }
+
+        dynamic currentUser;
+        dynamic profileData;
+
+        if (state is UserLoaded) {
+          currentUser = (state as UserLoaded).user;
+        } else if (state is UserProfileLoaded) {
+          currentUser = (state as UserProfileLoaded).user;
+          profileData = (state as UserProfileLoaded).profileData;
+        }
+
+        final List<Review> reviews;
+
+        if (event.isBrand) {
+          // Get reviews for a brand
+          reviews = await ReviewRepository.getReviewsForBrand(event.userId);
+        } else {
+          // Get reviews for an influencer
+          reviews =
+              await ReviewRepository.getReviewsForInfluencer(event.userId);
+        }
+
+        emit(UserReviewsLoaded(
+          user: currentUser,
+          profileData: profileData,
+          reviews: reviews,
+        ));
+      } catch (e) {
+        debugPrint('Error fetching user reviews: $e');
+        emit(UserError('Failed to load reviews: ${e.toString()}'));
+      }
+    });
+
     on<UpdateUser>((event, emit) async {
       try {
         if (state is! UserLoaded && state is! UserProfileLoaded) {
@@ -232,48 +271,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           final influencer = Influencer.fromRecord(updatedRecord);
           emit(UserLoaded(influencer));
         }
-      } catch (e) {
-        emit(UserError(e.toString()));
-      }
-    });
-
-    on<FetchUserReviews>((event, emit) async {
-      try {
-        // First, make sure we have the user data
-        if (state is! UserProfileLoaded) {
-          emit(UserError('User profile not loaded'));
-          return;
-        }
-
-        final currentState = state as UserProfileLoaded;
-
-        // Show loading state
-        emit(UserLoading());
-
-        List<Review> reviews = [];
-        double averageRating = 0.0;
-
-        // Fetch reviews based on user type
-        if (event.isBrand) {
-          reviews = await ReviewRepository.getReviewsForBrand(event.userId);
-          averageRating =
-              await ReviewRepository.getBrandAverageRating(event.userId);
-        } else {
-          reviews =
-              await ReviewRepository.getReviewsForInfluencer(event.userId);
-          averageRating =
-              await ReviewRepository.getInfluencerAverageRating(event.userId);
-        }
-
-        // Sort reviews by date (newest first)
-        reviews.sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
-
-        emit(UserReviewsLoaded(
-          user: currentState.user,
-          profileData: currentState.profileData,
-          reviews: reviews,
-          averageRating: averageRating,
-        ));
       } catch (e) {
         emit(UserError(e.toString()));
       }

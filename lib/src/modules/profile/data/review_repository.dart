@@ -30,6 +30,30 @@ class ReviewRepository {
     }
   }
 
+  /// Check if a user can delete a review
+  /// Users can delete reviews they've written or received
+  static Future<bool> canUserDeleteReview(
+      {required String userId,
+      required bool isBrand,
+      required Review review}) async {
+    try {
+      // If user is a brand
+      if (isBrand) {
+        // Brand can delete reviews they wrote or received
+        return (review.fromBrand == userId || review.toBrand == userId);
+      }
+      // If user is an influencer
+      else {
+        // Influencer can delete reviews they wrote or received
+        return (review.fromInfluencer == userId ||
+            review.toInfluencer == userId);
+      }
+    } catch (e) {
+      debugPrint('Error checking if user can delete review: $e');
+      return false;
+    }
+  }
+
   /// Create a brand-to-influencer review
   static Future<Review> createBrandToInfluencerReview({
     required String campaignId,
@@ -91,6 +115,19 @@ class ReviewRepository {
       return Review.fromRecord(record);
     } catch (e) {
       debugPrint('Error creating influencer-to-brand review: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
+  /// Delete a review by its ID
+  static Future<bool> deleteReview(String reviewId) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      await pb.collection(_collectionName).delete(reviewId);
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting review: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

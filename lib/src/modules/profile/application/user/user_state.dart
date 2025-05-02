@@ -33,7 +33,7 @@ class UserReviewsLoaded extends UserState {
     required this.user,
     required this.profileData,
     required this.reviews,
-    required this.averageRating,
+    this.averageRating = 0.0,
   });
 }
 
