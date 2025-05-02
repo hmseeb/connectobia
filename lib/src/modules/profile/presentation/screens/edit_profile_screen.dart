@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'dart:io';
 
 import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/industries.dart';
@@ -30,6 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   String? _selectedIndustry;
   XFile? _profileImage;
+  XFile? _bannerImage;
   bool _formIsDirty = false;
   bool _formIsValid = false;
 
@@ -109,44 +111,193 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildForm() {
     return Form(
       key: _formKey,
+      onChanged: _updateFormState,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_originalUser != null) ...[
-              Center(
-                child: _profileImage == null
-                    ? AvatarUploader(
-                        avatarUrl: _isBrand
-                            ? (_originalUser as Brand).avatar
-                            : (_originalUser as Influencer).avatar,
-                        userId: _isBrand
-                            ? (_originalUser as Brand).id
-                            : (_originalUser as Influencer).id,
-                        collectionId: _isBrand
-                            ? (_originalUser as Brand).collectionId
-                            : (_originalUser as Influencer).collectionId,
-                        isEditable: true,
-                        onAvatarSelected: _onAvatarSelected,
-                      )
-                    : TemporaryAvatarUploader(
-                        image: _profileImage,
-                        onPressed: () async {
-                          final ImagePicker picker = ImagePicker();
-                          final XFile? image = await picker.pickImage(
-                            source: ImageSource.gallery,
-                            maxWidth: 800,
-                            maxHeight: 800,
-                            imageQuality: 85,
-                          );
-                          if (image != null) {
-                            _onAvatarSelected(image);
-                          }
-                        },
+              if (_isBrand) ...[
+                // Combined Banner and Profile Image Section
+                SizedBox(
+                  height: 250,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Banner Section
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Theme.of(context).colorScheme.surfaceVariant,
+                          ),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              if (_bannerImage != null)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(
+                                    File(_bannerImage!.path),
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              else if (_originalUser is Brand &&
+                                  (_originalUser as Brand).banner != null)
+                                FutureBuilder(
+                                  future: PocketBaseSingleton.instance,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.network(
+                                          '${snapshot.data!.baseUrl}/api/files/${(_originalUser as Brand).collectionId}/${(_originalUser as Brand).id}/${(_originalUser as Brand).banner}',
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return const Center(
+                                              child: Icon(
+                                                LucideIcons.image,
+                                                size: 48,
+                                                color: Colors.grey,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  },
+                                )
+                              else
+                                const Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.image,
+                                        size: 48,
+                                        color: Colors.grey,
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Add a banner image',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              // Banner Edit Button
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.8),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(LucideIcons.camera),
+                                    onPressed: () async {
+                                      final ImagePicker picker = ImagePicker();
+                                      final XFile? image = await picker.pickImage(
+                                        source: ImageSource.gallery,
+                                        maxWidth: 1920,
+                                        maxHeight: 1080,
+                                        imageQuality: 85,
+                                      );
+                                      if (image != null) {
+                                        _onBannerSelected(image);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-              ),
-              const SizedBox(height: 24),
+                      // Profile Image Section
+                      Positioned(
+                        bottom: 0,
+                        left: 16,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              width: 4,
+                            ),
+                          ),
+                          child: _profileImage == null
+                              ? AvatarUploader(
+                                  avatarUrl: _isBrand
+                                      ? (_originalUser as Brand).avatar
+                                      : (_originalUser as Influencer).avatar,
+                                  userId: _isBrand
+                                      ? (_originalUser as Brand).id
+                                      : (_originalUser as Influencer).id,
+                                  collectionId: _isBrand
+                                      ? (_originalUser as Brand).collectionId
+                                      : (_originalUser as Influencer).collectionId,
+                                  isEditable: true,
+                                  onAvatarSelected: _onAvatarSelected,
+                                )
+                              : TemporaryAvatarUploader(
+                                  image: _profileImage,
+                                  onPressed: () async {
+                                    final ImagePicker picker = ImagePicker();
+                                    final XFile? image = await picker.pickImage(
+                                      source: ImageSource.gallery,
+                                      maxWidth: 800,
+                                      maxHeight: 800,
+                                      imageQuality: 85,
+                                    );
+                                    if (image != null) {
+                                      _onAvatarSelected(image);
+                                    }
+                                  },
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ] else ...[
+                // Just Profile Image for non-brands
+                Center(
+                  child: _profileImage == null
+                      ? AvatarUploader(
+                          avatarUrl: (_originalUser as Influencer).avatar,
+                          userId: (_originalUser as Influencer).id,
+                          collectionId: (_originalUser as Influencer).collectionId,
+                          isEditable: true,
+                          onAvatarSelected: _onAvatarSelected,
+                        )
+                      : TemporaryAvatarUploader(
+                          image: _profileImage,
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? image = await picker.pickImage(
+                              source: ImageSource.gallery,
+                              maxWidth: 800,
+                              maxHeight: 800,
+                              imageQuality: 85,
+                            );
+                            if (image != null) {
+                              _onAvatarSelected(image);
+                            }
+                          },
+                        ),
+                ),
+                const SizedBox(height: 24),
+              ],
             ],
 
             // Personal Information Section
@@ -423,6 +574,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final Brand brand = _originalUser;
       if (_nameController.text != brand.brandName) return true;
       if (_selectedIndustry != brand.industry) return true;
+      if (_bannerImage != null) return true;
 
       if (_profileData != null) {
         final BrandProfile profile = _profileData;
@@ -443,8 +595,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     }
 
-    // Always check profile image
+    // Always check profile image and banner
     if (_profileImage != null) return true;
+    if (_bannerImage != null) return true;
 
     return false;
   }
@@ -490,6 +643,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_profileImage != null) {
       context.read<UserBloc>().add(
             UpdateUserAvatar(avatar: _profileImage),
+          );
+    }
+
+    // Handle banner if updated
+    if (_bannerImage != null) {
+      context.read<UserBloc>().add(
+            UpdateUserBanner(banner: _bannerImage),
           );
     }
 
@@ -591,13 +751,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       _profileImage = image;
       _formIsDirty = true;
+      _formIsValid = true;
+    });
+  }
+
+  void _onBannerSelected(XFile image) {
+    setState(() {
+      _bannerImage = image;
+      _formIsDirty = true;
+      _formIsValid = true;
     });
   }
 
   void _updateFormState() {
     if (!mounted) return;
 
-    final isValid = _formKey.currentState?.validate() ?? false;
+    // For banner-only changes, we should consider the form valid
+    final isValid = (_bannerImage != null) || (_formKey.currentState?.validate() ?? false);
     final isDirty = _checkIfFormIsDirty();
 
     setState(() {
