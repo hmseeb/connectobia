@@ -23,6 +23,20 @@ class UserProfileLoaded extends UserState {
   UserProfileLoaded({required this.user, required this.profileData});
 }
 
+class UserReviewsLoaded extends UserState {
+  final dynamic user;
+  final dynamic profileData;
+  final List<dynamic> reviews;
+  final double averageRating;
+
+  UserReviewsLoaded({
+    required this.user,
+    required this.profileData,
+    required this.reviews,
+    required this.averageRating,
+  });
+}
+
 @immutable
 abstract class UserState {}
 

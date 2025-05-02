@@ -1,4 +1,5 @@
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
@@ -174,6 +175,56 @@ class ContractRepository {
     }
   }
 
+  /// Mark contract as completed, allowing both parties to leave reviews
+  static Future<Contract> markAsCompleted(String id) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      // First, get the contract to ensure it exists and to get related data
+      final existingContract = await getContractById(id);
+
+      // Update the contract status to completed
+      final record = await pb.collection(_collectionName).update(
+        id,
+        body: {'status': 'completed'},
+      );
+
+      final completedContract = Contract.fromRecord(record);
+
+      // Send notifications to both parties that they can now leave reviews
+      try {
+        // Notify the brand
+        await NotificationRepository.createNotification(
+          userId: completedContract.brand,
+          title: 'Contract Completed',
+          body:
+              'The contract has been marked as completed. You can now leave a review for the influencer.',
+          type: 'contract_completed',
+          redirectUrl: '$reviewScreen?contractId=${completedContract.id}',
+        );
+
+        // Notify the influencer
+        await NotificationRepository.createNotification(
+          userId: completedContract.influencer,
+          title: 'Contract Completed',
+          body:
+              'The contract has been marked as completed. You can now leave a review for the brand.',
+          type: 'contract_completed',
+          redirectUrl: '$reviewScreen?contractId=${completedContract.id}',
+        );
+      } catch (e) {
+        debugPrint('Error sending contract completion notifications: $e');
+        // Don't fail the contract completion if notifications fail
+      }
+
+      return completedContract;
+    } catch (e) {
+      debugPrint('Error marking contract as completed: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
   /// Reject contract by influencer
   static Future<Contract> rejectByInfluencer(String id) async {
     try {
@@ -231,6 +282,13 @@ class ContractRepository {
   static Future<Contract> updateStatus(String id, String status) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+
+      // If status is 'completed', use the specialized method
+      if (status == 'completed') {
+        return await markAsCompleted(id);
+      }
+
+      // Otherwise, just update the status
       final record = await pb.collection(_collectionName).update(
         id,
         body: {'status': status},

@@ -7,10 +7,13 @@ import '../../../../shared/domain/models/brand.dart';
 import '../../../../shared/domain/models/brand_profile.dart';
 import '../../../../shared/domain/models/influencer.dart';
 import '../../../../shared/domain/models/influencer_profile.dart';
+import '../../../../shared/domain/models/review.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
+import '../../../profile/data/review_repository.dart';
 import '../../application/user/user_bloc.dart';
 import '../components/avatar_uploader.dart';
 import '../components/profile_field.dart';
+import '../components/review_list.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,6 +25,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   dynamic _profileData;
   bool _isLoadingProfile = false;
+  bool _isLoadingReviews = false;
+  List<Review> _reviews = [];
+  double _averageRating = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +44,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _profileData = state.profileData;
               _isLoadingProfile = false;
             });
+            // Load reviews when profile is loaded
+            _loadReviews(state.user);
           }
         },
         builder: (context, state) {
@@ -218,9 +226,102 @@ class _ProfileScreenState extends State<ProfileScreen> {
               isEditable: false,
             );
           }),
+
+          const SizedBox(height: 24),
+
+          // Reviews Section
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Reviews',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '${_reviews.length} ${_reviews.length == 1 ? 'review' : 'reviews'}',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          if (_isLoadingReviews)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else if (_reviews.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'No reviews yet',
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ),
+            )
+          else
+            ReviewList(
+              reviews: _reviews,
+              averageRating: _averageRating,
+              isLoading: false,
+            ),
         ],
       ),
     );
+  }
+
+  // Load reviews for the user
+  Future<void> _loadReviews(dynamic user) async {
+    if (_isLoadingReviews) return;
+
+    setState(() {
+      _isLoadingReviews = true;
+    });
+
+    try {
+      final bool isBrand = user is Brand;
+      final String userId = user.id;
+
+      if (isBrand) {
+        // Load reviews for brand
+        _reviews = await ReviewRepository.getReviewsForBrand(userId);
+        _averageRating = await ReviewRepository.getBrandAverageRating(userId);
+      } else {
+        // Load reviews for influencer
+        _reviews = await ReviewRepository.getReviewsForInfluencer(userId);
+        _averageRating =
+            await ReviewRepository.getInfluencerAverageRating(userId);
+      }
+
+      // Sort reviews by date (newest first)
+      _reviews.sort((a, b) => b.submittedAt.compareTo(a.submittedAt));
+
+      if (mounted) {
+        setState(() {
+          _isLoadingReviews = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading reviews: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingReviews = false;
+        });
+      }
+    }
   }
 
   Future<void> _refreshProfileData(String profileId, bool isBrand) async {
@@ -252,13 +353,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-
       setState(() {
         _isLoadingProfile = false;
       });
-      ScaffoldMessenger.of(currentContext).showSnackBar(
-        SnackBar(content: Text('Error loading profile data: ${e.toString()}')),
-      );
     }
   }
 }

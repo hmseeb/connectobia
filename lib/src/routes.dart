@@ -32,6 +32,7 @@ import 'package:connectobia/src/modules/onboarding/presentation/screens/influenc
 import 'package:connectobia/src/modules/profile/presentation/screens/edit_profile_screen.dart'
     as new_profile;
 import 'package:connectobia/src/modules/profile/presentation/screens/profile_screen.dart';
+import 'package:connectobia/src/modules/profile/presentation/screens/review_screen.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
@@ -138,6 +139,12 @@ class GenerateRoutes {
 
       case '/editProfile':
         return _buildRoute(const old_profile.EditProfileScreen());
+
+      case reviewScreen:
+        final args = settings.arguments as Map<String, dynamic>;
+        return _buildRoute(ReviewScreen(
+          contractId: args['contractId'],
+        ));
 
       default:
         return _buildRoute(WelcomeScreen());

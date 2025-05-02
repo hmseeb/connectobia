@@ -92,6 +92,17 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                   contract = state.contract;
                 });
                 _showSuccessToast('Contract signed successfully');
+              } else if (state is ContractCompleted) {
+                setState(() {
+                  contract = state.contract;
+                });
+                _showSuccessToast(
+                    'Contract marked as completed successfully! You can now leave a review.');
+              } else if (state is ContractRejected) {
+                setState(() {
+                  contract = state.contract;
+                });
+                _showSuccessToast('Contract rejected successfully');
               } else if (state is ContractError) {
                 _showErrorToast(state.message);
               }
@@ -395,37 +406,35 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             if (contract.guidelines.isNotEmpty)
               _buildDetailRow('Guidelines', contract.guidelines),
 
-            // Contract actions for influencer
-            if (userType == 'influencer' &&
-                contract.status == 'pending' &&
-                !contract.isSignedByInfluencer)
+            // Contract actions based on status
+            if (userType == 'influencer' && contract.status == 'pending')
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
                   children: [
                     Expanded(
-                      child: ShadButton(
-                        onPressed: () {
-                          _showConfirmationDialog(
-                            'Sign Contract',
-                            'Are you sure you want to sign this contract? This will legally bind you to the terms specified.',
-                            () => _signContract(contract.id),
-                          );
-                        },
-                        child: const Text('Sign Contract'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: ShadButton.secondary(
+                      child: ShadButton.destructive(
                         onPressed: () {
                           _showConfirmationDialog(
                             'Reject Contract',
-                            'Are you sure you want to reject this contract? This action cannot be undone.',
+                            'Are you sure you want to reject this contract?',
                             () => _rejectContract(contract.id),
                           );
                         },
                         child: const Text('Reject'),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ShadButton(
+                        onPressed: () {
+                          _showConfirmationDialog(
+                            'Sign Contract',
+                            'By signing this contract, you agree to all the terms and conditions. Proceed?',
+                            () => _signContract(contract.id),
+                          );
+                        },
+                        child: const Text('Sign Contract'),
                       ),
                     ),
                   ],
@@ -445,6 +454,28 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                     );
                   },
                   child: const Text('Mark as Completed'),
+                ),
+              ),
+
+            // Review option for completed contracts
+            if (contract.status == 'completed')
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: ShadButton.secondary(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(
+                      '/review',
+                      arguments: {'contractId': contract.id},
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.star, size: 18),
+                      SizedBox(width: 8),
+                      Text('Leave a Review'),
+                    ],
+                  ),
                 ),
               ),
           ],
@@ -532,9 +563,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   void _completeContract(String contractId) {
-    context.read<ContractBloc>().add(
-          CompleteContract(contractId),
-        );
+    context.read<ContractBloc>().add(CompleteContract(contractId));
   }
 
   String _formatDate(DateTime date) {
@@ -657,9 +686,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   void _rejectContract(String contractId) {
-    context.read<ContractBloc>().add(
-          RejectContract(contractId),
-        );
+    context.read<ContractBloc>().add(RejectContract(contractId));
   }
 
   void _showConfirmationDialog(
@@ -703,9 +730,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   void _signContract(String contractId) {
-    context.read<ContractBloc>().add(
-          SignContractByInfluencer(contractId),
-        );
+    context.read<ContractBloc>().add(SignContractByInfluencer(contractId));
   }
 
   void _updateCampaignStatus(String status) {

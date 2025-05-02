@@ -9,6 +9,13 @@ class FetchUserProfile extends UserEvent {
   FetchUserProfile({required this.profileId, required this.isBrand});
 }
 
+class FetchUserReviews extends UserEvent {
+  final String userId;
+  final bool isBrand;
+
+  FetchUserReviews({required this.userId, required this.isBrand});
+}
+
 class UpdateUser extends UserEvent {
   final String? fullName;
   final String? username;
