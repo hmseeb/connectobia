@@ -2,10 +2,13 @@ import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart'
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
+import 'package:connectobia/src/modules/dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
+import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
+import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -157,6 +160,173 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                           const SizedBox(height: 16),
                           _buildCampaignDetails(campaign!),
                           const SizedBox(height: 24),
+
+                          // Display selected influencer information for brand view
+                          if (userType == 'brand' && campaign!.selectedInfluencer != null && campaign!.selectedInfluencer!.isNotEmpty)
+                            Column(
+                              children: [
+                                ShadCard(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.person_outline, size: 20),
+                                          const SizedBox(width: 8),
+                                          const Text(
+                                            'Selected Influencer',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      const Divider(),
+                                      const SizedBox(height: 8),
+                                      FutureBuilder<Influencer>(
+                                        future: _getInfluencerById(campaign!.selectedInfluencer!),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return const Center(
+                                              child: CircularProgressIndicator(),
+                                            );
+                                          } else if (snapshot.hasError) {
+                                            debugPrint('Error loading influencer: ${snapshot.error}');
+                                            return const Center(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.error_outline, color: Colors.red, size: 48),
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    'Unable to load influencer details',
+                                                    style: TextStyle(color: Colors.red),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          } else if (!snapshot.hasData) {
+                                            return const Center(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.person_off, color: Colors.grey, size: 48),
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    'Influencer not found',
+                                                    style: TextStyle(color: Colors.grey),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+
+                                          final influencer = snapshot.data!;
+                                          if (influencer.profile.isEmpty) {
+                                            return const Center(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(Icons.person_off, color: Colors.grey, size: 48),
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    'Influencer profile not available',
+                                                    style: TextStyle(color: Colors.grey),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+
+                                          return BlocProvider(
+                                            create: (context) => InfluencerProfileBloc()
+                                              ..add(InfluencerProfileLoad(
+                                                profileId: influencer.profile,
+                                                influencer: influencer,
+                                              )),
+                                            child: BlocBuilder<InfluencerProfileBloc, InfluencerProfileState>(
+                                              builder: (context, state) {
+                                                if (state is InfluencerProfileLoaded) {
+                                                  return Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        radius: 30,
+                                                        backgroundImage: NetworkImage(
+                                                          Avatar.getUserImage(
+                                                            collectionId: state.influencer.collectionId,
+                                                            image: state.influencer.avatar,
+                                                            recordId: state.influencer.id,
+                                                          ),
+                                                        ),
+                                                        child: state.influencer.avatar.isEmpty
+                                                            ? const Icon(Icons.person, size: 30)
+                                                            : null,
+                                                      ),
+                                                      const SizedBox(width: 16),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              state.influencer.fullName,
+                                                              style: const TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(height: 4),
+                                                            Text(
+                                                              '@${state.influencer.username}',
+                                                              style: TextStyle(
+                                                                color: Theme.of(context).textTheme.bodySmall?.color,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(height: 4),
+                                                            Text(
+                                                              '${state.influencerProfile.followers.toStringAsFixed(0)} followers',
+                                                              style: TextStyle(
+                                                                color: Theme.of(context).textTheme.bodySmall?.color,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                } else if (state is InfluencerProfileError) {
+                                                  debugPrint('Error loading influencer profile: ${state.message}');
+                                                  return const Center(
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Icon(Icons.error_outline, color: Colors.red, size: 48),
+                                                        SizedBox(height: 8),
+                                                        Text(
+                                                          'Unable to load influencer profile',
+                                                          style: TextStyle(color: Colors.red),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                } else {
+                                                  return const Center(
+                                                    child: CircularProgressIndicator(),
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                              ],
+                            ),
 
                           // Status management (for influencers)
                           if (userType == 'influencer' &&
@@ -713,6 +883,20 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       context.read<CampaignBloc>().add(
             UpdateCampaignStatus(campaign!.id, status),
           );
+    }
+  }
+
+  Future<Influencer> _getInfluencerById(String influencerId) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+      final record = await pb.collection('influencers').getOne(influencerId);
+      if (record == null) {
+        throw Exception('Influencer not found');
+      }
+      return Influencer.fromRecord(record);
+    } catch (e) {
+      debugPrint('Error getting influencer: $e');
+      rethrow;
     }
   }
 }
