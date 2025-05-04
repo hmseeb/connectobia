@@ -3,6 +3,7 @@ import 'package:connectobia/src/shared/data/constants/industries.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
 import 'package:connectobia/src/shared/data/repositories/funds_repository.dart';
 import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +24,11 @@ class CampaignRepository {
   }) async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.record!.id;
+      final userId = pb.authStore.model.id;
 
       debugPrint(
           'Assigning influencer: $influencerId to campaign: $campaignId');
+      debugPrint('Brand ID (from auth store model): $userId');
 
       // Update the campaign
       final record = await pb.collection(_collectionName).update(
@@ -37,6 +39,7 @@ class CampaignRepository {
       final updatedCampaign = Campaign.fromRecord(record);
       debugPrint(
           'Campaign updated with influencer: ${updatedCampaign.selectedInfluencer}');
+      debugPrint('Campaign status updated to: ${updatedCampaign.status}');
 
       // Create a contract for this assignment
       try {
@@ -109,12 +112,16 @@ class CampaignRepository {
   }) async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.record!.id;
+      final userId = pb.authStore.model.id;
 
       // Debug log
       debugPrint('Creating campaign with brand ID: $userId');
       debugPrint(
           'Selected influencer before creation: ${campaign.selectedInfluencer}');
+
+      // Force status to 'draft' regardless of what was passed in the campaign object
+      final campaignWithDraftStatus = campaign.copyWith(status: 'draft');
+      debugPrint('Forcing status to draft for new campaign');
 
       // Verify and lock funds first
       if (campaign.budget > 0) {
@@ -135,7 +142,8 @@ class CampaignRepository {
       }
 
       // Make sure the brand is set to the current user
-      final body = campaign.copyWith(brand: userId).toCreateJson();
+      final body =
+          campaignWithDraftStatus.copyWith(brand: userId).toCreateJson();
 
       // Debug log body
       debugPrint('Campaign creation body: $body');
@@ -148,6 +156,7 @@ class CampaignRepository {
       debugPrint('Campaign created with ID: ${createdCampaign.id}');
       debugPrint(
           'Selected influencer after creation: ${createdCampaign.selectedInfluencer}');
+      debugPrint('Campaign status: ${createdCampaign.status}');
 
       // Default values if not provided
       final contractPostTypes = postTypes ?? ['post'];
@@ -231,7 +240,32 @@ class CampaignRepository {
   static Future<List<Campaign>> getAssignedCampaigns() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.record?.id ?? '';
+      final userId = pb.authStore.model.id;
+
+      // Debug: Log the user ID we're searching with
+      debugPrint(
+          'Looking for campaigns assigned to influencer with ID: $userId');
+      debugPrint('Auth store record: ${pb.authStore.record}');
+      debugPrint('Auth store model: ${pb.authStore.model}');
+
+      // First, let's debug by getting all campaigns to see what's there
+      final allCampaigns = await pb.collection(_collectionName).getList(
+            page: 1,
+            perPage: 50,
+          );
+
+      debugPrint(
+          'DEBUG: Total campaigns in database: ${allCampaigns.items.length}');
+      for (var item in allCampaigns.items) {
+        debugPrint(
+            'Campaign: ${item.id}, Status: ${item.data['status']}, Influencer: ${item.data['selected_influencer']}');
+
+        // Check if this campaign should match our filter
+        if (item.data['selected_influencer'] == userId) {
+          debugPrint(
+              'FOUND MATCH: Campaign ${item.id} has current user as selected influencer');
+        }
+      }
 
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
@@ -239,12 +273,17 @@ class CampaignRepository {
             filter: 'selected_influencer = "$userId"',
           );
 
+      debugPrint(
+          'Found ${resultList.items.length} campaigns assigned to this influencer');
+      debugPrint('Filter used: selected_influencer = "$userId"');
+
       List<Campaign> campaigns = resultList.items.map((record) {
         return Campaign.fromRecord(record);
       }).toList();
 
       return campaigns;
     } catch (e) {
+      debugPrint('Error fetching assigned campaigns: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
@@ -254,6 +293,9 @@ class CampaignRepository {
   static Future<List<Campaign>> getAvailableCampaigns() async {
     try {
       final pb = await PocketBaseSingleton.instance;
+      final userId = pb.authStore.model.id;
+
+      debugPrint('Getting available campaigns for influencer ID: $userId');
 
       // First, let's debug by getting all campaigns to see what's there
       final allCampaigns = await pb.collection(_collectionName).getList(
@@ -268,16 +310,18 @@ class CampaignRepository {
             'Campaign: ${item.id}, Status: ${item.data['status']}, Influencer: ${item.data['selected_influencer']}');
       }
 
-      // Now the actual query with improved filter
+      // Now the actual query with improved filter - make sure we exclude campaigns where this influencer is already selected
       final resultList = await pb.collection(_collectionName).getList(
             page: 1,
             perPage: 50,
             filter:
-                'status = "active" && (selected_influencer = "" || selected_influencer = null)',
+                'status = "active" && (selected_influencer = "" || selected_influencer = null || selected_influencer != "$userId")',
           );
 
       debugPrint(
           'DEBUG: Available campaigns found: ${resultList.items.length}');
+      debugPrint(
+          'Filter used: status = "active" && (selected_influencer = "" || selected_influencer = null || selected_influencer != "$userId")');
 
       List<Campaign> campaigns = resultList.items.map((record) {
         return Campaign.fromRecord(record);
@@ -318,24 +362,66 @@ class CampaignRepository {
     }
   }
 
-  /// Get all campaigns for the logged-in brand
+  /// Get all campaigns for the logged-in user (brand or influencer)
   static Future<List<Campaign>> getCampaigns() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      final userId = pb.authStore.record?.id ?? '';
+      final userId = pb.authStore.model.id;
 
-      final resultList = await pb.collection(_collectionName).getList(
-            page: 1,
-            perPage: 50,
-            filter: 'brand = "$userId"',
-          );
+      // Use the singleton to get collection name
+      final collectionName = CollectionNameSingleton.instance;
+      final bool isInfluencer = collectionName == "influencers";
 
-      List<Campaign> campaigns = resultList.items.map((record) {
-        return Campaign.fromRecord(record);
-      }).toList();
+      debugPrint(
+          'Getting campaigns for user ID: $userId with collection: $collectionName');
+      debugPrint(
+          'Is user influencer? $isInfluencer (using CollectionNameSingleton)');
 
-      return campaigns;
+      // Check if the user is an influencer or brand
+      if (isInfluencer) {
+        // For influencers, show campaigns where they are selected
+        debugPrint('User is an influencer, fetching assigned campaigns');
+
+        // Get campaigns where this influencer is explicitly selected
+        final assignedList = await pb.collection(_collectionName).getList(
+              page: 1,
+              perPage: 50,
+              filter: 'selected_influencer = "$userId"',
+            );
+
+        debugPrint(
+            'Found ${assignedList.items.length} campaigns assigned to this influencer');
+        for (var item in assignedList.items) {
+          debugPrint(
+              'Assigned campaign: ${item.id}, Title: ${item.data['title']}, Status: ${item.data['status']}');
+        }
+
+        List<Campaign> allCampaigns = assignedList.items.map((record) {
+          return Campaign.fromRecord(record);
+        }).toList();
+
+        return allCampaigns;
+      } else {
+        // For brands, show only their campaigns
+        debugPrint('User is a brand, fetching brand campaigns');
+
+        final resultList = await pb.collection(_collectionName).getList(
+              page: 1,
+              perPage: 50,
+              filter: 'brand = "$userId"',
+            );
+
+        debugPrint(
+            'Found ${resultList.items.length} campaigns created by this brand');
+
+        List<Campaign> campaigns = resultList.items.map((record) {
+          return Campaign.fromRecord(record);
+        }).toList();
+
+        return campaigns;
+      }
     } catch (e) {
+      debugPrint('Error in getCampaigns: $e');
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }

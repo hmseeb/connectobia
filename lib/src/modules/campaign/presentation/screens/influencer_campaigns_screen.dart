@@ -165,55 +165,102 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
       );
     }
 
-    if (_assignedCampaigns.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.assignment_ind_outlined,
-              size: 64,
-              color: Colors.grey.withOpacity(0.5),
+    return Column(
+      children: [
+        // Step-by-step guidance card
+        ShadCard(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Theme.of(context).primaryColor,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'How it works',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildStepRow(1, 'Review campaign details',
+                    'Understand requirements and expectations'),
+                _buildStepRow(2, 'Accept campaign',
+                    'Confirm your participation and requirements'),
+                _buildStepRow(
+                    3, 'Sign contract', 'Review and sign the legal agreement'),
+                _buildStepRow(4, 'Complete tasks',
+                    'Create content according to campaign guidelines'),
+                _buildStepRow(5, 'Submit for review',
+                    'Send your completed work to the brand'),
+              ],
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'No campaigns assigned yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'When brands select you for campaigns, they will appear here',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ShadButton.secondary(
-              onPressed: () {
-                _tabController
-                    .animateTo(1); // Switch to Available Campaigns tab
-              },
-              child: const Text('Browse Available Campaigns'),
-            ),
-          ],
+          ),
         ),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: _assignedCampaigns.length,
-      itemBuilder: (context, index) {
-        final campaign = _assignedCampaigns[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: _buildCampaignCard(campaign),
-        );
-      },
+        const SizedBox(height: 16),
+        if (_assignedCampaigns.isEmpty)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.assignment_ind_outlined,
+                    size: 64,
+                    color: Colors.grey.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No campaigns assigned yet',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'When brands select you for campaigns, they will appear here',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ShadButton.secondary(
+                    onPressed: () {
+                      _tabController
+                          .animateTo(1); // Switch to Available Campaigns tab
+                    },
+                    child: const Text('Browse Available Campaigns'),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          Expanded(
+            child: ListView.builder(
+              itemCount: _assignedCampaigns.length,
+              itemBuilder: (context, index) {
+                final campaign = _assignedCampaigns[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: _buildCampaignCard(campaign),
+                );
+              },
+            ),
+          ),
+      ],
     );
   }
 
@@ -240,63 +287,168 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
       );
     }
 
-    if (_availableCampaigns.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.campaign_outlined,
-              size: 64,
-              color: Colors.grey.withOpacity(0.5),
+    return Column(
+      children: [
+        // Step-by-step guidance card for available campaigns
+        ShadCard(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: Theme.of(context).primaryColor,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Finding Opportunities',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildStepRow(1, 'Browse available campaigns',
+                    'Find opportunities that match your profile'),
+                _buildStepRow(2, 'Review requirements',
+                    'Check if the campaign aligns with your content style'),
+                _buildStepRow(3, 'Apply to campaigns',
+                    'Express your interest by applying'),
+                _buildStepRow(4, 'Wait for brand approval',
+                    'Brands will review your profile and approve if suitable'),
+                _buildStepRow(5, 'Check "Your Campaigns" tab',
+                    'Once approved, campaigns will appear in your tab'),
+              ],
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'No campaigns available',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Check back later for new campaign opportunities',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
+          ),
         ),
-      );
-    }
-
-    return ListView.builder(
-      itemCount: _availableCampaigns.length,
-      itemBuilder: (context, index) {
-        final campaign = _availableCampaigns[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: _buildCampaignCard(campaign),
-        );
-      },
+        const SizedBox(height: 16),
+        if (_availableCampaigns.isEmpty)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.campaign_outlined,
+                    size: 64,
+                    color: Colors.grey.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No campaigns available',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Check back later for new campaign opportunities',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          Expanded(
+            child: ListView.builder(
+              itemCount: _availableCampaigns.length,
+              itemBuilder: (context, index) {
+                final campaign = _availableCampaigns[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: _buildCampaignCard(campaign),
+                );
+              },
+            ),
+          ),
+      ],
     );
   }
 
   Widget _buildCampaignActions(Campaign campaign) {
-    if (campaign.status.toLowerCase() == 'assigned') {
+    // Add support for draft status - this shows the right actions when a brand has selected you but
+    // the campaign is still in draft state
+    if (campaign.status.toLowerCase() == 'draft' &&
+        campaign.selectedInfluencer != null &&
+        campaign.selectedInfluencer!.isNotEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          ShadButton.destructive(
-            onPressed: () => _updateCampaignStatus(campaign.id, 'declined'),
-            child: const Text('Decline'),
+          Tooltip(
+            message: 'View draft campaign details',
+            child: ShadButton.secondary(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  campaignDetails,
+                  arguments: {
+                    'campaignId': campaign.id,
+                    'userType': 'influencer',
+                  },
+                );
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.visibility, size: 16),
+                  SizedBox(width: 6),
+                  Text('View Draft'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    } else if (campaign.status.toLowerCase() == 'assigned') {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Tooltip(
+            message: 'Decline this campaign opportunity',
+            child: ShadButton.destructive(
+              onPressed: () => _showConfirmDialog(
+                'Decline Campaign',
+                'Are you sure you want to decline this campaign? This action cannot be undone.',
+                () => _updateCampaignStatus(campaign.id, 'declined'),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.cancel_outlined, size: 16),
+                  SizedBox(width: 6),
+                  Text('Decline'),
+                ],
+              ),
+            ),
           ),
           const SizedBox(width: 8),
-          ShadButton(
-            onPressed: () => _updateCampaignStatus(campaign.id, 'in_progress'),
-            child: const Text('Accept'),
+          Tooltip(
+            message: 'Accept and begin working on this campaign',
+            child: ShadButton(
+              onPressed: () =>
+                  _updateCampaignStatus(campaign.id, 'in_progress'),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle_outline, size: 16),
+                  SizedBox(width: 6),
+                  Text('Accept'),
+                ],
+              ),
+            ),
           ),
         ],
       );
@@ -307,9 +459,19 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          ShadButton(
-            onPressed: () => _applyToCampaign(campaign.id),
-            child: const Text('Apply'),
+          Tooltip(
+            message: 'Apply to work on this campaign',
+            child: ShadButton(
+              onPressed: () => _applyToCampaign(campaign.id),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add_circle_outline, size: 16),
+                  SizedBox(width: 6),
+                  Text('Apply'),
+                ],
+              ),
+            ),
           ),
         ],
       );
@@ -318,19 +480,29 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ShadButton.secondary(
-          onPressed: () {
-            Navigator.pushNamed(
-              context,
-              campaignDetails,
-              arguments: {
-                'campaignId': campaign.id,
-                'userType':
-                    'influencer', // Indicates this is an influencer viewing the campaign
-              },
-            );
-          },
-          child: const Text('View Details'),
+        Tooltip(
+          message: 'View full campaign details',
+          child: ShadButton.secondary(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                campaignDetails,
+                arguments: {
+                  'campaignId': campaign.id,
+                  'userType':
+                      'influencer', // Indicates this is an influencer viewing the campaign
+                },
+              );
+            },
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.visibility, size: 16),
+                SizedBox(width: 6),
+                Text('View Details'),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -379,14 +551,31 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 16),
-            _buildInfoRow(
-                Icons.category, 'Category', campaign.category.toUpperCase()),
-            _buildInfoRow(Icons.attach_money, 'Budget', formattedBudget),
-            _buildInfoRow(Icons.date_range, 'Timeline',
-                '$formattedStartDate to $formattedEndDate'),
-            _buildInfoRow(Icons.flag, 'Goals',
-                campaign.goals.map((g) => g.toUpperCase()).join(', ')),
-            const SizedBox(height: 16),
+
+            // Campaign progress indicator - only for assigned campaigns
+            if (campaign.status.toLowerCase() == 'in_progress' ||
+                campaign.status.toLowerCase() == 'assigned')
+              _buildProgressIndicator(campaign.status),
+
+            // Campaign details in a more visually organized grid
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Wrap(
+                spacing: 16.0,
+                runSpacing: 12.0,
+                children: [
+                  _buildInfoTile(Icons.category, 'Category',
+                      campaign.category.toUpperCase()),
+                  _buildInfoTile(Icons.attach_money, 'Budget', formattedBudget),
+                  _buildInfoTile(Icons.date_range, 'Timeline',
+                      '$formattedStartDate\nto $formattedEndDate'),
+                  _buildInfoTile(Icons.flag, 'Goals',
+                      campaign.goals.map((g) => g.toUpperCase()).join(', ')),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
             _buildCampaignActions(campaign),
           ],
         ),
@@ -394,30 +583,102 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
+  Widget _buildInfoTile(IconData icon, String label, String value) {
+    return SizedBox(
+      width: 140,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: AppColors.textSecondary),
-          const SizedBox(width: 8),
-          Text(
-            '$label:',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textSecondary,
-            ),
+          Row(
+            children: [
+              Icon(icon, size: 16, color: AppColors.textSecondary),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: AppColors.textPrimary),
-              overflow: TextOverflow.ellipsis,
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 13,
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProgressIndicator(String status) {
+    double progressValue = 0.0;
+    String progressLabel = '';
+
+    switch (status.toLowerCase()) {
+      case 'assigned':
+        progressValue = 0.2;
+        progressLabel = 'Awaiting your acceptance';
+        break;
+      case 'in_progress':
+        progressValue = 0.6;
+        progressLabel = 'Content creation in progress';
+        break;
+      case 'completed':
+        progressValue = 1.0;
+        progressLabel = 'Campaign completed';
+        break;
+      default:
+        progressValue = 0.0;
+        progressLabel = 'Campaign status: ${status.toUpperCase()}';
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Campaign Progress',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+            Text(
+              '${(progressValue * 100).toInt()}%',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        LinearProgressIndicator(
+          value: progressValue,
+          backgroundColor: Colors.grey.shade200,
+          valueColor:
+              AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          progressLabel,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 12),
+      ],
     );
   }
 
@@ -481,6 +742,56 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     );
   }
 
+  Widget _buildStepRow(int step, String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              step.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _loadAssignedCampaigns() async {
     setState(() {
       _isAssignedLoading = true;
@@ -488,7 +799,9 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     });
 
     try {
+      final pb = await PocketBaseSingleton.instance;
       final campaigns = await CampaignRepository.getAssignedCampaigns();
+
       setState(() {
         _assignedCampaigns = campaigns;
         _isAssignedLoading = false;
@@ -508,7 +821,9 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     });
 
     try {
+      final pb = await PocketBaseSingleton.instance;
       final campaigns = await CampaignRepository.getAvailableCampaigns();
+
       setState(() {
         _availableCampaigns = campaigns;
         _isAvailableLoading = false;
@@ -519,6 +834,42 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
         _isAvailableLoading = false;
       });
     }
+  }
+
+  // Add a confirmation dialog for important actions
+  Future<void> _showConfirmDialog(
+      String title, String content, Function onConfirm) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(content),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                onConfirm();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _updateCampaignStatus(

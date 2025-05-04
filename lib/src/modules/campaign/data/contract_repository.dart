@@ -245,6 +245,12 @@ class ContractRepository {
   static Future<Contract> signByInfluencer(String id) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+
+      // Get the contract details first to retrieve the campaign ID
+      final existingContract = await getContractById(id);
+      final campaignId = existingContract.campaign;
+
+      // Update the contract to signed status
       final record = await pb.collection(_collectionName).update(
         id,
         body: {
@@ -254,6 +260,20 @@ class ContractRepository {
       );
 
       final signedContract = Contract.fromRecord(record);
+
+      // Also update the campaign status to active
+      try {
+        await pb.collection('campaigns').update(
+          campaignId,
+          body: {
+            'status': 'active',
+          },
+        );
+        debugPrint('Updated campaign $campaignId status to active');
+      } catch (e) {
+        debugPrint('Error updating campaign status: $e');
+        // Don't fail the contract signing if campaign update fails
+      }
 
       // Create notification for the brand
       try {

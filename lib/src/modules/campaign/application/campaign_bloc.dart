@@ -251,13 +251,14 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
               budget: formState.budget,
               startDate: formState.startDate,
               endDate: formState.endDate,
-              status: 'draft',
+              status: 'draft', // Always set initial status to draft
               brand: '', // Will be set by repository
               selectedInfluencer: formState.selectedInfluencer,
               created: DateTime.now(),
               updated: DateTime.now(),
             );
 
+            debugPrint('Creating campaign with initial status: draft');
             // Save the campaign to the backend with contract details
             final createdCampaign = await CampaignRepository.createCampaign(
               campaign,

@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_v
 import 'package:connectobia/src/modules/campaign/presentation/screens/create_campaign.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/delete_confirmation_dialog.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/status_badge.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,9 @@ class CampaignCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if user is a brand - only brands can edit campaigns
+    final bool isBrand = CollectionNameSingleton.instance == 'brands';
+
     // If campaign is null, show placeholder for skeleton loading
     final title = campaign?.title ?? 'Campaign Title';
     final description = campaign?.description ??
@@ -53,74 +57,88 @@ class CampaignCard extends StatelessWidget {
       );
     }
 
-    // Use Slidable when we have a real campaign
-    return Slidable(
-      key: ValueKey(campaign!.id),
-      // Show actions only on the end side (right side in LTR)
-      endActionPane: ActionPane(
-        motion: const BehindMotion(),
-        extentRatio: 0.3, // Limit how far the pane extends
-        children: [
-          // Edit action
-          SlidableAction(
-            onPressed: (context) {
-              HapticFeedback.mediumImpact();
+    // Use Slidable when we have a real campaign, but only for brands
+    if (isBrand) {
+      return Slidable(
+        key: ValueKey(campaign!.id),
+        // Show actions only on the end side (right side in LTR)
+        endActionPane: ActionPane(
+          motion: const BehindMotion(),
+          extentRatio: 0.3, // Limit how far the pane extends
+          children: [
+            // Edit action
+            SlidableAction(
+              onPressed: (context) {
+                HapticFeedback.mediumImpact();
 
-              // Direct navigation with MaterialPageRoute and passing campaign object
-              Navigator.of(context)
-                  .push(
-                MaterialPageRoute(
-                  builder: (context) => CreateCampaignScreen(
-                    campaignToEdit: campaign,
+                // Direct navigation with MaterialPageRoute and passing campaign object
+                Navigator.of(context)
+                    .push(
+                  MaterialPageRoute(
+                    builder: (context) => CreateCampaignScreen(
+                      campaignToEdit: campaign,
+                    ),
                   ),
-                ),
-              )
-                  .then((_) {
-                // Refresh the campaigns list when returning from edit
-                onDeleted(); // This will trigger a reload of campaigns
-              });
-            },
-            backgroundColor: Colors.blue.shade700,
-            foregroundColor: Colors.white,
-            icon: Icons.edit,
-            label: 'Edit',
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              bottomLeft: Radius.circular(8),
+                )
+                    .then((_) {
+                  // Refresh the campaigns list when returning from edit
+                  onDeleted(); // This will trigger a reload of campaigns
+                });
+              },
+              backgroundColor: Colors.blue.shade700,
+              foregroundColor: Colors.white,
+              icon: Icons.edit,
+              label: 'Edit',
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                bottomLeft: Radius.circular(8),
+              ),
             ),
-          ),
-          // Delete action
-          SlidableAction(
-            onPressed: (context) async {
-              HapticFeedback.mediumImpact();
-              showDeleteConfirmationDialog(
-                context,
-                () async {
-                  try {
-                    await CampaignRepository.deleteCampaign(campaign!.id);
-                    onDeleted();
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
-                      );
+            // Delete action
+            SlidableAction(
+              onPressed: (context) async {
+                HapticFeedback.mediumImpact();
+                showDeleteConfirmationDialog(
+                  context,
+                  () async {
+                    try {
+                      await CampaignRepository.deleteCampaign(campaign!.id);
+                      onDeleted();
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
                     }
-                  }
-                },
-              );
-            },
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'Delete',
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(8),
-              bottomRight: Radius.circular(8),
+                  },
+                );
+              },
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Delete',
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(8),
+                bottomRight: Radius.circular(8),
+              ),
             ),
-          ),
-        ],
-      ),
-      child: _buildCardContent(
+          ],
+        ),
+        child: _buildCardContent(
+          context,
+          title,
+          description,
+          status,
+          formattedBudget,
+          startDate,
+          endDate,
+          dateFormat,
+        ),
+      );
+    } else {
+      // For influencers, return the card without edit options
+      return _buildCardContent(
         context,
         title,
         description,
@@ -129,8 +147,8 @@ class CampaignCard extends StatelessWidget {
         startDate,
         endDate,
         dateFormat,
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildCardContent(

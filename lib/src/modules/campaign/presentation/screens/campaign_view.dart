@@ -5,7 +5,6 @@ import 'package:connectobia/src/modules/campaign/application/contract/contract_b
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
-import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -50,10 +49,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         listeners: [
           BlocListener<CampaignBloc, CampaignState>(
             listener: (context, state) {
-              debugPrint('CampaignBloc state: $state');
               if (state is CampaignLoaded) {
-                debugPrint(
-                    'Campaign loaded: ${state.campaign.id}, ${state.campaign.title}');
                 setState(() {
                   campaign = state.campaign;
                   isLoading = false;
@@ -64,7 +60,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 });
                 _showSuccessToast('Campaign status updated successfully');
               } else if (state is CampaignError) {
-                debugPrint('Campaign error: ${state.message}');
                 setState(() {
                   isLoading = false;
                   campaign = null;
@@ -80,7 +75,13 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                   contract = state.contract;
                 });
                 if (contract == null) {
-                  debugPrint('No contract available for this campaign');
+                  // No contract available message
+                } else {
+                  // If this was triggered by the Accept button for influencers
+                  if (userType == 'influencer' && campaign?.status == 'draft') {
+                    _showSuccessToast(
+                        'Please review and sign the contract below');
+                  }
                 }
               } else if (state is ContractCreated) {
                 setState(() {
@@ -169,21 +170,23 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                           _buildCampaignDetails(campaign!),
                           const SizedBox(height: 24),
 
-                          // Status management (for influencers)
-                          if (userType == 'influencer' &&
-                              campaign!.status == 'draft')
-                            Column(
-                              children: [
-                                _buildStatusUpdateSection(),
-                                const SizedBox(height: 24),
-                              ],
-                            ),
-
                           // Contracts section
                           if (contract != null)
                             Column(
                               children: [
                                 _buildContractSection(contract!),
+                                const SizedBox(height: 24),
+                              ],
+                            ),
+
+                          // When there's no contract yet but user is an influencer
+                          if (contract == null &&
+                              userType == 'influencer' &&
+                              campaign!.status.toLowerCase() != 'declined' &&
+                              campaign!.status.toLowerCase() != 'completed')
+                            Column(
+                              children: [
+                                _buildAcceptRejectSection(),
                                 const SizedBox(height: 24),
                               ],
                             ),
@@ -216,21 +219,20 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
               campaignId = providedCampaignId;
             }
 
+            // We still take the userType from route args temporarily
+            // but we'll verify it with _getCurrentUserIdAndType later
             final providedUserType = args['userType'] as String?;
             if (providedUserType != null && providedUserType.isNotEmpty) {
               userType = providedUserType;
             }
           }
         } catch (e) {
-          debugPrint('Error parsing arguments: $e');
+          // Error handling
         }
-      } else {
-        debugPrint('Warning: No arguments provided to CampaignDetailsPage');
       }
 
       // Check if campaignId is valid
       if (campaignId.isEmpty) {
-        debugPrint('Warning: Empty campaignId in CampaignDetailsPage');
         setState(() {
           isLoading = false;
         });
@@ -247,10 +249,17 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     super.initState();
     // Initialize with values from widget if available
     campaignId = widget.campaignId ?? '';
-    userType = widget.userType ?? 'brand'; // Default to 'brand' if not provided
 
-    // Get the current user ID
-    _getCurrentUserId();
+    // First use the user type from constructor if available
+    if (widget.userType != null && widget.userType!.isNotEmpty) {
+      userType = widget.userType!;
+    } else {
+      // Default to influencer since we're having issues
+      userType = 'influencer';
+    }
+
+    // Get the current user ID and type
+    _getCurrentUserIdAndType();
 
     // Check if campaignId is valid from constructor
     if (campaignId.isNotEmpty) {
@@ -261,7 +270,87 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     }
   }
 
+  Widget _buildAcceptRejectSection() {
+    return ShadCard(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.handshake, size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                'Campaign Invitation',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 8),
+          const Text(
+            'You have been invited to participate in this campaign. Please review the details above and decide if you would like to proceed.',
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ShadButton.destructive(
+                  onPressed: () {
+                    _showConfirmationDialog(
+                      'Reject Campaign',
+                      'Are you sure you want to reject this campaign? This action cannot be undone.',
+                      () => _rejectContract(''),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cancel_outlined, size: 16),
+                      SizedBox(width: 8),
+                      Text('Reject Campaign'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ShadButton(
+                  onPressed: () {
+                    _showConfirmationDialog(
+                      'Accept Campaign',
+                      'Do you want to accept this campaign and proceed to create a contract?',
+                      () => _signContract(''),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check_circle_outline, size: 16),
+                      SizedBox(width: 8),
+                      Text('Accept Campaign'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCampaignDetails(Campaign campaign) {
+    // Format currency
+    final currencyFormat =
+        NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0);
+    final formattedBudget = currencyFormat.format(campaign.budget);
+
     return ShadCard(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -283,20 +372,18 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
           const SizedBox(height: 16),
           const Divider(),
           const SizedBox(height: 8),
-          _buildDetailRow('Budget', '\$${campaign.budget.toStringAsFixed(2)}',
-              Icons.attach_money),
+          _buildDetailRow('Category', campaign.category.toUpperCase()),
           _buildDetailRow(
-              'Category',
-              campaign.category.replaceAll('_', ' ').toUpperCase(),
-              Icons.category),
+            'Budget',
+            formattedBudget,
+          ),
           _buildDetailRow(
-              'Goals',
-              campaign.goals.map((g) => g.toUpperCase()).join(', '),
-              Icons.flag),
-          _buildDetailRow(
-            'Duration',
+            'Timeline',
             '${_formatDate(campaign.startDate)} to ${_formatDate(campaign.endDate)}',
-            Icons.date_range,
+          ),
+          _buildDetailRow(
+            'Goals',
+            campaign.goals.map((g) => g.toUpperCase()).join(', '),
           ),
         ],
       ),
@@ -359,6 +446,12 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   Widget _buildContractSection(Contract contract) {
+    final bool canTakeAction = campaign!.status.toLowerCase() != 'declined' &&
+        campaign!.status.toLowerCase() != 'completed' &&
+        userType == 'influencer' &&
+        (contract.status.toLowerCase() == 'pending' ||
+            contract.status.toLowerCase() == 'draft');
+
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: ShadCard(
@@ -406,36 +499,77 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             if (contract.guidelines.isNotEmpty)
               _buildDetailRow('Guidelines', contract.guidelines),
 
-            // Contract actions based on status
-            if (userType == 'influencer' && contract.status == 'pending')
+            // Influencer contract actions - now directly under contract details
+            if (canTakeAction)
               Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Row(
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: ShadButton.destructive(
-                        onPressed: () {
-                          _showConfirmationDialog(
-                            'Reject Contract',
-                            'Are you sure you want to reject this contract?',
-                            () => _rejectContract(contract.id),
-                          );
-                        },
-                        child: const Text('Reject'),
-                      ),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Please review the contract details above and decide whether to sign or reject it.',
+                      style: TextStyle(color: Colors.grey.shade700),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ShadButton(
-                        onPressed: () {
-                          _showConfirmationDialog(
-                            'Sign Contract',
-                            'By signing this contract, you agree to all the terms and conditions. Proceed?',
-                            () => _signContract(contract.id),
-                          );
-                        },
-                        child: const Text('Sign Contract'),
-                      ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ShadButton.destructive(
+                            onPressed: () {
+                              _showConfirmationDialog(
+                                'Reject Contract',
+                                'Are you sure you want to reject this contract? This action cannot be undone.',
+                                () => _rejectContract(contract.id),
+                              );
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Reject Contract'),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ShadButton(
+                            onPressed: () {
+                              _showConfirmationDialog(
+                                'Sign Contract',
+                                'By signing this contract, you agree to all the terms and conditions. Proceed?',
+                                () => _signContract(contract.id),
+                              );
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.check_circle_outline, size: 16),
+                                SizedBox(width: 8),
+                                Text('Sign Contract'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+            // Status information when no action is needed
+            if (userType == 'influencer' && !canTakeAction)
+              Padding(
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Text(
+                      _getStatusMessage(),
+                      style: TextStyle(color: Colors.grey.shade700),
                     ),
                   ],
                 ),
@@ -517,51 +651,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     );
   }
 
-  Widget _buildStatusUpdateSection() {
-    return ShadCard(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.update, size: 20),
-              const SizedBox(width: 8),
-              const Text(
-                'Update Campaign Status',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 8),
-          const Text(
-            'As an influencer, you can change this campaign from draft to active status.',
-            style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ShadButton(
-              onPressed: () {
-                _showConfirmationDialog(
-                  'Activate Campaign',
-                  'Are you sure you want to activate this campaign? This will make it visible to all potential influencers.',
-                  () => _updateCampaignStatus('active'),
-                );
-              },
-              child: const Text('Activate Campaign'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _completeContract(String contractId) {
     context.read<ContractBloc>().add(CompleteContract(contractId));
   }
@@ -601,92 +690,124 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   Color _getContractStatusColor(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'pending':
-        return Colors.amber.shade100;
+        return Colors.yellow.shade100;
       case 'signed':
         return Colors.green.shade100;
-      case 'completed':
-        return Colors.purple.shade100;
       case 'rejected':
         return Colors.red.shade100;
+      case 'completed':
+        return Colors.blue.shade100;
       default:
-        return Colors.grey.shade200;
+        return Colors.grey.shade100;
     }
   }
 
   Color _getContractStatusTextColor(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'pending':
         return Colors.amber.shade800;
       case 'signed':
-        return AppColors.success;
-      case 'completed':
-        return Colors.purple.shade800;
+        return Colors.green.shade800;
       case 'rejected':
-        return AppColors.error;
+        return Colors.red.shade800;
+      case 'completed':
+        return Colors.blue.shade800;
       default:
         return Colors.grey.shade800;
     }
   }
 
-  Future<void> _getCurrentUserId() async {
+  Future<void> _getCurrentUserIdAndType() async {
     try {
       final pb = await PocketBaseSingleton.instance;
       if (pb.authStore.isValid) {
+        final record = pb.authStore.record;
+        final recordId = record?.id ?? '';
+        final collectionId = record?.collectionId;
+        final collectionName = record?.collectionName;
+
         setState(() {
-          userId = pb.authStore.record?.id ?? '';
+          userId = recordId;
+
+          // Determine user type from record collection name
+          if (collectionName != null) {
+            if (collectionName.toLowerCase().contains('influencer')) {
+              userType = 'influencer';
+            } else if (collectionName.toLowerCase().contains('brand')) {
+              userType = 'brand';
+            }
+          }
         });
       }
     } catch (e) {
-      debugPrint('Error getting current user ID: $e');
+      // Error handling
     }
   }
 
-  void _loadData() {
+  String _getStatusMessage() {
+    if (campaign == null) {
+      return 'Campaign information not available.';
+    }
+
+    switch (campaign!.status.toLowerCase()) {
+      case 'declined':
+        return 'You have declined this campaign. No further action is required.';
+      case 'completed':
+        return 'This campaign has been successfully completed. Thank you for your participation!';
+      case 'in_progress':
+        if (contract != null) {
+          if (contract!.status.toLowerCase() == 'signed') {
+            return 'You have signed the contract. Please work on the deliverables as agreed.';
+          } else if (contract!.status.toLowerCase() == 'rejected') {
+            return 'You have rejected the contract for this campaign.';
+          } else if (contract!.status.toLowerCase() == 'completed') {
+            return 'This contract has been marked as completed. The campaign is now finalized.';
+          }
+        }
+        return 'This campaign is in progress. Please check with the brand for next steps.';
+      default:
+        return 'Current status: ${campaign!.status.toUpperCase()}';
+    }
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
-      // Validate campaignId before proceeding
-      if (campaignId.isEmpty) {
-        debugPrint('Error: Empty campaignId in _loadData');
-        setState(() {
-          isLoading = false;
-        });
-        _showErrorToast('Campaign ID is missing');
-        return;
-      }
+      // Get current user ID and type
+      await _getCurrentUserIdAndType();
 
-      // Reset loading state
-      setState(() {
-        isLoading = true;
-        // Don't clear the existing campaign data until new data is loaded
-        // This prevents the campaign from disappearing during refresh
-      });
-
-      // Debug the campaign ID we're trying to load
-      debugPrint('Loading campaign data for ID: "$campaignId"');
-
-      // Load campaign details with error handling
+      // Load campaign details
       context.read<CampaignBloc>().add(LoadCampaign(campaignId));
 
-      // Load contract if exists
+      // Load contract for this campaign
       context.read<ContractBloc>().add(LoadCampaignContract(campaignId));
     } catch (e) {
-      debugPrint('Error in _loadData: $e');
       setState(() {
         isLoading = false;
-        // Keep existing campaign data on error
-        // Only set campaign to null if it was never loaded
-        if (campaign == null) {
-          _showErrorToast('Failed to load campaign: $e');
-        } else {
-          _showErrorToast('Error refreshing data. Using cached data instead.');
-        }
       });
     }
   }
 
   void _rejectContract(String contractId) {
-    context.read<ContractBloc>().add(RejectContract(contractId));
+    // If no contract exists yet, we just need to update the campaign status
+    if (contractId.isEmpty) {
+      context.read<CampaignBloc>().add(
+            UpdateCampaignStatus(campaign!.id, 'declined'),
+          );
+    } else {
+      // Reject the existing contract
+      context.read<ContractBloc>().add(RejectContract(contractId));
+
+      // Also update campaign status
+      context.read<CampaignBloc>().add(
+            UpdateCampaignStatus(campaign!.id, 'declined'),
+          );
+    }
   }
 
   void _showConfirmationDialog(
@@ -715,8 +836,9 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
 
   void _showErrorToast(String message) {
     ShadToaster.of(context).show(
-      ShadToast(
-        title: Text(message),
+      ShadToast.destructive(
+        title: const Text('Error'),
+        description: Text(message),
       ),
     );
   }
@@ -724,19 +846,46 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   void _showSuccessToast(String message) {
     ShadToaster.of(context).show(
       ShadToast(
-        title: Text(message),
+        title: const Text('Success'),
+        description: Text(message),
       ),
     );
   }
 
   void _signContract(String contractId) {
-    context.read<ContractBloc>().add(SignContractByInfluencer(contractId));
-  }
+    // If no contract exists yet, we need to create one
+    if (contractId.isEmpty) {
+      // Show loading
+      ShadToaster.of(context).show(
+        ShadToast(
+          title: const Text('Processing'),
+          description: const Text('Creating and signing contract...'),
+        ),
+      );
 
-  void _updateCampaignStatus(String status) {
-    if (campaign != null) {
+      // First update campaign status to in_progress
       context.read<CampaignBloc>().add(
-            UpdateCampaignStatus(campaign!.id, status),
+            UpdateCampaignStatus(campaign!.id, 'in_progress'),
+          );
+
+      // Then load or create contract for this campaign
+      context.read<ContractBloc>().add(LoadCampaignContract(campaignId));
+
+      // After contract is loaded/created, sign it
+      Future.delayed(const Duration(seconds: 1), () {
+        if (contract != null && contract!.id.isNotEmpty) {
+          context
+              .read<ContractBloc>()
+              .add(SignContractByInfluencer(contract!.id));
+        }
+      });
+    } else {
+      // Sign the existing contract
+      context.read<ContractBloc>().add(SignContractByInfluencer(contractId));
+
+      // Update campaign status to in_progress
+      context.read<CampaignBloc>().add(
+            UpdateCampaignStatus(campaign!.id, 'in_progress'),
           );
     }
   }

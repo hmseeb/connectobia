@@ -101,7 +101,7 @@ class _CampaignScreenState extends State<CampaignScreen>
                 : null,
           ),
 
-          // Add the ProductTourOverlay for brand users
+          // Add the ProductTourOverlay for brand users only
           if (_isBrand) const ProductTourOverlay(),
         ],
       ),
