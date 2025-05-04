@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../modules/chatting/presentation/widgets/first_message.dart';
 import '../../../../shared/data/models/notification.dart';
 import '../../../../theme/colors.dart';
 import '../../application/notification_bloc.dart';
@@ -58,8 +59,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             );
           } else if (state is NotificationsLoaded) {
             if (state.notifications.isEmpty) {
-              return const Center(
-                child: Text('No notifications yet'),
+              return const NoMatchWidget(
+                title: 'No notifications yet',
+                subTitle: 'You\'ll be notified when something happens',
               );
             }
 
@@ -104,8 +106,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             );
           }
 
-          return const Center(
-            child: Text('No notifications to display'),
+          return const NoMatchWidget(
+            title: 'No notifications yet',
+            subTitle: 'You\'ll be notified when something happens',
           );
         },
       ),

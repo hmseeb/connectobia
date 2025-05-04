@@ -5,6 +5,7 @@ import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_c
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_error_boundary.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/search_field.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/swipe_hint.dart';
+import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:connectobia/src/shared/presentation/widgets/transparent_app_bar.dart';
@@ -153,9 +154,11 @@ class _CampaignScreenState extends State<CampaignScreen>
     debugPrint('Building campaigns list with state: ${state.runtimeType}');
     if (state is CampaignsLoaded) {
       if (state.campaigns.isEmpty) {
-        return const Center(
-          child:
-              Text('No campaigns found. Create one by tapping the + button.'),
+        return NoMatchWidget(
+          title: 'No campaigns yet',
+          subTitle: _isBrand
+              ? 'Create one by tapping the + button below'
+              : 'You\'ll see campaigns when brands invite you to collaborate',
         );
       }
 

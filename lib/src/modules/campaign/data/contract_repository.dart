@@ -181,7 +181,6 @@ class ContractRepository {
       final pb = await PocketBaseSingleton.instance;
 
       // First, get the contract to ensure it exists and to get related data
-      final existingContract = await getContractById(id);
 
       // Update the contract status to completed
       final record = await pb.collection(_collectionName).update(
