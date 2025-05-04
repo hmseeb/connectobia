@@ -301,7 +301,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileContent(BuildContext context, dynamic user) {
     // Extract user details
     final userId = user.id;
-    final isCurrentUser = true; // Always true in this screen
     String name = '';
     String username = '';
     String email = '';
@@ -315,9 +314,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isBrand = true;
       name = user.brandName;
       email = user.email;
-      industry = user.industry ?? '';
+      industry = user.industry;
       avatar = user.avatar;
-      profileId = user.profile ?? '';
+      profileId = user.profile;
 
       // Schedule profile data loading for after the build is complete
       if (_profileData == null && profileId.isNotEmpty) {
@@ -331,9 +330,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       name = user.fullName;
       username = user.username;
       email = user.email;
-      industry = user.industry ?? '';
+      industry = user.industry;
       avatar = user.avatar;
-      profileId = user.profile ?? '';
+      profileId = user.profile;
 
       // Schedule profile data loading for after the build is complete
       if (_profileData == null && profileId.isNotEmpty) {
