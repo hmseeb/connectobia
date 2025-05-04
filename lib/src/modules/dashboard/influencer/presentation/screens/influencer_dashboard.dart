@@ -5,6 +5,7 @@ import 'package:connectobia/src/modules/chatting/application/messaging/realtime_
 import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:connectobia/src/modules/dashboard/influencer/application/influencer_dashboard/influencer_dashboard_bloc.dart';
 import 'package:connectobia/src/modules/notifications/application/notification_bloc.dart';
+import 'package:connectobia/src/modules/notifications/presentation/screens/notifications_screen.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:delightful_toast/delight_toast.dart';
@@ -86,57 +87,6 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Dashboard'),
-          actions: [
-            // Notification icon with badge
-            BlocBuilder<NotificationBloc, NotificationState>(
-              builder: (context, state) {
-                int unreadCount = 0;
-                if (state is NotificationsLoaded) {
-                  unreadCount = state.unreadCount;
-                }
-
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.notifications),
-                      onPressed: () {
-                        Navigator.pushNamed(context, notificationsScreen);
-                      },
-                    ),
-                    if (unreadCount > 0)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            unreadCount > 9 ? '9+' : unreadCount.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
-            // Existing action buttons (if any)
-          ],
-        ),
         endDrawer: CommonDrawer(
           name: user.fullName,
           email: user.email,
@@ -170,15 +120,15 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                     children: [
                       const SectionTitle('Featured Brands'),
                       const SizedBox(height: 16),
-                      InfluencerFeaturedListings(),
+                      const InfluencerFeaturedListings(),
                     ],
                   ),
                 ),
               ),
             ),
-            CampaignScreen(),
-            Chats(),
-            Placeholder(),
+            const CampaignScreen(),
+            const Chats(),
+            const NotificationsScreen(),
           ],
         ),
         bottomNavigationBar: buildBottomNavigationBar(
@@ -187,10 +137,15 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
             // Get chats when the chats screen is selected
             if (index == 2) {
               BlocProvider.of<ChatsBloc>(context).add(GetChats());
-
               // Unsubscribe from chats when the chats screen is not selected
             } else if (index != 2 && _selectedIndex == 2) {
               BlocProvider.of<ChatsBloc>(context).add(UnsubscribeChats());
+            }
+
+            // Refresh notifications when notifications tab is selected
+            if (index == 3) {
+              BlocProvider.of<NotificationBloc>(context)
+                  .add(FetchNotifications());
             }
 
             setState(() {

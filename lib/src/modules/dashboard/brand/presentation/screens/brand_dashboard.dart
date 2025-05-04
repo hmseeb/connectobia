@@ -1,11 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/modules/auth/presentation/widgets/brand_featured_listing.dart';
 import 'package:connectobia/src/modules/campaign/presentation/screens/campaign_screen.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/chatting/presentation/screens/chats_screen.dart';
 import 'package:connectobia/src/modules/dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import 'package:connectobia/src/modules/notifications/application/notification_bloc.dart';
+import 'package:connectobia/src/modules/notifications/presentation/screens/notifications_screen.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
@@ -13,9 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../../../shared/domain/models/brand.dart';
-import '../../../../auth/presentation/widgets/brand_featured_listing.dart';
-import '../../../../chatting/presentation/screens/chats_screen.dart';
 import '../../../common/widgets/app_bar.dart';
 import '../../../common/widgets/bottom_navigation.dart';
 import '../../../common/widgets/drawer.dart';
@@ -30,11 +31,8 @@ class BrandDashboard extends StatefulWidget {
 }
 
 class _BrandDashboardState extends State<BrandDashboard> {
+  final scrollController = ScrollController();
   late Brand user = widget.user;
-  // late final List<String> _industries;
-  late final brightness = ShadTheme.of(context).brightness;
-  final ScrollController scrollController = ScrollController();
-
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -85,57 +83,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Dashboard'),
-          actions: [
-            // Notification icon with badge
-            BlocBuilder<NotificationBloc, NotificationState>(
-              builder: (context, state) {
-                int unreadCount = 0;
-                if (state is NotificationsLoaded) {
-                  unreadCount = state.unreadCount;
-                }
-
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.notifications),
-                      onPressed: () {
-                        Navigator.pushNamed(context, notificationsScreen);
-                      },
-                    ),
-                    if (unreadCount > 0)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            unreadCount > 9 ? '9+' : unreadCount.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
-            // Existing action buttons (if any)
-          ],
-        ),
         endDrawer: CommonDrawer(
           name: user.brandName,
           email: user.email,
@@ -170,15 +117,15 @@ class _BrandDashboardState extends State<BrandDashboard> {
                       _buildWalletCard(),
                       const SectionTitle('Featured Influencers'),
                       const SizedBox(height: 16),
-                      BrandFeaturedListings(),
+                      const BrandFeaturedListings(),
                     ],
                   ),
                 ),
               ),
             ),
-            CampaignScreen(),
-            Chats(),
-            Placeholder(),
+            const CampaignScreen(),
+            const Chats(),
+            const NotificationsScreen(),
           ],
         ),
         bottomNavigationBar: BlocBuilder<ChatsBloc, ChatsState>(
@@ -191,6 +138,11 @@ class _BrandDashboardState extends State<BrandDashboard> {
                 });
                 if (index == 2) {
                   BlocProvider.of<ChatsBloc>(context).add(GetChats());
+                }
+                if (index == 3) {
+                  // Refresh notifications when the tab is selected
+                  BlocProvider.of<NotificationBloc>(context)
+                      .add(FetchNotifications());
                 }
               },
             );
@@ -211,6 +163,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
   @override
   void initState() {
     super.initState();
+    user = widget.user;
     scrollController.addListener(_scrollListener); // Pass the function directly
 
     // Subscribe to real-time messages
