@@ -306,9 +306,33 @@ class _UserProfileState extends State<UserProfile> {
 
     return Scaffold(
       floatingActionButton: widget.self
-          ? null
-          : // Hide FAB when viewing own profile
-          BlocBuilder<RealtimeMessagingBloc, RealtimeMessagingState>(
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                // Navigate to the edit profile screen based on profile type
+                if (profileType == 'influencers') {
+                  Navigator.pushNamed(
+                    context,
+                    'influencer_edit_profile_screen',
+                    arguments: {
+                      'userId': userId,
+                      'profileId': influencerProfile?.id ?? '',
+                    },
+                  );
+                } else {
+                  Navigator.pushNamed(
+                    context,
+                    'brand_edit_profile_screen',
+                    arguments: {
+                      'userId': userId,
+                      'profileId': '', // Pass profile ID if available
+                    },
+                  );
+                }
+              },
+              icon: const Icon(Icons.edit),
+              label: const Text('Edit Profile'),
+            )
+          : BlocBuilder<RealtimeMessagingBloc, RealtimeMessagingState>(
               builder: (context, state) {
                 debugPrint(
                     'FAB visibility check - isVerified: $isVerified, self: ${widget.self}');

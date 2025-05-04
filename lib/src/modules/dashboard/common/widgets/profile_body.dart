@@ -282,14 +282,6 @@ class ProfileBody extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              helpText,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade800,
-              ),
-            ),
-            const SizedBox(height: 12),
             content,
           ],
         ),
