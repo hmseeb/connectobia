@@ -16,18 +16,47 @@ class BrandProfileBloc extends Bloc<BrandProfileEvent, BrandProfileState> {
     on<LoadBrandProfile>((event, emit) async {
       emit(BrandProfileLoading());
       try {
+        // Log detailed information about the attempt
+        debugPrint(
+            'BrandProfileLoad: Trying to load profile with ID: ${event.profileId}');
+        debugPrint(
+            'BrandProfileLoad: Brand info: ${event.brand.brandName}, ID: ${event.brand.id}');
+
+        if (event.profileId.isEmpty) {
+          debugPrint(
+              '⚠️ Warning: Empty profileId received in BrandProfileLoad');
+          emit(BrandProfileError('Empty profile ID provided'));
+          return;
+        }
+
         final BrandProfile brandProfile =
             await ProfileRepository.getBrandProfile(profileId: event.profileId);
 
-        Influencer influencer = await AuthRepository.getUser();
+        // Check what type of user is currently logged in
+        bool isInfluencerVerified = false;
+        try {
+          final user = await AuthRepository.getUser();
+          debugPrint('Current user type: ${user.runtimeType}');
 
+          // If the user is an influencer, check if they're verified
+          if (user is Influencer) {
+            isInfluencerVerified = user.connectedSocial;
+          }
+        } catch (e) {
+          debugPrint('Error getting current user type: $e');
+          // Default to false if there's an error
+          isInfluencerVerified = false;
+        }
+
+        debugPrint('✅ Successfully loaded profile: ${brandProfile.id}');
         emit(BrandProfileLoaded(
           brand: event.brand,
           brandProfile: brandProfile,
-          isInfluencerVerified: influencer.connectedSocial,
+          isInfluencerVerified: isInfluencerVerified,
         ));
         debugPrint('Fetched ${event.brand.brandName} profile');
       } catch (e) {
+        debugPrint('❌ Error loading brand profile: $e');
         ErrorRepository errorRepo = ErrorRepository();
         emit(BrandProfileError(errorRepo.handleError(e)));
       }

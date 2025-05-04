@@ -299,43 +299,52 @@ class _UserProfileState extends State<UserProfile> {
     required String profileType,
     InfluencerProfile? influencerProfile,
   }) {
+    // Debug info for message button visibility
+    debugPrint(
+        'Profile build - self: ${widget.self}, isVerified: $isVerified, profileType: $profileType');
+
     return Scaffold(
-      floatingActionButton:
+      floatingActionButton: widget.self
+          ? null
+          : // Hide FAB when viewing own profile
           BlocBuilder<RealtimeMessagingBloc, RealtimeMessagingState>(
-        builder: (context, state) {
-          return isVerified
-              ? FloatingActionButton(
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          if (isInfluencerVerified) {
-                            BlocProvider.of<RealtimeMessagingBloc>(context)
-                                .add(GetMessagesByUserId(userId));
-                            Navigator.pushNamed(
-                              context,
-                              messagesScreen,
-                              arguments: {
-                                'userId': userId,
-                                'name': name,
-                                'avatar': avatar,
-                                'collectionId': collectionId,
-                                'hasConnectedInstagram': connectedSocial,
+              builder: (context, state) {
+                debugPrint(
+                    'FAB visibility check - isVerified: $isVerified, self: ${widget.self}');
+                return isVerified
+                    ? FloatingActionButton(
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                                if (isInfluencerVerified) {
+                                  BlocProvider.of<RealtimeMessagingBloc>(
+                                          context)
+                                      .add(GetMessagesByUserId(userId));
+                                  Navigator.pushNamed(
+                                    context,
+                                    messagesScreen,
+                                    arguments: {
+                                      'userId': userId,
+                                      'name': name,
+                                      'avatar': avatar,
+                                      'collectionId': collectionId,
+                                      'hasConnectedInstagram': connectedSocial,
+                                    },
+                                  );
+                                } else {
+                                  ShadToaster.of(context).show(
+                                    ShadToast.destructive(
+                                      title: const Text(
+                                          'Please connect your Instagram account to be able to connect with other users'),
+                                    ),
+                                  );
+                                }
                               },
-                            );
-                          } else {
-                            ShadToaster.of(context).show(
-                              ShadToast.destructive(
-                                title: const Text(
-                                    'Please connect your Instagram account to be able to connect with other users'),
-                              ),
-                            );
-                          }
-                        },
-                  child: const Icon(Icons.message),
-                )
-              : const SizedBox();
-        },
-      ),
+                        child: const Icon(Icons.message),
+                      )
+                    : const SizedBox();
+              },
+            ),
       body: Skeletonizer(
         enabled: isLoading,
         child: SingleChildScrollView(
@@ -662,7 +671,9 @@ class _UserProfileState extends State<UserProfile> {
                 'Attempting to load brand profile directly with ID: ${widget.userId}');
             final pb = await PocketBaseSingleton.instance;
 
-            // If this succeeds, we have a profile ID
+            // First verify the profile exists
+            await pb.collection('brandProfile').getOne(widget.userId);
+
             debugPrint(
                 '✅ Successfully found profile record with ID: ${widget.userId}');
 
@@ -690,7 +701,7 @@ class _UserProfileState extends State<UserProfile> {
                 return;
               } else {
                 debugPrint('⚠️ No brand found with this profile ID');
-                // No matching brand found, create a temporary one
+                // No matching brand found, create a temporary one with better fallback data
                 final tempBrand = Brand(
                   id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
                   collectionId: 'brands',
@@ -720,7 +731,8 @@ class _UserProfileState extends State<UserProfile> {
               }
             } catch (e) {
               debugPrint('Error finding brand for profile: $e');
-              rethrow;
+              throw Exception(
+                  'Failed to find brand for profile ID: ${widget.userId}');
             }
           } catch (e) {
             debugPrint('🔄 Second approach failed: $e');

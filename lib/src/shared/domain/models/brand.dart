@@ -49,7 +49,7 @@ class Brand {
         brandName: json["brandName"],
         onboarded: json["onboarded"],
         industry: json["industry"],
-        profile: json["profile"],
+        profile: json["profile"] ?? '',
         description: json["description"],
         created: DateTime.parse(json["created"]),
         updated: DateTime.parse(json["updated"]),

@@ -7,10 +7,12 @@ class BrandRepository {
   static Future<Brand> getBrandById(String id) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+      debugPrint('🔍 Attempting to get brand with ID: $id');
       final record = await pb.collection('brands').getOne(id);
+      debugPrint('✅ Successfully loaded brand with ID: $id');
       return Brand.fromRecord(record);
     } catch (e) {
-      debugPrint('Error getting brand by ID: $e');
+      debugPrint('❌ Error getting brand by ID $id: $e');
       final errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);
     }
