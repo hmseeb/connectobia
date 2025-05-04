@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show MultipartFile;
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../services/storage/pb.dart';
@@ -236,20 +237,25 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final id = pb.authStore.record!.id;
         final collectionName = pb.authStore.record!.collectionName;
 
-        // Create form data for file upload
-        final formData = <String, dynamic>{};
-
         if (event.avatar != null) {
-          // For PocketBase avatar upload, you would use formdata approach
-          // This is abstracted away from this method
-          // The multipart file setup would depend on your PB configuration
+          // Create a multipart file for the avatar upload
+          final avatarFile = await event.avatar!.readAsBytes();
+          final fileName = 'avatar.${event.avatar!.path.split('.').last}';
+
+          await pb.collection(collectionName).update(
+            id,
+            files: [
+              MultipartFile.fromBytes(
+                'avatar',
+                avatarFile,
+                filename: fileName,
+              ),
+            ],
+          );
         }
 
-        final updatedRecord = await pb.collection(collectionName).update(
-              id,
-              body: formData,
-              // files: files,
-            );
+        // Fetch the updated record
+        final updatedRecord = await pb.collection(collectionName).getOne(id);
 
         if (collectionName == 'brands') {
           final brand = Brand.fromRecord(updatedRecord);
@@ -270,20 +276,25 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final id = pb.authStore.record!.id;
         final collectionName = pb.authStore.record!.collectionName;
 
-        // Create form data for file upload
-        final formData = <String, dynamic>{};
-
         if (event.banner != null) {
-          // For PocketBase banner upload, you would use formdata approach
-          // This is abstracted away from this method
-          // The multipart file setup would depend on your PB configuration
+          // Create a multipart file for the banner upload
+          final bannerFile = await event.banner!.readAsBytes();
+          final fileName = 'banner.${event.banner!.path.split('.').last}';
+
+          await pb.collection(collectionName).update(
+            id,
+            files: [
+              MultipartFile.fromBytes(
+                'banner',
+                bannerFile,
+                filename: fileName,
+              ),
+            ],
+          );
         }
 
-        final updatedRecord = await pb.collection(collectionName).update(
-              id,
-              body: formData,
-              // files: files,
-            );
+        // Fetch the updated record
+        final updatedRecord = await pb.collection(collectionName).getOne(id);
 
         if (collectionName == 'brands') {
           final brand = Brand.fromRecord(updatedRecord);

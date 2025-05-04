@@ -12,6 +12,7 @@ import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../theme/colors.dart';
 import '../../application/user/user_bloc.dart';
 import '../components/avatar_uploader.dart';
+import '../components/banner_uploader.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -30,6 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   String? _selectedIndustry;
   XFile? _profileImage;
+  XFile? _bannerImage;
   bool _formIsDirty = false;
   bool _formIsValid = false;
 
@@ -115,6 +117,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_originalUser != null) ...[
+              // Banner image uploader
+              _bannerImage == null
+                  ? BannerUploader(
+                      bannerUrl: _isBrand
+                          ? (_originalUser as Brand).banner
+                          : (_originalUser as Influencer).banner,
+                      userId: _isBrand
+                          ? (_originalUser as Brand).id
+                          : (_originalUser as Influencer).id,
+                      collectionId: _isBrand
+                          ? (_originalUser as Brand).collectionId
+                          : (_originalUser as Influencer).collectionId,
+                      isEditable: true,
+                      onBannerSelected: _onBannerSelected,
+                    )
+                  : TemporaryBannerUploader(
+                      image: _bannerImage,
+                      onPressed: () async {
+                        final ImagePicker picker = ImagePicker();
+                        final XFile? image = await picker.pickImage(
+                          source: ImageSource.gallery,
+                          maxWidth: 1200,
+                          maxHeight: 800,
+                          imageQuality: 85,
+                        );
+                        if (image != null) {
+                          _onBannerSelected(image);
+                        }
+                      },
+                    ),
+
+              const SizedBox(height: 16),
+
+              // Profile image uploader (avatar)
               Center(
                 child: _profileImage == null
                     ? AvatarUploader(
@@ -419,6 +455,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _checkIfFormIsDirty() {
     if (_originalUser == null) return false;
 
+    // Check if banner or profile image has changed
+    if (_bannerImage != null || _profileImage != null) return true;
+
     if (_isBrand) {
       final Brand brand = _originalUser;
       if (_nameController.text != brand.brandName) return true;
@@ -442,9 +481,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (_bioController.text != (profile.description)) return true;
       }
     }
-
-    // Always check profile image
-    if (_profileImage != null) return true;
 
     return false;
   }
@@ -492,6 +528,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_profileImage != null) {
       context.read<UserBloc>().add(
             UpdateUserAvatar(avatar: _profileImage),
+          );
+    }
+
+    // Then handle banner if updated
+    if (_bannerImage != null) {
+      context.read<UserBloc>().add(
+            UpdateUserBanner(banner: _bannerImage),
           );
     }
 
@@ -592,6 +635,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _onAvatarSelected(XFile image) {
     setState(() {
       _profileImage = image;
+      _formIsDirty = true;
+    });
+  }
+
+  void _onBannerSelected(XFile image) {
+    setState(() {
+      _bannerImage = image;
       _formIsDirty = true;
     });
   }
