@@ -132,6 +132,20 @@ class ContractBloc extends Bloc<ContractEvent, ContractState> {
         emit(ContractError(errorRepo.handleError(e)));
       }
     });
+
+    // Update post URLs
+    on<UpdateContractPostUrls>((event, emit) async {
+      emit(ContractsLoading());
+      try {
+        final contract = await ContractRepository.updatePostUrls(
+            event.contractId, event.postUrlJson);
+        emit(ContractUrlsUpdated(contract));
+      } catch (e) {
+        debugPrint('Error updating post URLs: $e');
+        final errorRepo = ErrorRepository();
+        emit(ContractError(errorRepo.handleError(e)));
+      }
+    });
   }
 }
 
@@ -169,6 +183,11 @@ class ContractsLoading extends ContractState {}
 
 // States
 abstract class ContractState {}
+
+class ContractUrlsUpdated extends ContractState {
+  final Contract contract;
+  ContractUrlsUpdated(this.contract);
+}
 
 class CreateContract extends ContractEvent {
   final String campaignId;
@@ -212,4 +231,11 @@ class RejectContract extends ContractEvent {
 class SignContractByInfluencer extends ContractEvent {
   final String contractId;
   SignContractByInfluencer(this.contractId);
+}
+
+class UpdateContractPostUrls extends ContractEvent {
+  final String contractId;
+  final String postUrlJson;
+
+  UpdateContractPostUrls(this.contractId, this.postUrlJson);
 }

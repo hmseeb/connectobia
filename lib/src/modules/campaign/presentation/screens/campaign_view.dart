@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
@@ -8,6 +10,7 @@ import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class CampaignDetailsPage extends StatefulWidget {
   final String? campaignId;
@@ -98,6 +101,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 });
                 _showSuccessToast('Contract signed successfully');
 
+                // Ensure we don't trigger a full reload that could cause errors
+                // Just update local campaign state instead
                 if (campaign != null) {
                   setState(() {
                     campaign = campaign!.copyWith(status: 'in_progress');
@@ -115,11 +120,17 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 });
                 _showSuccessToast('Contract rejected successfully');
 
+                // Update local campaign state instead of triggering a reload
                 if (campaign != null) {
                   setState(() {
                     campaign = campaign!.copyWith(status: 'declined');
                   });
                 }
+              } else if (state is ContractUrlsUpdated) {
+                setState(() {
+                  contract = state.contract;
+                });
+                _showSuccessToast('Content submitted successfully');
               } else if (state is ContractError) {
                 _showErrorToast(state.message);
               }
@@ -468,6 +479,11 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         (contract.status.toLowerCase() == 'pending' ||
             contract.status.toLowerCase() == 'draft');
 
+    // Check if we should show submission field
+    final bool showSubmission = userType == 'influencer' &&
+        campaign!.status.toLowerCase() == 'active' &&
+        contract.status.toLowerCase() == 'signed';
+
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: ShadCard(
@@ -515,6 +531,13 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             if (contract.guidelines.isNotEmpty)
               _buildDetailRow('Guidelines', contract.guidelines),
 
+            // Show previously submitted URLs if available
+            if (contract.postUrl != null && contract.postUrl!.isNotEmpty)
+              _buildSubmittedUrls(contract),
+
+            // Show submission field for influencers
+            if (showSubmission) _buildUrlSubmissionSection(contract),
+
             // Influencer contract actions - now directly under contract details
             if (canTakeAction)
               Padding(
@@ -543,6 +566,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Icon(Icons.cancel_outlined, size: 16),
+                                SizedBox(width: 8),
                                 Text('Reject Contract'),
                               ],
                             ),
@@ -575,7 +600,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
               ),
 
             // Status information when no action is needed
-            if (userType == 'influencer' && !canTakeAction)
+            if (userType == 'influencer' && !canTakeAction && !showSubmission)
               Padding(
                 padding: const EdgeInsets.only(top: 24.0),
                 child: Column(
@@ -665,6 +690,147 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         ],
       ),
     );
+  }
+
+  // Widget to show previously submitted URLs
+  Widget _buildSubmittedUrls(Contract contract) {
+    List<String> urls = [];
+
+    // Try to parse the postUrl field if it exists
+    if (contract.postUrl != null && contract.postUrl!.isNotEmpty) {
+      try {
+        // Check if it's a JSON string that needs to be parsed
+        if (contract.postUrl!.startsWith('[')) {
+          urls = List<String>.from(jsonDecode(contract.postUrl!));
+        } else {
+          // If it's just a single URL
+          urls = [contract.postUrl!];
+        }
+      } catch (e) {
+        // If parsing fails, just use it directly
+        urls = [contract.postUrl!];
+      }
+    }
+
+    if (urls.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(),
+          const SizedBox(height: 16),
+          const Text(
+            'Submitted Content',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...urls.map((url) => _buildUrlItem(url)),
+        ],
+      ),
+    );
+  }
+
+  // Widget to display a single URL with a clickable link
+  Widget _buildUrlItem(String url) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          const Icon(Icons.link, size: 16, color: Colors.grey),
+          const SizedBox(width: 8),
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                _launchUrl(url);
+              },
+              child: Text(
+                url,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  decoration: TextDecoration.underline,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // URL submission section for influencers
+  Widget _buildUrlSubmissionSection(Contract contract) {
+    // Create a text controller to handle the input
+    final TextEditingController urlController = TextEditingController();
+
+    return StatefulBuilder(builder: (context, setState) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Divider(),
+            const SizedBox(height: 16),
+            const Text(
+              'Content Submission',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Submit the URLs of your content for this campaign. If you have multiple links, submit them one at a time.',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: urlController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Post URL',
+                hintText: 'https://example.com/your-post',
+                prefixIcon: Icon(Icons.link),
+              ),
+              keyboardType: TextInputType.url,
+            ),
+            const SizedBox(height: 16),
+            ShadButton(
+              onPressed: () {
+                final String url = urlController.text.trim();
+                if (url.isNotEmpty) {
+                  _submitPostUrl(contract.id, url);
+                  // Clear the input field after submission
+                  urlController.clear();
+                } else {
+                  _showErrorToast('Please enter a valid URL');
+                }
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.send, size: 16),
+                  SizedBox(width: 8),
+                  Text('Submit URL'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   void _completeContract(String contractId) {
@@ -807,6 +973,26 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         return 'This campaign is in progress. Please check with the brand for next steps.';
       default:
         return 'Current status: ${campaign!.status.toUpperCase()}';
+    }
+  }
+
+  void _launchUrl(String url) async {
+    try {
+      // Make sure URL has a scheme
+      String urlToLaunch = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        urlToLaunch = 'https://$url';
+      }
+
+      final Uri uri = Uri.parse(urlToLaunch);
+      if (await url_launcher.canLaunchUrl(uri)) {
+        await url_launcher.launchUrl(uri,
+            mode: url_launcher.LaunchMode.externalApplication);
+      } else {
+        _showErrorToast('Could not launch URL: $url');
+      }
+    } catch (e) {
+      _showErrorToast('Error launching URL: $e');
     }
   }
 
@@ -995,5 +1181,91 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         _showErrorToast('Error signing contract: $e');
       }
     }
+  }
+
+  // Method to submit a post URL
+  void _submitPostUrl(String contractId, String newUrl) {
+    if (newUrl.trim().isEmpty) {
+      _showErrorToast('Please enter a valid URL');
+      return;
+    }
+
+    // Validate URL format
+    String urlToValidate = newUrl.trim();
+    if (!urlToValidate.startsWith('http://') &&
+        !urlToValidate.startsWith('https://')) {
+      urlToValidate = 'https://$urlToValidate';
+    }
+
+    try {
+      final uri = Uri.parse(urlToValidate);
+      if (!uri.hasAuthority) {
+        _showErrorToast('Please enter a valid URL');
+        return;
+      }
+    } catch (e) {
+      _showErrorToast('Please enter a valid URL');
+      return;
+    }
+
+    // Show loading indicator
+    ShadToaster.of(context).show(
+      ShadToast(
+        title: const Text('Submitting URL'),
+        description: const Text('Please wait...'),
+      ),
+    );
+
+    try {
+      // Process the new URL
+      List<String> existingUrls = [];
+
+      // Parse existing URLs if available
+      if (contract != null &&
+          contract!.postUrl != null &&
+          contract!.postUrl!.isNotEmpty) {
+        try {
+          if (contract!.postUrl!.startsWith('[')) {
+            existingUrls = List<String>.from(jsonDecode(contract!.postUrl!));
+          } else {
+            existingUrls = [contract!.postUrl!];
+          }
+        } catch (e) {
+          // If parsing fails, just use it directly
+          existingUrls = [contract!.postUrl!];
+        }
+      }
+
+      // Add the new URL to the list
+      existingUrls.add(newUrl.trim());
+
+      // Convert to JSON string
+      final postUrlsJson = jsonEncode(existingUrls);
+
+      // Update the contract in the database
+      _updateContractPostUrls(contractId, postUrlsJson);
+    } catch (e) {
+      _showErrorToast('Error submitting URL: $e');
+    }
+  }
+
+  // Method to update contract's postUrl field
+  void _updateContractPostUrls(String contractId, String postUrlsJson) {
+    if (contractId.isEmpty) {
+      _showErrorToast('Contract ID is missing');
+      return;
+    }
+
+    // Call the actual API to update the contract
+    context
+        .read<ContractBloc>()
+        .add(UpdateContractPostUrls(contractId, postUrlsJson));
+
+    // Update local state optimistically
+    setState(() {
+      if (contract != null) {
+        contract = contract!.copyWith(postUrl: postUrlsJson);
+      }
+    });
   }
 }

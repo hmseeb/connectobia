@@ -297,6 +297,44 @@ class ContractRepository {
     }
   }
 
+  /// Update post URLs for a contract
+  static Future<Contract> updatePostUrls(String id, String postUrlJson) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      debugPrint('Updating post URLs for contract $id: $postUrlJson');
+
+      final record = await pb.collection(_collectionName).update(
+        id,
+        body: {'post_url': postUrlJson},
+      );
+
+      // Create notification for the brand that content has been submitted
+      final updatedContract = Contract.fromRecord(record);
+
+      try {
+        // Create notification for brand
+        await NotificationRepository.createNotification(
+          userId: updatedContract.brand,
+          title: 'Content Submitted',
+          body: 'The influencer has submitted content for review.',
+          type: 'content_submitted',
+          redirectUrl:
+              '$campaignDetails?campaignId=${updatedContract.campaign}&userType=brand',
+        );
+      } catch (e) {
+        debugPrint('Error creating notification after content submission: $e');
+        // Do not fail the URL update if notification fails
+      }
+
+      return updatedContract;
+    } catch (e) {
+      debugPrint('Error updating post URLs: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
   /// Update contract status
   static Future<Contract> updateStatus(String id, String status) async {
     try {

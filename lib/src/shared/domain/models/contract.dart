@@ -13,6 +13,7 @@ class Contract {
   final bool isSignedByBrand;
   final bool isSignedByInfluencer;
   final String status; // pending, signed, rejected, completed
+  final String? postUrl; // For storing submitted post URLs as JSON
 
   // Optional expanded records
   final dynamic campaignRecord;
@@ -32,6 +33,7 @@ class Contract {
     required this.isSignedByBrand,
     required this.isSignedByInfluencer,
     required this.status,
+    this.postUrl,
     this.campaignRecord,
     this.brandRecord,
     this.influencerRecord,
@@ -61,6 +63,7 @@ class Contract {
       isSignedByBrand: record.data['is_signed_by_brand'] ?? false,
       isSignedByInfluencer: record.data['is_signed_by_influencer'] ?? false,
       status: record.data['status'] ?? 'pending',
+      postUrl: record.data['post_url'],
       campaignRecord: record.get<dynamic>("expand.campaign"),
       brandRecord: record.get<dynamic>("expand.brand"),
       influencerRecord: record.get<dynamic>("expand.influencer"),
@@ -80,6 +83,7 @@ class Contract {
     bool? isSignedByBrand,
     bool? isSignedByInfluencer,
     String? status,
+    String? postUrl,
     dynamic campaignRecord,
     dynamic brandRecord,
     dynamic influencerRecord,
@@ -97,6 +101,7 @@ class Contract {
       isSignedByBrand: isSignedByBrand ?? this.isSignedByBrand,
       isSignedByInfluencer: isSignedByInfluencer ?? this.isSignedByInfluencer,
       status: status ?? this.status,
+      postUrl: postUrl ?? this.postUrl,
       campaignRecord: campaignRecord ?? this.campaignRecord,
       brandRecord: brandRecord ?? this.brandRecord,
       influencerRecord: influencerRecord ?? this.influencerRecord,
@@ -116,6 +121,7 @@ class Contract {
       'is_signed_by_brand': isSignedByBrand,
       'is_signed_by_influencer': isSignedByInfluencer,
       'status': status,
+      'post_url': postUrl,
     };
   }
 }
