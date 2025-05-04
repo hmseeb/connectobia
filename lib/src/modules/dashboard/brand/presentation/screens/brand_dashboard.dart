@@ -89,6 +89,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
           collectionId: user.collectionId,
           avatar: user.avatar,
           userId: user.id,
+          profileId: user.profile,
         ),
         body: IndexedStack(
           index: _selectedIndex,

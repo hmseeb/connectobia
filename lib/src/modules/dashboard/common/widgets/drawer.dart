@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -15,6 +16,7 @@ class CommonDrawer extends StatelessWidget {
   final String collectionId;
   final String avatar;
   final String userId;
+  final String? profileId;
 
   const CommonDrawer({
     super.key,
@@ -23,6 +25,7 @@ class CommonDrawer extends StatelessWidget {
     required this.collectionId,
     required this.avatar,
     required this.userId,
+    this.profileId,
   });
 
   @override
@@ -43,7 +46,33 @@ class CommonDrawer extends StatelessWidget {
                           builder: (context) => const Text('Edit Profile'),
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, profileScreen);
+                              // Get the account type
+                              final accountType =
+                                  CollectionNameSingleton.instance;
+
+                              // If the user has a profile ID, navigate to user profile with self=true
+                              if (profileId != null && profileId!.isNotEmpty) {
+                                if (accountType == 'influencers') {
+                                  // For influencers
+                                  Navigator.pushNamed(context, profile,
+                                      arguments: {
+                                        'profileId': profileId,
+                                        'self': true,
+                                        'profileType': 'influencers'
+                                      });
+                                } else {
+                                  // For brands
+                                  Navigator.pushNamed(context, profile,
+                                      arguments: {
+                                        'profileId': profileId,
+                                        'self': true,
+                                        'profileType': 'brands'
+                                      });
+                                }
+                              } else {
+                                // Fallback to profile screen if no profile ID
+                                Navigator.pushNamed(context, profileScreen);
+                              }
                             },
                             child: CircleAvatar(
                               backgroundImage:

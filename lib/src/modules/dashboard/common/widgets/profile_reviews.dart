@@ -76,7 +76,7 @@ class _ProfileReviewsState extends State<ProfileReviews> {
     }
 
     return Card(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
