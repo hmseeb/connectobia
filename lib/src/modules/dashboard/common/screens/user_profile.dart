@@ -1,3 +1,4 @@
+import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
@@ -636,6 +637,14 @@ class _UserProfileState extends State<UserProfile> {
           }
         }
       } else if (widget.profileType == 'brands') {
+        // Get the current user type for debugging
+        try {
+          final user = await AuthRepository.getUser();
+          debugPrint('User is ${user.runtimeType}');
+        } catch (e) {
+          debugPrint('Error getting current user: $e');
+        }
+
         // APPROACH 1: Try treating the ID as a user ID from the 'brands' collection
         try {
           debugPrint('Attempting to load brand user with ID: ${widget.userId}');
@@ -665,6 +674,8 @@ class _UserProfileState extends State<UserProfile> {
         } catch (e) {
           debugPrint('🔄 First approach failed: $e');
 
+          // Don't rethrow immediately, try the second approach
+
           // APPROACH 2: Try treating the ID as a profile ID from 'brandProfile' collection
           try {
             debugPrint(
@@ -672,10 +683,10 @@ class _UserProfileState extends State<UserProfile> {
             final pb = await PocketBaseSingleton.instance;
 
             // First verify the profile exists
-            await pb.collection('brandProfile').getOne(widget.userId);
-
+            final profileRecord =
+                await pb.collection('brandProfile').getOne(widget.userId);
             debugPrint(
-                '✅ Successfully found profile record with ID: ${widget.userId}');
+                '✅ Successfully found profile record: ${profileRecord.id}');
 
             // Now we need to find the associated brand
             try {

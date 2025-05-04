@@ -499,7 +499,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _handleSave() {
     if (!_formKey.currentState!.validate() || !_formIsDirty) return;
 
-    // Format description text - wrap it in <p> tags if it doesn't already have them
+    // Format description text. Wrap it in <p> tags if it doesn't already have them
     String formattedDescription = _bioController.text;
     if (formattedDescription.isNotEmpty &&
         !formattedDescription.trim().startsWith('<p>') &&
