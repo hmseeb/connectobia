@@ -208,8 +208,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
             data['industry'] = event.industry;
           }
           if (event.email != null) data['email'] = event.email;
-          if (event.socialHandle != null)
+          if (event.socialHandle != null) {
             data['socialHandle'] = event.socialHandle;
+          }
 
           await InfluencerRepository.updateInfluencer(userId, data);
 
@@ -237,7 +238,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         // Create form data for file upload
         final formData = <String, dynamic>{};
-        final List<dynamic> files = [];
 
         if (event.avatar != null) {
           // For PocketBase avatar upload, you would use formdata approach
@@ -272,7 +272,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
         // Create form data for file upload
         final formData = <String, dynamic>{};
-        final List<dynamic> files = [];
 
         if (event.banner != null) {
           // For PocketBase banner upload, you would use formdata approach
