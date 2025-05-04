@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/application/campaign_event.dart
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_card.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/campaign_error_boundary.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/product_tour_overlay.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/search_field.dart';
 import 'package:connectobia/src/modules/campaign/presentation/widgets/swipe_hint.dart';
 import 'package:connectobia/src/modules/chatting/presentation/widgets/first_message.dart';
@@ -40,60 +41,69 @@ class _CampaignScreenState extends State<CampaignScreen>
           context.read<CampaignBloc>().add(LoadCampaigns());
         }
       },
-      child: Scaffold(
-        appBar: transparentAppBar(
-          'Campaigns',
-          context: context,
-          centerTitle: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {
-                debugPrint('Refresh button pressed, loading campaigns');
-                context.read<CampaignBloc>().add(LoadCampaigns());
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: transparentAppBar(
+              'Campaigns',
+              context: context,
+              centerTitle: false,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {
+                    debugPrint('Refresh button pressed, loading campaigns');
+                    context.read<CampaignBloc>().add(LoadCampaigns());
+                  },
+                ),
+              ],
+            ),
+            body: BlocConsumer<CampaignBloc, CampaignState>(
+              listener: (context, state) {
+                if (state is CampaignsLoadingError) {
+                  debugPrint('Campaign loading error: ${state.errorMessage}');
+                  ShadToaster.of(context).show(
+                    ShadToast.destructive(
+                      title: Text(state.errorMessage),
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      SearchField(
+                        controller: _searchController,
+                        onSearch: (query) {
+                          context
+                              .read<CampaignBloc>()
+                              .add(SearchCampaigns(query));
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: _buildCampaignsList(state),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
-          ],
-        ),
-        body: BlocConsumer<CampaignBloc, CampaignState>(
-          listener: (context, state) {
-            if (state is CampaignsLoadingError) {
-              debugPrint('Campaign loading error: ${state.errorMessage}');
-              ShadToaster.of(context).show(
-                ShadToast.destructive(
-                  title: Text(state.errorMessage),
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  SearchField(
-                    controller: _searchController,
-                    onSearch: (query) {
-                      context.read<CampaignBloc>().add(SearchCampaigns(query));
+            floatingActionButton: _isBrand
+                ? FloatingActionButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(createCampaign);
                     },
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: _buildCampaignsList(state),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-        floatingActionButton: _isBrand
-            ? FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(createCampaign);
-                },
-                child: const Icon(Icons.add),
-              )
-            : null,
+                    child: const Icon(Icons.add),
+                  )
+                : null,
+          ),
+
+          // Add the ProductTourOverlay for brand users
+          if (_isBrand) const ProductTourOverlay(),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/modules/campaign/presentation/widgets/product_tour_overlay.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/singletons/account_type.dart';
 import 'package:flutter/material.dart';
@@ -129,6 +130,27 @@ class CommonDrawer extends StatelessWidget {
                   ],
                 ),
               ),
+              // Campaign Help option (only for brands)
+              if (collectionId == 'brands')
+                ListTile(
+                  title: const Row(
+                    children: [
+                      Icon(Icons.help_outline),
+                      SizedBox(width: 16),
+                      Text('Campaign Help'),
+                    ],
+                  ),
+                  onTap: () {
+                    // Show the product tour again
+                    ProductTourOverlay.showAgain();
+
+                    // Close the drawer
+                    Navigator.pop(context);
+
+                    // Navigate to the campaigns screen to see the tour
+                    Navigator.pushNamed(context, campaignsScreen);
+                  },
+                ),
               ListTile(
                 title: const Row(
                   children: [
