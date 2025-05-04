@@ -56,6 +56,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         listener: (context, state) {
           if (state is UserLoaded && _originalUser == null) {
             _loadUserData(state.user);
+          } else if (state is UserUpdating) {
+            // Show loading when updating
+            setState(() {
+              _isLoading = true;
+            });
+          } else if (state is UserLoaded && _originalUser != null) {
+            // Update was successful
+            setState(() {
+              _isLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pop(context);
+          } else if (state is UserError) {
+            // Update failed with error
+            setState(() {
+              _isLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to update profile: ${state.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -499,6 +527,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _handleSave() {
     if (!_formKey.currentState!.validate() || !_formIsDirty) return;
 
+    setState(() {
+      _isLoading = true;
+    });
+
     // Format description text. Wrap it in <p> tags if it doesn't already have them
     String formattedDescription = _bioController.text;
     if (formattedDescription.isNotEmpty &&
@@ -538,8 +570,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           );
     }
 
-    // Navigate back after save
-    Navigator.pop(context);
+    // We'll navigate back in BlocListener once the operation is complete
   }
 
   Future<void> _loadUserData(dynamic user) async {

@@ -40,10 +40,34 @@ class InfluencerRepository {
         throw Exception('Influencer has no profile');
       }
 
-      await pb.collection('influencerProfile').update(
-        profileId,
-        body: {'description': description},
-      );
+      debugPrint('Updating influencer profile with ID: $profileId');
+      debugPrint('Description: $description');
+
+      // First try to update using the standard approach
+      try {
+        await pb.collection('influencerProfile').update(
+          profileId,
+          body: {'description': description},
+        );
+        debugPrint('Successfully updated influencer profile');
+      } catch (e) {
+        debugPrint(
+            'Error with standard update, trying alternative approach: $e');
+
+        // If direct update fails, try using a filter approach first to verify the profile exists
+        final record =
+            await pb.collection('influencerProfile').getFirstListItem(
+                  'id = "$profileId"',
+                );
+
+        // Now update with the confirmed ID
+        await pb.collection('influencerProfile').update(
+          record.id,
+          body: {'description': description},
+        );
+        debugPrint(
+            'Successfully updated influencer profile using alternative approach');
+      }
     } catch (e) {
       debugPrint('Error updating influencer profile: $e');
       final errorRepo = ErrorRepository();

@@ -224,8 +224,21 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           }
         }
 
-        add(FetchUser());
+        // Fetch the updated user to reflect changes
+        final pb = await PocketBaseSingleton.instance;
+        final collectionName = isBrand ? 'brands' : 'influencers';
+        final updatedRecord =
+            await pb.collection(collectionName).getOne(userId);
+
+        if (isBrand) {
+          final brand = Brand.fromRecord(updatedRecord);
+          emit(UserLoaded(brand));
+        } else {
+          final influencer = Influencer.fromRecord(updatedRecord);
+          emit(UserLoaded(influencer));
+        }
       } catch (e) {
+        debugPrint('Error updating user: $e');
         emit(UserError(e.toString()));
       }
     });
@@ -265,6 +278,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           emit(UserLoaded(influencer));
         }
       } catch (e) {
+        debugPrint('Error updating user avatar: $e');
         emit(UserError(e.toString()));
       }
     });
@@ -304,6 +318,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           emit(UserLoaded(influencer));
         }
       } catch (e) {
+        debugPrint('Error updating user banner: $e');
         emit(UserError(e.toString()));
       }
     });

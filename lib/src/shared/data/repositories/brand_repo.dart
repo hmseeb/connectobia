@@ -41,10 +41,33 @@ class BrandRepository {
         throw Exception('Brand has no profile');
       }
 
-      await pb.collection('brandProfile').update(
-        profileId,
-        body: {'description': description},
-      );
+      debugPrint('Updating brand profile with ID: $profileId');
+      debugPrint('Description: $description');
+
+      // First try to update using the standard approach
+      try {
+        await pb.collection('brandProfile').update(
+          profileId,
+          body: {'description': description},
+        );
+        debugPrint('Successfully updated brand profile');
+      } catch (e) {
+        debugPrint(
+            'Error with standard update, trying alternative approach: $e');
+
+        // If direct update fails, try using a filter approach first to verify the profile exists
+        final record = await pb.collection('brandProfile').getFirstListItem(
+              'id = "$profileId"',
+            );
+
+        // Now update with the confirmed ID
+        await pb.collection('brandProfile').update(
+          record.id,
+          body: {'description': description},
+        );
+        debugPrint(
+            'Successfully updated brand profile using alternative approach');
+      }
     } catch (e) {
       debugPrint('Error updating brand profile: $e');
       final errorRepo = ErrorRepository();
