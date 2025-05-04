@@ -524,6 +524,7 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   }
 
   void _validateAndGoToNextStep(CampaignFormState formState) {
+    // Prevent multiple rapid validations (debounce)
     // Clear previous validation errors
     setState(() {
       _validationErrors = [];
@@ -559,13 +560,18 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
         return;
       }
 
-      // Update the data before proceeding
+      // Update the data before proceeding - IMPORTANT to do this before changing step
       _updateBasicDetails();
 
-      // Move to the next step immediately after validation passes
-      setState(() {
-        _currentStep++;
+      // Use a microtask to ensure state updates are processed before moving to next step
+      Future.microtask(() {
+        if (mounted) {
+          setState(() {
+            _currentStep++;
+          });
+        }
       });
+
       return;
     }
 
@@ -627,9 +633,13 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       return;
     }
 
-    // If validation passed, move to the next step
-    setState(() {
-      _currentStep++;
+    // Use a microtask to ensure state updates are processed before moving to next step
+    Future.microtask(() {
+      if (mounted) {
+        setState(() {
+          _currentStep++;
+        });
+      }
     });
   }
 }

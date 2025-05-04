@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class NavigationButtons extends StatelessWidget {
+class NavigationButtons extends StatefulWidget {
   final int currentStep;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
@@ -17,9 +19,17 @@ class NavigationButtons extends StatelessWidget {
   });
 
   @override
+  State<NavigationButtons> createState() => _NavigationButtonsState();
+}
+
+class _NavigationButtonsState extends State<NavigationButtons> {
+  bool _isNextButtonEnabled = true;
+  Timer? _debounceTimer;
+
+  @override
   Widget build(BuildContext context) {
-    final isFirstStep = currentStep == 1;
-    final isLastStep = currentStep == 4;
+    final isFirstStep = widget.currentStep == 1;
+    final isLastStep = widget.currentStep == 4;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -44,7 +54,7 @@ class NavigationButtons extends StatelessWidget {
                 ),
               )
             : ShadButton.outline(
-                onPressed: onPrevious,
+                onPressed: widget.onPrevious,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -68,8 +78,10 @@ class NavigationButtons extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: ShadButton(
-            onPressed: onNext,
-            backgroundColor: AppColors.primary,
+            onPressed: _isNextButtonEnabled ? _handleNextPress : null,
+            backgroundColor: _isNextButtonEnabled
+                ? AppColors.primary
+                : AppColors.primary.withOpacity(0.6),
             foregroundColor: AppColors.textLight,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -77,7 +89,9 @@ class NavigationButtons extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    isLastStep ? (submitLabel ?? 'Submit Campaign') : 'Next',
+                    isLastStep
+                        ? (widget.submitLabel ?? 'Submit Campaign')
+                        : 'Next',
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       color: AppColors.textLight,
@@ -96,5 +110,32 @@ class NavigationButtons extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _handleNextPress() {
+    if (!_isNextButtonEnabled) return;
+
+    setState(() {
+      _isNextButtonEnabled = false;
+    });
+
+    // Call the onNext callback immediately
+    widget.onNext();
+
+    // Set a debounce timer to prevent rapid clicks
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 800), () {
+      if (mounted) {
+        setState(() {
+          _isNextButtonEnabled = true;
+        });
+      }
+    });
   }
 }
