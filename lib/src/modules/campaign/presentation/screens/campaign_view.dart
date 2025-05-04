@@ -33,6 +33,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   bool isLoading = true;
   Campaign? campaign;
   Contract? contract;
+  bool showSubmission = false;
 
   @override
   Widget build(BuildContext context) {
@@ -274,27 +275,10 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   @override
   void initState() {
     super.initState();
-    // Initialize with values from widget if available
     campaignId = widget.campaignId ?? '';
+    userType = widget.userType ?? '';
 
-    // First use the user type from constructor if available
-    if (widget.userType != null && widget.userType!.isNotEmpty) {
-      userType = widget.userType!;
-    } else {
-      // Default to influencer since we're having issues
-      userType = 'influencer';
-    }
-
-    // Get the current user ID and type
-    _getCurrentUserIdAndType();
-
-    // Check if campaignId is valid from constructor
-    if (campaignId.isNotEmpty) {
-      // Delay to ensure context is available
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _loadData();
-      });
-    }
+    _loadData();
   }
 
   Widget _buildAcceptRejectSection() {
@@ -531,12 +515,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
             if (contract.guidelines.isNotEmpty)
               _buildDetailRow('Guidelines', contract.guidelines),
 
-            // Show previously submitted URLs if available
-            if (contract.postUrl != null && contract.postUrl!.isNotEmpty)
-              _buildSubmittedUrls(contract),
-
-            // Show submission field for influencers
-            if (showSubmission) _buildUrlSubmissionSection(contract),
+            // URL Submission & Display Section
+            _buildUrlDisplaySection(contract),
 
             // Influencer contract actions - now directly under contract details
             if (canTakeAction)
@@ -692,49 +672,304 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     );
   }
 
-  // Widget to show previously submitted URLs
-  Widget _buildSubmittedUrls(Contract contract) {
-    List<String> urls = [];
+  // Enhanced method to display URLs with better UI
+  Widget _buildUrlDisplaySection(Contract contract) {
+    return StatefulBuilder(builder: (builderContext, setSectionState) {
+      List<String> urls = [];
+      List<TextEditingController> urlControllers = [];
+      bool isEditingMode = false;
+      bool isSubmitting = false;
 
-    // Try to parse the postUrl field if it exists
-    if (contract.postUrl != null && contract.postUrl!.isNotEmpty) {
-      try {
-        // Check if it's a JSON string that needs to be parsed
-        if (contract.postUrl!.startsWith('[')) {
-          urls = List<String>.from(jsonDecode(contract.postUrl!));
-        } else {
-          // If it's just a single URL
+      // Try to parse the postUrl field if it exists
+      if (contract.postUrl != null && contract.postUrl!.isNotEmpty) {
+        try {
+          // Check if it's a JSON string that needs to be parsed
+          if (contract.postUrl!.startsWith('[')) {
+            urls = List<String>.from(jsonDecode(contract.postUrl!));
+          } else {
+            // If it's just a single URL
+            urls = [contract.postUrl!];
+          }
+        } catch (e) {
+          // If parsing fails, just use it directly
           urls = [contract.postUrl!];
         }
-      } catch (e) {
-        // If parsing fails, just use it directly
-        urls = [contract.postUrl!];
       }
-    }
 
-    if (urls.isEmpty) {
-      return const SizedBox.shrink();
-    }
+      // Only show section if there are URLs or user is an influencer and contract is signed
+      bool shouldShowSection = urls.isNotEmpty ||
+          (userType == 'influencer' && contract.status == 'signed');
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Divider(),
-          const SizedBox(height: 16),
-          const Text(
-            'Submitted Content',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+      if (!shouldShowSection) {
+        return const SizedBox.shrink();
+      }
+
+      return Padding(
+        padding: const EdgeInsets.only(top: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Divider(),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Submitted Content',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                // Only show edit button to influencers for signed contracts
+                if (userType == 'influencer' &&
+                    contract.status == 'signed' &&
+                    !isEditingMode)
+                  ShadButton.outline(
+                    onPressed: () {
+                      // Initialize controllers with existing URLs
+                      urlControllers = urls
+                          .map((url) => TextEditingController(text: url))
+                          .toList();
+                      if (urlControllers.isEmpty) {
+                        urlControllers.add(TextEditingController());
+                      }
+
+                      setSectionState(() {
+                        isEditingMode = true;
+                      });
+                    },
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.edit, size: 14),
+                        SizedBox(width: 4),
+                        Text('Edit URLs'),
+                      ],
+                    ),
+                  ),
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          ...urls.map((url) => _buildUrlItem(url)),
-        ],
-      ),
-    );
+            const SizedBox(height: 12),
+            if (isEditingMode)
+              // URL Editing UI
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Enter the URLs where your content for this campaign can be viewed.',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // URL Input Fields
+                  ...List.generate(
+                    urlControllers.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: urlControllers[index],
+                              decoration: InputDecoration(
+                                hintText: 'https://example.com/your-post',
+                                prefixIcon: const Icon(Icons.link, size: 16),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (urlControllers.length > 1)
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline,
+                                  size: 20, color: Colors.red),
+                              onPressed: () {
+                                setSectionState(() {
+                                  urlControllers.removeAt(index);
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Add URL Button
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: ShadButton.outline(
+                        onPressed: () {
+                          setSectionState(() {
+                            urlControllers.add(TextEditingController());
+                          });
+                        },
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add, size: 14),
+                            SizedBox(width: 4),
+                            Text('Add Another URL'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ShadButton.secondary(
+                          onPressed: () {
+                            setSectionState(() {
+                              isEditingMode = false;
+                            });
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ShadButton(
+                          onPressed: isSubmitting
+                              ? null
+                              : () {
+                                  // Validate all URLs
+                                  bool allValid = true;
+                                  List<String> validUrls = [];
+
+                                  for (var controller in urlControllers) {
+                                    final url = controller.text.trim();
+                                    if (url.isNotEmpty) {
+                                      String formattedUrl = url;
+                                      if (!url.startsWith('http://') &&
+                                          !url.startsWith('https://')) {
+                                        formattedUrl = 'https://$url';
+                                      }
+
+                                      try {
+                                        final uri = Uri.parse(formattedUrl);
+                                        if (uri.hasAuthority) {
+                                          validUrls.add(formattedUrl);
+                                        } else {
+                                          allValid = false;
+                                          break;
+                                        }
+                                      } catch (e) {
+                                        allValid = false;
+                                        break;
+                                      }
+                                    }
+                                  }
+
+                                  if (!allValid) {
+                                    _showErrorToast(
+                                        'Please enter valid URLs for all fields');
+                                    return;
+                                  }
+
+                                  if (validUrls.isEmpty) {
+                                    _showErrorToast(
+                                        'Please add at least one URL');
+                                    return;
+                                  }
+
+                                  // Set submitting state to show loading
+                                  setSectionState(() {
+                                    isSubmitting = true;
+                                  });
+
+                                  // Submit all URLs
+                                  final postUrlsJson = jsonEncode(validUrls);
+
+                                  // Show loading indicator
+                                  ShadToaster.of(context).show(
+                                    ShadToast(
+                                      title: const Text('Updating Content'),
+                                      description:
+                                          const Text('Saving your changes...'),
+                                    ),
+                                  );
+
+                                  // Call method to update URLs
+                                  _updateContractPostUrls(
+                                      contract.id, postUrlsJson);
+
+                                  // Update UI
+                                  setSectionState(() {
+                                    isEditingMode = false;
+                                    isSubmitting = false;
+                                    urls = validUrls;
+                                  });
+                                },
+                          child: isSubmitting
+                              ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2))
+                              : const Text('Save Changes'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            else if (urls.isNotEmpty)
+              // Display URL List
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade50,
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: urls.map((url) => _buildUrlItem(url)).toList(),
+                ),
+              )
+            else if (userType == 'influencer' && contract.status == 'signed')
+              // Show prompt for influencers with signed contracts but no URLs yet
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade50,
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'No content submitted yet',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Click "Edit URLs" to add links to your content for this campaign.',
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      );
+    });
   }
 
   // Widget to display a single URL with a clickable link
@@ -764,73 +999,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         ],
       ),
     );
-  }
-
-  // URL submission section for influencers
-  Widget _buildUrlSubmissionSection(Contract contract) {
-    // Create a text controller to handle the input
-    final TextEditingController urlController = TextEditingController();
-
-    return StatefulBuilder(builder: (context, setState) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Divider(),
-            const SizedBox(height: 16),
-            const Text(
-              'Content Submission',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Submit the URLs of your content for this campaign. If you have multiple links, submit them one at a time.',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: urlController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Post URL',
-                hintText: 'https://example.com/your-post',
-                prefixIcon: Icon(Icons.link),
-              ),
-              keyboardType: TextInputType.url,
-            ),
-            const SizedBox(height: 16),
-            ShadButton(
-              onPressed: () {
-                final String url = urlController.text.trim();
-                if (url.isNotEmpty) {
-                  _submitPostUrl(contract.id, url);
-                  // Clear the input field after submission
-                  urlController.clear();
-                } else {
-                  _showErrorToast('Please enter a valid URL');
-                }
-              },
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.send, size: 16),
-                  SizedBox(width: 8),
-                  Text('Submit URL'),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    });
   }
 
   void _completeContract(String contractId) {
@@ -1183,7 +1351,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     }
   }
 
-  // Method to submit a post URL
+  // Method to submit a post URL - keeping this for backward compatibility
   void _submitPostUrl(String contractId, String newUrl) {
     if (newUrl.trim().isEmpty) {
       _showErrorToast('Please enter a valid URL');
@@ -1237,7 +1405,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       }
 
       // Add the new URL to the list
-      existingUrls.add(newUrl.trim());
+      existingUrls.add(urlToValidate);
 
       // Convert to JSON string
       final postUrlsJson = jsonEncode(existingUrls);
@@ -1253,6 +1421,19 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   void _updateContractPostUrls(String contractId, String postUrlsJson) {
     if (contractId.isEmpty) {
       _showErrorToast('Contract ID is missing');
+      return;
+    }
+
+    // Add debugging
+    debugPrint('SUBMITTING URLS: $postUrlsJson');
+
+    try {
+      // Verify JSON is valid
+      final parsedUrls = jsonDecode(postUrlsJson);
+      debugPrint('URLS PARSED SUCCESSFULLY: $parsedUrls');
+    } catch (e) {
+      debugPrint('JSON PARSING ERROR IN VIEW: $e');
+      _showErrorToast('Error with URL format: $e');
       return;
     }
 

@@ -11,6 +11,7 @@ class Contract {
   final bool isSignedByBrand;
   final bool isSignedByInfluencer;
   final String status;
+  final String? postUrl;
 
   Contract({
     required this.id,
@@ -25,6 +26,7 @@ class Contract {
     required this.isSignedByBrand,
     required this.isSignedByInfluencer,
     required this.status,
+    this.postUrl,
   });
 
   factory Contract.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class Contract {
       isSignedByBrand: json['isSignedByBrand'] as bool,
       isSignedByInfluencer: json['isSignedByInfluencer'] as bool,
       status: json['status'] as String,
+      postUrl: json['postUrl'] as String?,
     );
   }
 
@@ -57,6 +60,7 @@ class Contract {
     bool? isSignedByBrand,
     bool? isSignedByInfluencer,
     String? status,
+    String? postUrl,
   }) {
     return Contract(
       id: id ?? this.id,
@@ -71,6 +75,7 @@ class Contract {
       isSignedByBrand: isSignedByBrand ?? this.isSignedByBrand,
       isSignedByInfluencer: isSignedByInfluencer ?? this.isSignedByInfluencer,
       status: status ?? this.status,
+      postUrl: postUrl ?? this.postUrl,
     );
   }
 
@@ -88,6 +93,7 @@ class Contract {
       'isSignedByBrand': isSignedByBrand,
       'isSignedByInfluencer': isSignedByInfluencer,
       'status': status,
+      'postUrl': postUrl,
     };
   }
 }

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class Contract {
@@ -50,6 +53,27 @@ class Contract {
       deliveryDate = DateTime.now().add(const Duration(days: 7));
     }
 
+    // Parse post_url
+    String? postUrl;
+    var rawPostUrls = record.data['postUrls'];
+
+    // Handle different types for postUrls
+    if (rawPostUrls != null) {
+      if (rawPostUrls is List) {
+        // If it's already a list, convert it to JSON string
+        postUrl = jsonEncode(rawPostUrls);
+        debugPrint('CONTRACT MODEL: Converted List to JSON string: $postUrl');
+      } else if (rawPostUrls is String) {
+        // If it's already a string, use it directly
+        postUrl = rawPostUrls;
+        debugPrint('CONTRACT MODEL: Using string directly: $postUrl');
+      } else {
+        // For any other type, try to convert to string
+        postUrl = rawPostUrls.toString();
+        debugPrint('CONTRACT MODEL: Converted to string: $postUrl');
+      }
+    }
+
     return Contract(
       id: record.id,
       campaign: record.data['campaign'] ?? '',
@@ -63,7 +87,7 @@ class Contract {
       isSignedByBrand: record.data['is_signed_by_brand'] ?? false,
       isSignedByInfluencer: record.data['is_signed_by_influencer'] ?? false,
       status: record.data['status'] ?? 'pending',
-      postUrl: record.data['post_url'],
+      postUrl: postUrl,
       campaignRecord: record.get<dynamic>("expand.campaign"),
       brandRecord: record.get<dynamic>("expand.brand"),
       influencerRecord: record.get<dynamic>("expand.influencer"),
@@ -121,7 +145,7 @@ class Contract {
       'is_signed_by_brand': isSignedByBrand,
       'is_signed_by_influencer': isSignedByInfluencer,
       'status': status,
-      'post_url': postUrl,
+      'postUrls': postUrl,
     };
   }
 }

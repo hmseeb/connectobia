@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
@@ -304,10 +306,44 @@ class ContractRepository {
 
       debugPrint('Updating post URLs for contract $id: $postUrlJson');
 
+      // Add more debug info
+      debugPrint(
+          'POST URL FORMAT CHECK: Type: ${postUrlJson.runtimeType}, Length: ${postUrlJson.length}');
+      debugPrint('RAW JSON STRING: $postUrlJson');
+
+      // Validate and sanitize the JSON
+      String sanitizedJson = postUrlJson;
+      try {
+        // Validate JSON format
+        final decodedUrls = jsonDecode(postUrlJson);
+        debugPrint('JSON VALID: $decodedUrls');
+
+        // If it's a list but not in JSON format, re-encode it
+        if (decodedUrls is List) {
+          sanitizedJson = jsonEncode(decodedUrls);
+          debugPrint('RE-ENCODED JSON: $sanitizedJson');
+        }
+      } catch (e) {
+        debugPrint('JSON PARSING ERROR: $e');
+        // If invalid JSON, try to wrap it as a single item array
+        try {
+          sanitizedJson = jsonEncode([postUrlJson]);
+          debugPrint('FIXED JSON: $sanitizedJson');
+        } catch (e2) {
+          debugPrint('COULD NOT FIX JSON: $e2');
+          // Continue with original string as last resort
+        }
+      }
+
+      // Use the sanitized JSON string for the update
       final record = await pb.collection(_collectionName).update(
         id,
-        body: {'post_url': postUrlJson},
+        body: {'postUrls': sanitizedJson},
       );
+
+      // Log response
+      debugPrint('UPDATE RESPONSE: ${record.data}');
+      debugPrint('SAVED POST_URL: ${record.data['postUrls']}');
 
       // Create notification for the brand that content has been submitted
       final updatedContract = Contract.fromRecord(record);
@@ -318,7 +354,7 @@ class ContractRepository {
           userId: updatedContract.brand,
           title: 'Content Submitted',
           body: 'The influencer has submitted content for review.',
-          type: 'content_submitted',
+          type: 'content',
           redirectUrl:
               '$campaignDetails?campaignId=${updatedContract.campaign}&userType=brand',
         );
