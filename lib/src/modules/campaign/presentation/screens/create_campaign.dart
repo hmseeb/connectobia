@@ -375,16 +375,32 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   Widget _buildStepContent(CampaignFormState? formState) {
     switch (_currentStep) {
       case 1:
+        // Make sure we pass the correct budget value from the form state
+        double budgetValue = 0.0;
+
+        // First priority: use the value from form state if available
+        if (formState != null && formState.budget > 0) {
+          budgetValue = formState.budget;
+          debugPrint('Using budget from form state: $budgetValue');
+        }
+        // Second priority: use the value from the controller if not empty
+        else if (_budgetController.text.isNotEmpty) {
+          // Get only the digits from the formatted string
+          String digitsOnly =
+              _budgetController.text.replaceAll(RegExp(r'[^\d]'), '');
+          budgetValue = double.tryParse(digitsOnly) ?? 0.0;
+          debugPrint('Using budget from controller: $budgetValue');
+        }
+
         return CampaignFormCard(
           key: _formKey,
           campaignNameController: _campaignNameController,
           campaignDescriptionController: _campaignDescriptionController,
-          budgetValue: _budgetController.text.isNotEmpty
-              ? double.tryParse(_budgetController.text) ?? 0.0
-              : null,
-          categoryValue: _category,
-          startDateValue: _startDate,
-          endDateValue: _endDate,
+          budgetValue: budgetValue > 0 ? budgetValue : null,
+          categoryValue: (formState != null) ? formState.category : _category,
+          startDateValue:
+              (formState != null) ? formState.startDate : _startDate,
+          endDateValue: (formState != null) ? formState.endDate : _endDate,
           onBudgetChanged: (value) {
             debugPrint('Budget updated to: $value');
             _budgetController.text = value.toString();
@@ -499,6 +515,25 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       setState(() {
         _currentStep--;
         _validationErrors = [];
+
+        // If returning to Step 1, ensure the budget controller and category have the latest values
+        if (_currentStep == 1) {
+          final state = context.read<CampaignBloc>().state;
+          if (state is CampaignFormState) {
+            // Update budget controller with the value from state, if budget controller is empty
+            if (_budgetController.text.isEmpty && state.budget > 0) {
+              // Format the budget value
+              final formatter = NumberFormat('#,###', 'en_US');
+              _budgetController.text = formatter.format(state.budget.toInt());
+              debugPrint(
+                  'Updated budget field when returning to step 1: ${_budgetController.text}');
+            }
+
+            // Update category value
+            _category = state.category;
+            debugPrint('Updated category when returning to step 1: $_category');
+          }
+        }
       });
     }
   }
@@ -507,7 +542,13 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     final budgetText = _budgetController.text;
     // Remove any commas or non-digit characters from the budget text
     final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
-    final budget = int.tryParse(digitsOnly)?.toDouble() ?? 0.0;
+
+    // Make sure we have a valid budget value
+    double budget = 0.0;
+    if (digitsOnly.isNotEmpty) {
+      budget = int.tryParse(digitsOnly)?.toDouble() ?? 0.0;
+    }
+
     debugPrint(
         'Updating basic details with budget text: $budgetText, parsed value: $budget');
 
@@ -547,7 +588,13 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
       final budgetText = _budgetController.text;
       // Remove any commas or non-digit characters from the budget text
       final String digitsOnly = budgetText.replaceAll(RegExp(r'[^\d]'), '');
-      final budget = int.tryParse(digitsOnly);
+
+      // Parse budget value
+      int? budget;
+      if (digitsOnly.isNotEmpty) {
+        budget = int.tryParse(digitsOnly);
+      }
+
       debugPrint('Budget text: $budgetText, parsed value: $budget');
       if (budgetText.isEmpty || budget == null || budget <= 0) {
         errors.add('Budget must be greater than 0');

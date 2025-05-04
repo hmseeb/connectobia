@@ -388,16 +388,19 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     super.didUpdateWidget(oldWidget);
 
     // Update budget controller if the value has changed from parent
-    if (widget.budgetValue != null &&
-        widget.budgetValue.toString() != _budgetController.text) {
-      _budgetController.text = widget.budgetValue!.toInt().toString();
-      debugPrint(
-          'Updated budget field in didUpdateWidget: ${_budgetController.text}');
+    if (widget.budgetValue != null) {
+      // Format the budget value using the ThousandsFormatter
+      final formatter = NumberFormat('#,###', 'en_US');
+      final formattedBudget = formatter.format(widget.budgetValue!.toInt());
+      if (_budgetController.text != formattedBudget) {
+        _budgetController.text = formattedBudget;
+        debugPrint(
+            'Updated budget field in didUpdateWidget: ${_budgetController.text}');
+      }
     }
 
     // Update category if it changed
-    if (widget.categoryValue != null &&
-        widget.categoryValue != _selectedCategory) {
+    if (widget.categoryValue != null) {
       setState(() {
         _selectedCategory = widget.categoryValue!;
         debugPrint('Updated category in didUpdateWidget: $_selectedCategory');
@@ -405,14 +408,14 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     }
 
     // Update dates if they changed
-    if (widget.startDateValue != null && widget.startDateValue != _startDate) {
+    if (widget.startDateValue != null) {
       setState(() {
         _startDate = widget.startDateValue!;
         debugPrint('Updated start date in didUpdateWidget: $_startDate');
       });
     }
 
-    if (widget.endDateValue != null && widget.endDateValue != _endDate) {
+    if (widget.endDateValue != null) {
       setState(() {
         _endDate = widget.endDateValue!;
         debugPrint('Updated end date in didUpdateWidget: $_endDate');
@@ -440,14 +443,16 @@ class _CampaignFormCardState extends State<CampaignFormCard>
 
     _loadCategories();
 
-    // Initialize budget controller
+    // Initialize budget controller with proper formatting
     if (widget.budgetValue != null && widget.budgetValue! > 0) {
-      _budgetController.text = widget.budgetValue!.toInt().toString();
+      final formatter = NumberFormat('#,###', 'en_US');
+      _budgetController.text = formatter.format(widget.budgetValue!.toInt());
       debugPrint('Set budget field in initState: ${_budgetController.text}');
     } else {
       _budgetController.text = '';
     }
 
+    // Initialize other fields with proper default values
     _selectedCategory = widget.categoryValue ?? 'fashion';
     _startDate = widget.startDateValue ?? DateTime.now();
     _endDate =
