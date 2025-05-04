@@ -1,16 +1,16 @@
 import 'dart:convert';
 
+import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/constants/industries.dart';
+import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
+import 'package:connectobia/src/shared/data/services/instagram_analytics_service.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
+import 'package:connectobia/src/shared/domain/models/brand.dart';
+import 'package:connectobia/src/shared/domain/models/influencer.dart';
+import 'package:connectobia/src/shared/domain/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../../services/storage/pb.dart';
-import '../../../../shared/data/constants/industries.dart';
-import '../../../../shared/data/repositories/error_repo.dart';
-import '../../../../shared/data/singletons/account_type.dart';
-import '../../../../shared/domain/models/brand.dart';
-import '../../../../shared/domain/models/influencer.dart';
-import '../../../../shared/domain/models/user.dart';
 
 /// [AuthRepo] is a repository class that contains all the methods that are
 /// responsible for handling authentication related operations.
@@ -82,9 +82,29 @@ class AuthRepository {
   static Future<String> createInfluencerProfileByInstagram(
       {required Meta meta, required RawUser rawUser}) async {
     final pocketBase = await PocketBaseSingleton.instance;
+
+    // Fetch additional analytics data using the Instagram username
+    final String username = rawUser.username ?? '';
+    Map<String, dynamic> analyticsData = {};
+
+    if (username.isNotEmpty) {
+      debugPrint('Fetching additional analytics for $username');
+      analyticsData = await InstagramAnalyticsService.getProfileAnalytics(
+          username: username);
+    }
+
     final body = <String, dynamic>{
       "followers": rawUser.followersCount,
       "mediaCount": rawUser.mediaCount,
+      // Add the additional analytics data
+      "avgInteractions": analyticsData['avgInteractions'] ?? 0,
+      "avgLikes": analyticsData['avgLikes'] ?? 0,
+      "avgComments": analyticsData['avgComments'] ?? 0,
+      "avgVideoLikes": analyticsData['avgVideoLikes'] ?? 0,
+      "avgVideoComments": analyticsData['avgVideoComments'] ?? 0,
+      "avgVideoViews": analyticsData['avgVideoViews'] ?? 0,
+      "country": analyticsData['country'] ?? '',
+      "gender": analyticsData['gender'] ?? '',
     };
 
     final record =

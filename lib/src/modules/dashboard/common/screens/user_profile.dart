@@ -1,5 +1,6 @@
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
+import 'package:connectobia/src/shared/domain/models/influencer_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -117,6 +118,7 @@ class _UserProfileState extends State<UserProfile> {
             followers: state.influencerProfile.followers,
             mediaCount: state.influencerProfile.mediaCount,
             profileType: 'influencers',
+            influencerProfile: state.influencerProfile,
           );
         } else {
           return _buildProfileScaffold(
@@ -136,6 +138,7 @@ class _UserProfileState extends State<UserProfile> {
             followers: 0,
             mediaCount: 0,
             profileType: 'influencers',
+            influencerProfile: null,
           );
         }
       },
@@ -159,6 +162,7 @@ class _UserProfileState extends State<UserProfile> {
     required String username,
     required bool isVerified,
     required String profileType,
+    InfluencerProfile? influencerProfile,
   }) {
     return Scaffold(
       floatingActionButton:
@@ -226,7 +230,7 @@ class _UserProfileState extends State<UserProfile> {
                 followers: followers,
                 mediaCount: mediaCount,
                 hasConnectedInstagram: connectedSocial,
-                // profileType: profileType,
+                profile: influencerProfile,
               ),
               if (!isLoading)
                 ProfileReviews(
