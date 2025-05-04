@@ -405,12 +405,22 @@ class _UserProfileState extends State<UserProfile> {
                                           .state;
                                       if (currentState
                                           is InfluencerProfileLoaded) {
+                                        // Create a new influencer object with connectedSocial set to true
+                                        final updatedInfluencer =
+                                            currentState.influencer.copyWith(
+                                          connectedSocial: true,
+                                        );
+
+                                        debugPrint(
+                                            'Instagram connected successfully, reloading profile with connectedSocial=true');
+
+                                        // Reload the profile with the updated influencer
                                         BlocProvider.of<InfluencerProfileBloc>(
                                                 context)
                                             .add(
                                           InfluencerProfileLoad(
                                             profileId: userId,
-                                            influencer: currentState.influencer,
+                                            influencer: updatedInfluencer,
                                           ),
                                         );
                                       }
@@ -543,8 +553,6 @@ class _UserProfileState extends State<UserProfile> {
             debugPrint(
                 'Attempting to load influencer profile directly with ID: ${widget.userId}');
             final pb = await PocketBaseSingleton.instance;
-            final profileRecord =
-                await pb.collection('influencerProfile').getOne(widget.userId);
 
             // If this succeeds, we have a profile ID
             debugPrint(
@@ -653,8 +661,6 @@ class _UserProfileState extends State<UserProfile> {
             debugPrint(
                 'Attempting to load brand profile directly with ID: ${widget.userId}');
             final pb = await PocketBaseSingleton.instance;
-            final profileRecord =
-                await pb.collection('brandProfile').getOne(widget.userId);
 
             // If this succeeds, we have a profile ID
             debugPrint(
