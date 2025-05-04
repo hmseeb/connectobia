@@ -35,6 +35,8 @@ class ProfileBody extends StatelessWidget {
               _buildSectionCard(
                 context,
                 title: 'About',
+                helpText: 'Personal information and bio',
+                icon: Icons.person_rounded,
                 content: ReadMoreText(
                   description.removeAllHtmlTags(),
                   trimMode: TrimMode.Line,
@@ -59,6 +61,8 @@ class ProfileBody extends StatelessWidget {
               _buildSectionCard(
                 context,
                 title: 'Basic Analytics',
+                helpText: 'Key metrics from your Instagram account',
+                icon: Icons.auto_graph_rounded,
                 content: Column(
                   children: [
                     Row(
@@ -69,7 +73,11 @@ class ProfileBody extends StatelessWidget {
                             value: followers.toString(),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
                         Expanded(
                           child: ProfileAnalyticsCard(
                             title: 'MEDIA COUNT',
@@ -84,6 +92,17 @@ class ProfileBody extends StatelessWidget {
                         (profile!.country.isNotEmpty ||
                             profile!.gender.isNotEmpty)) ...[
                       const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Demographics',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade800,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           if (profile!.country.isNotEmpty)
@@ -93,18 +112,21 @@ class ProfileBody extends StatelessWidget {
                                 value: profile!.country,
                               ),
                             ),
-                          if (profile!.country.isNotEmpty &&
-                              profile!.gender.isNotEmpty)
-                            const SizedBox(width: 16),
-                          if (profile!.gender.isNotEmpty)
+                        ],
+                      ),
+                      if (profile!.gender.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
                             Expanded(
                               child: ProfileAnalyticsCard(
                                 title: 'GENDER',
                                 value: profile!.gender,
                               ),
                             ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ],
                   ],
                 ),
@@ -116,6 +138,8 @@ class ProfileBody extends StatelessWidget {
                 _buildSectionCard(
                   context,
                   title: 'Engagement Analytics',
+                  helpText: 'How your audience interacts with your content',
+                  icon: Icons.thumb_up_alt_rounded,
                   content: Column(
                     children: [
                       Row(
@@ -126,7 +150,11 @@ class ProfileBody extends StatelessWidget {
                               value: profile!.avgInteractions.toString(),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
                           Expanded(
                             child: ProfileAnalyticsCard(
                               title: 'AVG LIKES',
@@ -135,7 +163,7 @@ class ProfileBody extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           Expanded(
@@ -144,7 +172,11 @@ class ProfileBody extends StatelessWidget {
                               value: profile!.avgComments.toString(),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
                           Expanded(
                             child: ProfileAnalyticsCard(
                               title: 'ENG RATE',
@@ -165,6 +197,8 @@ class ProfileBody extends StatelessWidget {
                   _buildSectionCard(
                     context,
                     title: 'Video Analytics',
+                    helpText: 'Performance metrics for your video content',
+                    icon: Icons.videocam_rounded,
                     content: Column(
                       children: [
                         Row(
@@ -175,7 +209,11 @@ class ProfileBody extends StatelessWidget {
                                 value: profile!.avgVideoViews.toString(),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
                             Expanded(
                               child: ProfileAnalyticsCard(
                                 title: 'AVG VIDEO LIKES',
@@ -185,7 +223,7 @@ class ProfileBody extends StatelessWidget {
                           ],
                         ),
                         if (profile!.avgVideoComments > 0) ...[
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           Row(
                             children: [
                               Expanded(
@@ -194,7 +232,6 @@ class ProfileBody extends StatelessWidget {
                                   value: profile!.avgVideoComments.toString(),
                                 ),
                               ),
-                              const Expanded(child: SizedBox()),
                             ],
                           ),
                         ],
@@ -211,7 +248,10 @@ class ProfileBody extends StatelessWidget {
   }
 
   Widget _buildSectionCard(BuildContext context,
-      {required String title, required Widget content}) {
+      {required String title,
+      required String helpText,
+      required IconData icon,
+      required Widget content}) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -226,11 +266,28 @@ class ProfileBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: Colors.grey.shade800,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              helpText,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade800,
+              ),
             ),
             const SizedBox(height: 12),
             content,
