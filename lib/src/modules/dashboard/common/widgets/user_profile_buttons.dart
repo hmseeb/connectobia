@@ -21,14 +21,6 @@ class ProfileButtons extends StatelessWidget {
             child: const Text('Edit Profile'),
           ),
         ),
-        Expanded(
-          child: ShadButton.outline(
-            onPressed: () {
-              // Add your settings logic here
-            },
-            child: const Text('Settings'),
-          ),
-        ),
       ],
     );
   }

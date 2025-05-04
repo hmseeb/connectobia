@@ -132,18 +132,6 @@ class CommonDrawer extends StatelessWidget {
               ListTile(
                 title: const Row(
                   children: [
-                    Icon(LucideIcons.settings),
-                    SizedBox(width: 16),
-                    Text('Settings'),
-                  ],
-                ),
-                onTap: () {
-                  // _displayEditInfluencerProfile(context);
-                },
-              ),
-              ListTile(
-                title: const Row(
-                  children: [
                     Icon(
                       LucideIcons.logOut,
                       color: Colors.redAccent,
