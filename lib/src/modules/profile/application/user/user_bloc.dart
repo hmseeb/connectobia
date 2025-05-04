@@ -240,9 +240,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final List<dynamic> files = [];
 
         if (event.avatar != null) {
-          final bytes = await event.avatar!.readAsBytes();
-          final fileName = event.avatar!.name;
-
           // For PocketBase avatar upload, you would use formdata approach
           // This is abstracted away from this method
           // The multipart file setup would depend on your PB configuration
@@ -278,9 +275,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final List<dynamic> files = [];
 
         if (event.banner != null) {
-          final bytes = await event.banner!.readAsBytes();
-          final fileName = event.banner!.name;
-
           // For PocketBase banner upload, you would use formdata approach
           // This is abstracted away from this method
           // The multipart file setup would depend on your PB configuration
