@@ -469,6 +469,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         !formattedDescription.trim().startsWith('<p>') &&
         !formattedDescription.trim().endsWith('</p>')) {
       formattedDescription = '<p>$formattedDescription</p>';
+    } else if (formattedDescription.isEmpty) {
+      // For empty description, use empty paragraph tags
+      formattedDescription = '<p></p>';
     }
 
     // First update main user data
@@ -478,8 +481,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             brandName: _isBrand ? _nameController.text : null,
             username: _isBrand ? null : _usernameController.text,
             industry: _selectedIndustry,
-            description:
-                formattedDescription.isNotEmpty ? formattedDescription : null,
+            description: formattedDescription, // Always pass description
             socialHandle: (!_isBrand && _socialController.text.isNotEmpty)
                 ? _socialController.text
                 : null,

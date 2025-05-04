@@ -191,8 +191,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
           await BrandRepository.updateBrand(userId, data);
 
-          // Update profile if description exists
-          if (event.description != null && event.description!.isNotEmpty) {
+          // Always update profile description if it's provided (even if empty)
+          if (event.description != null) {
             await BrandRepository.updateBrandProfile(
               brand: currentUser,
               description: event.description!,
@@ -214,8 +214,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
           await InfluencerRepository.updateInfluencer(userId, data);
 
-          // Update profile if description exists
-          if (event.description != null && event.description!.isNotEmpty) {
+          // Always update profile description if it's provided (even if empty)
+          if (event.description != null) {
             await InfluencerRepository.updateInfluencerProfile(
               influencer: currentUser as Influencer,
               description: event.description!,
