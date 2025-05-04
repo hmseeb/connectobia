@@ -799,7 +799,6 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     });
 
     try {
-      final pb = await PocketBaseSingleton.instance;
       final campaigns = await CampaignRepository.getAssignedCampaigns();
 
       setState(() {
@@ -821,7 +820,6 @@ class _InfluencerCampaignsScreenState extends State<InfluencerCampaignsScreen>
     });
 
     try {
-      final pb = await PocketBaseSingleton.instance;
       final campaigns = await CampaignRepository.getAvailableCampaigns();
 
       setState(() {

@@ -60,11 +60,15 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 });
                 _showSuccessToast('Campaign status updated successfully');
               } else if (state is CampaignError) {
-                setState(() {
-                  isLoading = false;
-                  campaign = null;
-                });
-                _showErrorToast(state.message);
+                if (isLoading || campaign == null) {
+                  setState(() {
+                    isLoading = false;
+                    campaign = null;
+                  });
+                  _showErrorToast(state.message);
+                } else {
+                  _showErrorToast('Error updating campaign: ${state.message}');
+                }
               }
             },
           ),
@@ -93,6 +97,12 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                   contract = state.contract;
                 });
                 _showSuccessToast('Contract signed successfully');
+
+                if (campaign != null) {
+                  setState(() {
+                    campaign = campaign!.copyWith(status: 'in_progress');
+                  });
+                }
               } else if (state is ContractCompleted) {
                 setState(() {
                   contract = state.contract;
@@ -104,6 +114,12 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                   contract = state.contract;
                 });
                 _showSuccessToast('Contract rejected successfully');
+
+                if (campaign != null) {
+                  setState(() {
+                    campaign = campaign!.copyWith(status: 'declined');
+                  });
+                }
               } else if (state is ContractError) {
                 _showErrorToast(state.message);
               }
@@ -652,7 +668,30 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   void _completeContract(String contractId) {
-    context.read<ContractBloc>().add(CompleteContract(contractId));
+    try {
+      // Show loading first
+      ShadToaster.of(context).show(
+        ShadToast(
+          title: const Text('Processing'),
+          description: const Text('Completing contract...'),
+        ),
+      );
+
+      // Update contract
+      context.read<ContractBloc>().add(CompleteContract(contractId));
+
+      // Update local state
+      setState(() {
+        if (contract != null) {
+          contract = contract!.copyWith(status: 'completed');
+        }
+        if (campaign != null) {
+          campaign = campaign!.copyWith(status: 'completed');
+        }
+      });
+    } catch (e) {
+      _showErrorToast('Error completing contract: $e');
+    }
   }
 
   String _formatDate(DateTime date) {
@@ -725,7 +764,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       if (pb.authStore.isValid) {
         final record = pb.authStore.record;
         final recordId = record?.id ?? '';
-        final collectionId = record?.collectionId;
         final collectionName = record?.collectionName;
 
         setState(() {
@@ -773,6 +811,14 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   Future<void> _loadData() async {
+    // Skip loading if we're already in a terminal state (like declined/completed)
+    // or if we're in the middle of a state transition (like signing a contract)
+    if (campaign != null &&
+        (campaign!.status.toLowerCase() == 'declined' ||
+            campaign!.status.toLowerCase() == 'completed')) {
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
@@ -790,23 +836,53 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       setState(() {
         isLoading = false;
       });
+      _showErrorToast('Error loading data: $e');
     }
   }
 
   void _rejectContract(String contractId) {
-    // If no contract exists yet, we just need to update the campaign status
-    if (contractId.isEmpty) {
-      context.read<CampaignBloc>().add(
-            UpdateCampaignStatus(campaign!.id, 'declined'),
-          );
-    } else {
-      // Reject the existing contract
-      context.read<ContractBloc>().add(RejectContract(contractId));
+    // Show loading toast
+    ShadToaster.of(context).show(
+      ShadToast(
+        title: const Text('Processing'),
+        description: const Text('Rejecting...'),
+      ),
+    );
 
-      // Also update campaign status
-      context.read<CampaignBloc>().add(
-            UpdateCampaignStatus(campaign!.id, 'declined'),
-          );
+    try {
+      // If no contract exists yet, we just need to update the campaign status
+      if (contractId.isEmpty) {
+        context.read<CampaignBloc>().add(
+              UpdateCampaignStatus(campaign!.id, 'declined'),
+            );
+
+        // Update local state to prevent reload issues
+        setState(() {
+          if (campaign != null) {
+            campaign = campaign!.copyWith(status: 'declined');
+          }
+        });
+      } else {
+        // Reject the existing contract
+        context.read<ContractBloc>().add(RejectContract(contractId));
+
+        // Also update campaign status
+        context.read<CampaignBloc>().add(
+              UpdateCampaignStatus(campaign!.id, 'declined'),
+            );
+
+        // Update local state to prevent reload issues
+        setState(() {
+          if (campaign != null) {
+            campaign = campaign!.copyWith(status: 'declined');
+          }
+          if (contract != null) {
+            contract = contract!.copyWith(status: 'rejected');
+          }
+        });
+      }
+    } catch (e) {
+      _showErrorToast('Error rejecting: $e');
     }
   }
 
@@ -825,7 +901,12 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              onConfirm();
+              // Wrap action in a try/catch to prevent errors
+              try {
+                onConfirm();
+              } catch (e) {
+                _showErrorToast('Error: $e');
+              }
             },
             child: const Text('Confirm'),
           ),
@@ -880,13 +961,39 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         }
       });
     } else {
-      // Sign the existing contract
-      context.read<ContractBloc>().add(SignContractByInfluencer(contractId));
+      // Show loading toast
+      ShadToaster.of(context).show(
+        ShadToast(
+          title: const Text('Processing'),
+          description: const Text('Signing contract...'),
+        ),
+      );
 
-      // Update campaign status to in_progress
-      context.read<CampaignBloc>().add(
-            UpdateCampaignStatus(campaign!.id, 'in_progress'),
-          );
+      try {
+        // Sign the existing contract
+        context.read<ContractBloc>().add(SignContractByInfluencer(contractId));
+
+        // Update campaign status to in_progress
+        context.read<CampaignBloc>().add(
+              UpdateCampaignStatus(campaign!.id, 'in_progress'),
+            );
+
+        // Don't reload the campaign immediately to avoid race conditions
+        // Instead, just update the local state if needed
+        setState(() {
+          if (campaign != null) {
+            campaign = campaign!.copyWith(status: 'in_progress');
+          }
+          if (contract != null) {
+            contract = contract!.copyWith(
+              status: 'signed',
+              isSignedByInfluencer: true,
+            );
+          }
+        });
+      } catch (e) {
+        _showErrorToast('Error signing contract: $e');
+      }
     }
   }
 }
