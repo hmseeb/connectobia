@@ -5,6 +5,7 @@ import 'package:connectobia/src/modules/chatting/presentation/widgets/first_mess
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/constants/date_and_time.dart';
 import 'package:connectobia/src/shared/data/constants/messages.dart';
+import 'package:connectobia/src/shared/presentation/widgets/fullscreen_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -29,58 +30,74 @@ class ChatMedia extends StatelessWidget {
     final maxWidth = screenWidth * 0.7; // 70% of screen width
     final maxHeight = maxWidth; // Square or maintain aspect ratio
 
+    final imageUrl = Avatar.getUserImage(
+        collectionId: message.collectionId!,
+        recordId: message.id!,
+        image: message.image!.first);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              Avatar.getUserImage(
-                  collectionId: message.collectionId!,
-                  recordId: message.id!,
-                  image: message.image!.first),
-              fit: BoxFit.contain,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  width: maxWidth,
-                  height: maxWidth * 0.75,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainerHighest
-                        .withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
+        child: GestureDetector(
+          onTap: () {
+            // Open fullscreen image viewer with our shared component
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => FullscreenImage(
+                  imageUrl: imageUrl,
+                  heroTag: 'chat_image_${message.id}',
+                ),
+              ),
+            );
+          },
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+              maxHeight: maxHeight,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    width: maxWidth,
+                    height: maxWidth * 0.75,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: maxWidth,
-                  height: maxWidth * 0.75,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.error_outline, color: Colors.red),
-                  ),
-                );
-              },
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: maxWidth,
+                    height: maxWidth * 0.75,
+                    decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).colorScheme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.error_outline, color: Colors.red),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),

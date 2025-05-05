@@ -102,6 +102,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   userId: user.id,
                   collectionId: user.collectionId,
                   image: user.avatar,
+                  showFilterButton: true,
                   onChange: (value) {
                     BlocProvider.of<BrandDashboardBloc>(context)
                         .add(FilterInfluencers(filter: value));

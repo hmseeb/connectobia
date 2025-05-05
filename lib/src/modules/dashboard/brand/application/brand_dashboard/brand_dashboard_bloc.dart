@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart' show RangeValues;
 import 'package:meta/meta.dart';
 
 import '../../../../../shared/data/repositories/error_repo.dart';
@@ -32,6 +33,21 @@ class BrandDashboardBloc
       if (state is BrandDashboardLoadedInfluencers) {
         final filteredInfluencers =
             influencers!.filterInfluencers(event.filter);
+        emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
+      }
+    });
+
+    on<AdvancedFilterInfluencers>((event, emit) async {
+      if (state is BrandDashboardLoadedInfluencers && influencers != null) {
+        // Use the enhanced filtering method
+        final filteredInfluencers = influencers!.advancedFilterInfluencers(
+          textFilter: event.textFilter,
+          followerRange: event.followerRange,
+          engagementRange: event.engagementRange,
+          country: event.country,
+          gender: event.gender,
+        );
+
         emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
       }
     });
