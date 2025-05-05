@@ -291,7 +291,25 @@ void _toggleInfluencerSelection(String influencerId) {
                             );
                           },
                         ),
+                ),Container(
+  height: 250,
+  padding: const EdgeInsets.symmetric(vertical: 8),
+  child: _isLoading
+      ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+      : _errorMessage != null
+          ? _buildErrorState()
+          : filteredInfluencers.isEmpty
+              ? _buildEmptyState()
+              : ListView.builder(
+                  itemCount: filteredInfluencers.length,
+                  itemBuilder: (context, index) {
+                    final influencer = filteredInfluencers[index];
+                    final isSelected = _selectedInfluencers.contains(influencer.id);
+                    return _buildInfluencerCard(influencer, isSelected);
+                  },
                 ),
+)
+
               ],
             ),
           ),
