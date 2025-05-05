@@ -276,7 +276,7 @@ void _toggleInfluencerSelection(String influencerId) {
                                     fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
-                                '@${influencer.username} | ${influencer.industry} | 100k+ followers',
+                                '@${influencer.username} | ${influencer.industry} | build.users',
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
