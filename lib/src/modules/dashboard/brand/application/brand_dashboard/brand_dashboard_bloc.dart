@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show RangeValues;
-import 'package:meta/meta.dart';
 
 import '../../../../../shared/data/repositories/error_repo.dart';
 import '../../../../../shared/domain/models/influencers.dart';
@@ -39,16 +39,35 @@ class BrandDashboardBloc
 
     on<AdvancedFilterInfluencers>((event, emit) async {
       if (state is BrandDashboardLoadedInfluencers && influencers != null) {
-        // Use the enhanced filtering method
-        final filteredInfluencers = influencers!.advancedFilterInfluencers(
+        // First show temporary results with just the text filter
+        final preliminaryResults = influencers!.advancedFilterInfluencers(
           textFilter: event.textFilter,
-          followerRange: event.followerRange,
-          engagementRange: event.engagementRange,
-          country: event.country,
-          gender: event.gender,
+          rangeFilters: event.rangeFilters,
         );
 
-        emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
+        // Only show loading state if we have range filters
+        if (event.rangeFilters.isNotEmpty) {
+          emit(BrandDashboardLoadingInfluencers());
+        } else {
+          emit(BrandDashboardLoadedInfluencers(preliminaryResults));
+          return;
+        }
+
+        try {
+          // Now load the profiles and apply full filtering
+          final filteredInfluencers =
+              await Influencers.advancedFilterWithProfiles(
+            source: influencers!,
+            textFilter: event.textFilter,
+            rangeFilters: event.rangeFilters,
+          );
+
+          emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
+        } catch (e) {
+          debugPrint('Error during advanced filtering: $e');
+          // Fall back to the preliminary results if there's an error
+          emit(BrandDashboardLoadedInfluencers(preliminaryResults));
+        }
       }
     });
   }

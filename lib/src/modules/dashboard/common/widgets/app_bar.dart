@@ -9,7 +9,7 @@ import '../../../../shared/data/constants/avatar.dart';
 import '../../../../shared/data/constants/greetings.dart';
 import '../../../../theme/colors.dart';
 
-class CommonAppBar extends StatelessWidget {
+class CommonAppBar extends StatefulWidget {
   final Function(String) onChange;
   final String userName;
   final String searchPlaceholder;
@@ -17,6 +17,8 @@ class CommonAppBar extends StatelessWidget {
   final String collectionId;
   final String image;
   final bool showFilterButton;
+  final Widget? walletWidget;
+  final GlobalKey<InfluencerFilterButtonState>? filterButtonKey;
 
   const CommonAppBar({
     super.key,
@@ -27,7 +29,18 @@ class CommonAppBar extends StatelessWidget {
     required this.image,
     required this.onChange,
     this.showFilterButton = false,
+    this.walletWidget,
+    this.filterButtonKey,
   });
+
+  @override
+  State<CommonAppBar> createState() => _CommonAppBarState();
+}
+
+class _CommonAppBarState extends State<CommonAppBar> {
+  // Reference to the filter button if not provided externally
+  late final GlobalKey<InfluencerFilterButtonState> _filterButtonKey =
+      widget.filterButtonKey ?? GlobalKey<InfluencerFilterButtonState>();
 
   @override
   Widget build(BuildContext context) {
@@ -41,29 +54,41 @@ class CommonAppBar extends StatelessWidget {
           pinned: true,
           scrolledUnderElevation: 0,
           centerTitle: false,
-          title: Text(Greetings.getGreeting(userName)),
+          title: Text(Greetings.getGreeting(widget.userName)),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(69),
+            preferredSize:
+                Size.fromHeight(widget.walletWidget != null ? 120 : 69),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 8,
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Search field
-                  Expanded(
-                    child: ShadInputFormField(
-                      prefix: const Icon(LucideIcons.search),
-                      placeholder: Text(searchPlaceholder),
-                      onChanged: onChange,
-                    ),
+                  Row(
+                    children: [
+                      // Search field
+                      Expanded(
+                        child: ShadInputFormField(
+                          prefix: const Icon(LucideIcons.search),
+                          placeholder: Text(widget.searchPlaceholder),
+                          onChanged: widget.onChange,
+                        ),
+                      ),
+
+                      // Filter button if enabled
+                      if (widget.showFilterButton) ...[
+                        const SizedBox(width: 8),
+                        InfluencerFilterButton(key: _filterButtonKey),
+                      ],
+                    ],
                   ),
 
-                  // Filter button if enabled
-                  if (showFilterButton) ...[
-                    const SizedBox(width: 8),
-                    const InfluencerFilterButton(),
+                  // Wallet widget if provided (now below search)
+                  if (widget.walletWidget != null) ...[
+                    const SizedBox(height: 8),
+                    widget.walletWidget!,
                   ],
                 ],
               ),
@@ -78,11 +103,11 @@ class CommonAppBar extends StatelessWidget {
               },
               child: CircleAvatar(
                 backgroundImage: CachedNetworkImageProvider(
-                  image.isNotEmpty
+                  widget.image.isNotEmpty
                       ? Avatar.getUserImage(
-                          recordId: userId,
-                          image: image,
-                          collectionId: collectionId,
+                          recordId: widget.userId,
+                          image: widget.image,
+                          collectionId: widget.collectionId,
                         )
                       : Avatar.getAvatarPlaceholder('HA'),
                 ),
@@ -93,5 +118,12 @@ class CommonAppBar extends StatelessWidget {
         );
       },
     );
+  }
+
+  // Method to clear all filters
+  void clearAllFilters() {
+    if (widget.showFilterButton && _filterButtonKey.currentState != null) {
+      _filterButtonKey.currentState!.clearAllFilters();
+    }
   }
 }
