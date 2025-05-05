@@ -90,9 +90,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 );
 
                 // Slight delay to ensure snackbar is visible before navigation
-                Future.delayed(const Duration(milliseconds: 300), () {
+                Future.delayed(const Duration(milliseconds: 300), () async {
                   if (mounted) {
-                    // Pass fresh data back to the profile screen
+                    // Get the freshest user data directly from the repository
+                    try {
+                      final freshUser = await AuthRepository.getUser();
+                      if (freshUser != null) {
+                        debugPrint(
+                            'Returning with fresh user data from the repository');
+
+                        // Pass the fresh data back to the profile screen
+                        Navigator.pop(context, freshUser);
+                        return;
+                      }
+                    } catch (e) {
+                      debugPrint('Error getting fresh user data: $e');
+                    }
+
+                    // Fallback to original user if fresh fetch failed
+                    debugPrint('Returning with local user data');
                     Navigator.pop(context, _originalUser);
                   }
                 });

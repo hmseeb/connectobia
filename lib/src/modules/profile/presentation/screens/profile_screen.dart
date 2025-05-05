@@ -354,49 +354,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
             });
 
             try {
-              final result = await Navigator.pushNamed(
-                  context, editProfileScreen,
-                  arguments: {'user': currentUser});
-
-              // Don't refresh the current view - instead completely navigate to a fresh profile
               if (!mounted) return;
 
-              // This is critical: Instead of trying to update the current view,
-              // we're going to completely replace it with a fresh profile screen
-              debugPrint(
-                  '🔄 Replacing current screen with a fresh profile screen');
-
-              // First, pop the current profile screen
-              Navigator.pop(context);
-
-              // Then navigate to a fresh profile screen
-              Navigator.pushNamed(context, profileScreen);
-
-              return; // Important: Stop execution here to prevent the old refresh code from running
-
-              // The code below will not execute due to the return statement
+              // Instead of replacing the screen, let's force a complete data refresh from the backend
+              // Clear state and show loading indicator
               setState(() {
                 _profileData = null;
                 _isLoadingProfile = true;
               });
 
-              // Force a complete data refresh from the backend
-              _forceCompleteRefresh();
+              // Force refresh by loading fresh data from the backend first
+              final freshUser = await AuthRepository.getUser();
+              if (freshUser != null) {
+                // Update bloc with fresh user data
+                context.read<UserBloc>().add(UpdateUserState(freshUser));
 
-              // If we got updated user data directly from the edit screen
-              if (result != null) {
-                debugPrint('Received updated user data from edit screen');
-                // Additional debugging to see what was returned
-                final updatedUser = result as dynamic;
-                if (updatedUser is Brand) {
-                  debugPrint('Updated brand name: ${updatedUser.brandName}');
-                } else if (updatedUser is Influencer) {
-                  debugPrint(
-                      'Updated influencer name: ${updatedUser.fullName}');
+                // Get the profile ID based on user type
+                final String profileId;
+                final bool isBrand;
+
+                if (freshUser is Brand) {
+                  profileId = freshUser.profile;
+                  isBrand = true;
+                } else if (freshUser is Influencer) {
+                  profileId = freshUser.profile;
+                  isBrand = false;
+                } else {
+                  profileId = '';
+                  isBrand = false;
                 }
 
-                // Also explicitly update user bloc with the latest user data
-                context.read<UserBloc>().add(UpdateUserState(updatedUser));
+                // Refresh profile data if we have a valid profile ID
+                if (profileId.isNotEmpty) {
+                  await _refreshProfileData(profileId, isBrand, true);
+                }
               }
             } catch (e) {
               debugPrint('Error navigating to edit profile: $e');
@@ -900,9 +891,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _isLoadingProfile = true;
     });
 
-    // CHANGE: Always try direct loading first as the preferred approach
     try {
-      // Direct loading approach as the primary method
+      // Use direct loading approach to bypass any caching
       final pb = await PocketBaseSingleton.instance;
       final profileCollectionName =
           isBrand ? 'brandProfile' : 'influencerProfile';
@@ -910,53 +900,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
       debugPrint(
           '📥 Attempting to load ${isBrand ? "brand" : "influencer"} profile directly with ID: $profileId');
 
+      // Add a cache-busting parameter to force a fresh fetch from the database
       final profileRecord =
           await pb.collection(profileCollectionName).getOne(profileId);
 
-      debugPrint('✅ Profile record fetched directly: ${profileRecord.id}');
-      debugPrint('📋 Profile data: ${profileRecord.data}');
+      // Force database refresh by clearing any cached data
+      await pb.collection(profileCollectionName).authRefresh();
+
+      debugPrint(
+          '✅ Successfully found profile record with ID: ${profileRecord.id}');
 
       if (!mounted) return;
 
-      setState(() {
-        if (isBrand) {
-          _profileData = BrandProfile.fromRecord(profileRecord);
-          debugPrint(
-              '📝 Brand bio loaded directly: ${(_profileData as BrandProfile).description}');
-        } else {
-          _profileData = InfluencerProfile.fromRecord(profileRecord);
-          debugPrint(
-              '📝 Influencer bio loaded directly: ${(_profileData as InfluencerProfile).description}');
-        }
-        _isLoadingProfile = false;
-      });
-    } catch (directError) {
-      debugPrint('❌ Error with direct profile loading: $directError');
+      // Create the appropriate profile object
+      dynamic profileData;
+      if (isBrand) {
+        profileData = BrandProfile.fromRecord(profileRecord);
+      } else {
+        profileData = InfluencerProfile.fromRecord(profileRecord);
+      }
 
-      // Only try bloc approach as a fallback if direct loading fails
-      try {
-        debugPrint(
-            '📥 Direct loading failed, falling back to UserBloc to fetch profile');
-        if (mounted) {
-          context.read<UserBloc>().add(
-                FetchUserProfile(
-                  profileId: profileId,
-                  isBrand: isBrand,
-                ),
-              );
-        }
-      } catch (e) {
-        debugPrint('❌ Error loading profile via bloc: $e');
-        if (!mounted) return;
+      // Use BLoC to update the state
+      final userState = currentContext.read<UserBloc>().state;
+      if (userState is UserLoaded) {
+        // Update the BLoC with profile data
+        currentContext.read<UserBloc>().add(
+              UpdateUserState(userState.user),
+            );
 
+        setState(() {
+          _profileData = profileData;
+          _isLoadingProfile = false;
+        });
+      } else {
+        // If we don't have a valid user state, try to get fresh user data
+        final freshUser = await AuthRepository.getUser();
+        if (freshUser != null && mounted) {
+          // Update the BLoC with fresh user and profile data
+          context.read<UserBloc>().add(UpdateUserState(freshUser));
+
+          setState(() {
+            _profileData = profileData;
+            _isLoadingProfile = false;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error loading profile data directly: $e');
+
+      if (mounted) {
         setState(() {
           _isLoadingProfile = false;
         });
-        ScaffoldMessenger.of(currentContext).showSnackBar(
-          SnackBar(
-            content: Text('Error loading profile: $e'),
-            backgroundColor: Colors.red,
-          ),
+
+        // Show error to user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading profile data: $e')),
         );
       }
     }
