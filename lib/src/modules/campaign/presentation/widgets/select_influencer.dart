@@ -243,6 +243,17 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                                 updated: DateTime.now(),
                               ),
                             );
+void _toggleInfluencerSelection(String influencerId) {
+  setState(() {
+    if (_selectedInfluencers.contains(influencerId)) {
+      _selectedInfluencers.clear();
+    } else {
+      _selectedInfluencers.clear();
+      _selectedInfluencers.add(influencerId);
+    }
+    widget.onSelectedInfluencersChanged(_selectedInfluencers);
+  });
+}
 
                             return ListTile(
                               leading: Hero(
