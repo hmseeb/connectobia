@@ -20,7 +20,7 @@ void showDeleteConfirmationDialog(BuildContext context, VoidCallback onDelete) {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 8),//height changed
               const Text(
                 'Are you sure you want to delete this campaign?',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
