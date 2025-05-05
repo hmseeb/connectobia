@@ -24,20 +24,64 @@ class ChatMedia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate responsive image size
+    final screenWidth = MediaQuery.of(context).size.width;
+    final maxWidth = screenWidth * 0.7; // 70% of screen width
+    final maxHeight = maxWidth; // Square or maintain aspect ratio
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Align(
         alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            Avatar.getUserImage(
-                collectionId: message.collectionId!,
-                recordId: message.id!,
-                image: message.image!.first),
-            width: 300,
-            height: 300,
-            fit: BoxFit.cover,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.network(
+              Avatar.getUserImage(
+                  collectionId: message.collectionId!,
+                  recordId: message.id!,
+                  image: message.image!.first),
+              fit: BoxFit.contain,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  width: maxWidth,
+                  height: maxWidth * 0.75,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: maxWidth,
+                  height: maxWidth * 0.75,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.error_outline, color: Colors.red),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -50,6 +94,7 @@ class MessagesList extends StatelessWidget {
   final String senderId;
   final Message? message;
   final bool isMediaSelected;
+  final bool enableWatermark;
   final Function()? onDismiss;
 
   final String newMessage = '';
@@ -60,6 +105,7 @@ class MessagesList extends StatelessWidget {
     required this.senderId,
     this.message,
     required this.isMediaSelected,
+    this.enableWatermark = true,
     this.onDismiss,
   });
 
@@ -129,7 +175,7 @@ class MessagesList extends StatelessWidget {
                       ShadAlert(
                         iconSrc: LucideIcons.image,
                         title: Text(
-                          'Selected an image',
+                          'Selected an image${enableWatermark ? " (Watermarked)" : " (No Watermark)"}',
                         ),
                         decoration: ShadDecoration(color: ShadColors.success),
                       ),

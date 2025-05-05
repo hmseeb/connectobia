@@ -42,6 +42,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   final ImagePicker picker = ImagePicker();
   bool isTyping = false;
   File? watermarkedImage;
+  bool enableWatermark = true; // Default to enabled
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +105,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   recipientName: widget.name,
                   senderId: widget.userId,
                   isMediaSelected: selectedMedia,
+                  enableWatermark: enableWatermark,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -218,16 +220,148 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                             var fileSize = imagePath.length;
                                             if (fileSize <=
                                                 maxFileSizeInBytes) {
-                                              watermarkedImage =
-                                                  await WatermarkImage
-                                                      .addWaterMarkToPhoto(
-                                                image: File(pickedImage.path),
-                                                waterMarkText: "CONNECTOBIA",
+                                              // Show watermark options dialog
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                  title: Row(
+                                                    children: [
+                                                      Icon(
+                                                        LucideIcons.shield,
+                                                        color:
+                                                            ShadColors.primary,
+                                                        size: 20,
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Text(
+                                                          "Protect Your Image"),
+                                                    ],
+                                                  ),
+                                                  content: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "Would you like to add a watermark to protect your image from unauthorized use?",
+                                                        style: TextStyle(
+                                                            fontSize: 14),
+                                                      ),
+                                                      SizedBox(height: 16),
+                                                      Container(
+                                                        width: double.infinity,
+                                                        padding:
+                                                            EdgeInsets.all(12),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: brightness ==
+                                                                  Brightness
+                                                                      .dark
+                                                              ? ShadColors
+                                                                  .darkForeground
+                                                                  .withOpacity(
+                                                                      0.1)
+                                                              : ShadColors
+                                                                  .lightForeground
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8),
+                                                          border: Border.all(
+                                                            color: ShadColors
+                                                                .primary
+                                                                .withOpacity(
+                                                                    0.3),
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              LucideIcons.info,
+                                                              size: 18,
+                                                              color: ShadColors
+                                                                  .primary,
+                                                            ),
+                                                            SizedBox(width: 12),
+                                                            Expanded(
+                                                              child: Text(
+                                                                "Adding a watermark places 'CONNECTOBIA' text on your image to help prevent unauthorized reuse",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: 12,
+                                                                  color: brightness ==
+                                                                          Brightness
+                                                                              .dark
+                                                                      ? Colors
+                                                                          .white70
+                                                                      : Colors
+                                                                          .black87,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  actions: [
+                                                    ShadButton.outline(
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        // No watermark
+                                                        setState(() {
+                                                          enableWatermark =
+                                                              false;
+                                                        });
+                                                        watermarkedImage = File(
+                                                            pickedImage.path);
+                                                        setState(() {
+                                                          selectedMedia = true;
+                                                          HapticFeedback
+                                                              .lightImpact();
+                                                        });
+                                                      },
+                                                      child: Text(
+                                                          "Skip Watermark"),
+                                                    ),
+                                                    ShadButton(
+                                                      onPressed: () async {
+                                                        Navigator.pop(context);
+                                                        // Add watermark
+                                                        setState(() {
+                                                          enableWatermark =
+                                                              true;
+                                                        });
+                                                        watermarkedImage =
+                                                            await WatermarkImage
+                                                                .addWaterMarkToPhoto(
+                                                          image: File(
+                                                              pickedImage.path),
+                                                          waterMarkText:
+                                                              "CONNECTOBIA",
+                                                        );
+                                                        setState(() {
+                                                          selectedMedia = true;
+                                                          HapticFeedback
+                                                              .lightImpact();
+                                                        });
+                                                      },
+                                                      child:
+                                                          Text("Add Watermark"),
+                                                    ),
+                                                  ],
+                                                ),
                                               );
-                                              setState(() {
-                                                selectedMedia = true;
-                                                HapticFeedback.lightImpact();
-                                              });
                                             } else {
                                               setState(() {
                                                 ShadToaster.of(context).show(
