@@ -54,5 +54,11 @@ class UpdateUserBanner extends UserEvent {
   UpdateUserBanner({required this.banner});
 }
 
+class UpdateUserState extends UserEvent {
+  final dynamic user;
+
+  UpdateUserState(this.user);
+}
+
 @immutable
 abstract class UserEvent {}

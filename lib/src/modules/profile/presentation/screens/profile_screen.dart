@@ -10,6 +10,7 @@ import '../../../../shared/domain/models/influencer.dart';
 import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../shared/domain/models/review.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
+import '../../../auth/data/repositories/auth_repo.dart';
 import '../../../profile/data/review_repository.dart';
 import '../../application/user/user_bloc.dart';
 import '../widgets/avatar_uploader.dart';
@@ -218,32 +219,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: transparentAppBar('Profile', context: context),
+      appBar: transparentAppBar(
+        'Profile',
+        context: context,
+        actions: [
+          // Add refresh button to app bar
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh Profile',
+            onPressed: () {
+              debugPrint('🔄 Manual refresh triggered from app bar button');
+              _forceCompleteRefresh();
+            },
+          ),
+        ],
+      ),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
-          if (state is UserLoaded && _profileData == null) {
-            // Schedule profile data loading for after the build is complete
+          if (state is UserLoaded) {
             final user = state.user;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                if (user is Brand) {
-                  final profileId = user.profile;
-                  if (profileId.isNotEmpty) {
-                    _refreshProfileData(profileId, true);
-                  }
-                } else if (user is Influencer) {
-                  final profileId = user.profile;
-                  if (profileId.isNotEmpty) {
-                    _refreshProfileData(profileId, false);
+            debugPrint('👂 UserLoaded state received in listener');
+
+            if (user is Brand) {
+              debugPrint('👤 Brand user loaded: ${user.brandName}');
+            } else if (user is Influencer) {
+              debugPrint('👤 Influencer user loaded: ${user.fullName}');
+            }
+
+            // If forceRefresh flag is true, immediately refresh data regardless of current state
+            if (state.forceRefresh) {
+              debugPrint('💫 Force refresh detected in UserLoaded state');
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() {
+                    _profileData = null; // Clear cached profile data
+                    _isLoadingProfile = true;
+                  });
+
+                  if (user is Brand) {
+                    final profileId = user.profile;
+                    if (profileId.isNotEmpty) {
+                      // Use BLoC approach for profile data
+                      _refreshProfileData(profileId, true, false);
+                    }
+                  } else if (user is Influencer) {
+                    final profileId = user.profile;
+                    if (profileId.isNotEmpty) {
+                      _refreshProfileData(profileId, false, false);
+                    }
                   }
                 }
-              }
-            });
-
-            setState(() {
-              _isLoadingProfile = false;
-            });
+              });
+            }
+            // For initial load or when profile data is null
+            else if (_profileData == null) {
+              // Schedule profile data loading for after the build is complete
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  if (user is Brand) {
+                    final profileId = user.profile;
+                    if (profileId.isNotEmpty) {
+                      _refreshProfileData(profileId, true, false);
+                    }
+                  } else if (user is Influencer) {
+                    final profileId = user.profile;
+                    if (profileId.isNotEmpty) {
+                      _refreshProfileData(profileId, false, false);
+                    }
+                  }
+                }
+              });
+            }
           } else if (state is UserProfileLoaded) {
+            debugPrint('👂 UserProfileLoaded state received in listener');
+            final user = state.user;
+            if (user is Brand) {
+              debugPrint('👤 Profile loaded for brand: ${user.brandName}');
+            } else if (user is Influencer) {
+              debugPrint('👤 Profile loaded for influencer: ${user.fullName}');
+            }
+
+            if (state.profileData != null) {
+              if (state.profileData is BrandProfile) {
+                debugPrint(
+                    '📄 Loaded brand profile data: ${(state.profileData as BrandProfile).description}');
+              } else if (state.profileData is InfluencerProfile) {
+                debugPrint(
+                    '📄 Loaded influencer profile data: ${(state.profileData as InfluencerProfile).description}');
+              }
+            }
+
             setState(() {
               _profileData = state.profileData;
               _isLoadingProfile = false;
@@ -258,6 +323,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else if (state is UserProfileLoaded) {
             return _buildProfileContent(context, state.user);
           } else if (state is UserLoaded) {
+            // Always build content with fresh data when forceRefresh is true
+            if (state.forceRefresh) {
+              return _buildProfileContent(context, state.user);
+            }
+
+            // Otherwise respect loading state
             if (_isLoadingProfile) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -277,17 +348,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : null;
 
           if (currentUser != null) {
-            await Navigator.pushNamed(context, editProfileScreen,
-                arguments: {'user': currentUser});
-            // Refresh data when returning from edit screen
-            if (!mounted) return;
+            // Show loading indicator before navigation
             setState(() {
-              _profileData = null; // Clear cached profile data
-              _isLoadingProfile = false;
+              _isLoadingProfile = true;
             });
-            currentContext
-                .read<UserBloc>()
-                .add(FetchUser()); // Refresh user data
+
+            try {
+              final result = await Navigator.pushNamed(
+                  context, editProfileScreen,
+                  arguments: {'user': currentUser});
+
+              // Don't refresh the current view - instead completely navigate to a fresh profile
+              if (!mounted) return;
+
+              // This is critical: Instead of trying to update the current view,
+              // we're going to completely replace it with a fresh profile screen
+              debugPrint(
+                  '🔄 Replacing current screen with a fresh profile screen');
+
+              // First, pop the current profile screen
+              Navigator.pop(context);
+
+              // Then navigate to a fresh profile screen
+              Navigator.pushNamed(context, profileScreen);
+
+              return; // Important: Stop execution here to prevent the old refresh code from running
+
+              // The code below will not execute due to the return statement
+              setState(() {
+                _profileData = null;
+                _isLoadingProfile = true;
+              });
+
+              // Force a complete data refresh from the backend
+              _forceCompleteRefresh();
+
+              // If we got updated user data directly from the edit screen
+              if (result != null) {
+                debugPrint('Received updated user data from edit screen');
+                // Additional debugging to see what was returned
+                final updatedUser = result as dynamic;
+                if (updatedUser is Brand) {
+                  debugPrint('Updated brand name: ${updatedUser.brandName}');
+                } else if (updatedUser is Influencer) {
+                  debugPrint(
+                      'Updated influencer name: ${updatedUser.fullName}');
+                }
+
+                // Also explicitly update user bloc with the latest user data
+                context.read<UserBloc>().add(UpdateUserState(updatedUser));
+              }
+            } catch (e) {
+              debugPrint('Error navigating to edit profile: $e');
+              if (mounted) {
+                setState(() {
+                  _isLoadingProfile = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error opening profile editor: $e')),
+                );
+              }
+            }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -313,10 +434,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _profileData = null;
-    context.read<UserBloc>().add(FetchUser());
+
+    // Use the more robust refresh method
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _forceCompleteRefresh();
+      }
+    });
   }
 
   Widget _buildProfileContent(BuildContext context, dynamic user) {
+    // Clear profile data if the new user doesn't match current profile data's user
+    if (_profileData != null) {
+      final String profileId = user is Brand ? user.profile : user.profile;
+      if (_profileData is BrandProfile &&
+          (_profileData as BrandProfile).id != profileId) {
+        _profileData = null;
+      } else if (_profileData is InfluencerProfile &&
+          (_profileData as InfluencerProfile).id != profileId) {
+        _profileData = null;
+      }
+    }
+
     // Extract user details
     final userId = user.id;
     String name = '';
@@ -331,32 +470,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (user is Brand) {
       isBrand = true;
       name = user.brandName;
+      debugPrint('📋 Building profile content with brand name: $name');
       email = user.email;
       industry = user.industry;
       avatar = user.avatar;
       profileId = user.profile;
 
-      // Schedule profile data loading for after the build is complete
+      // Load profile data if needed
       if (_profileData == null && profileId.isNotEmpty) {
+        debugPrint('🔍 Need to load brand profile data for ID: $profileId');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            _refreshProfileData(profileId, true);
+            // Always use BLoC approach - direct loading is failing
+            _refreshProfileData(profileId, true, false);
           }
         });
       }
     } else if (user is Influencer) {
       name = user.fullName;
+      debugPrint('📋 Building profile content with influencer name: $name');
       username = user.username;
       email = user.email;
       industry = user.industry;
       avatar = user.avatar;
       profileId = user.profile;
 
-      // Schedule profile data loading for after the build is complete
+      // Load profile data if needed
       if (_profileData == null && profileId.isNotEmpty) {
+        debugPrint(
+            '🔍 Need to load influencer profile data for ID: $profileId');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            _refreshProfileData(profileId, false);
+            // Always use BLoC approach - direct loading is failing
+            _refreshProfileData(profileId, false, false);
           }
         });
       }
@@ -365,9 +511,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Build the profile content
     return RefreshIndicator(
       onRefresh: () async {
-        // Refresh the user data
-        if (mounted) {
-          context.read<UserBloc>().add(FetchUser());
+        // Enhanced refresh functionality
+        debugPrint('🔄 Manual refresh triggered by pull-to-refresh');
+
+        // Clear profile data
+        setState(() {
+          _profileData = null;
+          _isLoadingProfile = true;
+        });
+
+        try {
+          // Get fresh user data directly from repository
+          final user = await AuthRepository.getUser();
+          if (user != null) {
+            debugPrint('✅ Fresh user data fetched on manual refresh');
+
+            if (mounted) {
+              // Update the bloc with fresh data
+              context.read<UserBloc>().add(UpdateUserState(user));
+
+              // Directly load profile data with direct approach
+              if (user is Brand && user.profile.isNotEmpty) {
+                await _refreshProfileData(user.profile, true, true);
+                debugPrint('✅ Successfully refreshed brand profile data');
+              } else if (user is Influencer && user.profile.isNotEmpty) {
+                await _refreshProfileData(user.profile, false, true);
+                debugPrint('✅ Successfully refreshed influencer profile data');
+              }
+            }
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Unable to refresh user data')),
+              );
+            }
+          }
+        } catch (e) {
+          debugPrint('❌ Error during manual refresh: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error refreshing: $e')),
+            );
+          }
+        } finally {
+          // Ensure loading indicator is hidden if something went wrong
+          if (mounted && _isLoadingProfile) {
+            setState(() {
+              _isLoadingProfile = false;
+            });
+          }
         }
       },
       child: SingleChildScrollView(
@@ -377,6 +569,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Add loading indicator at the top when refreshing
+              if (_isLoadingProfile)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: ShadCard(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Refreshing profile...',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               // Avatar and name section
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -614,29 +831,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return cleaned;
   }
 
-  Future<void> _refreshProfileData(String profileId, bool isBrand) async {
+  // Force a complete refresh from the backend
+  Future<void> _forceCompleteRefresh() async {
+    try {
+      // Clear all cached data
+      setState(() {
+        _profileData = null;
+        _isLoadingProfile = true;
+      });
+
+      debugPrint('🔄 Forcing complete profile refresh from backend');
+
+      // Get fresh user data directly from repository
+      final user = await AuthRepository.getUser();
+      if (user != null) {
+        debugPrint('✅ Fresh user data fetched directly from repository');
+
+        // Log user details for debugging
+        if (user is Brand) {
+          debugPrint(
+              '👤 Refreshed brand data - Name: ${user.brandName}, Industry: ${user.industry}');
+
+          // Directly load the profile data with the direct loading approach
+          if (user.profile.isNotEmpty) {
+            _refreshProfileData(user.profile, true, true);
+          }
+        } else if (user is Influencer) {
+          debugPrint(
+              '👤 Refreshed influencer data - Name: ${user.fullName}, Industry: ${user.industry}');
+
+          // Directly load the profile data with the direct loading approach
+          if (user.profile.isNotEmpty) {
+            _refreshProfileData(user.profile, false, true);
+          }
+        }
+
+        // Update the bloc with fresh data
+        if (mounted) {
+          context.read<UserBloc>().add(UpdateUserState(user));
+        }
+      } else {
+        // Fallback to using bloc's FetchUser
+        debugPrint('⚠️ Direct user fetch returned null, falling back to bloc');
+        if (mounted) {
+          context.read<UserBloc>().add(FetchUser());
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error during force refresh: $e');
+      // Fallback to using bloc's FetchUser
+      if (mounted) {
+        context.read<UserBloc>().add(FetchUser());
+      }
+    }
+  }
+
+  Future<void> _refreshProfileData(
+      String profileId, bool isBrand, bool useDirectLoading) async {
     if (_isLoadingProfile || profileId.isEmpty) return;
 
     final BuildContext currentContext = context;
 
     debugPrint(
-        '🔍 Refreshing profile data: profileId=$profileId, isBrand=$isBrand');
+        '🔍 Refreshing profile data: profileId=$profileId, isBrand=$isBrand, useDirectLoading=$useDirectLoading');
 
     setState(() {
+      _profileData = null; // Explicitly clear profile data
       _isLoadingProfile = true;
     });
 
+    // CHANGE: Always try direct loading first as the preferred approach
     try {
+      // Direct loading approach as the primary method
       final pb = await PocketBaseSingleton.instance;
       final profileCollectionName =
           isBrand ? 'brandProfile' : 'influencerProfile';
 
-      debugPrint('📥 Fetching from collection: $profileCollectionName');
+      debugPrint(
+          '📥 Attempting to load ${isBrand ? "brand" : "influencer"} profile directly with ID: $profileId');
 
       final profileRecord =
           await pb.collection(profileCollectionName).getOne(profileId);
 
-      debugPrint('✅ Profile record fetched: ${profileRecord.id}');
+      debugPrint('✅ Profile record fetched directly: ${profileRecord.id}');
       debugPrint('📋 Profile data: ${profileRecord.data}');
 
       if (!mounted) return;
@@ -645,26 +922,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (isBrand) {
           _profileData = BrandProfile.fromRecord(profileRecord);
           debugPrint(
-              '📝 Brand bio: ${(_profileData as BrandProfile).description}');
+              '📝 Brand bio loaded directly: ${(_profileData as BrandProfile).description}');
         } else {
           _profileData = InfluencerProfile.fromRecord(profileRecord);
           debugPrint(
-              '📝 Influencer bio: ${(_profileData as InfluencerProfile).description}');
+              '📝 Influencer bio loaded directly: ${(_profileData as InfluencerProfile).description}');
         }
         _isLoadingProfile = false;
       });
-    } catch (e) {
-      debugPrint('❌ Error loading profile: $e');
-      if (!mounted) return;
-      setState(() {
-        _isLoadingProfile = false;
-      });
-      ScaffoldMessenger.of(currentContext).showSnackBar(
-        SnackBar(
-          content: Text('Error loading profile: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    } catch (directError) {
+      debugPrint('❌ Error with direct profile loading: $directError');
+
+      // Only try bloc approach as a fallback if direct loading fails
+      try {
+        debugPrint(
+            '📥 Direct loading failed, falling back to UserBloc to fetch profile');
+        if (mounted) {
+          context.read<UserBloc>().add(
+                FetchUserProfile(
+                  profileId: profileId,
+                  isBrand: isBrand,
+                ),
+              );
+        }
+      } catch (e) {
+        debugPrint('❌ Error loading profile via bloc: $e');
+        if (!mounted) return;
+
+        setState(() {
+          _isLoadingProfile = false;
+        });
+        ScaffoldMessenger.of(currentContext).showSnackBar(
+          SnackBar(
+            content: Text('Error loading profile: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

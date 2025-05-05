@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../modules/auth/data/repositories/auth_repo.dart';
 import '../../../../services/storage/pb.dart';
 import '../../../../shared/data/constants/industries.dart';
 import '../../../../shared/domain/models/brand.dart';
@@ -26,6 +27,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _usernameController = TextEditingController();
@@ -44,73 +46,95 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
-      body: BlocConsumer<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state is UserLoaded && _originalUser == null) {
-            _loadUserData(state.user);
-          } else if (state is UserUpdating) {
-            // Show loading when updating
-            setState(() {
-              _isLoading = true;
-            });
-          } else if (state is UserLoaded && _originalUser != null) {
-            // Update was successful
-            setState(() {
-              _isLoading = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Profile updated successfully'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            Navigator.pop(context);
-          } else if (state is UserError) {
-            // Update failed with error
-            setState(() {
-              _isLoading = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Failed to update profile: ${state.message}'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        builder: (context, state) {
-          if ((state is UserLoading || state is UserInitial) &&
-              _originalUser == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerKey,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Profile'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
+        body: BlocConsumer<UserBloc, UserState>(
+          listener: (context, state) {
+            if (state is UserLoaded && _originalUser == null) {
+              _loadUserData(state.user);
+            } else if (state is UserUpdating) {
+              // Keep loading indicator visible while updates are in progress
+              if (!_isLoading) {
+                setState(() {
+                  _isLoading = true;
+                });
+              }
+            } else if (state is UserLoaded && _originalUser != null) {
+              // Update was successful - all updates have completed
+              setState(() {
+                _isLoading = false;
+                _originalUser = state
+                    .user; // Update the local reference to match the updated state
+              });
 
-          if (state is UserError && _originalUser == null) {
-            return Center(child: Text(state.message));
-          }
+              // Check if this is an update completion (forceRefresh flag is true)
+              if ((state).forceRefresh) {
+                debugPrint(
+                    'Profile update completed successfully, force refresh detected');
 
-          if (_isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+                _scaffoldMessengerKey.currentState?.showSnackBar(
+                  const SnackBar(
+                    content: Text('Profile updated successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
 
-          return _buildForm();
-        },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: ShadButton(
-            onPressed: _formIsDirty && _formIsValid ? _handleSave : null,
-            child: const Text('Save Changes'),
+                // Slight delay to ensure snackbar is visible before navigation
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  if (mounted) {
+                    // Pass fresh data back to the profile screen
+                    Navigator.pop(context, _originalUser);
+                  }
+                });
+              }
+            } else if (state is UserError) {
+              // Update failed with error
+              setState(() {
+                _isLoading = false;
+              });
+              _scaffoldMessengerKey.currentState?.showSnackBar(
+                SnackBar(
+                  content: Text('Failed to update profile: ${state.message}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if ((state is UserLoading || state is UserInitial) &&
+                _originalUser == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is UserError && _originalUser == null) {
+              return Center(child: Text(state.message));
+            }
+
+            if (_isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return _buildForm();
+          },
+        ),
+        bottomNavigationBar: BottomAppBar(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ShadButton(
+              onPressed: _formIsDirty && _formIsValid ? _handleSave : null,
+              child: const Text('Save Changes'),
+            ),
           ),
         ),
       ),
@@ -129,16 +153,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final userState = context.read<UserBloc>().state;
 
-    // Use the user from widget prop if provided
-    if (widget.user != null) {
-      _loadUserData(widget.user);
-    } else if (userState is UserLoaded) {
-      _loadUserData(userState.user);
-    } else {
-      context.read<UserBloc>().add(FetchUser());
-    }
+    // More robust initialization with multiple loading attempts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeUserData();
+    });
   }
 
   Widget _buildForm() {
@@ -537,49 +556,96 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _isLoading = true;
     });
 
-    // Format description text. Wrap it in <p> tags if it doesn't already have them
-    String formattedDescription = _bioController.text;
-    if (formattedDescription.isNotEmpty &&
-        !formattedDescription.trim().startsWith('<p>') &&
-        !formattedDescription.trim().endsWith('</p>')) {
-      formattedDescription = '<p>$formattedDescription</p>';
-    } else if (formattedDescription.isEmpty) {
-      // For empty description, use empty paragraph tags
-      formattedDescription = '<p></p>';
+    // Check if we have an original user loaded
+    if (_originalUser == null) {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Cannot update profile: no user data loaded. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Try reinitializing the user data as a recovery mechanism
+      _initializeUserData();
+      return;
     }
 
-    // First update main user data
-    context.read<UserBloc>().add(
-          UpdateUser(
-            fullName: _isBrand ? null : _nameController.text,
-            brandName: _isBrand ? _nameController.text : null,
-            username: null, // Username is now read-only and cannot be changed
-            industry: _selectedIndustry,
-            description: formattedDescription, // Always pass description
-          ),
-        );
+    // Verify authentication before proceeding
+    _verifyAuthAndProceedWithUpdate();
+  }
 
-    // Then handle avatar if updated
-    if (_profileImage != null) {
-      context.read<UserBloc>().add(
-            UpdateUserAvatar(avatar: _profileImage),
-          );
+  // Comprehensive user data initialization method
+  Future<void> _initializeUserData() async {
+    if (!mounted) return;
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Try multiple methods to ensure we have user data
+
+      // Method 1: Use user from widget prop if provided
+      if (widget.user != null) {
+        debugPrint('Loading user data from widget prop');
+        await _loadUserData(widget.user);
+        return;
+      }
+
+      // Method 2: Check if UserBloc already has loaded state
+      final userState = context.read<UserBloc>().state;
+      if (userState is UserLoaded) {
+        debugPrint('Loading user data from UserBloc state');
+        await _loadUserData(userState.user);
+        return;
+      }
+
+      // Method 3: Request fresh user data using AuthRepository directly
+      try {
+        debugPrint('Attempting to load user directly from AuthRepository');
+        final user = await AuthRepository.getUser();
+
+        if (user != null) {
+          debugPrint('Successfully loaded user from AuthRepository');
+          await _loadUserData(user);
+          // Also update the UserBloc to maintain state consistency
+          if (mounted) {
+            context.read<UserBloc>().add(UpdateUserState(user));
+          }
+          return;
+        }
+      } catch (e) {
+        debugPrint('Error loading user from AuthRepository: $e');
+      }
+
+      // Method 4: As a last resort, request user through UserBloc
+      debugPrint('Requesting user through UserBloc.FetchUser event');
+      if (mounted) {
+        context.read<UserBloc>().add(FetchUser());
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      debugPrint('Error initializing user data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Error initializing profile editor: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-
-    // Then handle banner if updated
-    if (_bannerImage != null) {
-      context.read<UserBloc>().add(
-            UpdateUserBanner(banner: _bannerImage),
-          );
-    }
-
-    // We'll navigate back in BlocListener once the operation is complete
   }
 
   Future<void> _loadUserData(dynamic user) async {
     if (!mounted) return;
-
-    final BuildContext currentContext = context;
 
     setState(() {
       _isLoading = true;
@@ -655,7 +721,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(currentContext).showSnackBar(
+      _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(content: Text('Error loading profile data: ${e.toString()}')),
       );
     }
@@ -716,7 +782,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
     } catch (e) {
       debugPrint('Error showing email change dialog: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
             content:
                 Text('Error opening email change dialog: ${e.toString()}')),
@@ -734,5 +800,215 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _formIsValid = isValid;
       _formIsDirty = isDirty;
     });
+  }
+
+  // New method to verify authentication and proceed with update
+  Future<void> _verifyAuthAndProceedWithUpdate() async {
+    try {
+      // Ensure loading state is visible
+      if (!mounted) return;
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Check authentication status
+      final pb = await PocketBaseSingleton.instance;
+      if (!pb.authStore.isValid) {
+        debugPrint('Cannot update profile: user is not authenticated');
+        _scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content:
+                Text('You are not logged in. Please log in and try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Double-check user ID
+      if (_originalUser == null) {
+        debugPrint('Cannot update profile: original user object is null');
+        _scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Text('Cannot access user data. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+
+        // Try to re-initialize user data as recovery mechanism
+        await _initializeUserData();
+        return;
+      }
+
+      final String userId = _isBrand
+          ? (_originalUser as Brand).id
+          : (_originalUser as Influencer).id;
+
+      if (userId.isEmpty) {
+        debugPrint('Cannot update profile: user ID is empty');
+        _scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(
+            content: Text('User ID is missing. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      debugPrint(
+          'Authentication verified, proceeding with profile update for user ID: $userId');
+
+      // More defensive approach for formatting description
+      String formattedDescription = _bioController.text.trim();
+      try {
+        if (formattedDescription.isNotEmpty) {
+          if (!formattedDescription.contains('<p>') &&
+              !formattedDescription.contains('</p>')) {
+            formattedDescription = '<p>$formattedDescription</p>';
+          }
+        } else {
+          formattedDescription = '<p></p>';
+        }
+      } catch (e) {
+        debugPrint('Error formatting description: $e');
+        formattedDescription = '<p>${_bioController.text}</p>';
+      }
+
+      // First ensure the user bloc has the most up-to-date user state
+      final userBloc = context.read<UserBloc>();
+
+      // First, explicitly verify we have a valid user state in the bloc
+      final currentBlocState = userBloc.state;
+      if (currentBlocState is! UserLoaded &&
+          currentBlocState is! UserProfileLoaded) {
+        debugPrint(
+            'UserBloc state is not loaded, forcing state update before proceeding');
+        // Force a state update with our local user data to ensure the bloc has valid user data
+        userBloc.add(UpdateUserState(_originalUser));
+
+        // Give time for the state to update before proceeding
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Verify the update was successful
+        final updatedBlocState = userBloc.state;
+        if (updatedBlocState is! UserLoaded &&
+            updatedBlocState is! UserProfileLoaded) {
+          debugPrint(
+              'Failed to update UserBloc state. Attempting fallback method.');
+
+          // Try direct fetch as fallback
+          try {
+            final freshUser = await AuthRepository.getUser();
+            if (freshUser != null) {
+              debugPrint('Successfully fetched fresh user data');
+              userBloc.add(UpdateUserState(freshUser));
+              await Future.delayed(const Duration(milliseconds: 500));
+            } else {
+              throw Exception('Could not fetch user data');
+            }
+          } catch (e) {
+            debugPrint('Failed to fetch user data: $e');
+            _scaffoldMessengerKey.currentState?.showSnackBar(
+              SnackBar(
+                content: Text('Failed to update user state: ${e.toString()}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            setState(() {
+              _isLoading = false;
+            });
+            return;
+          }
+        }
+      }
+
+      // Create a custom event that includes the user ID explicitly
+      try {
+        debugPrint(
+            'Updating profile for ${_isBrand ? 'Brand' : 'Influencer'}: ${_isBrand ? (_originalUser as Brand).brandName : (_originalUser as Influencer).fullName}');
+
+        // Wait a short time to ensure state is updated
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        // Make sure we're still in loading state
+        if (mounted) {
+          setState(() {
+            _isLoading = true;
+          });
+        }
+
+        // Make all updates sequentially with explicit types and null handling
+        userBloc.add(
+          UpdateUser(
+            fullName: _isBrand ? null : _nameController.text,
+            brandName: _isBrand ? _nameController.text : null,
+            username: null,
+            industry: _selectedIndustry,
+            description: formattedDescription,
+          ),
+        );
+
+        // Wait between requests to avoid race conditions
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Handle media uploads individually to avoid overwhelming the API
+        if (_profileImage != null) {
+          // Ensure we're still in loading state
+          if (mounted) {
+            setState(() {
+              _isLoading = true;
+            });
+          }
+
+          userBloc.add(UpdateUserAvatar(avatar: _profileImage));
+          await Future.delayed(const Duration(milliseconds: 500));
+        }
+
+        if (_bannerImage != null) {
+          // Ensure we're still in loading state
+          if (mounted) {
+            setState(() {
+              _isLoading = true;
+            });
+          }
+
+          userBloc.add(UpdateUserBanner(banner: _bannerImage));
+        }
+
+        // Note: we don't set _isLoading to false here because the BlocConsumer
+        // will handle this when state transitions to UserLoaded
+      } catch (e) {
+        debugPrint('Error during profile update: $e');
+        _scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('Error updating profile: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error verifying authentication: $e');
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Authentication error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }
