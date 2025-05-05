@@ -5,24 +5,13 @@ class AdvancedFilterInfluencers extends BrandDashboardEvent {
   /// Text search filter (name, industry)
   final String textFilter;
 
-  /// Follower count range (min, max)
-  final RangeValues? followerRange;
-
-  /// Engagement rate range (min, max)
-  final RangeValues? engagementRange;
-
-  /// Country filter
-  final String? country;
-
-  /// Gender filter
-  final String? gender;
+  /// Map of filter names to range values for numeric filters
+  /// Keys include: followers, engRate, mediaCount, etc.
+  final Map<String, RangeValues> rangeFilters;
 
   AdvancedFilterInfluencers({
     this.textFilter = '',
-    this.followerRange,
-    this.engagementRange,
-    this.country,
-    this.gender,
+    required this.rangeFilters,
   });
 }
 

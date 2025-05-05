@@ -21,6 +21,7 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   late WalletBloc _walletBloc;
+  Funds? _currentFunds;
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +43,43 @@ class _WalletScreenState extends State<WalletScreen> {
                 backgroundColor: Colors.green,
               ),
             );
+          } else if (state is WalletLoaded) {
+            // Store current funds for returning when popping
+            _currentFunds = state.funds;
           }
         },
         builder: (context, state) {
-          return Scaffold(
-            appBar: transparentAppBar('Wallet', context: context),
-            body: _buildBody(state),
-            floatingActionButton: FloatingActionButton(
-              onPressed: _navigateToAddFunds,
-              backgroundColor: Colors.red.shade400,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
+          return WillPopScope(
+            onWillPop: () async {
+              // Return funds to previous screen when popping
+              if (_currentFunds != null) {
+                Navigator.pop(context, _currentFunds);
+              }
+              return true;
+            },
+            child: Scaffold(
+              appBar: transparentAppBar(
+                'Wallet',
+                context: context,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    // Return funds to previous screen
+                    if (_currentFunds != null) {
+                      Navigator.pop(context, _currentFunds);
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ),
+              body: _buildBody(state),
+              floatingActionButton: FloatingActionButton(
+                onPressed: _navigateToAddFunds,
+                backgroundColor: Colors.red.shade400,
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.add),
+              ),
             ),
           );
         },
