@@ -39,7 +39,7 @@ class UserProfile extends StatefulWidget {
   State createState() => _UserProfileState();
 }
 
-class _UserProfileState extends State<UserProfile> {
+class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
   bool _isLoadingUser = false;
   String? _loadingError;
 
@@ -57,6 +57,13 @@ class _UserProfileState extends State<UserProfile> {
             icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: _loadUserInfo,
+              tooltip: 'Refresh Profile',
+            ),
+          ],
         ),
         body: _buildErrorWidget(),
       );
@@ -68,8 +75,24 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App came back to the foreground, refresh data
+      debugPrint('App resumed - refreshing profile data');
+      _loadUserInfo();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     debugPrint(
         'UserProfile initState - ID: ${widget.userId}, profileType: ${widget.profileType}, self: ${widget.self}');
 
@@ -305,36 +328,52 @@ class _UserProfileState extends State<UserProfile> {
         'Profile build - self: ${widget.self}, isVerified: $isVerified, profileType: $profileType');
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: !isLoading ? () => Navigator.pop(context) : () {},
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _loadUserInfo,
+            tooltip: 'Refresh Profile',
+          ),
+        ],
+      ),
       floatingActionButton: widget.self
           ? FloatingActionButton.extended(
-              onPressed: () {
+              onPressed: () async {
                 // Navigate to the edit profile screen based on profile type
+                dynamic user;
                 if (profileType == 'influencers') {
-                  Navigator.pushNamed(
-                    context,
-                    editProfileScreen,
-                    arguments: {
-                      'user': context.read<InfluencerProfileBloc>().state
-                              is InfluencerProfileLoaded
-                          ? (context.read<InfluencerProfileBloc>().state
-                                  as InfluencerProfileLoaded)
-                              .influencer
-                          : null,
-                    },
-                  );
+                  user = context.read<InfluencerProfileBloc>().state
+                          is InfluencerProfileLoaded
+                      ? (context.read<InfluencerProfileBloc>().state
+                              as InfluencerProfileLoaded)
+                          .influencer
+                      : null;
                 } else {
-                  Navigator.pushNamed(
-                    context,
-                    editProfileScreen,
-                    arguments: {
-                      'user': context.read<BrandProfileBloc>().state
-                              is BrandProfileLoaded
-                          ? (context.read<BrandProfileBloc>().state
-                                  as BrandProfileLoaded)
-                              .brand
-                          : null,
-                    },
-                  );
+                  user = context.read<BrandProfileBloc>().state
+                          is BrandProfileLoaded
+                      ? (context.read<BrandProfileBloc>().state
+                              as BrandProfileLoaded)
+                          .brand
+                      : null;
+                }
+
+                await Navigator.pushNamed(
+                  context,
+                  editProfileScreen,
+                  arguments: {'user': user},
+                );
+
+                // After returning from edit profile screen, refresh profile data
+                debugPrint(
+                    'Returned from edit profile screen, refreshing data');
+                if (mounted) {
+                  _loadUserInfo();
                 }
               },
               icon: const Icon(Icons.edit),
@@ -561,6 +600,10 @@ class _UserProfileState extends State<UserProfile> {
     }
 
     try {
+      // Always get a fresh PocketBase instance to reduce caching issues
+      final pb = await PocketBaseSingleton.instance;
+      debugPrint('Fetching fresh data from PocketBase for profile refresh');
+
       if (widget.profileType == 'influencers') {
         // Get the current user type for debugging
         try {
@@ -574,7 +617,6 @@ class _UserProfileState extends State<UserProfile> {
         try {
           debugPrint(
               'Attempting to load influencer profile directly with ID: ${widget.userId}');
-          final pb = await PocketBaseSingleton.instance;
 
           // If this succeeds, we have a profile ID
           debugPrint(
@@ -659,7 +701,6 @@ class _UserProfileState extends State<UserProfile> {
         try {
           debugPrint(
               'Attempting to load brand profile directly with ID: ${widget.userId}');
-          final pb = await PocketBaseSingleton.instance;
 
           // First verify the profile exists
           final profileRecord =

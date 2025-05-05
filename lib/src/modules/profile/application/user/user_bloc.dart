@@ -458,7 +458,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         if (user != null) {
           debugPrint(
               'Explicitly updating UserBloc state with provided user data');
-          // Set forceRefresh to true to ensure UI components refresh
+          // Always set forceRefresh to true to ensure UI components refresh
           emit(UserLoaded(user, forceRefresh: true));
         } else {
           debugPrint('Cannot update UserBloc state: null user provided');
