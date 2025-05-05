@@ -243,17 +243,6 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                                 updated: DateTime.now(),
                               ),
                             );
-void _toggleInfluencerSelection(String influencerId) {
-  setState(() {
-    if (_selectedInfluencers.contains(influencerId)) {
-      _selectedInfluencers.clear();
-    } else {
-      _selectedInfluencers.clear();
-      _selectedInfluencers.add(influencerId);
-    }
-    widget.onSelectedInfluencersChanged(_selectedInfluencers);
-  });
-}
 
                             return ListTile(
                               leading: Hero(
@@ -291,25 +280,7 @@ void _toggleInfluencerSelection(String influencerId) {
                             );
                           },
                         ),
-                ),Container(
-  height: 250,
-  padding: const EdgeInsets.symmetric(vertical: 8),
-  child: _isLoading
-      ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-      : _errorMessage != null
-          ? _buildErrorState()
-          : filteredInfluencers.isEmpty
-              ? _buildEmptyState()
-              : ListView.builder(
-                  itemCount: filteredInfluencers.length,
-                  itemBuilder: (context, index) {
-                    final influencer = filteredInfluencers[index];
-                    final isSelected = _selectedInfluencers.contains(influencer.id);
-                    return _buildInfluencerCard(influencer, isSelected);
-                  },
                 ),
-)
-
               ],
             ),
           ),
