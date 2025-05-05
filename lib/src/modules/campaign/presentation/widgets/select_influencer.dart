@@ -254,6 +254,33 @@ void _toggleInfluencerSelection(String influencerId) {
     widget.onSelectedInfluencersChanged(_selectedInfluencers);
   });
 }
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+class ProfileAvatar extends StatelessWidget {
+  final String? imageUrl;
+  final double size;
+
+  const ProfileAvatar({
+    Key? key,
+    required this.imageUrl,
+    this.size = 50.0,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: size / 2,
+      backgroundColor: Colors.grey[200],
+      backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
+          ? CachedNetworkImageProvider(imageUrl!)
+          : null,
+      child: imageUrl == null || imageUrl!.isEmpty
+          ? Icon(Icons.person, size: size * 0.6, color: Colors.grey)
+          : null,
+    );
+  }
+}
 
                             return ListTile(
                               leading: Hero(
