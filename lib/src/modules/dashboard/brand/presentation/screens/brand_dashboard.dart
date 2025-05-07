@@ -269,12 +269,12 @@ class _BrandDashboardState extends State<BrandDashboard> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Wallet Balance',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey,
+                    color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -285,7 +285,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
