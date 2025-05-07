@@ -69,9 +69,44 @@ class CampaignCard extends StatelessWidget {
             // Edit action
             SlidableAction(
               onPressed: (context) {
-                HapticFeedback.mediumImpact();
+                if (campaign!.status.toLowerCase() == 'active') {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: ShadCard(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Unable to Edit',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'You are unable to edit active campaign.',
+                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                            width: double.infinity, // Full width of parent
+                            child: ShadButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('OK'),
+                            ),
+                          ),
 
-                // Direct navigation with MaterialPageRoute and passing campaign object
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                HapticFeedback.mediumImpact();
                 Navigator.of(context)
                     .push(
                   MaterialPageRoute(
@@ -81,8 +116,7 @@ class CampaignCard extends StatelessWidget {
                   ),
                 )
                     .then((_) {
-                  // Refresh the campaigns list when returning from edit
-                  onDeleted(); // This will trigger a reload of campaigns
+                  onDeleted();
                 });
               },
               backgroundColor: Colors.blue.shade700,
@@ -97,6 +131,39 @@ class CampaignCard extends StatelessWidget {
             // Delete action
             SlidableAction(
               onPressed: (context) async {
+                if (campaign!.status.toLowerCase() == 'active') {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: ShadCard(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Unable to Delete',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'You are unable to delete the campaign.',
+                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            ShadButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                  return;
+                }
                 HapticFeedback.mediumImpact();
                 showDeleteConfirmationDialog(
                   context,
