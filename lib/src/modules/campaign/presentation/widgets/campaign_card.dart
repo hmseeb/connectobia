@@ -86,19 +86,15 @@ class CampaignCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'You are unable to edit active campaign.',
+                              'You are unable to edit the campaign.',
                               style: TextStyle(fontSize: 14, color: Colors.grey),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
-                            SizedBox(
-                            width: double.infinity, // Full width of parent
-                            child: ShadButton(
+                            ShadButton(
                               onPressed: () => Navigator.of(context).pop(),
                               child: const Text('OK'),
                             ),
-                          ),
-
                           ],
                         ),
                       ),
@@ -153,13 +149,10 @@ class CampaignCard extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
-                            SizedBox(
-                            width: double.infinity, // Full width of parent
-                            child: ShadButton(
+                            ShadButton(
                               onPressed: () => Navigator.of(context).pop(),
                               child: const Text('OK'),
                             ),
-                          ),
                           ],
                         ),
                       ),
