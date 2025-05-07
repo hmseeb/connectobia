@@ -551,7 +551,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(width: 7),
+                                SizedBox(width: 5),
                                 Text('Reject Contract'),
                               ],
                             ),
@@ -570,7 +570,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(width: 8),
+                                SizedBox(width: 5),
                                 Text('Sign Contract'),
                               ],
                             ),
