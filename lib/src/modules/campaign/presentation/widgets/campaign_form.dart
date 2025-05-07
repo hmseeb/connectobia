@@ -113,13 +113,16 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                     ShadInputFormField(
                       controller: widget.campaignNameController,
                       placeholder: const Text('Enter campaign name'),
+                      maxLength: 40,
                       onChanged: (_) => setState(() => _showNameError = false),
                     ),
                     if (_showNameError)
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0, left: 8.0),
                         child: Text(
-                          'Campaign name is required',
+                          widget.campaignNameController.text.isEmpty
+                              ? 'Campaign name is required'
+                              : 'Campaign name must be 40 characters or less',
                           style: TextStyle(
                             color: Colors.red[700],
                             fontSize: 12,
@@ -174,6 +177,7 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                       placeholder:
                           const Text('Describe what your campaign is about'),
                       maxLines: 3,
+                      maxLength: 4000,
                       onChanged: (_) =>
                           setState(() => _showDescriptionError = false),
                     ),
@@ -181,7 +185,9 @@ class _CampaignFormCardState extends State<CampaignFormCard>
                       Padding(
                         padding: const EdgeInsets.only(top: 4.0, left: 8.0),
                         child: Text(
-                          'Campaign description is required',
+                          widget.campaignDescriptionController.text.isEmpty
+                              ? 'Campaign description is required'
+                              : 'Campaign description must be 4000 characters or less',
                           style: TextStyle(
                             color: Colors.red[700],
                             fontSize: 12,
@@ -461,13 +467,13 @@ class _CampaignFormCardState extends State<CampaignFormCard>
     bool isValid = true;
 
     // Validate campaign name
-    if (widget.campaignNameController.text.isEmpty) {
+    if (widget.campaignNameController.text.isEmpty || widget.campaignNameController.text.length > 40) {
       setState(() => _showNameError = true);
       isValid = false;
     }
 
     // Validate campaign description
-    if (widget.campaignDescriptionController.text.isEmpty) {
+    if (widget.campaignDescriptionController.text.isEmpty || widget.campaignDescriptionController.text.length > 4000) {
       setState(() => _showDescriptionError = true);
       isValid = false;
     }
