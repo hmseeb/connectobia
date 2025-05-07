@@ -116,19 +116,19 @@ class _CampaignGoalsState extends State<CampaignGoals>
               // Helpful tips card
               ShadCard(
                 padding: const EdgeInsets.all(12),
-                backgroundColor: AppColors.lightBackground.withOpacity(0.5),
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.lightbulb, color: AppColors.warning),
+                        Icon(Icons.lightbulb, color: AppColors.warning),
                         const SizedBox(width: 8),
                         Text(
                           'Tip',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -138,7 +138,7 @@ class _CampaignGoalsState extends State<CampaignGoals>
                       'Selecting clear goals helps us match you with the right influencers and measure your campaign success effectively.',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                       ),
                     ),
                   ],
@@ -197,16 +197,22 @@ class _CampaignGoalsState extends State<CampaignGoals>
     required String sublabel,
     required bool initialValue,
   }) {
+    final theme = Theme.of(context);
+    final isSelected = _selectedGoals[id]!;
+    final cardBg = isSelected
+        ? theme.colorScheme.surface.withOpacity(theme.brightness == Brightness.dark ? 0.9 : 1.0)
+        : theme.colorScheme.surface;
+    final textColor = theme.colorScheme.onSurface;
+    final iconColor = isSelected ? AppColors.primary : textColor.withOpacity(0.7);
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: _selectedGoals[id]! ? AppColors.primary : AppColors.border,
-          width: _selectedGoals[id]! ? 2 : 1,
+          color: isSelected ? AppColors.primary : AppColors.border,
+          width: isSelected ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(12),
-        color: _selectedGoals[id]!
-            ? AppColors.primary.withOpacity(0.1)
-            : AppColors.background,
+        color: cardBg,
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -223,7 +229,7 @@ class _CampaignGoalsState extends State<CampaignGoals>
             children: [
               // Checkbox
               ShadCheckbox(
-                value: _selectedGoals[id]!,
+                value: isSelected,
                 onChanged: (value) {
                   setState(() {
                     _selectedGoals[id] = value;
@@ -240,22 +246,14 @@ class _CampaignGoalsState extends State<CampaignGoals>
                   children: [
                     Row(
                       children: [
-                        Icon(icon,
-                            size: 16,
-                            color: _selectedGoals[id]!
-                                ? AppColors.primary
-                                : AppColors.textSecondary),
+                        Icon(icon, size: 16, color: iconColor),
                         const SizedBox(width: 8),
                         Text(
                           label,
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: _selectedGoals[id]!
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: _selectedGoals[id]!
-                                ? AppColors.primary
-                                : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: isSelected ? AppColors.primary : textColor,
                           ),
                         ),
                       ],
@@ -267,7 +265,7 @@ class _CampaignGoalsState extends State<CampaignGoals>
                         sublabel,
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textSecondary,
+                          color: textColor.withOpacity(0.7),
                         ),
                       ),
                     ),
