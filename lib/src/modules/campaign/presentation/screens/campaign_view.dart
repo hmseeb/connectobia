@@ -551,8 +551,7 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.cancel_outlined, size: 16),
-                                SizedBox(width: 8),
+                                SizedBox(width: 7),
                                 Text('Reject Contract'),
                               ],
                             ),
@@ -571,7 +570,6 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.check_circle_outline, size: 16),
                                 SizedBox(width: 8),
                                 Text('Sign Contract'),
                               ],
