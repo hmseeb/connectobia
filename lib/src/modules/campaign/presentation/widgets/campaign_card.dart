@@ -91,10 +91,13 @@ class CampaignCard extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
-                            ShadButton(
+                            SizedBox(
+                            width: double.infinity, // Full width of parent
+                            child: ShadButton(
                               onPressed: () => Navigator.of(context).pop(),
                               child: const Text('OK'),
                             ),
+                          ),
                           ],
                         ),
                       ),
@@ -149,10 +152,14 @@ class CampaignCard extends StatelessWidget {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
-                            ShadButton(
+                            SizedBox(
+                            width: double.infinity, // Full width of parent
+                            child: ShadButton(
                               onPressed: () => Navigator.of(context).pop(),
                               child: const Text('OK'),
                             ),
+                          ),
+
                           ],
                         ),
                       ),
