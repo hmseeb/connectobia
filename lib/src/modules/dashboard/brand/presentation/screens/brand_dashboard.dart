@@ -274,7 +274,8 @@ class _BrandDashboardState extends State<BrandDashboard> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
+                    color: Theme.of(context).textTheme.bodySmall?.color ??
+                        Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -315,22 +316,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
         ),
       ),
     );
-  }
-
-  void _clearAllFilters() {
-    // Reset the bloc filters directly
-    BlocProvider.of<BrandDashboardBloc>(context).add(
-      FilterInfluencers(filter: ''),
-    );
-
-    // Reset the filter button state directly
-    if (filterButtonKey.currentState != null) {
-      filterButtonKey.currentState!.clearAllFilters();
-    }
-
-    setState(() {
-      _hasActiveFilters = false;
-    });
   }
 
   void _setActiveFilters(bool hasFilters) {
