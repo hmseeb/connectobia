@@ -314,6 +314,9 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         if (state.selectedPostTypes.isEmpty) {
           errors.add('Please select at least one post type');
         }
+        if (state.contentGuidelines.trim().isEmpty) {
+          errors.add('Content guidelines are required');
+        }
         if (!state.confirmDetails) {
           errors.add('You must confirm that all details are correct');
         }

@@ -409,7 +409,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: _buildSection(
-                title: 'Bio',
+                title: 'About',
                 children: [
                   // Bio field
                   ShadCard(
@@ -418,7 +418,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Bio',
+                          'About',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,

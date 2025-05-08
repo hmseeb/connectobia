@@ -278,6 +278,10 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
+  // Add state for errors
+  bool _showDeliveryDateError = false;
+  bool _showGuidelinesError = false;
+
   // Helper to get list of selected post types
   List<String> get selectedPostTypesList => _selectedPostTypes.entries
       .where((e) => e.value)
@@ -401,8 +405,7 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                DateFormat('MMM dd, yyyy')
-                                    .format(_deliveryDate),
+                                DateFormat('MMM dd, yyyy').format(_deliveryDate),
                                 style: const TextStyle(fontSize: 16),
                               ),
                               const Icon(Icons.calendar_today, size: 20),
@@ -410,6 +413,17 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                           ),
                         ),
                       ),
+                      if (_showDeliveryDateError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                          child: Text(
+                            'Delivery date must be between campaign start and end date',
+                            style: TextStyle(
+                              color: Colors.red[700],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -438,9 +452,21 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
                             'Examples: specific colors, messaging, hashtags, etc.'),
                         maxLines: 5,
                         onChanged: (value) {
+                          setState(() => _showGuidelinesError = false);
                           _notifyChanges();
                         },
                       ),
+                      if (_showGuidelinesError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                          child: Text(
+                            'Content guidelines are required',
+                            style: TextStyle(
+                              color: Colors.red[700],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -649,5 +675,25 @@ class ContractDetailsStepState extends State<ContractDetailsStep>
       _confirmDetails,
       _acceptTerms,
     );
+  }
+
+  bool validateContractDetails() {
+    bool isValid = true;
+    final startDate = widget.campaignFormState?.startDate;
+    final endDate = widget.campaignFormState?.endDate;
+    _showDeliveryDateError = false;
+    _showGuidelinesError = false;
+
+    if (startDate != null && endDate != null) {
+      if (_deliveryDate.isBefore(startDate) || _deliveryDate.isAfter(endDate)) {
+        setState(() => _showDeliveryDateError = true);
+        isValid = false;
+      }
+    }
+    if (_guidelinesController.text.trim().isEmpty) {
+      setState(() => _showGuidelinesError = true);
+      isValid = false;
+    }
+    return isValid;
   }
 }
