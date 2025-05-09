@@ -43,10 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: transparentAppBar(
-            accountType == 'brands'
-                ? 'Connect with Influencers'
-                : 'Connect with Brands',
-            context: context),
+          accountType == 'brands'
+              ? 'Connect with Influencers'
+              : 'Connect with Brands',
+          context: context,
+        ),
         body: PopScope(
           child: SingleChildScrollView(
               child: Center(

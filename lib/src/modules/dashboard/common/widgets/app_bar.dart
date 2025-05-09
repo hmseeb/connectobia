@@ -17,7 +17,6 @@ class CommonAppBar extends StatefulWidget {
   final String collectionId;
   final String image;
   final bool showFilterButton;
-  final Widget? walletWidget;
   final GlobalKey<InfluencerFilterButtonState>? filterButtonKey;
 
   const CommonAppBar({
@@ -29,7 +28,6 @@ class CommonAppBar extends StatefulWidget {
     required this.image,
     required this.onChange,
     this.showFilterButton = false,
-    this.walletWidget,
     this.filterButtonKey,
   });
 
@@ -56,39 +54,27 @@ class _CommonAppBarState extends State<CommonAppBar> {
           centerTitle: false,
           title: Text(Greetings.getGreeting(widget.userName)),
           bottom: PreferredSize(
-            preferredSize:
-                Size.fromHeight(widget.walletWidget != null ? 120 : 69),
+            preferredSize: const Size.fromHeight(69),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 8,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      // Search field
-                      Expanded(
-                        child: ShadInputFormField(
-                          prefix: const Icon(LucideIcons.search),
-                          placeholder: Text(widget.searchPlaceholder),
-                          onChanged: widget.onChange,
-                        ),
-                      ),
-
-                      // Filter button if enabled
-                      if (widget.showFilterButton) ...[
-                        const SizedBox(width: 8),
-                        InfluencerFilterButton(key: _filterButtonKey),
-                      ],
-                    ],
+                  // Search field
+                  Expanded(
+                    child: ShadInputFormField(
+                      prefix: const Icon(LucideIcons.search),
+                      placeholder: Text(widget.searchPlaceholder),
+                      onChanged: widget.onChange,
+                    ),
                   ),
 
-                  // Wallet widget if provided (now below search)
-                  if (widget.walletWidget != null) ...[
-                    const SizedBox(height: 8),
-                    widget.walletWidget!,
+                  // Filter button if enabled
+                  if (widget.showFilterButton) ...[
+                    const SizedBox(width: 8),
+                    InfluencerFilterButton(key: _filterButtonKey),
                   ],
                 ],
               ),

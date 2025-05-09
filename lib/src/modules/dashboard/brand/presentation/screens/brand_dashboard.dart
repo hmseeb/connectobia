@@ -120,18 +120,6 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     image: widget.user.avatar,
                     showFilterButton: true,
                     filterButtonKey: filterButtonKey,
-                    walletWidget: BlocBuilder<WalletBloc, WalletState>(
-                      buildWhen: (previous, current) {
-                        // Rebuild whenever the state is loaded
-                        return current is WalletLoaded;
-                      },
-                      builder: (context, state) {
-                        if (state is WalletLoaded) {
-                          return _buildWalletCard(state.funds);
-                        }
-                        return _buildWalletCard(null);
-                      },
-                    ),
                     onChange: (value) {
                       BlocProvider.of<BrandDashboardBloc>(context)
                           .add(FilterInfluencers(filter: value));
@@ -160,6 +148,19 @@ class _BrandDashboardState extends State<BrandDashboard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            BlocBuilder<WalletBloc, WalletState>(
+                              buildWhen: (previous, current) {
+                                // Rebuild whenever the state is loaded
+                                return current is WalletLoaded;
+                              },
+                              builder: (context, state) {
+                                if (state is WalletLoaded) {
+                                  return _buildWalletCard(state.funds);
+                                }
+                                return _buildWalletCard(null);
+                              },
+                            ),
+                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 const Expanded(
