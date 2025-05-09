@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/constants/screens.dart';
 import 'package:connectobia/src/shared/data/repositories/error_repo.dart';
+import 'package:connectobia/src/shared/data/repositories/funds_repository.dart';
 import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
 import 'package:flutter/material.dart';
@@ -230,12 +231,62 @@ class ContractRepository {
   static Future<Contract> rejectByInfluencer(String id) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+
+      // Get the existing contract to retrieve the campaign and amount
+      final existingContract = await getContractById(id);
+      final campaignId = existingContract.campaign;
+      final brandId = existingContract.brand;
+      final amount = existingContract.payout;
+
+      // Update the contract status to rejected
       final record = await pb.collection(_collectionName).update(
         id,
         body: {
           'status': 'rejected',
         },
       );
+
+      // Also update the campaign status to rejected
+      try {
+        await pb.collection('campaigns').update(
+          campaignId,
+          body: {
+            'status': 'rejected',
+          },
+        );
+        debugPrint('Updated campaign $campaignId status to rejected');
+      } catch (e) {
+        debugPrint('Error updating campaign status: $e');
+        // Don't fail the contract rejection if campaign update fails
+      }
+
+      // Release locked funds back to the brand
+      if (amount > 0) {
+        try {
+          debugPrint(
+              'Releasing $amount funds for brand $brandId after contract rejection');
+          await FundsRepository.releaseFunds(brandId, amount);
+        } catch (e) {
+          debugPrint('Error releasing funds after contract rejection: $e');
+          // Even if releasing funds fails, we don't want to fail the rejection
+        }
+      }
+
+      // Create notification for the brand about rejection
+      try {
+        await NotificationRepository.createNotification(
+          userId: brandId,
+          title: 'Contract Rejected',
+          body:
+              'An influencer has rejected your campaign contract. Your funds have been released.',
+          type: 'contract_rejected',
+          redirectUrl: '$campaignDetails?campaignId=$campaignId&userType=brand',
+        );
+      } catch (e) {
+        debugPrint('Error creating notification after contract rejection: $e');
+        // Do not fail the contract rejection if notification fails
+      }
+
       return Contract.fromRecord(record);
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();

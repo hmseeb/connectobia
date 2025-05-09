@@ -32,7 +32,6 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
   List<Influencer> _influencers = [];
   // Map to store profiles for each influencer
   final Map<String, InfluencerProfile> _influencerProfiles = {};
-  bool _loadingProfiles = false;
   String? _errorMessage;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -584,10 +583,6 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
   Future<void> _loadInfluencerProfiles() async {
     if (_influencers.isEmpty) return;
 
-    setState(() {
-      _loadingProfiles = true;
-    });
-
     try {
       for (final influencer in _influencers) {
         if (influencer.profile.isNotEmpty) {
@@ -606,12 +601,8 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
           }
         }
       }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _loadingProfiles = false;
-        });
-      }
+    } catch (e) {
+      debugPrint('Error loading profiles: $e');
     }
   }
 

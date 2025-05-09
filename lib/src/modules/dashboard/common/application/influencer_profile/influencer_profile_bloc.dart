@@ -28,25 +28,41 @@ class InfluencerProfileBloc
           return;
         }
 
-        InfluencerProfile influencerProfile =
-            await ProfileRepository.getInfluencerProfile(
-                profileId: event.profileId);
+        InfluencerProfile influencerProfile;
+        try {
+          influencerProfile = await ProfileRepository.getInfluencerProfile(
+              profileId: event.profileId);
+          debugPrint('✅ Successfully loaded profile: ${influencerProfile.id}');
+        } catch (e) {
+          // If profile loading fails, create a default profile
+          debugPrint('⚠️ Failed to load influencer profile: $e');
+          debugPrint(
+              'Creating default empty profile for Instagram-less influencer');
 
-        debugPrint('✅ Successfully loaded profile: ${influencerProfile.id}');
+          // Create a default empty profile
+          influencerProfile = InfluencerProfile(
+            id: 'default_${DateTime.now().millisecondsSinceEpoch}',
+            collectionId: 'influencerProfile',
+            collectionName: 'influencerProfile',
+            description:
+                'Connect your Instagram account to display your profile information.',
+            followers: 0,
+            mediaCount: 0,
+            engRate: 0,
+            created: DateTime.now(),
+            updated: DateTime.now(),
+          );
+        }
+
         emit(InfluencerProfileLoaded(
           influencer: event.influencer,
           influencerProfile: influencerProfile,
         ));
         debugPrint('Fetched ${event.influencer.fullName} profile');
       } catch (e) {
-        debugPrint('❌ Error loading influencer profile: $e');
-        // First emit the raw error message
-        emit(InfluencerProfileError(e.toString()));
-        // Then try to handle it more nicely
         ErrorRepository errorRepo = ErrorRepository();
-        final String errorMessage = errorRepo.handleError(e);
-        debugPrint('Formatted error: $errorMessage');
-        emit(InfluencerProfileError(errorMessage));
+        emit(InfluencerProfileError(e.toString()));
+        throw errorRepo.handleError(e);
       }
     });
   }

@@ -26,22 +26,19 @@ class CampaignCard extends StatelessWidget {
     final bool isBrand = CollectionNameSingleton.instance == 'brands';
 
     // If campaign is null, show placeholder for skeleton loading
-    final title = campaign?.title ?? 'Campaign Title';
-    final description = campaign?.description ??
-        'Campaign description goes here with more details about the campaign.';
+    final title = campaign?.title ?? 'Untitled Campaign';
+    final description = campaign?.description ?? 'No description';
     final status = campaign?.status ?? 'draft';
     final budget = campaign?.budget ?? 0.0;
     final startDate = campaign?.startDate ?? DateTime.now();
     final endDate =
         campaign?.endDate ?? DateTime.now().add(const Duration(days: 30));
 
-    // Format currency
-    final currencyFormat =
-        NumberFormat.currency(symbol: 'PKR ', decimalDigits: 0);
-    final formattedBudget = currencyFormat.format(budget);
-
-    // Format date
-    final dateFormat = DateFormat('MMM dd, yyyy');
+    // Format currency with dynamic locale
+    final locale = Localizations.localeOf(context).toString();
+    final formattedBudget =
+        NumberFormat.currency(locale: locale, symbol: '\$').format(budget);
+    final dateFormat = DateFormat('MMM d, yyyy');
 
     // For skeleton loading, just return the card without Slidable
     if (campaign == null) {
@@ -81,23 +78,25 @@ class CampaignCard extends StatelessWidget {
                           children: [
                             const Text(
                               'Unable to Edit',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 8),
                             const Text(
                               'You are unable to edit the campaign.',
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
-                            width: double.infinity, // Full width of parent
-                            child: ShadButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('OK'),
+                              width: double.infinity, // Full width of parent
+                              child: ShadButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('OK'),
+                              ),
                             ),
-                          ),
                           ],
                         ),
                       ),
@@ -142,24 +141,25 @@ class CampaignCard extends StatelessWidget {
                           children: [
                             const Text(
                               'Unable to Delete',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 8),
                             const Text(
                               'You are unable to delete the campaign.',
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
-                            width: double.infinity, // Full width of parent
-                            child: ShadButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('OK'),
+                              width: double.infinity, // Full width of parent
+                              child: ShadButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('OK'),
+                              ),
                             ),
-                          ),
-
                           ],
                         ),
                       ),
@@ -193,8 +193,63 @@ class CampaignCard extends StatelessWidget {
                 bottomRight: Radius.circular(8),
               ),
             ),
+            // Cancel action - only for draft or assigned campaigns
+            if (campaign != null &&
+                (campaign!.status.toLowerCase() == 'draft' ||
+                    campaign!.status.toLowerCase() == 'assigned'))
+              SlidableAction(
+                onPressed: (context) {
+                  HapticFeedback.mediumImpact();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Cancel Campaign'),
+                      content: const Text(
+                          'Are you sure you want to cancel this campaign? Your locked funds will be released back to your account.'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: const Text('No'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context, 'OK');
+                            // Add cancel campaign logic
+                            try {
+                              CampaignRepository.cancelCampaign(campaign!.id)
+                                  .then((_) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Campaign cancelled. Funds have been released.'),
+                                    duration: Duration(seconds: 3),
+                                  ),
+                                );
+                                // Refresh the list
+                                onDeleted();
+                              });
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Error cancelling campaign: $e')),
+                                );
+                              }
+                            }
+                          },
+                          child: const Text('Yes'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                icon: Icons.cancel,
+                label: 'Cancel',
+              ),
           ],
-          
         ),
         child: _buildCardContent(
           context,

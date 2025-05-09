@@ -1,5 +1,4 @@
 import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
-import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
 import 'package:connectobia/src/modules/onboarding/application/bloc/influencer_onboard_bloc.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/data/constants/assets.dart';
@@ -348,75 +347,60 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                 // Navigate to the edit profile screen based on profile type
                 dynamic user;
                 if (profileType == 'influencers') {
-                  user = context.read<InfluencerProfileBloc>().state
-                          is InfluencerProfileLoaded
-                      ? (context.read<InfluencerProfileBloc>().state
-                              as InfluencerProfileLoaded)
-                          .influencer
-                      : null;
+                  // Make sure we only check if state is InfluencerProfileLoaded before accessing it
+                  final currentState =
+                      context.read<InfluencerProfileBloc>().state;
+                  if (currentState is InfluencerProfileLoaded) {
+                    user = currentState.influencer;
+                  } else {
+                    // If we're still loading or have an error, show a message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              'Profile is still loading, please try again')),
+                    );
+                    return;
+                  }
                 } else {
-                  user = context.read<BrandProfileBloc>().state
-                          is BrandProfileLoaded
-                      ? (context.read<BrandProfileBloc>().state
-                              as BrandProfileLoaded)
-                          .brand
-                      : null;
+                  // Same for brand profile
+                  final currentState = context.read<BrandProfileBloc>().state;
+                  if (currentState is BrandProfileLoaded) {
+                    user = currentState.brand;
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              'Profile is still loading, please try again')),
+                    );
+                    return;
+                  }
                 }
 
-                await Navigator.pushNamed(
-                  context,
-                  editProfileScreen,
-                  arguments: {'user': user},
-                );
+                if (user != null) {
+                  await Navigator.pushNamed(
+                    context,
+                    editProfileScreen,
+                    arguments: {'user': user},
+                  );
 
-                // After returning from edit profile screen, refresh profile data
-                debugPrint(
-                    'Returned from edit profile screen, refreshing data');
-                if (mounted) {
-                  _loadUserInfo();
+                  // After returning from edit profile screen, refresh profile data
+                  debugPrint(
+                      'Returned from edit profile screen, refreshing data');
+                  if (mounted) {
+                    _loadUserInfo();
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'Cannot edit profile: User data not available')),
+                  );
                 }
               },
               icon: const Icon(Icons.edit),
               label: const Text('Edit Profile'),
             )
-          : BlocBuilder<RealtimeMessagingBloc, RealtimeMessagingState>(
-              builder: (context, state) {
-                debugPrint(
-                    'FAB visibility check - isVerified: $isVerified, self: ${widget.self}');
-                return isVerified
-                    ? FloatingActionButton(
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                if (isInfluencerVerified) {
-                                  BlocProvider.of<RealtimeMessagingBloc>(
-                                          context)
-                                      .add(GetMessagesByUserId(userId));
-                                  Navigator.pushNamed(
-                                    context,
-                                    messagesScreen,
-                                    arguments: {
-                                      'userId': userId,
-                                      'name': name,
-                                      'avatar': avatar,
-                                      'collectionId': collectionId,
-                                      'hasConnectedInstagram': connectedSocial,
-                                    },
-                                  );
-                                } else {
-                                  ShadToaster.of(context).show(
-                                    ShadToast.destructive(
-                                      title: const Text(
-                                          'Please connect your Instagram account to be able to connect with other users'),
-                                    ),
-                                  );
-                                }
-                              },
-                        child: const Icon(Icons.message),
-                      )
-                    : const SizedBox();
-              },
-            ),
+          : null,
       body: Skeletonizer(
         enabled: isLoading,
         child: SingleChildScrollView(
@@ -475,7 +459,12 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                                         fontWeight: FontWeight.bold,
                                       ),
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Connect your Instagram account to showcase your analytics and improve your profile visibility to brands.',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 16),
                                 BlocConsumer<InfluencerOnboardBloc,
                                     InfluencerOnboardState>(
                                   listener: (context, state) {

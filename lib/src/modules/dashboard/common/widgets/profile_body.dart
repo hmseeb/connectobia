@@ -56,6 +56,36 @@ class ProfileBody extends StatelessWidget {
               const SizedBox(height: 16),
             ],
 
+            // Show Instagram connection message when not connected
+            if (!hasConnectedInstagram) ...[
+              _buildSectionCard(
+                context,
+                title: 'Instagram Connection',
+                helpText:
+                    'Connect your Instagram account to show your analytics',
+                icon: Icons.info_outline_rounded,
+                content: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'No Instagram account connected',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Connect your Instagram account to display your social media analytics and improve your profile visibility.',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             // Basic Analytics Card
             if (hasConnectedInstagram) ...[
               _buildSectionCard(

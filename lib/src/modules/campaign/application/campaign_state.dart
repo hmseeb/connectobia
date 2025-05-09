@@ -1,5 +1,17 @@
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 
+/// Campaign was canceled successfully
+class CampaignCanceled extends CampaignState {
+  final Campaign campaign;
+  CampaignCanceled(this.campaign);
+}
+
+/// Campaign cancellation failed
+class CampaignCancellationError extends CampaignState {
+  final String errorMessage;
+  CampaignCancellationError(this.errorMessage);
+}
+
 /// State when campaign has been successfully created
 class CampaignCreated extends CampaignState {
   final Campaign campaign;

@@ -287,6 +287,22 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         }
       }
     });
+
+    // Cancel campaign and release funds
+    on<CancelCampaign>((event, emit) async {
+      emit(CampaignsLoading());
+      try {
+        debugPrint('Cancelling campaign with ID: ${event.campaignId}');
+        final canceledCampaign =
+            await CampaignRepository.cancelCampaign(event.campaignId);
+        debugPrint('Campaign cancelled successfully, funds released');
+        emit(CampaignCanceled(canceledCampaign));
+      } catch (e) {
+        debugPrint('Error cancelling campaign: $e');
+        ErrorRepository errorRepo = ErrorRepository();
+        emit(CampaignCancellationError(errorRepo.handleError(e)));
+      }
+    });
   }
 
   // Helper method to validate each step

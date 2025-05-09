@@ -102,6 +102,66 @@ class CampaignRepository {
     }
   }
 
+  /// Cancel a campaign (by brand) and release funds
+  static Future<Campaign> cancelCampaign(String id) async {
+    try {
+      final pb = await PocketBaseSingleton.instance;
+
+      // Get the campaign details first to retrieve the budget and brand
+      final campaign = await getCampaignById(id);
+      final brandId = campaign.brand;
+      final budget = campaign.budget;
+
+      // Update campaign status to cancelled
+      final record = await pb.collection(_collectionName).update(
+        id,
+        body: {'status': 'cancelled'},
+      );
+
+      // Release locked funds back to the brand
+      if (budget > 0) {
+        try {
+          debugPrint(
+              'Releasing $budget funds for brand $brandId after campaign cancellation');
+          await FundsRepository.releaseFunds(brandId, budget);
+        } catch (e) {
+          debugPrint('Error releasing funds after campaign cancellation: $e');
+          // Even if releasing funds fails, we don't want to fail the cancellation
+        }
+      }
+
+      // If there's an associated contract, update its status too
+      try {
+        final contract = await ContractRepository.getContractByCampaignId(id);
+        if (contract != null) {
+          await ContractRepository.updateStatus(contract.id, 'cancelled');
+
+          // Notify the influencer if one was assigned
+          if (campaign.selectedInfluencer != null &&
+              campaign.selectedInfluencer!.isNotEmpty) {
+            await NotificationRepository.createNotification(
+              userId: campaign.selectedInfluencer!,
+              title: 'Campaign Cancelled',
+              body:
+                  'A campaign you were assigned to has been cancelled by the brand.',
+              type: 'campaign_cancelled',
+              redirectUrl: '',
+            );
+          }
+        }
+      } catch (e) {
+        debugPrint('Error updating associated contract: $e');
+        // Don't fail the campaign cancellation if contract update fails
+      }
+
+      return Campaign.fromRecord(record);
+    } catch (e) {
+      debugPrint('Error cancelling campaign: $e');
+      ErrorRepository errorRepo = ErrorRepository();
+      throw errorRepo.handleError(e);
+    }
+  }
+
   /// Create a new campaign with a contract
   static Future<Campaign> createCampaign(
     Campaign campaign, {
@@ -229,7 +289,26 @@ class CampaignRepository {
   static Future<void> deleteCampaign(String id) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+
+      // Get the campaign details first to retrieve the budget and brand
+      final campaign = await getCampaignById(id);
+      final brandId = campaign.brand;
+      final budget = campaign.budget;
+
+      // Delete the campaign
       await pb.collection(_collectionName).delete(id);
+
+      // Release locked funds back to the brand
+      if (budget > 0) {
+        try {
+          debugPrint(
+              'Releasing $budget funds for brand $brandId after campaign deletion');
+          await FundsRepository.releaseFunds(brandId, budget);
+        } catch (e) {
+          debugPrint('Error releasing funds after campaign deletion: $e');
+          // Even if releasing funds fails, we don't want to fail the deletion
+        }
+      }
     } catch (e) {
       ErrorRepository errorRepo = ErrorRepository();
       throw errorRepo.handleError(e);

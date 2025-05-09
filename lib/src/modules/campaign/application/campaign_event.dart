@@ -1,5 +1,11 @@
 abstract class CampaignEvent {}
 
+/// Event to cancel a campaign and release funds
+class CancelCampaign extends CampaignEvent {
+  final String campaignId;
+  CancelCampaign(this.campaignId);
+}
+
 /// Event to create the campaign with all collected data
 class CreateCampaign extends CampaignEvent {
   final String? campaignId; // If provided, this is an update operation
