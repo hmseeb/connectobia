@@ -521,6 +521,17 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
   void _goToPreviousStep() {
     if (_currentStep > 1) {
       setState(() {
+        // If coming back from influencer selection step, clear selection status
+        // to ensure we don't have stale UI state when returning
+        if (_currentStep == 3) {
+          debugPrint(
+              'Going back from influencer selection step, resetting selection state');
+          // Reset the selected influencer in the local state
+          _selectedInfluencer = null;
+          // Reset the selected influencer in the bloc
+          context.read<CampaignBloc>().add(ResetSelectedInfluencer());
+        }
+
         _currentStep--;
         _validationErrors = [];
 
@@ -770,6 +781,20 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     // Use a microtask to ensure state updates are processed before moving to next step
     Future.microtask(() {
       if (mounted) {
+        // Always reset influencer selection state when navigating away from step 3
+        // This ensures consistency with the UI state in SelectInfluencerStep
+        if (_currentStep == 3) {
+          if (_selectedInfluencer == null) {
+            // If nothing selected, ensure the bloc state is also cleared
+            context.read<CampaignBloc>().add(ResetSelectedInfluencer());
+          } else {
+            // Make sure the bloc state matches our local state
+            context
+                .read<CampaignBloc>()
+                .add(UpdateSelectedInfluencer(_selectedInfluencer));
+          }
+        }
+
         setState(() {
           _currentStep++;
         });

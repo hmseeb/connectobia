@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/dashboard/common/data/repositories/dashboard_repo.dart';
+import 'package:connectobia/src/modules/dashboard/common/data/repositories/profile_repo.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/extensions/string_extention.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
+import 'package:connectobia/src/shared/domain/models/influencer_profile.dart';
 import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -28,6 +30,9 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
   String searchQuery = '';
   bool _isLoading = true;
   List<Influencer> _influencers = [];
+  // Map to store profiles for each influencer
+  final Map<String, InfluencerProfile> _influencerProfiles = {};
+  bool _loadingProfiles = false;
   String? _errorMessage;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -251,11 +256,15 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                                   backgroundColor:
                                       AppColors.primary.withOpacity(0.1),
                                   backgroundImage: CachedNetworkImageProvider(
-                                    Avatar.getUserImage(
-                                      collectionId: influencer.collectionId,
-                                      image: '',
-                                      recordId: influencer.id,
-                                    ),
+                                    influencer.avatar.isNotEmpty
+                                        ? Avatar.getUserImage(
+                                            recordId: influencer.id,
+                                            image: influencer.avatar,
+                                            collectionId:
+                                                influencer.collectionId,
+                                          )
+                                        : Avatar.getAvatarPlaceholder(
+                                            influencer.fullName),
                                   ),
                                 ),
                               ),
@@ -265,7 +274,7 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                                     fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
-                                '@${influencer.username} | ${influencer.industry} | 100k+ followers',
+                                '@${influencer.username} | ${influencer.industry} | ${_influencerProfiles.containsKey(influencer.id) ? _getFollowerCount(influencer.id) : 'Loading followers...'}',
                                 style: TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
@@ -290,6 +299,24 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
   }
 
   @override
+  void didUpdateWidget(SelectInfluencerStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Clear and update selection when the initialSelectedInfluencer changes or becomes null
+    if (widget.initialSelectedInfluencer !=
+        oldWidget.initialSelectedInfluencer) {
+      _selectedInfluencers.clear();
+      if (widget.initialSelectedInfluencer != null) {
+        _selectedInfluencers.add(widget.initialSelectedInfluencer!);
+      }
+      // Always notify parent with current selection
+      widget.onSelectedInfluencersChanged(_selectedInfluencers);
+      debugPrint(
+          'Updated selected influencers based on prop change: $_selectedInfluencers');
+    }
+  }
+
+  @override
   void dispose() {
     searchController.dispose();
     _animationController.dispose();
@@ -299,30 +326,27 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
   @override
   void initState() {
     super.initState();
-
-    // Initialize with the influencer if provided
-    if (widget.initialSelectedInfluencer != null &&
-        widget.initialSelectedInfluencer!.isNotEmpty) {
-      _selectedInfluencers.add(widget.initialSelectedInfluencer!);
-    }
-
-    // Setup animations
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.easeIn,
       ),
     );
-
     _animationController.forward();
 
-    // Load influencers data
     _loadInfluencers();
+
+    // Set initial selection based on prop passed from parent
+    _selectedInfluencers.clear();
+    if (widget.initialSelectedInfluencer != null) {
+      _selectedInfluencers.add(widget.initialSelectedInfluencer!);
+      debugPrint(
+          'Initialized selected influencer: ${widget.initialSelectedInfluencer}');
+    }
   }
 
   Widget _buildEmptyState() {
@@ -430,12 +454,12 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                 // Influencer Avatar
                 CachedNetworkImage(
                   imageUrl: influencer.avatar.isNotEmpty
-                      ? influencer.avatar
-                      : Avatar.getUserImage(
-                          collectionId: influencer.collectionId,
-                          image: '',
+                      ? Avatar.getUserImage(
                           recordId: influencer.id,
-                        ),
+                          image: influencer.avatar,
+                          collectionId: influencer.collectionId,
+                        )
+                      : Avatar.getAvatarPlaceholder(influencer.fullName),
                   placeholder: (context, url) => const CircleAvatar(
                     radius: 25,
                     child: CircularProgressIndicator(strokeWidth: 2),
@@ -497,9 +521,11 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                               color: AppColors.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Text(
-                              '100k+ followers',
-                              style: TextStyle(
+                            child: Text(
+                              _influencerProfiles.containsKey(influencer.id)
+                                  ? _getFollowerCount(influencer.id)
+                                  : 'Loading...',
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                                 color: AppColors.primary,
@@ -537,6 +563,58 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
     );
   }
 
+  // Helper method to get formatted follower count for an influencer
+  String _getFollowerCount(String influencerId) {
+    final profile = _influencerProfiles[influencerId];
+    if (profile == null) {
+      return 'Loading...';
+    }
+
+    final followers = profile.followers;
+    if (followers >= 1000000) {
+      return '${(followers / 1000000).toStringAsFixed(1)}M followers';
+    } else if (followers >= 1000) {
+      return '${(followers / 1000).toStringAsFixed(1)}K followers';
+    } else {
+      return '$followers followers';
+    }
+  }
+
+  // New method to load profiles for all influencers
+  Future<void> _loadInfluencerProfiles() async {
+    if (_influencers.isEmpty) return;
+
+    setState(() {
+      _loadingProfiles = true;
+    });
+
+    try {
+      for (final influencer in _influencers) {
+        if (influencer.profile.isNotEmpty) {
+          try {
+            final profile = await ProfileRepository.getInfluencerProfile(
+              profileId: influencer.profile,
+            );
+            if (mounted) {
+              setState(() {
+                _influencerProfiles[influencer.id] = profile;
+              });
+            }
+          } catch (e) {
+            debugPrint(
+                'Error loading profile for influencer ${influencer.id}: $e');
+          }
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loadingProfiles = false;
+        });
+      }
+    }
+  }
+
   Future<void> _loadInfluencers() async {
     setState(() {
       _isLoading = true;
@@ -553,6 +631,9 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
         if (_influencers.isEmpty) {
           _errorMessage =
               'No verified influencers available yet. Make sure there are verified influencer profiles in the system.';
+        } else {
+          // Load profiles for all influencers
+          _loadInfluencerProfiles();
         }
       });
     } catch (e) {
@@ -568,12 +649,17 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
       // If the selected influencer is already selected, deselect it
       if (_selectedInfluencers.contains(influencerId)) {
         _selectedInfluencers.clear();
+        // Notify parent that nothing is selected
+        widget.onSelectedInfluencersChanged([]);
+        debugPrint('Influencer deselected: $influencerId');
       } else {
         // Deselect any previously selected influencer and select the new one
         _selectedInfluencers.clear();
         _selectedInfluencers.add(influencerId);
+        // Notify parent of the new selection
+        widget.onSelectedInfluencersChanged(_selectedInfluencers);
+        debugPrint('Influencer selected: $influencerId');
       }
-      widget.onSelectedInfluencersChanged(_selectedInfluencers);
     });
   }
 }

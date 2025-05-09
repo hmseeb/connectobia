@@ -145,6 +145,18 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
       }
     });
 
+    // Reset selected influencer
+    on<ResetSelectedInfluencer>((event, emit) {
+      if (state is CampaignFormState) {
+        final currentState = state as CampaignFormState;
+        debugPrint(
+            'Resetting selected influencer to null - previous value: ${currentState.selectedInfluencer}');
+        emit(currentState.copyWith(
+          selectedInfluencer: null,
+        ));
+      }
+    });
+
     // Update contract details (Step 4)
     on<UpdateContractDetails>((event, emit) {
       if (state is CampaignFormState) {

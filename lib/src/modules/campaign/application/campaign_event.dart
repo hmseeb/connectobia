@@ -41,6 +41,9 @@ class LoadCampaign extends CampaignEvent {
 
 class LoadCampaigns extends CampaignEvent {}
 
+/// Event to reset the selected influencer
+class ResetSelectedInfluencer extends CampaignEvent {}
+
 class SearchCampaigns extends CampaignEvent {
   final String query;
   SearchCampaigns(this.query);

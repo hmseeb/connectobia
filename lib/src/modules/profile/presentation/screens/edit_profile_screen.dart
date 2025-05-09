@@ -299,8 +299,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             if (val.isEmpty) {
                               return 'This field is required';
                             }
+                            if (val.length > 40) {
+                              return 'Maximum 40 characters allowed';
+                            }
                             return null;
                           },
+                          maxLength: 40,
                           onChanged: (_) => _updateFormState(),
                         ),
                       ],
@@ -431,10 +435,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             hintText:
                                 'Write something about yourself or your brand...',
                             border: OutlineInputBorder(),
+                            counterText: '',
                           ),
                           minLines: 3,
                           maxLines: 5,
+                          maxLength: 4000,
                           onChanged: (_) => _updateFormState(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            '${_bioController.text.length}/4000 characters',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -807,15 +823,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _updateFormState() {
-    if (!mounted) return;
+    final bool isDirty = _checkIfFormIsDirty();
+    final bool isValid = _formKey.currentState?.validate() ?? false;
 
-    final isValid = _formKey.currentState?.validate() ?? false;
-    final isDirty = _checkIfFormIsDirty();
-
-    setState(() {
-      _formIsValid = isValid;
-      _formIsDirty = isDirty;
-    });
+    if (isDirty != _formIsDirty || isValid != _formIsValid) {
+      setState(() {
+        _formIsDirty = isDirty;
+        _formIsValid = isValid;
+      });
+    } else {
+      // Even if dirty/valid state didn't change, we need to update the state
+      // to refresh the character counter
+      setState(() {});
+    }
   }
 
   // New method to verify authentication and proceed with update
