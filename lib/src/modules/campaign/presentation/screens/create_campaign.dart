@@ -776,9 +776,6 @@ class _CreateCampaignScreenState extends State<CreateCampaignScreen> {
     // Create a completer to handle the async validation
     final completer = Completer<void>();
 
-    // Save the current state of the bloc to compare later
-    final beforeState = context.read<CampaignBloc>().state;
-
     // Add a listener to detect state changes
     final blocSubscription =
         context.read<CampaignBloc>().stream.listen((state) {
