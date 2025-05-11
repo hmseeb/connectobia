@@ -197,5 +197,16 @@ class ConnectobiaState extends State<Connectobia> {
       // For other errors, use the default error handler
       FlutterError.presentError(details);
     };
+
+    // Add a safety timeout to prevent getting stuck on splash screen
+    Future.delayed(Duration(seconds: 10), () {
+      if (authState is AuthLoading) {
+        debugPrint('Auth still loading after 10 seconds, forcing navigation');
+        Navigator.pushReplacementNamed(
+          context,
+          welcomeScreen,
+        );
+      }
+    });
   }
 }

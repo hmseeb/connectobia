@@ -34,7 +34,15 @@ class RealtimeMessagingBloc
     on<SubscribeMessages>((event, emit) async {
       try {
         final pb = await PocketBaseSingleton.instance;
+
+        // Check if the user is authenticated
+        if (!pb.authStore.isValid || pb.authStore.record == null) {
+          debugPrint('Cannot subscribe to messages: User not authenticated');
+          return; // Exit early without throwing an error
+        }
+
         final userId = pb.authStore.record!.id;
+        debugPrint('Subscribing to messages for user: $userId');
 
         // Subscribe to changes in the messages collection
         pb.collection('messages').subscribe(
@@ -48,8 +56,9 @@ class RealtimeMessagingBloc
           filter: "recipientId = '$userId'",
           expand: 'chat',
         ).asStream();
-        debugPrint('Subscribed to messages');
+        debugPrint('Successfully subscribed to messages');
       } catch (e) {
+        debugPrint('Error subscribing to messages: $e');
         emit(RealtimeMessagingError(e.toString()));
       }
     });

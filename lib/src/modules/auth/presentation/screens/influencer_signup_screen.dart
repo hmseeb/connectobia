@@ -103,6 +103,7 @@ class _InfluencerScreenState extends State<InfluencerScreen> {
                         brandNameController: firstNameController,
                         emailController: emailController,
                         passwordController: passwordController),
+                    const SizedBox(height: 10),
                     CustomShadSelect(
                       items: IndustryList.industries,
                       placeholder: 'Select industry...',

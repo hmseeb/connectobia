@@ -26,7 +26,7 @@ class CustomShadSelect extends StatefulWidget {
   /// [headerText] is the text shown in the dropdown header
   final String headerText;
 
-  /// [width] is the width of the dropdown. If null, it will adapt to its parent
+  /// [width] is the width of the dropdown. If null, it will take full width
   final double? width;
 
   const CustomShadSelect({
@@ -57,11 +57,12 @@ class CustomShadSelectState extends State<CustomShadSelect> {
     try {
       final theme = ShadTheme.of(context);
       return SizedBox(
-        width: widget.width, // Width can be null to adapt to parent
+        width: widget.width ?? double.infinity, // Use full width by default
         child: ShadSelect<String>(
           enabled: true,
           focusNode: widget.focusNode, // Use the provided focus node
-          minWidth: widget.width,
+          minWidth:
+              widget.width ?? double.infinity, // Use full width by default
           maxHeight: 220,
           placeholder: Text(widget.placeholder),
           options: [
@@ -79,24 +80,18 @@ class CustomShadSelectState extends State<CustomShadSelect> {
             ...sortedItems.entries.map(
               (e) => ShadOption(
                 value: e.key,
-                child: SizedBox(
-                  width: 300, // Constrain the width of the option text
-                  child: Text(
-                    e.value,
-                    overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-                  ),
+                child: Text(
+                  e.value,
+                  overflow: TextOverflow.ellipsis, // Truncate with ellipsis
                 ),
               ),
             ),
           ],
           selectedOptionBuilder: (context, value) {
             widget.onSelected(value);
-            return SizedBox(
-              width: 300, // Constrain the width of the selected text
-              child: Text(
-                widget.items[value] ?? '',
-                overflow: TextOverflow.ellipsis, // Truncate with ellipsis
-              ),
+            return Text(
+              widget.items[value] ?? '',
+              overflow: TextOverflow.ellipsis, // Truncate with ellipsis
             );
           },
         ),
@@ -118,7 +113,7 @@ class CustomShadSelectState extends State<CustomShadSelect> {
 
       // Return a fallback widget
       return SizedBox(
-        width: widget.width,
+        width: widget.width ?? double.infinity, // Use full width by default
         child: ShadInputFormField(
           placeholder: Text('${widget.placeholder} (Error loading options)'),
           readOnly: true,

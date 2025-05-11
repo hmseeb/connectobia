@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:connectobia/src/services/storage/pb.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../shared/data/repositories/error_repo.dart';
 import '../../data/helpers/validation/input_validation.dart';
@@ -34,6 +35,10 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
+        // First, unsubscribe from any existing realtime connections
+        await PocketBaseSingleton.unsubscribeAll();
+
+        // Create the account
         await AuthRepository.createBrandAccount(
           brandName: event.brandName,
           username: event.username.toLowerCase(),
@@ -41,15 +46,27 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           password: event.password,
           industry: event.industry,
         );
+
+        // Emit success state
         emit(SignupSuccess(
           email: event.email,
         ));
 
+        // Allow a small delay before login to ensure PocketBase has time to process
+        await Future.delayed(Duration(milliseconds: 500));
+
+        // Reset the PocketBase singleton to clear any existing auth state
+        await PocketBaseSingleton.reset();
+
+        // Login with the new account
         await AuthRepository.login(
             email: event.email,
             password: event.password,
             accountType: 'brands');
+
+        debugPrint('Brand signup and login completed successfully');
       } catch (e) {
+        debugPrint('Error during brand signup: $e');
         ErrorRepository errorRepo = ErrorRepository();
         emit(SignupFailure(errorRepo.handleError(e)));
       }
@@ -73,6 +90,10 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
 
       try {
+        // First, unsubscribe from any existing realtime connections
+        await PocketBaseSingleton.unsubscribeAll();
+
+        // Create the account
         await AuthRepository.createInfluencerAccount(
           fullName: '${event.firstName} ${event.lastName}',
           username: event.username,
@@ -80,12 +101,25 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           password: event.password,
           industry: event.industry,
         );
+
+        // Emit success state
         emit(SignupSuccess(email: event.email));
+
+        // Allow a small delay before login to ensure PocketBase has time to process
+        await Future.delayed(Duration(milliseconds: 500));
+
+        // Reset the PocketBase singleton to clear any existing auth state
+        await PocketBaseSingleton.reset();
+
+        // Login with the new account
         await AuthRepository.login(
             email: event.email,
             password: event.password,
             accountType: 'influencers');
+
+        debugPrint('Influencer signup and login completed successfully');
       } catch (e) {
+        debugPrint('Error during influencer signup: $e');
         ErrorRepository errorRepo = ErrorRepository();
         emit(SignupFailure(errorRepo.handleError(e)));
       }
@@ -94,10 +128,14 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     on<InstagramSignup>((event, emit) async {
       emit(InstagramLoading());
       try {
+        // First, unsubscribe from any existing realtime connections
+        await PocketBaseSingleton.unsubscribeAll();
+
         final Influencer influencer = await AuthRepository.instagramAuth(
             collectionName: event.accountType);
         emit(InstagramSignupSuccess(influencer: influencer));
       } catch (e) {
+        debugPrint('Error during Instagram signup: $e');
         ErrorRepository errorRepo = ErrorRepository();
         emit(InstagramFailure(errorRepo.handleError(e)));
       }

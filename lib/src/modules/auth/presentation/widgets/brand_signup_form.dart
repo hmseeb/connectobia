@@ -87,6 +87,7 @@ class _BrandSignupFormState extends State<BrandSignupForm> {
           },
           obscureText: obscureText,
         ),
+        const SizedBox(height: 10),
         widget.industry,
       ],
     );

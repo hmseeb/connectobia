@@ -5,7 +5,6 @@ import 'package:connectobia/src/modules/auth/data/repositories/auth_repo.dart';
 import 'package:connectobia/src/shared/data/models/notification.dart';
 import 'package:connectobia/src/shared/data/repositories/notification_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 part 'notification_event.dart';
@@ -121,18 +120,35 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     Emitter<NotificationState> emit,
   ) async {
     try {
-      _userId ??= await AuthRepository.getUserId();
+      // Check if user is already authenticated before proceeding
+      try {
+        _userId = await AuthRepository.getUserId();
 
-      _subscription = await NotificationRepository.subscribeToNotifications(
-        userId: _userId!,
-        callback: (RecordSubscriptionEvent e) {
-          if (e.action == 'create') {
-            final notification = NotificationModel.fromRecord(e.record!);
-            add(NotificationArrived(notification));
-          }
-        },
-      );
+        if (_userId == null || _userId!.isEmpty) {
+          debugPrint(
+              'Cannot subscribe to notifications: User not authenticated');
+          return; // Exit early but don't emit an error
+        }
+
+        debugPrint('Subscribing to notifications for user: $_userId');
+
+        _subscription = await NotificationRepository.subscribeToNotifications(
+          userId: _userId!,
+          callback: (RecordSubscriptionEvent e) {
+            if (e.action == 'create') {
+              final notification = NotificationModel.fromRecord(e.record!);
+              add(NotificationArrived(notification));
+            }
+          },
+        );
+
+        debugPrint('Successfully subscribed to notifications');
+      } catch (e) {
+        // If it's an auth error, just log it but don't emit error state
+        debugPrint('Auth error when subscribing to notifications: $e');
+      }
     } catch (e) {
+      debugPrint('Error in notification subscription: $e');
       emit(NotificationError(e.toString()));
     }
   }

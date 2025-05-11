@@ -237,6 +237,11 @@ class AuthRepository {
       required String accountType}) async {
     try {
       final pb = await PocketBaseSingleton.instance;
+
+      // Unsubscribe from all realtime connections before login
+      // This prevents auth token mismatch errors
+      await PocketBaseSingleton.unsubscribeAll();
+
       final authData =
           await pb.collection(accountType).authWithPassword(email, password);
 
@@ -253,8 +258,10 @@ class AuthRepository {
   static Future<void> logout() async {
     try {
       final pb = await PocketBaseSingleton.instance;
-      await pb.collection('chats').unsubscribe();
-      await pb.collection('messages').unsubscribe();
+
+      // Unsubscribe from all realtime connections before logout
+      await PocketBaseSingleton.unsubscribeAll();
+
       pb.authStore.clear();
       debugPrint('Logged out successfully');
     } catch (e) {
