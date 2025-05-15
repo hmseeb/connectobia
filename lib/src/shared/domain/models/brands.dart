@@ -61,6 +61,22 @@ class Brands {
     );
   }
 
+  /// Filter brands list to only show items with IDs in the provided list
+  Brands filterByIds(List<String> ids) {
+    if (ids.isEmpty) {
+      return copyWith(totalItems: 0, items: []);
+    }
+
+    List<Brand> filteredItems = items.where((brand) {
+      return ids.contains(brand.id);
+    }).toList();
+
+    return copyWith(
+      totalItems: filteredItems.length,
+      items: filteredItems,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         "page": page,
         "perPage": perPage,

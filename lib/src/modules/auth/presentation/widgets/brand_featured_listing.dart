@@ -6,6 +6,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../dashboard/brand/application/brand_dashboard/brand_dashboard_bloc.dart';
 import '../../../dashboard/brand/presentation/widgets/featured_image.dart';
+import '../../../dashboard/brand/presentation/widgets/heart_icon.dart';
 import '../../../dashboard/brand/presentation/widgets/image_info.dart';
 import '../../../dashboard/common/application/influencer_profile/influencer_profile_bloc.dart';
 import 'listings_placeholder.dart';
@@ -64,10 +65,20 @@ class _BrandFeaturedListingsState extends State<BrandFeaturedListings> {
                             userId: state.influencers.items[index].id,
                             collectionId:
                                 state.influencers.items[index].collectionId,
-                          )
-                          // Favorite button
-                          // Add heart icon after implementing the feature
-                          // const FeatureHeartIcon(),
+                          ),
+                          // Add the heart icon for favorites
+                          FeatureHeartIcon(
+                            targetUserId: state.influencers.items[index].id,
+                            targetUserType: 'influencers',
+                            onToggle: (isFavorite) {
+                              // Refresh the list if needed when toggling favorites
+                              if (state.influencers.items.length == 1 &&
+                                  !isFavorite) {
+                                BlocProvider.of<BrandDashboardBloc>(context)
+                                    .add(BrandDashboardLoadInfluencers());
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ),

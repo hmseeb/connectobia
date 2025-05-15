@@ -106,9 +106,10 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
                   userId: user.id,
                   collectionId: user.collectionId,
                   image: user.avatar,
+                  showFavoriteFilter: true,
                   onChange: (value) {
                     BlocProvider.of<InfluencerDashboardBloc>(context)
-                        .add(FilterBrands(filter: value));
+                        .add(FilterBrands(value));
                   },
                 ),
               ],
@@ -178,6 +179,10 @@ class _InfluencerDashboardState extends State<InfluencerDashboard> {
   @override
   void initState() {
     super.initState();
+    // Load brands and initialize the dashboard
+    BlocProvider.of<InfluencerDashboardBloc>(context)
+        .add(InfluencerDashboardLoadBrands());
+
     // Subscribe to real-time messages
     context.read<RealtimeMessagingBloc>().add(SubscribeMessages());
 

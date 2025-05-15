@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectobia/src/modules/dashboard/brand/presentation/widgets/favorite_filter_button.dart';
+import 'package:connectobia/src/modules/dashboard/brand/presentation/widgets/favorite_filter_button.dart'
+    as brand;
 import 'package:connectobia/src/modules/dashboard/brand/presentation/widgets/filter_button.dart';
+import 'package:connectobia/src/modules/dashboard/influencer/presentation/widgets/favorite_filter_button.dart'
+    as influencer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -77,7 +80,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                   // Favorite filter button if enabled
                   if (widget.showFavoriteFilter) ...[
                     const SizedBox(width: 8),
-                    FavoriteFilterButton(userId: widget.userId),
+                    _buildFavoriteButton(),
                   ],
 
                   // Filter button if enabled
@@ -119,6 +122,17 @@ class _CommonAppBarState extends State<CommonAppBar> {
   void clearAllFilters() {
     if (widget.showFilterButton && _filterButtonKey.currentState != null) {
       _filterButtonKey.currentState!.clearAllFilters();
+    }
+  }
+
+  // Build the appropriate favorite button based on collection ID
+  Widget _buildFavoriteButton() {
+    final isBrand = widget.collectionId == 'brands';
+
+    if (isBrand) {
+      return brand.FavoriteFilterButton(userId: widget.userId);
+    } else {
+      return influencer.FavoriteFilterButton(userId: widget.userId);
     }
   }
 }
