@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/modules/auth/application/auth/auth_bloc.dart';
 import 'package:connectobia/src/modules/dashboard/common/data/repositories/dashboard_repo.dart';
 import 'package:connectobia/src/modules/dashboard/common/data/repositories/profile_repo.dart';
+import 'package:connectobia/src/modules/profile/presentation/widgets/favorite_button.dart';
 import 'package:connectobia/src/shared/data/constants/avatar.dart';
 import 'package:connectobia/src/shared/data/extensions/string_extention.dart';
+import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:connectobia/src/shared/domain/models/influencer_profile.dart';
 import 'package:connectobia/src/shared/presentation/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SelectInfluencerStep extends StatefulWidget {
@@ -421,6 +425,26 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
     );
   }
 
+  // Helper method to build the favorite button
+  Widget _buildFavoriteButton(Influencer influencer) {
+    // Get current auth state
+    final authState = context.read<AuthBloc>().state;
+
+    if (authState is BrandAuthenticated) {
+      final Brand currentUser = authState.user;
+
+      return FavoriteButton(
+        targetUser: influencer,
+        currentUserId: currentUser.id,
+        currentUserType: 'brand',
+        size: 22.0,
+      );
+    }
+
+    // Return empty container if not authenticated as a brand
+    return const SizedBox.shrink();
+  }
+
   Widget _buildInfluencerCard(Influencer influencer, bool isSelected) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -493,12 +517,20 @@ class _SelectInfluencerStepState extends State<SelectInfluencerStep>
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (isSelected)
-                            const Icon(
-                              Icons.check_circle,
-                              color: AppColors.primary,
-                              size: 22,
-                            ),
+                          Row(
+                            children: [
+                              // Favorite button
+                              _buildFavoriteButton(influencer),
+                              const SizedBox(width: 8),
+                              // Selected indicator
+                              if (isSelected)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primary,
+                                  size: 22,
+                                ),
+                            ],
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),

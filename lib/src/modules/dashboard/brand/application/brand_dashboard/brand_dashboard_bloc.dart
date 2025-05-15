@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show RangeValues;
 
+import '../../../../../modules/profile/data/favorites_repository.dart';
 import '../../../../../shared/data/repositories/error_repo.dart';
 import '../../../../../shared/domain/models/influencers.dart';
 import '../../../common/data/repositories/dashboard_repo.dart';
@@ -13,6 +14,8 @@ class BrandDashboardBloc
     extends Bloc<BrandDashboardEvent, BrandDashboardState> {
   Influencers? influencers;
   int page = 0;
+  bool _showOnlyFavorites = false;
+
   BrandDashboardBloc() : super(BrandDashboardInitial()) {
     on<BrandDashboardLoadInfluencers>((event, emit) async {
       if (state is BrandDashboardLoadedInfluencers) {
@@ -34,6 +37,33 @@ class BrandDashboardBloc
         final filteredInfluencers =
             influencers!.filterInfluencers(event.filter);
         emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
+      }
+    });
+
+    on<FilterFavoriteInfluencers>((event, emit) async {
+      if (state is BrandDashboardLoadedInfluencers && influencers != null) {
+        emit(BrandDashboardLoadingInfluencers());
+
+        try {
+          _showOnlyFavorites = event.showOnlyFavorites;
+
+          if (_showOnlyFavorites) {
+            // Get the list of favorite influencer IDs
+            final favoriteIds =
+                await FavoritesRepository.getUserFavoriteIds(event.userId);
+
+            // Filter the influencers list to only show favorites
+            final filteredInfluencers = influencers!.filterByIds(favoriteIds);
+            emit(BrandDashboardLoadedInfluencers(filteredInfluencers));
+          } else {
+            // Show all influencers if favorites filter is turned off
+            emit(BrandDashboardLoadedInfluencers(influencers!));
+          }
+        } catch (e) {
+          debugPrint('Error filtering favorites: $e');
+          // Fall back to the original list if there's an error
+          emit(BrandDashboardLoadedInfluencers(influencers!));
+        }
       }
     });
 
@@ -71,4 +101,7 @@ class BrandDashboardBloc
       }
     });
   }
+
+  // Getter for favorite filter state
+  bool get showOnlyFavorites => _showOnlyFavorites;
 }

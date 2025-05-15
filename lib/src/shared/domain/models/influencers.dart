@@ -97,6 +97,22 @@ class Influencers {
         items: items ?? this.items,
       );
 
+  /// Filter influencers by a list of IDs
+  Influencers filterByIds(List<String> ids) {
+    // Return all influencers whose IDs are in the provided list
+    List<Influencer> filteredItems = items.where((influencer) {
+      return ids.contains(influencer.id);
+    }).toList();
+
+    return Influencers(
+      page: page,
+      perPage: perPage,
+      totalPages: totalPages,
+      totalItems: filteredItems.length,
+      items: filteredItems,
+    );
+  }
+
   Influencers filterInfluencers(String filter) {
     // Simple text-based filter
     List<Influencer> filteredItems = items.where((influencer) {

@@ -10,10 +10,12 @@ import '../../../../shared/domain/models/influencer.dart';
 import '../../../../shared/domain/models/influencer_profile.dart';
 import '../../../../shared/domain/models/review.dart';
 import '../../../../shared/presentation/widgets/transparent_app_bar.dart';
+import '../../../auth/application/auth/auth_bloc.dart';
 import '../../../auth/data/repositories/auth_repo.dart';
 import '../../../profile/data/review_repository.dart';
 import '../../application/user/user_bloc.dart';
 import '../widgets/avatar_uploader.dart';
+import '../widgets/favorite_floating_button.dart';
 import '../widgets/profile_field.dart';
 import '../widgets/shadcn_review_card.dart';
 
@@ -219,21 +221,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: transparentAppBar(
-        'Profile',
-        context: context,
-        actions: [
-          // Add refresh button to app bar
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh Profile',
-            onPressed: () {
-              debugPrint('🔄 Manual refresh triggered from app bar button');
-              _forceCompleteRefresh();
-            },
-          ),
-        ],
-      ),
+      appBar: _buildConditionalAppBar(context),
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserLoaded) {
@@ -337,81 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return const Center(child: Text('Something went wrong'));
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final currentContext = context;
-          final currentState = currentContext.read<UserBloc>().state;
-          final currentUser = (currentState is UserLoaded)
-              ? (currentState).user
-              : (currentState is UserProfileLoaded)
-                  ? (currentState).user
-                  : null;
-
-          if (currentUser != null) {
-            // Show loading indicator before navigation
-            setState(() {
-              _isLoadingProfile = true;
-            });
-
-            try {
-              if (!mounted) return;
-
-              // Instead of replacing the screen, let's force a complete data refresh from the backend
-              // Clear state and show loading indicator
-              setState(() {
-                _profileData = null;
-                _isLoadingProfile = true;
-              });
-
-              // Force refresh by loading fresh data from the backend first
-              final freshUser = await AuthRepository.getUser();
-              if (freshUser != null) {
-                // Update bloc with fresh user data
-                context.read<UserBloc>().add(UpdateUserState(freshUser));
-
-                // Get the profile ID based on user type
-                final String profileId;
-                final bool isBrand;
-
-                if (freshUser is Brand) {
-                  profileId = freshUser.profile;
-                  isBrand = true;
-                } else if (freshUser is Influencer) {
-                  profileId = freshUser.profile;
-                  isBrand = false;
-                } else {
-                  profileId = '';
-                  isBrand = false;
-                }
-
-                // Refresh profile data if we have a valid profile ID
-                if (profileId.isNotEmpty) {
-                  await _refreshProfileData(profileId, isBrand, true);
-                }
-              }
-            } catch (e) {
-              debugPrint('Error navigating to edit profile: $e');
-              if (mounted) {
-                setState(() {
-                  _isLoadingProfile = false;
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error opening profile editor: $e')),
-                );
-              }
-            }
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content:
-                      Text('Cannot edit profile: User data not available')),
-            );
-          }
-        },
-        backgroundColor: Colors.red.shade400,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.edit),
-      ),
+      floatingActionButton: _buildFloatingActionButtons(context),
     );
   }
 
@@ -432,6 +346,201 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _forceCompleteRefresh();
       }
     });
+  }
+
+  /// Conditionally build app bar - only show for own profile
+  PreferredSizeWidget? _buildConditionalAppBar(BuildContext context) {
+    // Get current auth state to determine if this is the current user's profile
+    final authState = context.read<AuthBloc>().state;
+    final currentUserState = context.read<UserBloc>().state;
+
+    // Get the current user based on auth state
+    dynamic profileUser;
+    if (currentUserState is UserLoaded) {
+      profileUser = currentUserState.user;
+    } else if (currentUserState is UserProfileLoaded) {
+      profileUser = currentUserState.user;
+    }
+
+    // If it's not our profile, don't show app bar
+    if (authState is BrandAuthenticated ||
+        authState is InfluencerAuthenticated) {
+      final dynamic currentUser = authState is BrandAuthenticated
+          ? (authState).user
+          : (authState as InfluencerAuthenticated).user;
+
+      if (profileUser != null && currentUser.id != profileUser.id) {
+        // Return null for app bar when viewing someone else's profile
+        return null;
+      }
+    }
+
+    // Return regular app bar for own profile
+    return transparentAppBar(
+      'Profile',
+      context: context,
+      actions: [
+        // Add refresh button to app bar
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          tooltip: 'Refresh Profile',
+          onPressed: () {
+            debugPrint('🔄 Manual refresh triggered from app bar button');
+            _forceCompleteRefresh();
+          },
+        ),
+      ],
+    );
+  }
+
+  /// Build chat and favorite buttons for viewing other profiles
+  Widget? _buildFloatingActionButtons(BuildContext context) {
+    // Get current auth state to determine if this is the current user's profile
+    final authState = context.read<AuthBloc>().state;
+    final currentUserState = context.read<UserBloc>().state;
+
+    // Get the current profile user
+    dynamic profileUser;
+    if (currentUserState is UserLoaded) {
+      profileUser = currentUserState.user;
+    } else if (currentUserState is UserProfileLoaded) {
+      profileUser = currentUserState.user;
+    } else {
+      // If we can't determine the profile user, don't show FABs
+      return null;
+    }
+
+    // Get current authenticated user
+    dynamic currentUser;
+    if (authState is BrandAuthenticated) {
+      currentUser = authState.user;
+    } else if (authState is InfluencerAuthenticated) {
+      currentUser = authState.user;
+    } else {
+      // If not authenticated, don't show FABs
+      return null;
+    }
+
+    // If viewing someone else's profile
+    if (profileUser != null &&
+        currentUser != null &&
+        currentUser.id != profileUser.id) {
+      // Determine if we should show chat button
+      bool showChatButton = false;
+
+      // For influencers, only show if they have connected social accounts
+      if (profileUser is Influencer) {
+        showChatButton = profileUser.connectedSocial;
+      } else if (profileUser is Brand) {
+        // Always show chat for brands regardless of Instagram connection
+        showChatButton = true;
+      }
+
+      // Return row of floating action buttons
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // Chat button - if applicable
+            if (showChatButton)
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: FloatingActionButton(
+                  heroTag: 'chat-button',
+                  onPressed: () => _openChatScreen(context, profileUser),
+                  backgroundColor: Colors.blue,
+                  elevation: 6.0,
+                  tooltip: "Start chat",
+                  child: const Icon(Icons.chat, color: Colors.white, size: 28),
+                ),
+              ),
+
+            // Favorite button
+            FavoriteFloatingButton(
+              targetUser: profileUser,
+              currentUser: currentUser,
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Default edit button for own profile
+    return FloatingActionButton(
+      onPressed: () async {
+        final currentContext = context;
+        final currentState = currentContext.read<UserBloc>().state;
+        final currentUser = (currentState is UserLoaded)
+            ? (currentState).user
+            : (currentState is UserProfileLoaded)
+                ? (currentState).user
+                : null;
+
+        if (currentUser != null) {
+          // Show loading indicator before navigation
+          setState(() {
+            _isLoadingProfile = true;
+          });
+
+          try {
+            if (!mounted) return;
+
+            // Instead of replacing the screen, let's force a complete data refresh from the backend
+            // Clear state and show loading indicator
+            setState(() {
+              _profileData = null;
+              _isLoadingProfile = true;
+            });
+
+            // Force refresh by loading fresh data from the backend first
+            final freshUser = await AuthRepository.getUser();
+            if (freshUser != null) {
+              // Update bloc with fresh user data
+              context.read<UserBloc>().add(UpdateUserState(freshUser));
+
+              // Get the profile ID based on user type
+              final String profileId;
+              final bool isBrand;
+
+              if (freshUser is Brand) {
+                profileId = freshUser.profile;
+                isBrand = true;
+              } else if (freshUser is Influencer) {
+                profileId = freshUser.profile;
+                isBrand = false;
+              } else {
+                profileId = '';
+                isBrand = false;
+              }
+
+              // Refresh profile data if we have a valid profile ID
+              if (profileId.isNotEmpty) {
+                await _refreshProfileData(profileId, isBrand, true);
+              }
+            }
+          } catch (e) {
+            debugPrint('Error navigating to edit profile: $e');
+            if (mounted) {
+              setState(() {
+                _isLoadingProfile = false;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error opening profile editor: $e')),
+              );
+            }
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Cannot edit profile: User data not available')),
+          );
+        }
+      },
+      backgroundColor: Colors.red.shade400,
+      foregroundColor: Colors.white,
+      child: const Icon(Icons.edit),
+    );
   }
 
   Widget _buildProfileContent(BuildContext context, dynamic user) {
@@ -456,6 +565,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String avatar = '';
     bool isBrand = false;
     String profileId = '';
+    bool hasConnectedInstagram = false;
 
     // Determine if user is a brand and extract appropriate data
     if (user is Brand) {
@@ -466,6 +576,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       industry = user.industry;
       avatar = user.avatar;
       profileId = user.profile;
+      // Brands don't have Instagram connection
+      hasConnectedInstagram =
+          true; // Always true for brands to hide the connection card
 
       // Load profile data if needed
       if (_profileData == null && profileId.isNotEmpty) {
@@ -485,6 +598,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       industry = user.industry;
       avatar = user.avatar;
       profileId = user.profile;
+      hasConnectedInstagram = user.connectedSocial;
 
       // Load profile data if needed
       if (_profileData == null && profileId.isNotEmpty) {
@@ -875,6 +989,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context.read<UserBloc>().add(FetchUser());
       }
     }
+  }
+
+  // Open chat screen with the user being viewed
+  void _openChatScreen(BuildContext context, dynamic targetUser) {
+    Navigator.pushNamed(
+      context,
+      messagesScreen,
+      arguments: {
+        'userId': targetUser.id,
+        'name':
+            targetUser is Brand ? targetUser.brandName : targetUser.fullName,
+        'avatar': targetUser.avatar,
+        'collectionId': targetUser.collectionId,
+        'hasConnectedInstagram':
+            targetUser is Influencer ? targetUser.connectedSocial : false,
+        'chatExists': false, // Create new chat if it doesn't exist
+      },
+    );
   }
 
   Future<void> _refreshProfileData(

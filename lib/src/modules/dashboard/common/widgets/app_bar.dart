@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectobia/src/modules/dashboard/brand/presentation/widgets/favorite_filter_button.dart';
 import 'package:connectobia/src/modules/dashboard/brand/presentation/widgets/filter_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +18,7 @@ class CommonAppBar extends StatefulWidget {
   final String collectionId;
   final String image;
   final bool showFilterButton;
+  final bool showFavoriteFilter;
   final GlobalKey<InfluencerFilterButtonState>? filterButtonKey;
 
   const CommonAppBar({
@@ -28,6 +30,7 @@ class CommonAppBar extends StatefulWidget {
     required this.image,
     required this.onChange,
     this.showFilterButton = false,
+    this.showFavoriteFilter = false,
     this.filterButtonKey,
   });
 
@@ -70,6 +73,12 @@ class _CommonAppBarState extends State<CommonAppBar> {
                       onChanged: widget.onChange,
                     ),
                   ),
+
+                  // Favorite filter button if enabled
+                  if (widget.showFavoriteFilter) ...[
+                    const SizedBox(width: 8),
+                    FavoriteFilterButton(userId: widget.userId),
+                  ],
 
                   // Filter button if enabled
                   if (widget.showFilterButton) ...[

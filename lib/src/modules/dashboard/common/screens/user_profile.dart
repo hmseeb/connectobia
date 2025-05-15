@@ -15,6 +15,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:social_auth_btn_kit/social_auth_btn_kit.dart';
 
+import '../../../../shared/data/singletons/account_type.dart';
 import '../application/brand_profile/brand_profile_bloc.dart';
 import '../application/influencer_profile/influencer_profile_bloc.dart';
 import '../widgets/profile_body.dart';
@@ -400,7 +401,28 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
               icon: const Icon(Icons.edit),
               label: const Text('Edit Profile'),
             )
-          : null,
+          : (widget.profileType == 'influencers' &&
+                  CollectionNameSingleton.instance == 'brands')
+              ? FloatingActionButton.extended(
+                  onPressed: () {
+                    // Navigate to chat/messages screen with influencer info
+                    Navigator.pushNamed(
+                      context,
+                      messagesScreen,
+                      arguments: {
+                        'userId': userId,
+                        'name': name,
+                        'avatar': avatar,
+                        'collectionId': collectionId,
+                        'hasConnectedInstagram': connectedSocial,
+                        'chatExists': false,
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.chat),
+                  label: const Text('Chat'),
+                )
+              : null,
       body: Skeletonizer(
         enabled: isLoading,
         child: SingleChildScrollView(
@@ -567,6 +589,7 @@ class _UserProfileState extends State<UserProfile> with WidgetsBindingObserver {
                 mediaCount: mediaCount,
                 hasConnectedInstagram: connectedSocial,
                 profile: influencerProfile,
+                isInfluencer: profileType == 'influencers',
               ),
               if (!isLoading)
                 ProfileReviews(

@@ -7,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 class WatermarkImage {
   static Future<File> addWaterMarkToPhoto({
     required File image,
-    required String waterMarkText,
     bool showDateTime = false,
     double opacity = 0.3, // Default low opacity
   }) async {
@@ -20,14 +19,31 @@ class WatermarkImage {
       throw Exception('Failed to decode image');
     }
 
-    //DateTime & Time format
-    var now = DateTime.now();
-    var format =
-        "${now.day}/${now.month}/${now.year} ${now.hour}:${now.minute}";
+    // Load logo image from assets
+    final logoBytes = File('assets/icons/logo.png').readAsBytesSync();
+    ui.Image? logoImage = ui.decodeImage(logoBytes);
+    if (logoImage == null) {
+      throw Exception('Failed to decode logo image');
+    }
 
-    // Watermark text based on showDateTime value
-    String waterMarkedText =
-        showDateTime ? "$waterMarkText $format" : waterMarkText;
+    // Resize logo to fit (e.g., 1/4 of the image width)
+    int logoTargetWidth = (originalImage.width / 4).round();
+    int logoTargetHeight =
+        (logoImage.height * logoTargetWidth / logoImage.width).round();
+    logoImage = ui.copyResize(logoImage,
+        width: logoTargetWidth, height: logoTargetHeight);
+
+    // Apply opacity to the logo image before compositing
+    for (int yLogo = 0; yLogo < logoImage.height; yLogo++) {
+      for (int xLogo = 0; xLogo < logoImage.width; xLogo++) {
+        final pixel = logoImage.getPixel(xLogo, yLogo);
+        final a = (pixel.a * opacity).toInt();
+        final r = pixel.r;
+        final g = pixel.g;
+        final b = pixel.b;
+        logoImage.setPixelRgba(xLogo, yLogo, r, g, b, a);
+      }
+    }
 
     // Create a copy of the original image for watermarking
     ui.Image watermarkedImageData = ui.copyResize(
@@ -36,25 +52,17 @@ class WatermarkImage {
       height: originalImage.height,
     );
 
-    // Calculate center position
-    final font = ui.arial48;
-    final textWidth = waterMarkedText.length * 15; // Approximate width
-    final x = (watermarkedImageData.width - textWidth) ~/ 2;
-    final y = watermarkedImageData.height ~/ 2;
+    // Calculate center position for logo
+    final x = (watermarkedImageData.width - logoImage.width) ~/ 2;
+    final y = (watermarkedImageData.height - logoImage.height) ~/ 2;
 
-    // Apply semi-transparent watermark
-    ui.drawString(
+    // Draw the logo with opacity using compositeImage
+    ui.compositeImage(
       watermarkedImageData,
-      waterMarkedText,
-      font: font,
-      x: x,
-      y: y,
-      color: ui.ColorUint8.rgba(
-        255,
-        255,
-        255,
-        (255 * opacity).toInt(),
-      ),
+      logoImage,
+      dstX: x,
+      dstY: y,
+      blend: ui.BlendMode.alpha,
     );
 
     // Create temporary directory on storage

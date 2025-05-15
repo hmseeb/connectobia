@@ -3,6 +3,7 @@ import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart'
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/chats/chats_bloc.dart';
 import 'package:connectobia/src/modules/chatting/application/messaging/realtime_messaging_bloc.dart';
+import 'package:connectobia/src/modules/profile/application/favorites/favorites_bloc.dart';
 import 'package:connectobia/src/modules/profile/application/user/user_bloc.dart';
 import 'package:connectobia/src/modules/wallet/application/wallet/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,7 @@ class BlocProviders extends StatelessWidget {
         BlocProvider(create: (context) => ContractBloc()),
         BlocProvider(create: (context) => UserBloc()),
         BlocProvider(create: (context) => WalletBloc()),
+        BlocProvider(create: (context) => FavoritesBloc()),
         BlocProvider(
             create: (context) =>
                 RealtimeMessagingBloc()..add(SubscribeMessages())),

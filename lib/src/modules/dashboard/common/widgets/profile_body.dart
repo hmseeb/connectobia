@@ -12,6 +12,7 @@ class ProfileBody extends StatelessWidget {
   final int? mediaCount;
   final bool hasConnectedInstagram;
   final InfluencerProfile? profile;
+  final bool isInfluencer;
 
   const ProfileBody({
     super.key,
@@ -20,6 +21,7 @@ class ProfileBody extends StatelessWidget {
     this.mediaCount,
     required this.hasConnectedInstagram,
     this.profile,
+    this.isInfluencer = false,
   });
 
   @override
@@ -56,8 +58,8 @@ class ProfileBody extends StatelessWidget {
               const SizedBox(height: 16),
             ],
 
-            // Show Instagram connection message when not connected
-            if (!hasConnectedInstagram) ...[
+            // Show Instagram connection message ONLY for influencers who are not connected
+            if (isInfluencer && !hasConnectedInstagram) ...[
               _buildSectionCard(
                 context,
                 title: 'Instagram Connection',
@@ -86,8 +88,8 @@ class ProfileBody extends StatelessWidget {
               ),
             ],
 
-            // Basic Analytics Card
-            if (hasConnectedInstagram) ...[
+            // Basic Analytics Card - only for influencers with connected Instagram
+            if (isInfluencer && hasConnectedInstagram) ...[
               _buildSectionCard(
                 context,
                 title: 'Basic Analytics',

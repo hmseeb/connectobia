@@ -295,7 +295,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                             SizedBox(width: 12),
                                                             Expanded(
                                                               child: Text(
-                                                                "Adding a watermark places 'CONNECTOBIA' text on your image to help prevent unauthorized reuse",
+                                                                "Adding a watermark places the Connectobia logo on your image to help prevent unauthorized reuse",
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 12,
@@ -347,8 +347,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                                 .addWaterMarkToPhoto(
                                                           image: File(
                                                               pickedImage.path),
-                                                          waterMarkText:
-                                                              "CONNECTOBIA",
                                                         );
                                                         setState(() {
                                                           selectedMedia = true;

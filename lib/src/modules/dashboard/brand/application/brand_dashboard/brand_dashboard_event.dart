@@ -20,6 +20,20 @@ sealed class BrandDashboardEvent {}
 
 class BrandDashboardLoadInfluencers extends BrandDashboardEvent {}
 
+/// Event to filter influencers by favorite status
+class FilterFavoriteInfluencers extends BrandDashboardEvent {
+  /// Whether to only show favorites
+  final bool showOnlyFavorites;
+
+  /// Current user ID needed to check favorites
+  final String userId;
+
+  FilterFavoriteInfluencers({
+    required this.showOnlyFavorites,
+    required this.userId,
+  });
+}
+
 class FilterInfluencers extends BrandDashboardEvent {
   final String filter;
   FilterInfluencers({required this.filter});

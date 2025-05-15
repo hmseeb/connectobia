@@ -119,6 +119,7 @@ class _BrandDashboardState extends State<BrandDashboard> {
                     collectionId: widget.user.collectionId,
                     image: widget.user.avatar,
                     showFilterButton: true,
+                    showFavoriteFilter: true,
                     filterButtonKey: filterButtonKey,
                     onChange: (value) {
                       BlocProvider.of<BrandDashboardBloc>(context)
