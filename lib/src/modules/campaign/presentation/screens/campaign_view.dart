@@ -1,15 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_bloc.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_event.dart';
 import 'package:connectobia/src/modules/campaign/application/campaign_state.dart';
 import 'package:connectobia/src/modules/campaign/application/contract/contract_bloc.dart';
 import 'package:connectobia/src/modules/campaign/data/contract_repository.dart';
+import 'package:connectobia/src/modules/chatting/presentation/screens/messages_screen.dart';
 import 'package:connectobia/src/modules/profile/data/review_repository.dart';
 import 'package:connectobia/src/services/storage/pb.dart';
+import 'package:connectobia/src/shared/data/constants/avatar.dart';
+import 'package:connectobia/src/shared/data/repositories/brand_repo.dart';
+import 'package:connectobia/src/shared/data/repositories/influencer_repo.dart';
+import 'package:connectobia/src/shared/data/singletons/account_type.dart';
+import 'package:connectobia/src/shared/domain/models/brand.dart';
 import 'package:connectobia/src/shared/domain/models/campaign.dart';
 import 'package:connectobia/src/shared/domain/models/contract.dart';
+import 'package:connectobia/src/shared/domain/models/influencer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -408,6 +416,8 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
   }
 
   Widget _buildCampaignHeader(Campaign campaign) {
+    final bool isBrand = CollectionNameSingleton.instance == 'brands';
+
     return RepaintBoundary(
       child: ShadCard(
         padding: const EdgeInsets.all(16.0),
@@ -455,6 +465,157 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                 fontSize: 16,
                 color: Colors.grey,
               ),
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 8),
+
+            // User profile section
+            FutureBuilder(
+              future: _getUserDetails(isBrand, campaign),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.grey.shade200,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 16,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              height: 14,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                if (snapshot.hasError || !snapshot.hasData) {
+                  return const SizedBox.shrink();
+                }
+
+                final userData = snapshot.data;
+                String name = '';
+                String avatar = '';
+                String userId = '';
+                String collectionId = '';
+                bool hasConnectedSocial = false;
+
+                if (isBrand && userData is Influencer) {
+                  name = userData.fullName;
+                  avatar = userData.avatar;
+                  userId = userData.id;
+                  collectionId = 'influencers';
+                  hasConnectedSocial = userData.connectedSocial;
+                } else if (!isBrand && userData is Brand) {
+                  name = userData.brandName;
+                  avatar = userData.avatar;
+                  userId = userData.id;
+                  collectionId = 'brands';
+                  hasConnectedSocial = userData.verified;
+                }
+
+                return Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey.shade200,
+                      backgroundImage: avatar.isNotEmpty
+                          ? CachedNetworkImageProvider(
+                              Avatar.getUserImage(
+                                collectionId: collectionId,
+                                image: avatar,
+                                recordId: userId,
+                              ),
+                            )
+                          : null,
+                      child: avatar.isEmpty
+                          ? Icon(Icons.person,
+                              size: 20, color: Colors.grey.shade700)
+                          : null,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  name.isNotEmpty
+                                      ? name
+                                      : (isBrand ? 'Influencer' : 'Brand'),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (hasConnectedSocial) ...[
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.verified,
+                                  size: 16,
+                                  color: Colors.blue,
+                                ),
+                              ],
+                            ],
+                          ),
+                          Text(
+                            isBrand ? 'Influencer' : 'Brand',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        if (userData != null) {
+                          _openChat(context, userData, isBrand);
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(
+                          Icons.chat_bubble_outline,
+                          size: 20,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -1119,6 +1280,26 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
     }
   }
 
+  // Helper method to get user details
+  Future<dynamic> _getUserDetails(bool isBrand, Campaign campaign) async {
+    try {
+      if (isBrand) {
+        // If current user is a brand, get the influencer details
+        if (campaign.selectedInfluencer != null &&
+            campaign.selectedInfluencer!.isNotEmpty) {
+          return await InfluencerRepository.getInfluencerById(
+              campaign.selectedInfluencer!);
+        }
+      } else {
+        // If current user is an influencer, get the brand details
+        return await BrandRepository.getBrandById(campaign.brand);
+      }
+    } catch (e) {
+      debugPrint('Error fetching user details: $e');
+    }
+    return null;
+  }
+
   void _initializeUrlControllers(List<String> urls) {
     _urlControllers =
         urls.map((url) => TextEditingController(text: url)).toList();
@@ -1200,6 +1381,45 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
         isLoading = false;
       });
       _showErrorToast('Error loading data: $e');
+    }
+  }
+
+  // Helper method to open chat
+  void _openChat(BuildContext context, dynamic userData, bool isBrand) {
+    if (userData == null) return;
+
+    String name = '';
+    String avatar = '';
+    String userId = '';
+    String collectionId = '';
+    bool hasConnectedSocial = false;
+
+    if (isBrand && userData is Influencer) {
+      name = userData.fullName;
+      avatar = userData.avatar;
+      userId = userData.id;
+      collectionId = 'influencers';
+      hasConnectedSocial = userData.connectedSocial;
+    } else if (!isBrand && userData is Brand) {
+      name = userData.brandName;
+      avatar = userData.avatar;
+      userId = userData.id;
+      collectionId = 'brands';
+      hasConnectedSocial = userData.verified;
+    }
+
+    if (userId.isNotEmpty) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => MessagesScreen(
+            name: name,
+            avatar: avatar,
+            userId: userId,
+            collectionId: collectionId,
+            hasConnectedInstagram: hasConnectedSocial,
+          ),
+        ),
+      );
     }
   }
 
