@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as ui;
 import 'package:path_provider/path_provider.dart';
 
@@ -19,8 +20,9 @@ class WatermarkImage {
       throw Exception('Failed to decode image');
     }
 
-    // Load logo image from assets
-    final logoBytes = File('assets/icons/logo.png').readAsBytesSync();
+    // Load logo image from assets using Flutter's asset bundle
+    final ByteData logoData = await rootBundle.load('assets/icons/logo.png');
+    final Uint8List logoBytes = logoData.buffer.asUint8List();
     ui.Image? logoImage = ui.decodeImage(logoBytes);
     if (logoImage == null) {
       throw Exception('Failed to decode logo image');

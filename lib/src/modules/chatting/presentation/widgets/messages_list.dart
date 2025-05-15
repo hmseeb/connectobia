@@ -189,12 +189,36 @@ class MessagesList extends StatelessWidget {
                             ),
                     ),
                     if (index == 0 && isMediaSelected) ...[
-                      ShadAlert(
-                        iconSrc: LucideIcons.image,
-                        title: Text(
-                          'Selected an image${enableWatermark ? " (Watermarked)" : " (No Watermark)"}',
-                        ),
-                        decoration: ShadDecoration(color: ShadColors.success),
+                      Stack(
+                        children: [
+                          ShadAlert(
+                            iconSrc: LucideIcons.image,
+                            title: Text(
+                              'Selected an image${enableWatermark ? " (Watermarked)" : " (No Watermark)"}',
+                            ),
+                            decoration:
+                                ShadDecoration(color: ShadColors.success),
+                          ),
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: GestureDetector(
+                              onTap: onDismiss ?? () {},
+                              child: Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  LucideIcons.x,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ]
                   ],

@@ -108,6 +108,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   senderId: widget.userId,
                   isMediaSelected: selectedMedia,
                   enableWatermark: enableWatermark,
+                  onDismiss: () {
+                    setState(() {
+                      selectedMedia = false;
+                      watermarkedImage = null;
+                      HapticFeedback.lightImpact();
+                    });
+                  },
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
