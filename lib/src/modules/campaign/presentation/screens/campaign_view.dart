@@ -791,16 +791,11 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
                   if (snapshot.hasData && !snapshot.data!) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 16.0),
-                      child: ShadButton.secondary(
+                      child: ShadButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamed(
-                            '/review',
-                            arguments: {'contractId': contract.id},
-                          ).then((_) {
-                            // Refresh the review status when returning from review screen
-                            setState(() {});
-                          });
+                          _showReviewDialog(contract.id);
                         },
+                        width: double.infinity,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
@@ -1553,6 +1548,221 @@ class _CampaignDetailsPageState extends State<CampaignDetailsPage> {
       ShadToast.destructive(
         title: const Text('Error'),
         description: Text(message),
+      ),
+    );
+  }
+
+  // Show review dialog using ShadCN UI components
+  void _showReviewDialog(String contractId) {
+    // Rating state - default to 5 stars
+    int rating = 5;
+    // Controller for the review text
+    final TextEditingController commentController = TextEditingController();
+    // Loading state for the submission
+    bool isSubmitting = false;
+
+    // Create a stateful context for the dialog
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return Dialog(
+            child: ShadCard(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  const Text(
+                    'Leave a Review',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Rating stars
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return IconButton(
+                          onPressed: isSubmitting
+                              ? null
+                              : () {
+                                  setDialogState(() {
+                                    rating = index + 1;
+                                  });
+                                },
+                          icon: Icon(
+                            index < rating ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 32,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          iconSize: 32,
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Comment field
+                  ShadInputFormField(
+                    controller: commentController,
+                    maxLines: 4,
+                    enabled: !isSubmitting,
+                    placeholder: Text('Write your review here...'),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Action buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ShadButton.ghost(
+                        onPressed: isSubmitting
+                            ? null
+                            : () => Navigator.pop(dialogContext),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 8),
+                      ShadButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                // Validate
+                                if (commentController.text.trim().length < 5) {
+                                  ShadToaster.of(context).show(
+                                    ShadToast.destructive(
+                                      title: const Text('Error'),
+                                      description: const Text(
+                                          'Please enter at least 5 characters'),
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                // Set submitting state
+                                setDialogState(() {
+                                  isSubmitting = true;
+                                });
+
+                                try {
+                                  // Try to submit the review
+                                  final pb = await PocketBaseSingleton.instance;
+                                  final userId = pb.authStore.model.id;
+                                  final collectionName =
+                                      pb.authStore.model.collectionId;
+                                  // This may not be reliable - we need to check against contract IDs
+                                  final isBrand = collectionName == 'brands';
+
+                                  // Make sure contract and campaign are available
+                                  if (contract == null || campaign == null) {
+                                    throw Exception(
+                                        'Contract or campaign data missing');
+                                  }
+
+                                  debugPrint(
+                                      'Review submission - User details:');
+                                  debugPrint('  User ID: $userId');
+                                  debugPrint(
+                                      '  User Collection: $collectionName');
+                                  debugPrint('  Is Brand: $isBrand');
+                                  debugPrint('Contract details:');
+                                  debugPrint('  Contract ID: ${contract!.id}');
+                                  debugPrint(
+                                      '  Contract Brand ID: ${contract!.brand}');
+                                  debugPrint(
+                                      '  Contract Influencer ID: ${contract!.influencer}');
+
+                                  // Determine the actual role based on contract data
+                                  final actualUserIsBrand =
+                                      contract!.brand == userId;
+                                  final actualUserIsInfluencer =
+                                      contract!.influencer == userId;
+
+                                  debugPrint(
+                                      'Actual roles based on contract IDs:');
+                                  debugPrint(
+                                      '  User is brand: $actualUserIsBrand');
+                                  debugPrint(
+                                      '  User is influencer: $actualUserIsInfluencer');
+
+                                  if (!actualUserIsBrand &&
+                                      !actualUserIsInfluencer) {
+                                    throw Exception(
+                                        'User ID does not match any party in this contract');
+                                  }
+
+                                  // Submit the review based on actual role in the contract
+                                  if (actualUserIsBrand) {
+                                    // Brand reviewing influencer
+                                    await ReviewRepository
+                                        .createBrandToInfluencerReview(
+                                      campaignId: campaign!.id,
+                                      brandId: contract!
+                                          .brand, // Use contract values
+                                      influencerId: contract!.influencer,
+                                      rating: rating,
+                                      comment: commentController.text.trim(),
+                                    );
+                                  } else {
+                                    // Influencer reviewing brand
+                                    await ReviewRepository
+                                        .createInfluencerToBrandReview(
+                                      campaignId: campaign!.id,
+                                      influencerId: contract!
+                                          .influencer, // Use contract values
+                                      brandId: contract!.brand,
+                                      rating: rating,
+                                      comment: commentController.text.trim(),
+                                    );
+                                  }
+
+                                  // Close the dialog
+                                  Navigator.pop(dialogContext);
+
+                                  // Show success message
+                                  if (mounted) {
+                                    _showSuccessToast(
+                                        'Review submitted successfully!');
+                                    // Force rebuild to update the UI
+                                    setState(() {});
+                                  }
+                                } catch (e) {
+                                  // Show error and reset submission state
+                                  debugPrint('Error submitting review: $e');
+                                  setDialogState(() {
+                                    isSubmitting = false;
+                                  });
+
+                                  _showErrorToast(
+                                      'Failed to submit review. Please try again.');
+                                }
+                              },
+                        child: isSubmitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text('Submit Review'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

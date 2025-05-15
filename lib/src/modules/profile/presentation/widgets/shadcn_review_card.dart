@@ -29,10 +29,14 @@ class ShadcnReviewCard extends StatelessWidget {
     String? avatarUrl;
     try {
       if (review.isBrandReviewer && review.brandRecord != null) {
-        avatarUrl = review.brandRecord['avatar'];
+        if (review.brandRecord is Map) {
+          avatarUrl = review.brandRecord['avatar']?.toString();
+        }
       } else if (review.isInfluencerReviewer &&
           review.influencerRecord != null) {
-        avatarUrl = review.influencerRecord['avatar'];
+        if (review.influencerRecord is Map) {
+          avatarUrl = review.influencerRecord['avatar']?.toString();
+        }
       }
     } catch (e) {
       debugPrint('Error getting reviewer avatar: $e');
@@ -115,7 +119,9 @@ class ShadcnReviewCard extends StatelessWidget {
                                 radius: 22, // Smaller radius
                                 child: Text(
                                   reviewerName.isNotEmpty
-                                      ? reviewerName[0].toUpperCase()
+                                      ? reviewerName
+                                          .substring(0, 1)
+                                          .toUpperCase()
                                       : '?',
                                   style: TextStyle(
                                     color: Theme.of(context).primaryColor,
@@ -226,12 +232,6 @@ class ShadcnReviewCard extends StatelessWidget {
                     ),
                     child: _buildReviewContent(context),
                   ),
-
-                  // Campaign info if available
-                  if (review.campaignRecord != null) ...[
-                    const SizedBox(height: 16),
-                    _buildCampaignInfo(context),
-                  ],
                 ],
               ),
             ),
@@ -253,45 +253,6 @@ class ShadcnReviewCard extends StatelessWidget {
           size: 14,
         );
       }),
-    );
-  }
-
-  Widget _buildCampaignInfo(BuildContext context) {
-    final campaignTitle = review.campaignRecord['title'] ?? 'Unknown campaign';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.campaign_outlined,
-            size: 16,
-            color: Theme.of(context).primaryColor,
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              campaignTitle,
-              style: TextStyle(
-                fontSize: 13,
-                color: Theme.of(context).primaryColor,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -368,18 +329,24 @@ class ShadcnReviewCard extends StatelessWidget {
 
   String _getReviewerName() {
     try {
-      // Check who reviewed based on role
+      // Brand gave the review
       if (review.isBrandReviewer) {
-        // Brand gave the review
         if (review.brandRecord != null) {
-          return review.brandRecord['brandName'] ?? 'Brand';
+          if (review.brandRecord is Map) {
+            return review.brandRecord['brandName']?.toString() ?? 'Brand';
+          }
+          return 'Brand';
         }
         return 'Brand';
       }
       // Influencer gave the review
       else if (review.isInfluencerReviewer) {
         if (review.influencerRecord != null) {
-          return review.influencerRecord['fullName'] ?? 'Influencer';
+          if (review.influencerRecord is Map) {
+            return review.influencerRecord['fullName']?.toString() ??
+                'Influencer';
+          }
+          return 'Influencer';
         }
         return 'Influencer';
       }
@@ -450,8 +417,6 @@ class ShadcnReviewCard extends StatelessWidget {
               Text('Submitted on $formattedDate'),
               const SizedBox(height: 16),
               _buildReviewContent(context),
-              const SizedBox(height: 24),
-              if (review.campaignRecord != null) _buildCampaignInfo(context),
             ],
           ),
         ),

@@ -78,13 +78,19 @@ class _CampaignErrorBoundaryState extends State<CampaignErrorBoundary> {
   }
 
   void _handleFlutterError(FlutterErrorDetails details) {
-    if (mounted) {
-      setState(() {
-        _hasError = true;
-      });
-    }
-    // Log the error
+    // Log the error first
     debugPrint('Error in CampaignErrorBoundary: ${details.exception}');
     debugPrint('Stack trace: ${details.stack}');
+
+    if (mounted) {
+      // Use a post-frame callback to safely call setState
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _hasError = true;
+          });
+        }
+      });
+    }
   }
 }

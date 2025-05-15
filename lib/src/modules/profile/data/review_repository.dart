@@ -62,17 +62,6 @@ class ReviewRepository {
     try {
       final pb = await PocketBaseSingleton.instance;
 
-      // Create the review
-      final body = {
-        'brand': brandId,
-        'influencer': influencerId,
-        'campaign': campaignId,
-        'rating': rating,
-        'comment': comment,
-        'role': 'brand',
-        'submitted_at': DateTime.now().toIso8601String(),
-      };
-
       debugPrint('Creating brand-to-influencer review with data:');
       debugPrint('  Campaign ID: $campaignId');
       debugPrint('  Brand ID: $brandId');
@@ -81,21 +70,104 @@ class ReviewRepository {
       debugPrint('  Comment length: ${comment.length}');
       debugPrint('  Role: brand');
 
+      // Check if IDs might be swapped (if brandId is actually an influencerId)
+      bool idsSwapped = false;
+      String actualBrandId = brandId;
+      String actualInfluencerId = influencerId;
+
+      try {
+        debugPrint('Checking if brand ID exists in influencers collection...');
+        await pb.collection('influencers').getOne(brandId);
+        debugPrint(
+            'WARNING: Brand ID exists as an influencer! IDs might be swapped.');
+
+        try {
+          debugPrint(
+              'Checking if influencer ID exists in brands collection...');
+          await pb.collection('brands').getOne(influencerId);
+          debugPrint(
+              'Influencer ID exists as a brand. Swapping IDs for review creation.');
+
+          // Swap the IDs
+          actualBrandId = influencerId;
+          actualInfluencerId = brandId;
+          idsSwapped = true;
+
+          debugPrint('CORRECTION: Using actual brand ID: $actualBrandId');
+          debugPrint(
+              'CORRECTION: Using actual influencer ID: $actualInfluencerId');
+        } catch (e) {
+          debugPrint(
+              'Influencer ID does not exist as a brand. Not swapping IDs.');
+        }
+      } catch (e) {
+        debugPrint('Brand ID is correctly a brand. IDs are correct.');
+      }
+
+      // Create the review with potentially swapped IDs
+      final body = {
+        'brand': actualBrandId,
+        'influencer': actualInfluencerId,
+        'campaign': campaignId,
+        'rating': rating,
+        'comment': comment,
+        'role': 'brand',
+        'submitted_at': DateTime.now().toIso8601String(),
+      };
+
       // Validate that the related records exist first
       try {
         debugPrint('Verifying campaign exists...');
-        final campaignRecord =
-            await pb.collection('campaigns').getOne(campaignId);
-        debugPrint('✅ Campaign exists: ${campaignRecord.id}');
+        bool allRecordsExist = true;
+        String errorMessage = '';
 
-        debugPrint('Verifying brand exists...');
-        final brandRecord = await pb.collection('brands').getOne(brandId);
-        debugPrint('✅ Brand exists: ${brandRecord.id}');
+        try {
+          final campaignRecord =
+              await pb.collection('campaigns').getOne(campaignId);
+          debugPrint('✅ Campaign exists: ${campaignRecord.id}');
+        } catch (e) {
+          allRecordsExist = false;
+          errorMessage = 'Campaign not found';
+          debugPrint('❌ Campaign not found: $e');
+        }
 
-        debugPrint('Verifying influencer exists...');
-        final influencerRecord =
-            await pb.collection('influencers').getOne(influencerId);
-        debugPrint('✅ Influencer exists: ${influencerRecord.id}');
+        bool brandExists = false;
+        try {
+          debugPrint('Verifying brand exists...');
+          final brandRecord =
+              await pb.collection('brands').getOne(actualBrandId);
+          debugPrint('✅ Brand exists: ${brandRecord.id}');
+          brandExists = true;
+        } catch (e) {
+          debugPrint('❌ Brand not found: $e');
+        }
+
+        bool influencerExists = false;
+        try {
+          debugPrint('Verifying influencer exists...');
+          final influencerRecord =
+              await pb.collection('influencers').getOne(actualInfluencerId);
+          debugPrint('✅ Influencer exists: ${influencerRecord.id}');
+          influencerExists = true;
+        } catch (e) {
+          debugPrint('❌ Influencer not found: $e');
+        }
+
+        if (!brandExists) {
+          allRecordsExist = false;
+          errorMessage =
+              'Brand account not found. The user might have been deleted.';
+        }
+
+        if (!influencerExists) {
+          allRecordsExist = false;
+          errorMessage =
+              'Influencer account not found. The user might have been deleted.';
+        }
+
+        if (!allRecordsExist) {
+          throw Exception('Cannot create review: $errorMessage');
+        }
       } catch (e) {
         debugPrint('❌ ERROR VALIDATING RELATIONS: $e');
         rethrow;
@@ -123,17 +195,6 @@ class ReviewRepository {
     try {
       final pb = await PocketBaseSingleton.instance;
 
-      // Create the review
-      final body = {
-        'influencer': influencerId,
-        'brand': brandId,
-        'campaign': campaignId,
-        'rating': rating,
-        'comment': comment,
-        'role': 'influencer',
-        'submitted_at': DateTime.now().toIso8601String(),
-      };
-
       debugPrint('Creating influencer-to-brand review with data:');
       debugPrint('  Campaign ID: $campaignId');
       debugPrint('  Influencer ID: $influencerId');
@@ -142,21 +203,134 @@ class ReviewRepository {
       debugPrint('  Comment length: ${comment.length}');
       debugPrint('  Role: influencer');
 
+      // If the influencer ID and brand ID are the same, this is definitely an error
+      if (influencerId == brandId) {
+        debugPrint(
+            '⚠️ ERROR: influencerId and brandId are the same! This is invalid.');
+        throw Exception(
+            'Cannot create review: The same ID cannot be used for both brand and influencer');
+      }
+
+      // Check if IDs might be swapped (if influencerId is actually a brandId)
+      bool idsSwapped = false;
+      String actualInfluencerId = influencerId;
+      String actualBrandId = brandId;
+
+      // First check which collection the influencerId belongs to
+      String influencerCollection = '';
+      try {
+        await pb.collection('influencers').getOne(influencerId);
+        influencerCollection = 'influencers';
+        debugPrint('✅ Confirmed influencerId exists in influencers collection');
+      } catch (e) {
+        try {
+          await pb.collection('brands').getOne(influencerId);
+          influencerCollection = 'brands';
+          debugPrint('⚠️ WARNING: influencerId exists in brands collection!');
+        } catch (e2) {
+          debugPrint('❌ influencerId not found in any collection!');
+        }
+      }
+
+      // Then check which collection the brandId belongs to
+      String brandCollection = '';
+      try {
+        await pb.collection('brands').getOne(brandId);
+        brandCollection = 'brands';
+        debugPrint('✅ Confirmed brandId exists in brands collection');
+      } catch (e) {
+        try {
+          await pb.collection('influencers').getOne(brandId);
+          brandCollection = 'influencers';
+          debugPrint('⚠️ WARNING: brandId exists in influencers collection!');
+        } catch (e2) {
+          debugPrint('❌ brandId not found in any collection!');
+        }
+      }
+
+      // Determine if we need to swap IDs
+      if (influencerCollection == 'brands' &&
+          brandCollection == 'influencers') {
+        debugPrint(
+            '🔄 SWAPPING IDs: influencer and brand IDs appear to be reversed');
+        actualInfluencerId = brandId;
+        actualBrandId = influencerId;
+        idsSwapped = true;
+      } else if (influencerCollection != 'influencers') {
+        debugPrint('❌ ERROR: influencerId is not a valid influencer');
+      } else if (brandCollection != 'brands') {
+        debugPrint('❌ ERROR: brandId is not a valid brand');
+      }
+
+      debugPrint('Using final IDs:');
+      debugPrint('  Final Influencer ID: $actualInfluencerId');
+      debugPrint('  Final Brand ID: $actualBrandId');
+      debugPrint('  IDs were swapped: $idsSwapped');
+
+      // Create the review with potentially swapped IDs
+      final body = {
+        'influencer': actualInfluencerId,
+        'brand': actualBrandId,
+        'campaign': campaignId,
+        'rating': rating,
+        'comment': comment,
+        'role': 'influencer',
+        'submitted_at': DateTime.now().toIso8601String(),
+      };
+
       // Validate that the related records exist first
       try {
         debugPrint('Verifying campaign exists...');
-        final campaignRecord =
-            await pb.collection('campaigns').getOne(campaignId);
-        debugPrint('✅ Campaign exists: ${campaignRecord.id}');
+        bool allRecordsExist = true;
+        String errorMessage = '';
 
-        debugPrint('Verifying influencer exists...');
-        final influencerRecord =
-            await pb.collection('influencers').getOne(influencerId);
-        debugPrint('✅ Influencer exists: ${influencerRecord.id}');
+        try {
+          final campaignRecord =
+              await pb.collection('campaigns').getOne(campaignId);
+          debugPrint('✅ Campaign exists: ${campaignRecord.id}');
+        } catch (e) {
+          allRecordsExist = false;
+          errorMessage = 'Campaign not found';
+          debugPrint('❌ Campaign not found: $e');
+        }
 
-        debugPrint('Verifying brand exists...');
-        final brandRecord = await pb.collection('brands').getOne(brandId);
-        debugPrint('✅ Brand exists: ${brandRecord.id}');
+        bool influencerExists = false;
+        try {
+          debugPrint('Verifying influencer exists...');
+          final influencerRecord =
+              await pb.collection('influencers').getOne(actualInfluencerId);
+          debugPrint('✅ Influencer exists: ${influencerRecord.id}');
+          influencerExists = true;
+        } catch (e) {
+          debugPrint('❌ Influencer not found: $e');
+        }
+
+        bool brandExists = false;
+        try {
+          debugPrint('Verifying brand exists...');
+          final brandRecord =
+              await pb.collection('brands').getOne(actualBrandId);
+          debugPrint('✅ Brand exists: ${brandRecord.id}');
+          brandExists = true;
+        } catch (e) {
+          debugPrint('❌ Brand not found: $e');
+        }
+
+        if (!influencerExists) {
+          allRecordsExist = false;
+          errorMessage =
+              'Influencer account not found. The user might have been deleted.';
+        }
+
+        if (!brandExists) {
+          allRecordsExist = false;
+          errorMessage =
+              'Brand account not found. The user might have been deleted.';
+        }
+
+        if (!allRecordsExist) {
+          throw Exception('Cannot create review: $errorMessage');
+        }
       } catch (e) {
         debugPrint('❌ ERROR VALIDATING RELATIONS: $e');
         rethrow;
