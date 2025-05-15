@@ -110,8 +110,11 @@ class MessagesRepository {
       required String messageType,
       required String messageText}) async {
     try {
+      debugPrint(
+          "📝 sendTextMessage called with chatId: $chatId, recipientId: $recipientId");
       final pb = await PocketBaseSingleton.instance;
       String senderId = pb.authStore.record!.id;
+      debugPrint("📝 Sender ID: $senderId");
 
       final body = <String, dynamic>{
         "senderId": senderId,
@@ -121,11 +124,13 @@ class MessagesRepository {
         "chat": chatId,
         "isRead": false,
       };
+      debugPrint("📝 Creating message with body: $body");
 
       final record = await pb.collection('messages').create(body: body);
+      debugPrint("📝 Message created successfully with ID: ${record.id}");
       return Message.fromRecord(record);
     } catch (e) {
-      debugPrint('$e');
+      debugPrint("📝 ERROR in sendTextMessage: $e");
       throw ClientException();
     }
   }

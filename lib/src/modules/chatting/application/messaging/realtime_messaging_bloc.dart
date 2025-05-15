@@ -222,7 +222,14 @@ class RealtimeMessagingBloc
     on<SendTextMessage>((event, emit) async {
       MessagesRepository msgsRepo = MessagesRepository();
       try {
+        debugPrint(
+            "📨 SendTextMessage event received in bloc with message: ${event.message}");
+        debugPrint(
+            "📨 chatId empty? ${event.chatId.isEmpty}, recipientId: ${event.recipientId}");
+
         String senderId = await AuthRepository.getUserId();
+        debugPrint("📨 Sender ID: $senderId");
+
         Messages messages = event.messages;
         String chatId = event.chatId;
         // generate a random id for the message
@@ -238,52 +245,65 @@ class RealtimeMessagingBloc
           created: DateTime.now().toIso8601String(),
         );
         final Messages addSendingMessage = messages.addMessage(sendingMessage);
+        debugPrint("📨 Emitting MessagesLoaded with temporary message");
         emit(MessagesLoaded(messages: addSendingMessage, selfId: senderId));
 
         if (chatId.isEmpty) {
+          debugPrint("📨 Creating NEW chat because chatId is empty");
           final chatsRepo = ChatsRepository();
-          final message = await chatsRepo.createChat(
-            recipientId: event.recipientId,
-            messageText: event.message,
-          );
+          debugPrint(
+              "📨 Calling createChat with recipientId: ${event.recipientId}, message: ${event.message}");
 
-          Messages sentMessage = messages.removeMessageWithId(messageId);
-          sentMessage.addMessage(message);
-
-          // Create a notification for the recipient
           try {
-            // Get sender name based on account type
-            String accountType = CollectionNameSingleton.instance;
-            String senderName = '';
+            final message = await chatsRepo.createChat(
+              recipientId: event.recipientId,
+              messageText: event.message,
+            );
+            debugPrint("📨 Chat created successfully with id: ${message.chat}");
 
-            final currentUser = await AuthRepository.getUser();
-            if (accountType == 'brands') {
-              senderName = (currentUser as Brand).brandName;
-            } else {
-              senderName = (currentUser as Influencer).fullName;
+            Messages sentMessage = messages.removeMessageWithId(messageId);
+            sentMessage.addMessage(message);
+
+            // Create a notification for the recipient
+            try {
+              // Get sender name based on account type
+              String accountType = CollectionNameSingleton.instance;
+              String senderName = '';
+
+              final currentUser = await AuthRepository.getUser();
+              if (accountType == 'brands') {
+                senderName = (currentUser as Brand).brandName;
+              } else {
+                senderName = (currentUser as Influencer).fullName;
+              }
+
+              await NotificationRepository.createMessageNotification(
+                userId: event.recipientId,
+                senderName: senderName,
+                message: event.message,
+                chatId: message.chat,
+              );
+              debugPrint(
+                  'Created message notification for recipient: ${event.recipientId}');
+            } catch (e) {
+              debugPrint(
+                  'Error creating message notification for recipient: $e');
+              // Don't fail the message handling if notification fails
             }
 
-            await NotificationRepository.createMessageNotification(
-              userId: event.recipientId,
-              senderName: senderName,
-              message: event.message,
+            HapticFeedback.lightImpact();
+            debugPrint("📨 Emitting final MessagesLoaded with real message");
+            emit(MessagesLoaded(messages: sentMessage, selfId: senderId));
+
+            await msgsRepo.updateChatById(
               chatId: message.chat,
+              messageId: message.id!,
+              isRead: false,
             );
-            debugPrint(
-                'Created message notification for recipient: ${event.recipientId}');
           } catch (e) {
-            debugPrint('Error creating message notification for recipient: $e');
-            // Don't fail the message handling if notification fails
+            debugPrint("📨 ERROR in createChat: $e");
+            rethrow; // Re-throw to be caught by outer catch
           }
-
-          HapticFeedback.lightImpact();
-          emit(MessagesLoaded(messages: sentMessage, selfId: senderId));
-
-          await msgsRepo.updateChatById(
-            chatId: message.chat,
-            messageId: message.id!,
-            isRead: false,
-          );
         } else {
           final message = await msgsRepo.sendTextMessage(
             recipientId: event.recipientId,

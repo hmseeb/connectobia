@@ -18,36 +18,45 @@ class ChatsRepository {
   Future<Message> createChat(
       {required String recipientId, required String messageText}) async {
     try {
+      debugPrint("🔄 createChat called with recipientId: $recipientId");
       final pb = await PocketBaseSingleton.instance;
       String senderId = pb.authStore.record!.id;
+      debugPrint("🔄 Sender ID: $senderId");
 
       String accountType = CollectionNameSingleton.instance;
+      debugPrint("🔄 Account Type: $accountType");
 
       String influencerId =
           accountType == 'influencers' ? senderId : recipientId;
       String brandId = accountType == 'brands' ? senderId : recipientId;
+      debugPrint("🔄 Influencer ID: $influencerId, Brand ID: $brandId");
 
       final body = <String, dynamic>{
         "influencer": influencerId,
         "brand": brandId,
       };
 
+      debugPrint("🔄 Creating chat record with body: $body");
       final chatRecord = await pb.collection('chats').create(body: body);
+      debugPrint("🔄 Chat record created with ID: ${chatRecord.id}");
 
       MessagesRepository msgsRepo = MessagesRepository();
-
+      debugPrint("🔄 Sending first text message in new chat");
       final messageRecord = await msgsRepo.sendTextMessage(
         chatId: chatRecord.id,
         recipientId: recipientId,
         messageType: 'text',
         messageText: messageText,
       );
+      debugPrint("🔄 Message record created with ID: ${messageRecord.id}");
 
       await msgsRepo.updateChatById(
           chatId: chatRecord.id, isRead: false, messageId: messageRecord.id);
+      debugPrint("🔄 Chat updated with message ID");
 
       return messageRecord;
     } catch (e) {
+      debugPrint("🔄 ERROR in createChat: $e");
       throw ClientException;
     }
   }
